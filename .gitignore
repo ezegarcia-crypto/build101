@@ -1,0 +1,10 @@
+# Claves y archivos locales: nunca a GitHub
+.env
+.env.*
+!.env.example
+!.env.schema
+.vercel
+
+# Dependencias y sistema
+node_modules/
+.DS_Store

@@ -1,0 +1,512 @@
+<title>Machete build 101</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=Schibsted+Grotesk:wght@700;800&display=swap">
+<style>
+/* Layout: una sola columna de lectura, como una libreta de campo; etiquetas en mono tipo "// sección" de terminal. */
+:root {
+  --bg: #F4F6F9;
+  --surface: #FFFFFF;
+  --fg: #13161D;
+  --muted: #586072;
+  --rule: #D9DEE7;
+  --accent: #2346D8;
+  --accent-soft: #E7ECFF;
+  --warn: #8F530A;
+  --warn-soft: #FFF2DE;
+  --ok: #1D7247;
+  --ok-soft: #E4F3EA;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1116; --surface: #171A21; --fg: #E6E9EF; --muted: #9AA2B1; --rule: #2A2F3A;
+    --accent: #93A9FF; --accent-soft: #1B2343; --warn: #F2B65E; --warn-soft: #2B2112;
+    --ok: #6FD3A0; --ok-soft: #12261B; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1116; --surface: #171A21; --fg: #E6E9EF; --muted: #9AA2B1; --rule: #2A2F3A;
+  --accent: #93A9FF; --accent-soft: #1B2343; --warn: #F2B65E; --warn-soft: #2B2112;
+  --ok: #6FD3A0; --ok-soft: #12261B; color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--body); }
+.wrap { max-width: 46rem; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p, ul, ol, dl { margin: 0; }
+p, li { max-width: 65ch; }
+strong { font-weight: 600; }
+code, .mono { font-family: var(--mono); font-size: 0.9em; }
+
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Encabezado */
+header { display: grid; gap: 18px; padding-bottom: 28px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.4rem, 8vw, 3.6rem); line-height: 1; letter-spacing: -0.025em; }
+h1 .cursor { color: var(--accent); }
+.lead { font-size: 1.12rem; color: var(--fg); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 12px 20px; padding: 16px 0 0; border-top: 1px solid var(--rule); }
+.facts div { display: grid; gap: 2px; min-width: 0; }
+.facts dt { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 8px; }
+nav a { font-size: 0.85rem; text-decoration: none; color: var(--fg); border: 1px solid var(--rule); background: var(--surface); padding: 4px 10px; border-radius: 999px; }
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Secciones */
+section { border-top: 1px solid var(--rule); padding-block: 40px 8px; display: grid; gap: 16px; scroll-margin-top: 12px; }
+h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.55rem, 4.8vw, 2rem); line-height: 1.12; letter-spacing: -0.015em; }
+h3 { font-family: var(--display); font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
+ul, ol { padding-left: 1.2rem; display: grid; gap: 8px; }
+
+.essentials { list-style: none; padding: 0; counter-reset: e; gap: 12px; }
+.essentials li { display: grid; grid-template-columns: 2rem 1fr; gap: 4px; counter-increment: e; }
+.essentials li::before { content: counter(e); font-family: var(--display); font-weight: 800; font-size: 1.25rem; color: var(--accent); line-height: 1.4; }
+
+.callout { border-radius: 10px; padding: 14px 16px; background: var(--accent-soft); display: grid; gap: 4px; }
+.callout .eyebrow { color: var(--accent); }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn .eyebrow { color: var(--warn); }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--mono); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+/* Las tres cosas del loop */
+.steps { list-style: none; padding: 0; gap: 14px; }
+.steps li { display: grid; grid-template-columns: 2.2rem 1fr; gap: 2px 8px; }
+.steps .n { font-family: var(--display); font-weight: 800; font-size: 1.6rem; line-height: 1.1; color: var(--accent); grid-row: span 2; }
+.steps h3 { align-self: end; }
+.steps p { color: var(--fg); }
+
+/* Registro de las tres vueltas */
+.log { font-family: var(--mono); font-size: 0.84rem; line-height: 1.5; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; overflow-x: auto; display: grid; gap: 4px; }
+.log .row { display: grid; grid-template-columns: 1.3rem minmax(14rem, 1fr) auto; gap: 8px; align-items: baseline; }
+.log .turn { margin-top: 8px; color: var(--muted); }
+.log .turn:first-of-type { margin-top: 0; }
+.log .tag { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.log .tag.wall { color: var(--warn); }
+.log .tag.check { color: var(--accent); }
+.log .x { color: var(--warn); }
+.log .v { color: var(--ok); }
+.log .goal { color: var(--accent); }
+
+/* Tarjetas de piezas */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.card .eyebrow { font-size: 0.7rem; }
+
+/* Stack */
+.stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 12px; }
+.stack > div { border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.stack .use { background: var(--ok-soft); }
+.stack .planb { background: var(--accent-soft); }
+.stack .skip { background: var(--surface); border: 1px solid var(--rule); }
+.stack .use .eyebrow { color: var(--ok); }
+.stack .planb .eyebrow { color: var(--accent); }
+.stack ul { gap: 4px; }
+
+/* Plan del finde */
+.days { display: grid; gap: 24px; }
+.day { display: grid; gap: 10px; }
+.timeline { list-style: none; padding: 0; gap: 0; border-left: 2px solid var(--rule); margin-left: 4px; }
+.timeline li { display: grid; grid-template-columns: 4.6rem 1fr; gap: 10px; padding: 8px 0 8px 14px; position: relative; max-width: none; }
+.timeline li::before { content: ""; position: absolute; left: -6px; top: 15px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
+.timeline time, .timeline .t { font-family: var(--mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; color: var(--accent); padding-top: 2px; }
+
+/* Frases para copiar */
+.prompts { display: grid; gap: 12px; }
+.prompt { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.prompt-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.prompt-text { white-space: pre-line; overflow-wrap: anywhere; }
+button.copy { font: 600 0.8rem/1 var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--rule); border-radius: 999px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+button.copy:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Glosario */
+.glossary { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 12px 28px; }
+.glossary div { display: grid; gap: 2px; min-width: 0; }
+.glossary dt { font-weight: 600; }
+.glossary dd { margin: 0; color: var(--muted); }
+
+footer { border-top: 1px solid var(--rule); margin-top: 40px; padding-top: 20px; color: var(--muted); font-size: 0.88rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">// Equipo · build 101 · resumen del warm up</p>
+    <h1>Machete del finde<span class="cursor">_</span></h1>
+    <p class="lead">Todo lo que dejó el warm up de IA, explicado sin jerga, y cómo lo vamos a usar el sábado y el domingo. Leelo antes del kickoff. Las frases del final están para copiar y pegarle al agente.</p>
+    <dl class="facts">
+      <div><dt>Sábado 17</dt><dd>9 a 21 h</dd></div>
+      <div><dt>Domingo 18</dt><dd>9 a 16 h</dd></div>
+      <div><dt>Dónde</dt><dd>UM · FIUM, LATU</dd></div>
+      <div><dt>Equipo</dt><dd>3 personas</dd></div>
+    </dl>
+  </header>
+
+  <nav aria-label="Secciones">
+    <a href="#esencial">Lo esencial</a>
+    <a href="#evento">El evento</a>
+    <a href="#agentes">Agentes</a>
+    <a href="#equipar">Equipar al agente</a>
+    <a href="#loop">El loop</a>
+    <a href="#revision">Revisión</a>
+    <a href="#equipo">En equipo</a>
+    <a href="#publicar">Publicar</a>
+    <a href="#noche">De noche</a>
+    <a href="#piezas">Piezas de IA</a>
+    <a href="#stack">Stack</a>
+    <a href="#plan">Plan</a>
+    <a href="#frases">Frases</a>
+    <a href="#glosario">Glosario</a>
+  </nav>
+
+  <section id="esencial">
+    <p class="eyebrow">// lo esencial</p>
+    <h2>Si leés una sola cosa, que sea esto</h2>
+    <ol class="essentials">
+      <li><span><strong>La IA va adentro del producto.</strong> Se evalúa un producto de IA funcionando y el pitch en vivo. Usar IA para construirlo no alcanza.</span></li>
+      <li><span><strong>No escribimos código, dirigimos agentes.</strong> Lo que pesa es pedir bien, dividir el trabajo y revisar.</span></li>
+      <li><span><strong>Todo pedido dice cómo sé que terminó</strong>, y el agente lo prueba antes de decir "listo".</span></li>
+      <li><span><strong>Cada uno en su rama, y juntamos seguido.</strong> Dos agentes nunca tocan los mismos archivos.</span></li>
+      <li><span><strong>Publicamos en la primera hora</strong>, y las claves secretas nunca van en el código.</span></li>
+      <li><span><strong>El sábado a la noche dejamos agentes trabajando en la nube.</strong> El domingo congelamos, ensayamos y grabamos un video de respaldo.</span></li>
+    </ol>
+  </section>
+
+  <section id="evento">
+    <p class="eyebrow">// el evento</p>
+    <h2>Qué nos van a pedir</h2>
+    <div class="table-scroll">
+      <table>
+        <tbody>
+          <tr><th scope="row">Consigna</th><td>Se revela en el kickoff del sábado, para que nadie llegue con ventaja. Lo que se construye es 100% del equipo.</td></tr>
+          <tr><th scope="row">Se evalúa</th><td>El producto funcionando y el pitch en vivo.</td></tr>
+          <tr><th scope="row">Jurado</th><td>Fundadores, inversores y líderes de producto (PedidosYa, Nowports, Endeavor, entre otros). No van a leer código.</td></tr>
+          <tr><th scope="row">Horario</th><td>Sábado 9 a 21 h y domingo 9 a 16 h. De noche la sede cierra.</td></tr>
+          <tr><th scope="row">Llevar</th><td>Notebook, cargador y documento. Comida, café y conexión los ponen ellos.</td></tr>
+          <tr><th scope="row">Créditos</th><td>Dan herramientas y créditos de IA. En el kickoff preguntamos de qué empresas son.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="agentes">
+    <p class="eyebrow">// la idea central</p>
+    <h2>Ya no escribís código: dirigís agentes</h2>
+    <p>Un agente es una IA que no solo responde, también hace cosas. Tiene dos partes:</p>
+    <ul>
+      <li><strong>El modelo</strong> es el cerebro. Piensa y escribe, pero por sí solo no puede tocar nada.</li>
+      <li><strong>El harness</strong> es el programa que le da manos: leer y editar archivos, ejecutar comandos, buscar y entrar a internet. Claude Code es un harness.</li>
+    </ul>
+    <p>Trabaja en ciclo: pide usar una herramienta, el programa la ejecuta, mira el resultado y decide el próximo paso. Lo repite decenas de veces por tarea. Nuestro trabajo es dirigir varios a la vez, como un director de obra con varias cuadrillas.</p>
+  </section>
+
+  <section id="equipar">
+    <p class="eyebrow">// mismo modelo, mejor harness</p>
+    <h2>Equipar al agente para que trabaje bien</h2>
+    <p>Si a un agente sin contexto le pedís "armá el login", falla en cuatro cosas. Cada una tiene su arreglo:</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Falla</th><th scope="col">Se arregla con</th></tr></thead>
+        <tbody>
+          <tr><td>No sigue nuestras reglas</td><td><strong>CLAUDE.md</strong>: un archivo con las reglas del proyecto que el agente lee siempre.</td></tr>
+          <tr><td>No sabe cómo hacerlo</td><td><strong>Skills</strong>: recetas guardadas, paso a paso.</td></tr>
+          <tr><td>No ve nuestros datos</td><td><strong>Conectores (MCP)</strong>: un enchufe estándar, como un USB-C, que lo conecta con servicios como la base de datos.</td></tr>
+          <tr><td>No respeta el diseño</td><td><strong>Design system</strong>: colores, tipografía y estilo ya definidos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><strong>Su memoria de trabajo es limitada</strong> (se llama ventana de contexto). Una conversación nueva por tarea, y apagamos los conectores que no usamos.</li>
+      <li><strong>Programas de terminal</strong> como GitHub y Vercel: el agente los usa solo. Cada uno inicia sesión una vez y listo.</li>
+      <li><strong>Skills de la tienda skills.sh</strong> que vamos a usar: <em>grill-me</em> (te interroga sobre la idea antes de construir), <em>handoff</em> (resume todo para seguir en una conversación nueva) y <em>show-me</em> (explica con dibujos lo que se construyó).</li>
+    </ul>
+    <div class="callout warn">
+      <p class="eyebrow">Ojo</p>
+      <p>Los conectores de negocio (anuncios, mail, CRM) se apagan para el finde también por seguridad: que ningún agente gaste plata, mande un mail o toque datos reales por error. Y solo instalamos skills de fuentes conocidas, antes del sábado.</p>
+    </div>
+  </section>
+
+  <section id="loop">
+    <p class="eyebrow">// loops</p>
+    <h2>El agente trabaja solo si le das tres cosas</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Objetivo</h3><p>A dónde llegar, con cómo sé que terminó. Mal: "armá el login". Bien: "armá el login con Google; terminó cuando el usuario entra y ve su nombre arriba".</p></li>
+      <li><span class="n">2</span><h3>Restricciones</h3><p>Paredes que no puede atravesar: reglas automáticas (hooks), permisos (qué puede hacer sin preguntar) y un corrector automático del código (lint).</p></li>
+      <li><span class="n">3</span><h3>Validaciones</h3><p>¿Llegó de verdad? Pruebas automáticas (tests) y abrir la app en el navegador para probarla, también en tamaño celular.</p></li>
+    </ol>
+    <p>El ejemplo del warm up, vuelta por vuelta:</p>
+    <div class="log" role="group" aria-label="Ejemplo de tres vueltas">
+      <div class="row"><span class="goal">&gt;</span><span>login con Google en el celular</span><span class="tag check">objetivo</span></div>
+      <div class="row turn"><span></span><span>vuelta 1 · edita la pantalla de login</span><span></span></div>
+      <div class="row"><span class="x">✗</span><span>el corrector encuentra 2 errores</span><span class="tag wall">pared</span></div>
+      <div class="row turn"><span></span><span>vuelta 2 · corrige</span><span></span></div>
+      <div class="row"><span class="v">✓</span><span>corrector y chequeo de tipos</span><span class="tag wall">pared</span></div>
+      <div class="row"><span class="x">✗</span><span>en el celular, el botón no se ve</span><span class="tag check">prueba</span></div>
+      <div class="row turn"><span></span><span>vuelta 3 · corrige</span><span></span></div>
+      <div class="row"><span class="v">✓</span><span>corrector y chequeo de tipos</span><span class="tag wall">pared</span></div>
+      <div class="row"><span class="v">✓</span><span>pruebas · en el celular llega a la pantalla principal</span><span class="tag check">prueba</span></div>
+    </div>
+    <div class="callout">
+      <p class="eyebrow">La lección</p>
+      <p>En la vuelta 2 el código estaba "bien" y la persona igual no veía el botón. Solo lo atrapó la prueba en el navegador. Si el agente dice "listo", que lo pruebe primero. Y nadie tuvo que leer código.</p>
+    </div>
+    <p>Si da vueltas en círculo (tres veces el mismo error), frenalo con <strong>Esc</strong>, pegale el error completo o una captura, o pedile que primero te explique qué está fallando.</p>
+  </section>
+
+  <section id="revision">
+    <p class="eyebrow">// adversarial review</p>
+    <h2>Un abogado del diablo antes de juntar</h2>
+    <p>Los agentes fallan para los dos lados: se olvidan cosas y agregan cosas que nadie pidió. Antes de juntar cada parte, abrimos una conversación nueva que revisa con una sola misión: encontrar problemas. Qué falta, qué sobra y qué puede romper la demo, contado en lenguaje simple.</p>
+    <ul>
+      <li>Claude Code ya trae dos comandos para esto: <code>/code-review</code> busca errores y <code>/simplify</code> limpia lo que sobra.</li>
+      <li>Prevención en las reglas del proyecto: "hacé solo lo que te pido; si ves una mejora, proponela pero no la hagas".</li>
+    </ul>
+  </section>
+
+  <section id="equipo">
+    <p class="eyebrow">// worktrees y ramas</p>
+    <h2>Trabajar en equipo sin pisarnos</h2>
+    <p><strong>main</strong> es la versión oficial del proyecto, la que ve el público. Cada uno trabaja en su <strong>rama</strong>, una copia paralela, y guarda seguido: cada <strong>commit</strong> es un punto de guardado, como en un videojuego. Cada 1 o 2 horas juntamos las ramas a main (eso es un <strong>merge</strong>), de a una, y probamos después de cada una. Una sola persona hace los merges.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Quién</th><th scope="col">Se ocupa de</th><th scope="col">Además</th></tr></thead>
+        <tbody>
+          <tr><td>Persona 1</td><td>Pantallas y diseño, que se vea bien en el celular</td><td>Arma la demo y el pitch</td></tr>
+          <tr><td>Persona 2</td><td>La IA del producto: sus instrucciones, herramientas y decisiones</td><td></td></tr>
+          <tr><td>Persona 3</td><td>Datos, publicación y pruebas</td><td>Junta las ramas a main</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Quién es quién lo definimos el sábado, según la idea.</p>
+    <div class="callout">
+      <p class="eyebrow">¿Hace falta login?</p>
+      <p>Solo si es central para el producto. Come horas y el jurado no lo valora. Para la demo alcanza con un usuario de prueba.</p>
+    </div>
+  </section>
+
+  <section id="publicar">
+    <p class="eyebrow">// deploy</p>
+    <h2>Link público desde la primera hora</h2>
+    <p>Publicar (deploy) es tener un link que cualquiera abre. Conectamos GitHub con Vercel, y cada vez que algo entra a main se publica solo. Lo hacemos en la primera hora, aunque la app sea un "hola mundo": los problemas de publicación aparecen cuando la app es chica y fácil de arreglar, no el domingo al mediodía. Vercel también da un link de prueba para cada rama, así cada uno ve lo suyo sin tocar main.</p>
+    <div class="callout warn">
+      <p class="eyebrow">Claves secretas</p>
+      <p>Las claves de la IA y de la base de datos nunca van en el código ni en GitHub. Van en las variables de entorno de Vercel, que funcionan como una caja fuerte. Hay robots que rastrean GitHub buscando claves y las usan en minutos.</p>
+    </div>
+  </section>
+
+  <section id="noche">
+    <p class="eyebrow">// cloud agents</p>
+    <h2>Agentes que trabajan mientras dormimos</h2>
+    <p>Un agente en la nube trabaja en una computadora en internet aunque cierres la tuya, y te devuelve una propuesta de cambios (una <strong>PR</strong>) para aprobar. Nunca toca main directo. La sede cierra a las 21 h: antes de irnos dejamos 2 o 3 tareas chicas y claras, y el domingo a las 9 revisamos lo que hicieron.</p>
+    <p>Buenas tareas para la noche: la prueba automática del recorrido de la demo, mejorar textos, una versión en inglés, arreglos visuales. Nada vago como "mejorá la app".</p>
+  </section>
+
+  <section id="piezas">
+    <p class="eyebrow">// stack para el producto</p>
+    <h2>Las piezas para la IA de adentro</h2>
+    <div class="cards">
+      <div class="card">
+        <p class="eyebrow">Eve · de Vercel</p>
+        <h3>Framework de agentes</h3>
+        <p>Un kit para armar el agente dentro de la app. Cada agente es una carpeta con sus instrucciones en texto y sus herramientas. Es nuevo (junio de 2026), así que le pasamos al agente la documentación oficial.</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Jev · GPT-6 Luna</p>
+        <h3>Modelos de decisión</h3>
+        <p>No escriben: eligen entre opciones y dicen qué tan seguros están. "El pago falló y el cliente está furioso" da área cobros con 86% y urgente sí con 99%. Si está muy seguro, se resuelve solo; si duda, lo revisa una persona.</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Vector DB · viene en Supabase</p>
+        <h3>Búsqueda por significado</h3>
+        <p>Encuentra lo que quisiste decir aunque uses otras palabras. "Luminoso cerca del mar, con perro" encuentra "soleado, a dos cuadras de la playa, con jardín". Solo si hay muchos textos.</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow">ElevenLabs</p>
+        <h3>Voz</h3>
+        <p>El producto escucha y habla, como en una llamada. Solo si la consigna lo pide. En vivo, con auricular y un video de respaldo por si falla.</p>
+      </div>
+    </div>
+    <p>Para la demo: que el jurado vea a la IA trabajar, qué herramienta está usando y con qué seguridad decidió.</p>
+  </section>
+
+  <section id="stack">
+    <p class="eyebrow">// propuesta · se confirma el sábado</p>
+    <h2>Lo que usamos y lo que no</h2>
+    <div class="stack">
+      <div class="use">
+        <p class="eyebrow">Usamos</p>
+        <ul>
+          <li>Claude Code, en la app de escritorio</li>
+          <li>GitHub</li>
+          <li>Next.js (la web)</li>
+          <li>Supabase (datos)</li>
+          <li>shadcn (piezas visuales)</li>
+          <li>Vercel (publicar)</li>
+          <li>Eve (el agente)</li>
+        </ul>
+      </div>
+      <div class="planb">
+        <p class="eyebrow">Plan B</p>
+        <ul>
+          <li>Codex, si se acaba el cupo de Claude</li>
+          <li>AI SDK de Vercel, si Eve da problemas</li>
+          <li>Claude para clasificar, si fallan los modelos de decisión</li>
+        </ul>
+      </div>
+      <div class="skip">
+        <p class="eyebrow">Salteamos</p>
+        <ul>
+          <li>Cursor, OpenCode, Orca</li>
+          <li>LangChain</li>
+          <li>Pinecone, Qdrant</li>
+          <li>Figma</li>
+          <li>Linear, Notion</li>
+        </ul>
+      </div>
+    </div>
+    <p>Arrancamos desde una plantilla (Better-T-Stack) en vez de una carpeta vacía. Las piezas técnicas las elige Claude; nosotros le decimos qué queremos lograr.</p>
+  </section>
+
+  <section id="plan">
+    <p class="eyebrow">// horarios aproximados</p>
+    <h2>El finde, hora por hora</h2>
+    <div class="days">
+      <div class="day">
+        <h3>Sábado 17</h3>
+        <ol class="timeline">
+          <li><time>09:00</time><span>Kickoff. Preguntar qué créditos dan y de qué empresas, a qué hora es el pitch y cómo se entrega.</span></li>
+          <li><time>09:30</time><span>Elegir el problema. Afinar la idea con grill-me. Escribir las reglas del proyecto (CLAUDE.md).</span></li>
+          <li><time>10:30</time><span>Plantilla, GitHub y publicar en Vercel. Abrir el link en el celular.</span></li>
+          <li><time>11:30</time><span>Construir en 3 ramas. Juntar cada 1 o 2 horas, con revisión antes de cada merge.</span></li>
+          <li><time>20:30</time><span>Dejar 2 o 3 agentes en la nube. Hacer un handoff para retomar mañana.</span></li>
+          <li><time>21:00</time><span>Cierra la sede.</span></li>
+        </ol>
+      </div>
+      <div class="day">
+        <h3>Domingo 18</h3>
+        <ol class="timeline">
+          <li><time>09:00</time><span>Revisar y juntar, de a una, las PRs de los agentes de la noche.</span></li>
+          <li><time>09:30</time><span>Terminar lo central. Prueba automática del recorrido de la demo.</span></li>
+          <li><span class="t">a definir</span><span>Congelar: nada nuevo, solo arreglos. La hora depende del horario del pitch.</span></li>
+          <li><span class="t">después</span><span>Ensayar la demo y el pitch 3 veces. Grabar un video de respaldo.</span></li>
+          <li><time>16:00</time><span>Pitch y cierre.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="frases">
+    <p class="eyebrow">// para copiar y pegar</p>
+    <h2>Frases para pedirle al agente</h2>
+    <div class="prompts">
+      <div class="prompt">
+        <div class="prompt-head"><h3>Pedir algo</h3><button class="copy" type="button" data-copy="f1">Copiar</button></div>
+        <p class="prompt-text" id="f1">Hacé [qué]. Está terminado cuando [cómo me doy cuenta]. No pares hasta que las pruebas pasen y lo hayas probado en el navegador, también en tamaño celular. Mostrame una captura.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Afinar la idea</h3><button class="copy" type="button" data-copy="f2">Copiar</button></div>
+        <p class="prompt-text" id="f2">Antes de construir, haceme preguntas sobre esta idea, una por una, hasta que esté clara: [idea].</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Arrancar el proyecto</h3><button class="copy" type="button" data-copy="f3">Copiar</button></div>
+        <p class="prompt-text" id="f3">Creá el proyecto con Better-T-Stack: web con Next.js, Supabase, login con Google y shadcn. Subilo a GitHub y publicalo en Vercel. Asegurate de que ninguna clave quede en el código ni en GitHub.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Revisión abogado del diablo</h3><button class="copy" type="button" data-copy="f4">Copiar</button></div>
+        <p class="prompt-text" id="f4">Sos un revisor exigente. Compará lo que se pidió con lo que se hizo. Listá: 1) lo que falta o está mal, 2) lo que se agregó sin pedirlo, 3) qué podría romper la demo. No arregles nada, solo reportá, en lenguaje para no programadores.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Juntar mi rama</h3><button class="copy" type="button" data-copy="f5">Copiar</button></div>
+        <p class="prompt-text" id="f5">Mergeá mi rama a main, resolvé los conflictos y explicame qué decidiste.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Ponerme al día</h3><button class="copy" type="button" data-copy="f6">Copiar</button></div>
+        <p class="prompt-text" id="f6">Actualizá mi rama con lo último de main.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Si se traba</h3><button class="copy" type="button" data-copy="f7">Copiar</button></div>
+        <p class="prompt-text" id="f7">Pará. Antes de tocar nada más, explicame en simple qué está fallando y por qué.</p>
+      </div>
+      <div class="prompt">
+        <div class="prompt-head"><h3>Reglas para el CLAUDE.md</h3><button class="copy" type="button" data-copy="f8">Copiar</button></div>
+        <p class="prompt-text" id="f8">- Hacé solo lo que te pido. No agregues funciones, archivos ni cambios extra; si ves una mejora, proponela.
+- No toques archivos fuera de mi parte: [carpetas].
+- Hacé commit cada vez que algo funcione.
+- Antes de decir "listo": corré el lint y las pruebas, probá en el navegador (también en tamaño celular) y mostrame una captura.
+- Ninguna clave en el código ni en GitHub.
+- Los textos de la app, en español.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="glosario">
+    <p class="eyebrow">// diccionario rápido</p>
+    <h2>Las palabras que van a escuchar</h2>
+    <dl class="glossary">
+      <div><dt>Agente</dt><dd>IA que hace cosas con herramientas, no solo responde.</dd></div>
+      <div><dt>Modelo</dt><dd>El cerebro de la IA, como Claude o GPT.</dd></div>
+      <div><dt>Harness</dt><dd>El programa que le da herramientas al modelo. Claude Code es uno.</dd></div>
+      <div><dt>Prompt</dt><dd>El pedido que le escribís al agente.</dd></div>
+      <div><dt>CLAUDE.md</dt><dd>Archivo con las reglas del proyecto. El agente lo lee siempre.</dd></div>
+      <div><dt>Skill</dt><dd>Receta guardada para una tarea.</dd></div>
+      <div><dt>MCP</dt><dd>Enchufe estándar para conectar al agente con un servicio.</dd></div>
+      <div><dt>Terminal, CLI</dt><dd>Programas que se usan escribiendo comandos.</dd></div>
+      <div><dt>Contexto</dt><dd>La memoria de trabajo del agente en una conversación.</dd></div>
+      <div><dt>Repo</dt><dd>La carpeta del proyecto, guardada en GitHub.</dd></div>
+      <div><dt>Commit</dt><dd>Un punto de guardado.</dd></div>
+      <div><dt>Rama</dt><dd>Copia paralela del proyecto para trabajar sin pisar a otros.</dd></div>
+      <div><dt>Main</dt><dd>La rama oficial, la que ve el público.</dd></div>
+      <div><dt>Merge</dt><dd>Juntar una rama con otra.</dd></div>
+      <div><dt>Conflicto</dt><dd>Dos ramas cambiaron lo mismo y hay que decidir con qué quedarse.</dd></div>
+      <div><dt>PR</dt><dd>Propuesta de cambios para revisar y aprobar.</dd></div>
+      <div><dt>Deploy</dt><dd>Publicar la app con un link público.</dd></div>
+      <div><dt>Variables de entorno</dt><dd>El lugar seguro para las claves secretas.</dd></div>
+      <div><dt>Lint</dt><dd>Corrector automático del código.</dd></div>
+      <div><dt>Tests</dt><dd>Pruebas automáticas.</dd></div>
+      <div><dt>Template</dt><dd>Esqueleto de proyecto ya armado.</dd></div>
+      <div><dt>Vector DB, RAG</dt><dd>Buscar por significado en tus documentos antes de responder, para que la IA no invente.</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <p>Armado a partir del AI Coding Warm Up de build 101 (15 de octubre de 2026). Lo que hay que instalar y preparar el viernes va en una checklist aparte.</p>
+  </footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var el = document.getElementById(btn.dataset.copy);
+    if (!el) return;
+    var text = el.innerText.trim();
+    var reset = function () { setTimeout(function () { btn.textContent = 'Copiar'; }, 1800); };
+    var selectFallback = function () {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = 'Seleccionado';
+      reset();
+    };
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'Copiado';
+        reset();
+      }, selectFallback);
+    } catch (e) {
+      selectFallback();
+    }
+  });
+});
+</script>

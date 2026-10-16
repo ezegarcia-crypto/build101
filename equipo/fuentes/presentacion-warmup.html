@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lo que aprendimos en el warm up</title>
+<style>
+@page { size: 1280px 720px; margin: 0; }
+:root {
+  --bg: #F7F8FA; --surface: #FFFFFF; --fg: #13161D; --muted: #5A6172; --rule: #DCE0E7;
+  --accent: #2346D8; --accent-soft: #E7ECFF; --warn: #8F530A; --warn-soft: #FFF1DC;
+  --ok: #1D7247; --ok-soft: #E3F3E9;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: var(--font); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { counter-reset: s; }
+.slide { width: 1280px; height: 720px; position: relative; overflow: hidden; padding: 50px 72px 72px; display: flex; flex-direction: column; gap: 20px; background: var(--bg); break-after: page; page-break-after: always; counter-increment: s; }
+.slide:last-child { break-after: auto; page-break-after: auto; }
+.head { display: flex; flex-direction: column; gap: 10px; }
+.kicker { font-size: 15px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h1 { font-family: var(--display); font-size: 46px; line-height: 1.08; font-weight: 800; letter-spacing: -.02em; margin: 0; max-width: 1120px; }
+.lead { font-size: 25px; line-height: 1.4; margin: 0; max-width: 1080px; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 26px; display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.foot::after { content: counter(s); font-variant-numeric: tabular-nums; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+.card h3 { margin: 0; font-size: 25px; line-height: 1.2; font-weight: 750; }
+.card p { margin: 0; font-size: 20px; line-height: 1.42; }
+.label { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0; }
+.callout { border-radius: 16px; padding: 18px 24px; background: var(--accent-soft); font-size: 22px; line-height: 1.4; margin: 0; }
+.callout b { color: var(--accent); }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn b { color: var(--warn); }
+.callout.ok { background: var(--ok-soft); }
+.callout.ok b { color: var(--ok); }
+.mt-auto { margin-top: auto; }
+.muted { color: var(--muted); }
+.small { font-size: 18px; line-height: 1.4; margin: 0; }
+.num { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; flex: none; }
+svg text { font-family: var(--font); }
+
+/* Portada y cierre */
+.cover { justify-content: center; gap: 22px; padding-left: 96px; }
+.cover h1 { font-size: 78px; line-height: 1.02; max-width: 820px; }
+.cover .sub { font-size: 32px; color: var(--accent); font-weight: 650; margin: 0; }
+.cover .date { font-size: 22px; color: var(--muted); margin: 0; }
+.cover svg { position: absolute; right: 90px; top: 50%; transform: translateY(-50%); }
+.end { background: #13161D; color: #F3F5F9; justify-content: center; padding-left: 96px; gap: 26px; }
+.end h1 { font-size: 66px; color: #FFFFFF; max-width: 1000px; }
+.end p { font-size: 32px; line-height: 1.35; margin: 0; color: #C9CFDA; max-width: 960px; }
+.end .hl { color: #93A9FF; font-weight: 750; font-size: 40px; }
+
+/* Datos del evento */
+.fact { background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 18px 22px; display: flex; flex-direction: column; gap: 4px; }
+.fact span { font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.fact strong { font-size: 28px; font-weight: 750; }
+
+/* Tablas */
+table { border-collapse: separate; border-spacing: 0; width: 100%; background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; }
+th, td { text-align: left; vertical-align: top; padding: 13px 20px; border-bottom: 1px solid var(--rule); font-size: 21px; line-height: 1.35; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: #FBFCFD; }
+
+/* Barras */
+.barrow { display: grid; grid-template-columns: 260px 1fr 70px; align-items: center; gap: 16px; font-size: 20px; }
+.track { height: 22px; border-radius: 11px; background: #E4E7ED; overflow: hidden; }
+.fill { height: 100%; border-radius: 11px; background: var(--accent); }
+.fill.low { background: #9AA3B2; }
+
+/* Listas con viñeta */
+ul.clean { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+ul.clean li { font-size: 21px; line-height: 1.35; padding-left: 22px; position: relative; }
+ul.clean li::before { content: ""; position: absolute; left: 0; top: 11px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+ul.clean.x li::before { background: var(--warn); }
+ul.clean.ok li::before { background: var(--ok); }
+
+/* Línea de tiempo */
+.tl { display: flex; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 10px 22px; }
+.tl div { display: grid; grid-template-columns: 96px 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 18.5px; line-height: 1.35; }
+.tl div:last-child { border-bottom: 0; }
+.tl b { color: var(--accent); font-variant-numeric: tabular-nums; font-size: 18px; }
+
+/* Frases */
+.quote { background: var(--surface); border: 1px solid var(--rule); border-radius: 16px; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; }
+.quote p { margin: 0; font-size: 21px; line-height: 1.42; }
+.dict .small { font-size: 22px; }
+</style>
+</head>
+<body>
+
+<!-- 1. Portada -->
+<section class="slide cover">
+  <p class="kicker">Resumen para el equipo</p>
+  <h1>Lo que aprendimos en el warm up</h1>
+  <p class="sub">build 101 · explicado para no programadores</p>
+  <p class="date">Montevideo · 17 y 18 de octubre de 2026</p>
+  <svg width="300" height="300" viewBox="0 0 300 300" aria-hidden="true">
+    <g stroke="#2346D8" stroke-width="5">
+      <line x1="150" y1="150" x2="60" y2="60"/><line x1="150" y1="150" x2="240" y2="60"/>
+      <line x1="150" y1="150" x2="60" y2="240"/><line x1="150" y1="150" x2="240" y2="240"/>
+    </g>
+    <circle cx="150" cy="150" r="46" fill="#2346D8"/>
+    <g fill="#E7ECFF" stroke="#2346D8" stroke-width="5">
+      <circle cx="60" cy="60" r="30"/><circle cx="240" cy="60" r="30"/>
+      <circle cx="60" cy="240" r="30"/><circle cx="240" cy="240" r="30"/>
+    </g>
+  </svg>
+</section>
+
+<!-- 2. El evento -->
+<section class="slide">
+  <div class="head"><p class="kicker">El evento</p><h1>El evento en una slide</h1></div>
+  <div class="grid4">
+    <div class="fact"><span>Sábado 17</span><strong>9 a 21 h</strong></div>
+    <div class="fact"><span>Domingo 18</span><strong>9 a 16 h</strong></div>
+    <div class="fact"><span>Dónde</span><strong>UM · FIUM, LATU</strong></div>
+    <div class="fact"><span>Equipos</span><strong>de 3 personas</strong></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><p class="label">La consigna</p><p>Se revela en el kickoff del sábado, para que nadie llegue con ventaja. Lo que se construye es 100% del equipo.</p></div>
+    <div class="card"><p class="label">Qué se evalúa</p><p>El producto funcionando y el pitch en vivo, frente a un jurado de fundadores e inversores. No van a leer código.</p></div>
+  </div>
+  <p class="callout mt-auto"><b>La IA tiene que estar adentro del producto, haciendo trabajo real.</b> No alcanza con usarla para construir.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 3. La idea central -->
+<section class="slide">
+  <div class="head"><p class="kicker">La idea central</p><h1>Ya no escribís código: dirigís agentes</h1></div>
+  <svg width="1136" height="270" viewBox="0 0 1136 270" aria-label="Vos dirigís a cuatro agentes">
+    <g stroke="#2346D8" stroke-width="3">
+      <line x1="448" y1="135" x2="330" y2="60"/><line x1="448" y1="135" x2="330" y2="210"/>
+      <line x1="688" y1="135" x2="806" y2="60"/><line x1="688" y1="135" x2="806" y2="210"/>
+    </g>
+    <rect x="448" y="85" width="240" height="100" rx="18" fill="#13161D"/>
+    <text x="568" y="146" text-anchor="middle" font-size="32" font-weight="800" fill="#FFFFFF">Vos dirigís</text>
+    <g fill="#FFFFFF" stroke="#DCE0E7" stroke-width="2">
+      <rect x="20" y="20" width="310" height="80" rx="14"/><rect x="20" y="170" width="310" height="80" rx="14"/>
+      <rect x="806" y="20" width="310" height="80" rx="14"/><rect x="806" y="170" width="310" height="80" rx="14"/>
+    </g>
+    <g font-size="23" font-weight="750" fill="#13161D">
+      <text x="44" y="56">Agente 1</text><text x="44" y="206">Agente 2</text>
+      <text x="830" y="56">Agente 3</text><text x="830" y="206">Agente 4</text>
+    </g>
+    <g font-size="20" fill="#5A6172">
+      <text x="44" y="84">arma el login</text><text x="44" y="234">diseña las pantallas</text>
+      <text x="830" y="84">publica la app</text><text x="830" y="234">escribe las pruebas</text>
+    </g>
+  </svg>
+  <p class="lead">Sos el director de obra, no el albañil: cada agente es una cuadrilla trabajando en una parte, al mismo tiempo.</p>
+  <p class="callout ok mt-auto"><b>Lo que pesa ahora:</b> pedir bien, dividir el trabajo y revisar. Eso lo podemos hacer igual que un programador.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 4. Qué es un agente -->
+<section class="slide">
+  <div class="head"><p class="kicker">Qué es un agente</p><h1>Un cerebro con manos</h1></div>
+  <div class="grid2">
+    <div class="card"><p class="label">El modelo</p><h3>El cerebro</h3><p>Piensa y escribe, pero por sí solo no puede tocar nada. Por ejemplo: Claude o GPT.</p></div>
+    <div class="card"><p class="label">El harness</p><h3>Las manos</h3><p>Lee y edita archivos, ejecuta comandos, busca y entra a internet. Por ejemplo: Claude Code.</p></div>
+  </div>
+  <p class="lead" style="font-weight:750; font-size:30px;">Modelo + harness = <span style="color:var(--accent)">agente</span></p>
+  <p class="callout mt-auto">"Un cerebro brillante sin manos no hace nada. <b>El harness le da las manos.</b>"</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 5. El ciclo -->
+<section class="slide">
+  <div class="head"><p class="kicker">Cómo trabaja</p><h1>El ciclo del agente</h1></div>
+  <svg width="1136" height="300" viewBox="0 0 1136 300" aria-label="Ciclo de cuatro pasos">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2346D8"/></marker></defs>
+    <g fill="#FFFFFF" stroke="#DCE0E7" stroke-width="2">
+      <rect x="40" y="10" width="440" height="100" rx="16"/><rect x="656" y="10" width="440" height="100" rx="16"/>
+      <rect x="656" y="190" width="440" height="100" rx="16"/><rect x="40" y="190" width="440" height="100" rx="16"/>
+    </g>
+    <g fill="#2346D8"><circle cx="90" cy="60" r="24"/><circle cx="706" cy="60" r="24"/><circle cx="706" cy="240" r="24"/><circle cx="90" cy="240" r="24"/></g>
+    <g fill="#FFFFFF" font-size="22" font-weight="800" text-anchor="middle">
+      <text x="90" y="68">1</text><text x="706" y="68">2</text><text x="706" y="248">3</text><text x="90" y="248">4</text>
+    </g>
+    <g font-size="23" fill="#13161D" font-weight="650">
+      <text x="128" y="54">Pide usar una herramienta</text><text x="744" y="54">El programa la ejecuta</text>
+      <text x="744" y="234">Mira el resultado</text><text x="128" y="234">Decide el próximo paso</text>
+    </g>
+    <g font-size="19" fill="#5A6172">
+      <text x="128" y="84">"quiero editar este archivo"</text><text x="744" y="84">edita, busca, abre la app</text>
+      <text x="744" y="264">¿funcionó? ¿hay errores?</text><text x="128" y="264">sigue, corrige o termina</text>
+    </g>
+    <g stroke="#2346D8" stroke-width="4" fill="none" marker-end="url(#ar)">
+      <line x1="492" y1="60" x2="644" y2="60"/><line x1="876" y1="118" x2="876" y2="182"/>
+      <line x1="644" y1="240" x2="492" y2="240"/><line x1="260" y1="182" x2="260" y2="118"/>
+    </g>
+  </svg>
+  <p class="lead">Se repite decenas de veces por tarea, como un cocinero que prueba la comida y ajusta.</p>
+  <p class="callout mt-auto"><b>Ese ciclo es lo que lo hace un agente</b> y no un chat.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 6. Equipamiento -->
+<section class="slide">
+  <div class="head"><p class="kicker">Mismo cerebro, mejor equipamiento</p><h1>Si le pedís "armá el login" sin equiparlo, falla en 4 cosas</h1></div>
+  <table>
+    <thead><tr><th style="width:27%">Falla</th><th style="width:43%">Se arregla con</th><th>Es como</th></tr></thead>
+    <tbody>
+      <tr><td>No sigue tus reglas</td><td><b>CLAUDE.md</b>: un archivo de reglas que lee siempre</td><td>El reglamento de la obra</td></tr>
+      <tr><td>No sabe cómo hacerlo</td><td><b>Skills</b>: recetas paso a paso</td><td>El manual del oficio</td></tr>
+      <tr><td>No ve tus datos</td><td><b>Conectores (MCP)</b></td><td>Las llaves de acceso</td></tr>
+      <tr><td>No respeta tu diseño</td><td><b>Design system</b>: colores y estilo definidos</td><td>El manual de marca</td></tr>
+    </tbody>
+  </table>
+  <div class="mt-auto" style="display:flex; flex-direction:column; gap:12px;">
+    <div class="barrow"><span>Sin equipamiento</span><div class="track"><div class="fill low" style="width:25%"></div></div><b style="font-size:20px">2 / 8</b></div>
+    <div class="barrow"><span>Con equipamiento</span><div class="track"><div class="fill" style="width:100%"></div></div><b style="font-size:20px; color:var(--accent)">8 / 8</b></div>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 7. Nuestra herramienta -->
+<section class="slide">
+  <div class="head"><p class="kicker">Nuestra herramienta</p><h1>Claude Code, en la app de escritorio</h1></div>
+  <div class="grid3">
+    <div class="card" style="background:var(--ok-soft); border-color:transparent;"><p class="label" style="color:var(--ok)">Usamos</p><h3>Claude Code</h3><p>La app de Claude ya es un panel de control de agentes: varias sesiones a la vez, cada una con su copia del proyecto, y avisa cuando una te necesita.</p></div>
+    <div class="card"><p class="label">Plan B</p><h3>Codex</h3><p>De OpenAI. Por si a alguien se le termina el cupo de uso de Claude. Usa los mismos conectores.</p></div>
+    <div class="card"><p class="label" style="color:var(--muted)">No las necesitamos</p><h3>Cursor, OpenCode, Orca…</h3><p>Cambiar de herramienta a dos días del evento es puro riesgo.</p></div>
+  </div>
+  <p class="callout warn mt-auto"><b>Ojo:</b> la herramienta con la que construimos no tiene por qué ser la IA que va adentro del producto.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 8. Memoria -->
+<section class="slide">
+  <div class="head"><p class="kicker">La memoria del agente</p><h1>Su memoria de trabajo es limitada</h1></div>
+  <p class="lead">La "ventana de contexto" es el escritorio del agente: si lo llenás de papeles, trabaja peor.</p>
+  <div class="grid3">
+    <div class="card"><h3>Una conversación por tarea</h3><p>Las charlas larguísimas rinden peor. Tarea nueva, conversación nueva.</p></div>
+    <div class="card"><h3>Skills de a partes</h3><p>Primero lee solo el nombre y la descripción. Por eso se pueden tener muchas.</p></div>
+    <div class="card"><h3>Conectores, los justos</h3><p>Apagamos los que no usamos: ocupan lugar y lo distraen.</p></div>
+  </div>
+  <p class="callout warn mt-auto"><b>También por seguridad:</b> que ningún agente gaste plata en anuncios, mande un mail o toque datos de clientes por error.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 9. MCP y CLI -->
+<section class="slide">
+  <div class="head"><p class="kicker">Enchufes y comandos</p><h1>Cómo se conecta el agente con el mundo</h1></div>
+  <div class="grid2">
+    <div class="card"><p class="label">MCP</p><h3>El USB-C de los agentes</h3><p>Un enchufe estándar para conectarlo con servicios: la base de datos, el navegador, documentación al día. Se enchufa una vez y sirve en cualquier herramienta.</p></div>
+    <div class="card"><p class="label">CLI</p><h3>Programas de terminal</h3><p>Programas que se usan escribiendo comandos, como GitHub o Vercel. El agente los usa igual que una persona, y no le ocupan memoria.</p></div>
+  </div>
+  <p class="callout ok mt-auto"><b>Vos iniciás sesión una sola vez.</b> Después el agente los usa solo.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 10. skills.sh -->
+<section class="slide">
+  <div class="head"><p class="kicker">Recetas de otros</p><h1>skills.sh, una tienda de recetas</h1></div>
+  <p class="lead">Las tres que nos sirven:</p>
+  <div class="grid3">
+    <div class="card"><p class="label">grill-me</p><h3>Te interroga</h3><p>Pregunta por pregunta sobre la idea, hasta que está clara. Se usa antes de construir.</p></div>
+    <div class="card"><p class="label">handoff</p><h3>Pasa la posta</h3><p>Resume toda la conversación para seguir en una nueva, sin perder nada.</p></div>
+    <div class="card"><p class="label">show-me</p><h3>Te lo dibuja</h3><p>Explica con dibujos lo que se construyó, sin tener que leer código.</p></div>
+  </div>
+  <p class="callout warn mt-auto"><b>Cuidado:</b> una skill son instrucciones que el agente sigue con tus permisos. Solo de fuentes conocidas, e instaladas antes del sábado.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 11. El loop -->
+<section class="slide">
+  <div class="head"><p class="kicker">Loops</p><h1>El agente trabaja solo si le das tres cosas</h1></div>
+  <div class="grid3">
+    <div class="card"><div style="display:flex; gap:14px; align-items:center;"><span class="num">1</span><h3>Objetivo</h3></div><p>A dónde llegar, y cómo sé que terminó.</p></div>
+    <div class="card"><div style="display:flex; gap:14px; align-items:center;"><span class="num">2</span><h3>Paredes</h3></div><p>Lo que no puede atravesar: reglas automáticas, permisos y un corrector del código.</p></div>
+    <div class="card"><div style="display:flex; gap:14px; align-items:center;"><span class="num">3</span><h3>Pruebas</h3></div><p>¿Llegó de verdad? Pruebas automáticas y abrir la app para probarla.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card" style="background:var(--warn-soft); border-color:transparent;"><p class="label" style="color:var(--warn)">Pedido flojo</p><p>"Armá el login."</p></div>
+    <div class="card" style="background:var(--ok-soft); border-color:transparent;"><p class="label" style="color:var(--ok)">Pedido bueno</p><p>"Armá el login con Google. Terminó cuando el usuario entra y ve su nombre arriba."</p></div>
+  </div>
+  <p class="callout mt-auto"><b>¿Dice "listo"?</b> Que lo pruebe primero.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 12. Tres vueltas -->
+<section class="slide">
+  <div class="head"><p class="kicker">Ejemplo</p><h1>Tres vueltas hasta que todo pasa</h1></div>
+  <p class="lead"><b>Objetivo:</b> login con Google en el celular.</p>
+  <div class="grid3">
+    <div class="card"><p class="label" style="color:var(--warn)">Vuelta 1 · ✗</p><p>El corrector automático encuentra 2 errores.</p><p class="small muted">Lo frena una pared.</p></div>
+    <div class="card"><p class="label" style="color:var(--warn)">Vuelta 2 · ✗</p><p>Errores corregidos, pero en el celular el botón no se ve.</p><p class="small muted">Lo frena la prueba.</p></div>
+    <div class="card" style="background:var(--ok-soft); border-color:transparent;"><p class="label" style="color:var(--ok)">Vuelta 3 · ✓</p><p>Todo pasa y el login llega a la pantalla principal.</p><p class="small muted">Objetivo cumplido.</p></div>
+  </div>
+  <p class="callout mt-auto">El código puede estar "bien" y la app igual no servirle a la persona. <b>Por eso siempre se prueba como usuario.</b> Y nadie tuvo que leer código.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 13. Revisión -->
+<section class="slide">
+  <div class="head"><p class="kicker">Revisión</p><h1>Un abogado del diablo antes de juntar</h1></div>
+  <p class="lead">Los agentes fallan para los dos lados: se olvidan cosas y agregan cosas que nadie pidió. Otro agente, en una conversación nueva, revisa con una sola misión: encontrar problemas.</p>
+  <div class="grid3">
+    <div class="card"><h3>¿Qué falta o está mal?</h3></div>
+    <div class="card"><h3>¿Qué se agregó sin pedirlo?</h3></div>
+    <div class="card"><h3>¿Qué puede romper la demo?</h3></div>
+  </div>
+  <p class="callout ok mt-auto"><b>Prevención:</b> en las reglas del proyecto, "hacé solo lo que te pido; si ves una mejora, proponela".</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 14. Ramas -->
+<section class="slide">
+  <div class="head"><p class="kicker">En equipo</p><h1>Trabajar sin pisarnos: ramas</h1></div>
+  <svg width="1136" height="210" viewBox="0 0 1136 210" aria-label="Tres ramas que salen de main y vuelven a juntarse">
+    <line x1="10" y1="30" x2="1126" y2="30" stroke="#13161D" stroke-width="4"/>
+    <text x="10" y="18" font-size="16" font-weight="700" fill="#5A6172" letter-spacing="2">MAIN</text>
+    <g fill="none" stroke="#2346D8" stroke-width="3">
+      <path d="M190,30 C250,30 250,80 310,80 L800,80 C860,80 860,30 920,30"/>
+      <path d="M190,30 C250,30 250,130 310,130 L800,130 C860,130 860,30 920,30"/>
+      <path d="M190,30 C250,30 250,180 310,180 L800,180 C860,180 860,30 920,30"/>
+    </g>
+    <g fill="#FFFFFF" stroke="#2346D8" stroke-width="3">
+      <rect x="431" y="71" width="18" height="18"/><rect x="561" y="71" width="18" height="18"/><rect x="691" y="71" width="18" height="18"/>
+      <rect x="431" y="121" width="18" height="18"/><rect x="561" y="121" width="18" height="18"/><rect x="691" y="121" width="18" height="18"/>
+      <rect x="431" y="171" width="18" height="18"/><rect x="561" y="171" width="18" height="18"/><rect x="691" y="171" width="18" height="18"/>
+    </g>
+    <g font-size="17" fill="#13161D" font-weight="650">
+      <text x="318" y="70">pantallas</text><text x="318" y="120">IA</text><text x="318" y="170">datos</text>
+    </g>
+    <rect x="910" y="20" width="20" height="20" fill="#2346D8"/>
+    <text x="944" y="64" font-size="17" font-weight="700" fill="#2346D8">merge → main ✓</text>
+  </svg>
+  <div class="grid2" style="gap:14px 28px;">
+    <ul class="clean"><li><b>main</b> es la versión oficial, la que ve el público.</li><li>Cada uno trabaja en <b>su rama</b>, una copia paralela.</li></ul>
+    <ul class="clean"><li>Cada <b>commit</b> es un punto de guardado, como en un videojuego.</li><li>Juntamos (<b>merge</b>) de a una rama, cada 1 o 2 horas, y probamos.</li></ul>
+  </div>
+  <p class="callout mt-auto"><b>Main es sagrado:</b> solo entra lo que ya se probó.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 15. Reparto -->
+<section class="slide">
+  <div class="head"><p class="kicker">El reparto</p><h1>Una parte para cada uno</h1></div>
+  <div class="grid3">
+    <div class="card"><p class="label">Persona 1</p><h3>Pantallas y diseño</h3><p>Que se vea bien en el celular. Después arma la demo y el pitch.</p></div>
+    <div class="card"><p class="label">Persona 2</p><h3>La IA del producto</h3><p>Sus instrucciones, sus herramientas y sus decisiones.</p></div>
+    <div class="card"><p class="label">Persona 3</p><h3>Datos, publicación y pruebas</h3><p>Es quien junta las ramas a main.</p></div>
+  </div>
+  <p class="small muted">Quién es quién lo definimos el sábado, según la idea.</p>
+  <p class="callout warn mt-auto"><b>¿Login?</b> Solo si es central para el producto. Come horas y el jurado no lo valora: para la demo alcanza con un usuario de prueba.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 16. Publicar -->
+<section class="slide">
+  <div class="head"><p class="kicker">Publicar</p><h1>Un link público desde la primera hora</h1></div>
+  <p class="lead">Publicar (deploy) es tener un link que cualquiera abre. Conectando GitHub con Vercel, cada vez que algo entra a main se publica solo.</p>
+  <div class="grid2">
+    <div class="card"><h3>¿Por qué en la primera hora?</h3><p>Aunque sea un "hola mundo": los problemas de publicación aparecen cuando la app es chica y fácil de arreglar, no el domingo al mediodía.</p></div>
+    <div class="card"><h3>Un link siempre andando</h3><p>Para los mentores, para probar en el celular y para la demo. Cada rama tiene además su link de prueba.</p></div>
+  </div>
+  <p class="callout warn mt-auto"><b>Claves secretas:</b> nunca en el código ni en GitHub. Van en la "caja fuerte" de Vercel (variables de entorno).</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 17. De noche -->
+<section class="slide">
+  <div class="head"><p class="kicker">De noche</p><h1>Agentes que trabajan mientras dormimos</h1></div>
+  <div class="grid3">
+    <div class="card"><p class="label">Sábado 20:30</p><p>Les dejamos 2 o 3 tareas chicas y claras.</p></div>
+    <div class="card"><p class="label">Durante la noche</p><p>Trabajan en computadoras en la nube, con nuestras notebooks cerradas.</p></div>
+    <div class="card"><p class="label">Domingo 9:00</p><p>Revisamos sus propuestas de cambios (PR) y aprobamos las buenas.</p></div>
+  </div>
+  <div class="grid2">
+    <div><p class="label" style="color:var(--ok); margin-bottom:10px;">Buenas tareas</p><ul class="clean ok"><li>La prueba automática de la demo</li><li>Mejorar textos o arreglos visuales</li></ul></div>
+    <div><p class="label" style="color:var(--warn); margin-bottom:10px;">Malas tareas</p><ul class="clean x"><li>"Mejorá la app", o cualquier cosa vaga</li><li>Algo que toque lo mismo que nosotros</li></ul></div>
+  </div>
+  <p class="small muted mt-auto">Una PR es una propuesta de cambios para aprobar: el agente nunca toca main directo.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 18. Plantillas -->
+<section class="slide">
+  <div class="head"><p class="kicker">Plantillas</p><h1>No arrancar de cero</h1></div>
+  <p class="lead">Una plantilla (template) es el esqueleto del proyecto ya armado: carpetas, configuración y conexiones.</p>
+  <div class="grid3">
+    <div class="card"><p class="label">Better-T-Stack</p><h3>El proyecto entero</h3><p>Arma la estructura completa de una.</p></div>
+    <div class="card"><p class="label">shadcn</p><h3>Las piezas visuales</h3><p>Botones, formularios y tablas prolijos.</p></div>
+    <div class="card"><p class="label">Supabase o Convex</p><h3>La base de datos</h3><p>Elegimos una sola.</p></div>
+  </div>
+  <p class="callout ok mt-auto"><b>No elegimos piezas técnicas nosotros:</b> se lo pedimos a Claude en una frase.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 19. Piezas de la IA -->
+<section class="slide">
+  <div class="head"><p class="kicker">La IA de adentro</p><h1>Las piezas para la IA del producto</h1></div>
+  <div class="grid2" style="gap:18px;">
+    <div class="card"><h3>Framework de agentes</h3><p>Eve, de Vercel: un kit para armar el agente adentro de la app. Cada agente es una carpeta con instrucciones y herramientas.</p></div>
+    <div class="card"><h3>Modelos de decisión</h3><p>Eligen entre opciones y dicen qué tan seguros están.</p></div>
+    <div class="card"><h3>Búsqueda por significado</h3><p>Encuentra lo que quisiste decir, aunque uses otras palabras.</p></div>
+    <div class="card"><h3>Voz</h3><p>El producto escucha y habla, como en una llamada.</p></div>
+  </div>
+  <p class="callout mt-auto"><b>Para la demo:</b> que el jurado vea a la IA trabajar, qué herramienta usa y con qué seguridad decide.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 20. Modelos de decisión -->
+<section class="slide">
+  <div class="head"><p class="kicker">Modelos de decisión</p><h1>No escriben: eligen, y dicen qué tan seguros están</h1></div>
+  <div class="grid2" style="grid-template-columns: 1.15fr 1fr; gap:28px; align-items:start;">
+    <div class="card" style="gap:16px;">
+      <p class="label">La situación</p>
+      <p style="font-size:24px; font-weight:650;">"El pago falló y el cliente está furioso."</p>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <p class="small muted">¿Área? cobros · técnico · ventas</p>
+        <div class="barrow" style="grid-template-columns: 110px 1fr 60px;"><b>cobros</b><div class="track"><div class="fill" style="width:86%"></div></div><b>86%</b></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <p class="small muted">¿Urgente? sí · no</p>
+        <div class="barrow" style="grid-template-columns: 110px 1fr 60px;"><b>sí</b><div class="track"><div class="fill" style="width:99%"></div></div><b>99%</b></div>
+      </div>
+    </div>
+    <ul class="clean" style="gap:16px; padding-top:6px;">
+      <li>Rapidísimos y baratísimos.</li>
+      <li>Nunca devuelven algo raro: siempre una de las opciones.</li>
+      <li><b>Muy seguro:</b> se resuelve solo. <b>Dudoso:</b> lo revisa una persona.</li>
+      <li>Sirven para clasificar y derivar consultas, reclamos o interesados.</li>
+    </ul>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 21. Búsqueda por significado -->
+<section class="slide">
+  <div class="head"><p class="kicker">Búsqueda por significado</p><h1>Encuentra lo que quisiste decir</h1></div>
+  <div class="grid2" style="grid-template-columns: 1fr 1fr; gap:28px; align-items:start;">
+    <div style="position:relative; height:330px; background:var(--surface); border:1px solid var(--rule); border-radius:18px;">
+      <div style="position:absolute; left:24px; top:28px; width:250px; height:150px; border-radius:50%; background:var(--accent-soft);"></div>
+      <div style="position:absolute; left:290px; top:60px; width:230px; height:110px; border-radius:50%; background:var(--ok-soft);"></div>
+      <div style="position:absolute; left:120px; top:200px; width:280px; height:110px; border-radius:50%; background:var(--warn-soft);"></div>
+      <div style="position:absolute; left:52px; top:62px; font-size:18px; line-height:1.9;">● reembolso<br>● devolución<br>● reintegro</div>
+      <div style="position:absolute; left:322px; top:84px; font-size:18px; line-height:1.9;">● contraseña<br>● borrar cuenta</div>
+      <div style="position:absolute; left:160px; top:222px; font-size:18px; line-height:1.9;">● costo de envío<br>● seguimiento del pedido</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <p style="margin:0; font-size:21px; line-height:1.42;">Cada texto se ubica en un mapa según lo que significa. Los que quieren decir lo mismo quedan cerca, aunque usen otras palabras.</p>
+      <div class="card" style="gap:10px;">
+        <p class="label">Ejemplo inmobiliario</p>
+        <p><b>Busca:</b> "algo luminoso cerca del mar para una familia con perro"</p>
+        <p><b>Encuentra:</b> "soleado, a dos cuadras de la playa, con jardín"</p>
+      </div>
+      <p class="small muted">Solo si hay muchos textos. Supabase ya lo trae.</p>
+    </div>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 22. Voz -->
+<section class="slide">
+  <div class="head"><p class="kicker">Voz</p><h1>El producto escucha y habla</h1></div>
+  <div class="grid2">
+    <div class="card"><p class="label">ElevenLabs</p><h3>El más fácil</h3><p>Se arma desde un panel web, casi sin código.</p></div>
+    <div class="card"><p class="label">OpenAI Realtime</p><h3>Más programación</h3><p>Muy rápido, pero requiere más trabajo técnico.</p></div>
+  </div>
+  <ul class="clean">
+    <li><b>Cuándo:</b> solo si la consigna lo pide (atención, llamadas, manos libres).</li>
+    <li><b>Ejemplo:</b> un agente que atiende por teléfono al interesado, lo califica y le agenda la visita.</li>
+  </ul>
+  <p class="callout warn mt-auto"><b>En vivo puede fallar</b> (ruido, micrófono, wifi): auricular con micrófono, respaldo en texto y un video grabado.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 23. Stack -->
+<section class="slide">
+  <div class="head"><p class="kicker">Nuestro stack · propuesta</p><h1>Lo que usamos y lo que no</h1></div>
+  <div class="grid3" style="align-items:start;">
+    <div class="card" style="background:var(--ok-soft); border-color:transparent;"><p class="label" style="color:var(--ok)">Usamos</p>
+      <ul class="clean ok" style="gap:6px;"><li>Claude Code (app)</li><li>GitHub</li><li>Next.js · la web</li><li>Supabase · los datos</li><li>shadcn · lo visual</li><li>Vercel · publicar</li><li>Eve · el agente</li></ul></div>
+    <div class="card"><p class="label">Plan B</p>
+      <ul class="clean" style="gap:6px;"><li>Codex</li><li>AI SDK de Vercel</li><li>Claude para clasificar</li></ul></div>
+    <div class="card"><p class="label" style="color:var(--muted)">Salteamos</p>
+      <ul class="clean x" style="gap:6px;"><li>Cursor, OpenCode, Orca</li><li>LangChain</li><li>Pinecone</li><li>Figma, Linear</li></ul></div>
+  </div>
+  <p class="small muted mt-auto">Se confirma el sábado, según la consigna.</p>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 24. Plan -->
+<section class="slide">
+  <div class="head"><p class="kicker">El plan · horarios aproximados</p><h1>El finde, hora por hora</h1></div>
+  <div class="grid2" style="gap:22px; align-items:start;">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <p class="label">Sábado 17</p>
+      <div class="tl">
+        <div><b>09:00</b><span>Kickoff: preguntar qué créditos dan, hora del pitch y cómo se entrega.</span></div>
+        <div><b>09:30</b><span>Elegir el problema, afinar la idea y escribir las reglas.</span></div>
+        <div><b>10:30</b><span>Plantilla, GitHub y publicar. Abrir el link en el celular.</span></div>
+        <div><b>11:30</b><span>Construir en 3 ramas. Juntar cada 1 o 2 horas.</span></div>
+        <div><b>20:30</b><span>Dejar 2 o 3 agentes trabajando en la nube.</span></div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <p class="label">Domingo 18</p>
+      <div class="tl">
+        <div><b>09:00</b><span>Revisar lo que hicieron los agentes de noche.</span></div>
+        <div><b>09:30</b><span>Terminar lo central y la prueba de la demo.</span></div>
+        <div><b>A definir</b><span>Congelar: nada nuevo, solo arreglos.</span></div>
+        <div><b>Después</b><span>Ensayar 3 veces y grabar video de respaldo.</span></div>
+        <div><b>16:00</b><span>Pitch y cierre.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 25. Reglas de oro -->
+<section class="slide">
+  <div class="head"><p class="kicker">Reglas de oro</p><h1>Ocho reglas para el finde</h1></div>
+  <div class="grid2" style="gap:30px 36px; margin-top:12px;">
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">1</span><p class="small" style="font-size:25px;">Una sola herramienta: Claude Code.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">5</span><p class="small" style="font-size:25px;">Guardar seguido. Main es sagrado.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">2</span><p class="small" style="font-size:25px;">Dos agentes nunca tocan los mismos archivos.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">6</span><p class="small" style="font-size:25px;">Publicar en la primera hora.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">3</span><p class="small" style="font-size:25px;">Todo pedido dice "cómo sé que terminó".</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">7</span><p class="small" style="font-size:25px;">Las claves nunca van en el código.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">4</span><p class="small" style="font-size:25px;">Nunca creerle el "listo" sin prueba.</p></div>
+    <div style="display:flex; gap:16px; align-items:center;"><span class="num">8</span><p class="small" style="font-size:25px;">Domingo: congelar, ensayar y tener video de respaldo.</p></div>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 26. Frases -->
+<section class="slide">
+  <div class="head"><p class="kicker">Frases para copiar</p><h1>Para pedirle al agente</h1></div>
+  <div class="grid2" style="gap:16px;">
+    <div class="quote"><p class="label">Pedir algo</p><p>"Hacé [X]. Está terminado cuando [Y]. No pares hasta que las pruebas pasen y lo hayas probado en el navegador, también en tamaño celular. Mostrame una captura."</p></div>
+    <div class="quote"><p class="label">Afinar la idea</p><p>"Antes de construir, haceme preguntas sobre esta idea, una por una, hasta que esté clara."</p></div>
+    <div class="quote"><p class="label">Revisión</p><p>"Sos un revisor exigente. Compará lo que se pidió con lo que se hizo: qué falta, qué sobra y qué puede romper la demo. No arregles nada; contámelo en simple."</p></div>
+    <div class="quote"><p class="label">Si se traba</p><p>"Pará. Antes de tocar nada más, explicame en simple qué está fallando y por qué."</p></div>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 27. Diccionario -->
+<section class="slide">
+  <div class="head"><p class="kicker">Diccionario rápido</p><h1>Las palabras que van a escuchar</h1></div>
+  <div class="grid3 dict" style="gap:30px 30px; margin-top:12px;">
+    <p class="small"><b>Agente:</b> IA que hace cosas con herramientas.</p>
+    <p class="small"><b>Prompt:</b> el pedido que le escribís.</p>
+    <p class="small"><b>Repo:</b> la carpeta del proyecto en GitHub.</p>
+    <p class="small"><b>Commit:</b> un punto de guardado.</p>
+    <p class="small"><b>Rama:</b> copia paralela para no pisarse.</p>
+    <p class="small"><b>Main:</b> la versión oficial.</p>
+    <p class="small"><b>Merge:</b> juntar una rama con otra.</p>
+    <p class="small"><b>PR:</b> propuesta de cambios para aprobar.</p>
+    <p class="small"><b>Deploy:</b> publicar con un link.</p>
+    <p class="small"><b>Tests:</b> pruebas automáticas.</p>
+    <p class="small"><b>MCP:</b> enchufe para conectar servicios.</p>
+    <p class="small"><b>Skill:</b> receta guardada.</p>
+  </div>
+  <div class="foot"><span>build 101 · el warm up explicado</span></div>
+</section>
+
+<!-- 28. Cierre -->
+<section class="slide end">
+  <h1>El jurado no lee código.</h1>
+  <p>Mira el problema, la demo funcionando y el pitch.</p>
+  <p class="hl">Ahí jugamos de locales.</p>
+</section>
+
+</body>
+</html>
