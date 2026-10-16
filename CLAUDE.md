@@ -77,13 +77,14 @@ Reparto sugerido, a confirmar el sábado: persona 1 pantallas y diseño (y despu
 **Hecho (en la compu de Eze):**
 - Herramientas: git, Node 24 con npm 12.2, `gh` (sesión iniciada), `vercel` (sesión iniciada), `codex`, CLI de Supabase.
 - GitHub: este repo y `ensayo-build101` (plantilla de prueba, en `~/Proyectos/ensayo-build101` de Eze).
-- Vercel: la app de Vercel está instalada en GitHub solo para esos dos repos. El ensayo está publicado en https://ensayo-build101.vercel.app y se comprobó que cada push se publica solo.
+- Vercel: la app de Vercel está instalada en GitHub solo para esos dos repos. El ensayo está publicado en https://ensayo-build101.vercel.app y se comprobó que cada push se publica solo. El proyecto `build101` de Vercel se crea el sábado.
+- Repo: Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`) aceptaron la invitación. Al ensayo no se los invita: solo lo usa Eze.
+- Supabase: sesión iniciada. Hay lugar para un proyecto activo más en el plan gratis.
+- Skills grill-me (con grilling, que es la que usa por dentro), handoff y show-me, instaladas y revisadas.
 
 **Pendiente:**
-- Invitaciones a este repo enviadas el 16/10: Juan Pedro (`juanpeportas`) ya aceptó; falta Rodrigo (`rportas-pixel`). Al ensayo no se los invita: solo lo usa Eze. Ya tienen Claude: falta confirmar que el plan sea pago.
-- Supabase: que Eze inicie sesión (`supabase login`).
-- Probar un agente en la nube con una tarea chica en `ensayo-build101` (lo hace Eze).
-- Skills opcionales: grill-me, handoff y show-me.
+- Juan Pedro y Rodrigo: confirmar que su plan de Claude sea pago, bajar el repo y verificar su compu (sección siguiente).
+- Opcional: probar un agente en la nube con una tarea chica en `ensayo-build101` (lo hace Eze).
 
 ## Si sos el Claude de Juan Pedro o de Rodrigo: verificar que la compu esté lista
 
@@ -97,10 +98,12 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
    - Corré `cd ~/Proyectos && npx -y create-better-t-stack@latest create prueba-build101 --frontend next --backend self --runtime none --api none --database none --orm none --auth none --payments none --addons none --examples none --web-deploy none --server-deploy none --package-manager npm --no-git --install --disable-analytics --no-render-title && cd prueba-build101 && npm run dev`.
    - Abrí http://localhost:3001. Si se ve una página con el título grande "BETTER T STACK", la compu está lista.
    - Cortá con Ctrl+C y, con el OK de la persona, borrá la carpeta `~/Proyectos/prueba-build101`.
-4. **Opcional, skills:**
-   - `npx skills add https://github.com/mattpocock/skills --skill grill-me`
-   - `npx skills add https://github.com/mattpocock/skills --skill handoff`
-   - `npx skills add https://github.com/humanlayer/skills --skill show-me`
+4. **Opcional, skills** (con `-g` quedan para el usuario y no dentro del repo; grill-me necesita también grilling):
+   - `npx skills add https://github.com/mattpocock/skills --skill grill-me -g -a claude-code -y`
+   - `npx skills add https://github.com/mattpocock/skills --skill grilling -g -a claude-code -y`
+   - `npx skills add https://github.com/mattpocock/skills --skill handoff -g -a claude-code -y`
+   - `npx skills add https://github.com/humanlayer/skills --skill show-me -g -a claude-code -y`
+   - Aparecen en la próxima conversación.
 5. Recomendale leer `equipo/warmup-explicado.pdf` (20 minutos).
 
 ## Sábado: arranque (para el Claude de Eze o de quien integre)

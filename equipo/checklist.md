@@ -8,16 +8,16 @@
 - [x] App de Vercel instalada en esos dos repos
 - [x] Ensayo publicado en https://ensayo-build101.vercel.app; se comprobó que cada cambio se publica solo
 - [ ] Mandarles el mensaje de WhatsApp a Juan Pedro y Rodrigo
-- [x] Invitar a Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`) al repo del equipo
-- [ ] Iniciar sesión en Supabase (con Claude, 2 minutos)
+- [x] Invitar a Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`) al repo del equipo (los dos aceptaron)
+- [x] Iniciar sesión en Supabase
 - [ ] Opcional: probar un agente en la nube con una tarea chica
-- [ ] Opcional: skills grill-me, handoff y show-me
+- [x] Opcional: skills grill-me (con grilling), handoff y show-me, instaladas y revisadas
 
 ## Juan Pedro y Rodrigo (hoy)
 
 - [ ] Confirmar que el plan de Claude sea pago (Pro o superior); el gratis no alcanza para un finde de Claude Code
 - [ ] Crear la cuenta de GitHub (github.com/signup), gratis, y pasarle el usuario a Eze. Usar un mail que revisen.
-- [ ] Aceptar la invitación de Eze al repo `build101` (llega por mail)
+- [x] Aceptar la invitación de Eze al repo `build101` (llega por mail)
 - [ ] Pegarle a su Claude la frase del mensaje de WhatsApp: instala lo necesario, ayuda a iniciar sesión en GitHub, baja el repo a `~/Proyectos/build101` y prueba que todo ande
 - [ ] Leer `equipo/warmup-explicado.pdf`
 - Vercel y Supabase **no hacen falta**: van desde la cuenta de Eze.
