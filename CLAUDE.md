@@ -80,7 +80,7 @@ Reparto sugerido, a confirmar el sábado: persona 1 pantallas y diseño (y despu
 - Vercel: la app de Vercel está instalada en GitHub solo para esos dos repos. El ensayo está publicado en https://ensayo-build101.vercel.app y se comprobó que cada push se publica solo.
 
 **Pendiente:**
-- Usuarios de GitHub de Juan Pedro y Rodrigo, para invitarlos a los dos repos. Ya tienen Claude: falta confirmar que el plan sea pago.
+- Invitaciones a los dos repos enviadas el 16/10 a Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`): falta que las acepten. Ya tienen Claude: falta confirmar que el plan sea pago.
 - Supabase: que Eze inicie sesión (`supabase login`).
 - Probar un agente en la nube con una tarea chica en `ensayo-build101`.
 - Skills opcionales: grill-me, handoff y show-me.

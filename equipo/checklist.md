@@ -8,7 +8,7 @@
 - [x] App de Vercel instalada en esos dos repos
 - [x] Ensayo publicado en https://ensayo-build101.vercel.app; se comprobó que cada cambio se publica solo
 - [ ] Mandarles el mensaje de WhatsApp a Juan Pedro y Rodrigo
-- [ ] Pasarle a Claude sus usuarios de GitHub, para invitarlos a los dos repos
+- [x] Invitar a Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`) a los dos repos
 - [ ] Iniciar sesión en Supabase (con Claude, 2 minutos)
 - [ ] Opcional: probar un agente en la nube con una tarea chica
 - [ ] Opcional: skills grill-me, handoff y show-me
