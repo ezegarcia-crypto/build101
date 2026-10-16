@@ -106,9 +106,13 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 ## Sábado: arranque (para el Claude de Eze o de quien integre)
 
 1. Después del kickoff, afinar la idea con preguntas (grill-me) y definir la demo con "está terminado cuando…".
-2. `git pull`. Crear el proyecto con la plantilla en una carpeta temporal y copiarlo a este repo, para no pisar `CLAUDE.md`, `equipo/` ni `.gitignore`. Ajustá base de datos y login según la idea:
-   `cd /tmp && npx create-better-t-stack@latest create build101-app --frontend next --backend self --runtime none --api none --database none --orm none --auth none --payments none --addons none --examples none --web-deploy vercel --server-deploy none --package-manager npm --no-git --no-install --disable-analytics --no-render-title`
-   Después copiá su contenido a la raíz del repo, sin pisar estos archivos. Al `.gitignore` sumale las líneas de la plantilla, sin borrar las de `.env*`. Por último, `npm install`.
+2. `git pull`. **Plan acordado con Eze:** copiar a este repo el esqueleto que ya está probado en `~/Proyectos/ensayo-build101`.
+   - **No copiar** `.git`, `node_modules`, `.env.local` (tiene una clave de Vercel) ni `.vercel`.
+   - **No pisar** `CLAUDE.md`, `README.md`, `equipo/` ni `.gitignore`. Al `.gitignore` sumale las líneas del ensayo, sin borrar las de `.env*`.
+   - Cambiar `ensayo-build101` por `build101` en los `package.json` y en los nombres de paquetes (`@ensayo-build101/...`). Devolver el título de `apps/web/src/app/layout.tsx` a algo genérico.
+   - Ajustar base de datos y login según la idea. Por último, `npm install` y `npm run build` para comprobar que anda.
+
+   Alternativa, si la idea pide otras piezas: generar uno nuevo con la plantilla, que tarda un minuto (mismo comando que el ensayo, con `--no-git` y en una carpeta temporal), y copiarlo con las mismas reglas.
 3. Copiar `equipo/kit/CLAUDE-proyecto.md`, completarlo y sumarlo a este CLAUDE.md en una sección "El producto". Commit y push.
 4. Publicar en la primera hora:
    - `vercel link --yes --project build101`, después `vercel git connect --yes` y `vercel deploy --prod --yes`.
