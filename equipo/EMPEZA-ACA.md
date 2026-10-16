@@ -25,7 +25,7 @@ Este es el repo del equipo para **build 101** (sábado 17 y domingo 18 de octubr
 **Juan Pedro y Rodrigo** (alrededor de una hora cada uno):
 1. Confirmar que su plan de Claude sea pago (Pro o superior).
 2. Crear la cuenta de **GitHub** (github.com/signup) y pasarle el usuario a Eze. Usen un mail que revisen.
-3. Aceptar la invitación de Eze a los repos (llega por mail).
+3. Aceptar la invitación de Eze al repo `build101` (llega por mail).
 4. Pegarle a su Claude la frase del mensaje de WhatsApp. Les instala lo necesario, los ayuda a iniciar sesión en GitHub, les baja este repo y prueba que todo ande.
 5. Leer el PDF.
 

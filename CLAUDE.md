@@ -80,9 +80,9 @@ Reparto sugerido, a confirmar el sábado: persona 1 pantallas y diseño (y despu
 - Vercel: la app de Vercel está instalada en GitHub solo para esos dos repos. El ensayo está publicado en https://ensayo-build101.vercel.app y se comprobó que cada push se publica solo.
 
 **Pendiente:**
-- Invitaciones a los dos repos enviadas el 16/10 a Juan Pedro (`juanpeportas`) y Rodrigo (`rportas-pixel`): falta que las acepten. Ya tienen Claude: falta confirmar que el plan sea pago.
+- Invitaciones a este repo enviadas el 16/10: Juan Pedro (`juanpeportas`) ya aceptó; falta Rodrigo (`rportas-pixel`). Al ensayo no se los invita: solo lo usa Eze. Ya tienen Claude: falta confirmar que el plan sea pago.
 - Supabase: que Eze inicie sesión (`supabase login`).
-- Probar un agente en la nube con una tarea chica en `ensayo-build101`.
+- Probar un agente en la nube con una tarea chica en `ensayo-build101` (lo hace Eze).
 - Skills opcionales: grill-me, handoff y show-me.
 
 ## Si sos el Claude de Juan Pedro o de Rodrigo: verificar que la compu esté lista
@@ -93,7 +93,10 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 2. Si `gh auth status` no muestra la sesión iniciada:
    - corré `gh auth login --hostname github.com --git-protocol https --web` y después `gh auth setup-git`;
    - el código de 8 caracteres lo genera GitHub para su propia compu y vence a los 15 minutos: se pega en https://github.com/login/device.
-3. **Prueba final:** `cd ~/Proyectos && gh repo clone ezegarcia-crypto/ensayo-build101 && cd ensayo-build101 && npm install && npm run dev`. Abrí http://localhost:3001: si se ve la página, la compu está lista. Después cortá con Ctrl+C. Si el clon falla, falta aceptar la invitación de Eze a ese repo: llega por mail, o se acepta en https://github.com/ezegarcia-crypto/ensayo-build101/invitations.
+3. **Prueba final**, con la misma plantilla que se usa el sábado, en una carpeta de prueba que no se sube a ningún lado:
+   - Corré `cd ~/Proyectos && npx -y create-better-t-stack@latest create prueba-build101 --frontend next --backend self --runtime none --api none --database none --orm none --auth none --payments none --addons none --examples none --web-deploy none --server-deploy none --package-manager npm --no-git --install --disable-analytics --no-render-title && cd prueba-build101 && npm run dev`.
+   - Abrí http://localhost:3001. Si se ve una página con el título grande "BETTER T STACK", la compu está lista.
+   - Cortá con Ctrl+C y, con el OK de la persona, borrá la carpeta `~/Proyectos/prueba-build101`.
 4. **Opcional, skills:**
    - `npx skills add https://github.com/mattpocock/skills --skill grill-me`
    - `npx skills add https://github.com/mattpocock/skills --skill handoff`
@@ -116,5 +119,5 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 
 ## Comandos útiles
 
-- Invitar a alguien a un repo: `gh api -X PUT repos/ezegarcia-crypto/build101/collaborators/USUARIO -f permission=push` (lo mismo con `ensayo-build101`)
+- Invitar a alguien al repo: `gh api -X PUT repos/ezegarcia-crypto/build101/collaborators/USUARIO -f permission=push`
 - Ver las publicaciones: `vercel ls build101`
