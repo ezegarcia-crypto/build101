@@ -68,7 +68,10 @@ Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 - **Falta para que hable de verdad:** `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` en `.env.local` y en Vercel (las saca Eze), y correr el script.
 - `/api/voz/prueba`: página de prueba solo para desarrollo. En la web publicada no existe.
 
-## 6. El feed (módulo B; lo hizo la sesión "Feed de Instagram generado con la marca")
+## 6. El feed simple (se retira) · `POST /api/contenidos`
+
+> **Se retira (17/10):** el equipo eligió el motor completo de la sección 7. Este queda solo mientras Juan Pedro reconecta la pantalla del feed; después se borran `contenidos.ts`, `api/contenidos/route.ts` y `scripts/probar-contenidos.mjs`. No lo uses para nada nuevo.
+
 
 `POST /api/contenidos` con `{ brief, identidad }`: **la identidad entera, tal como sale de `/api/identidad`**. Devuelve `{ marca, direccion_de_arte, posteos, historias, medicion }`:
 - 3 o 4 posteos: `objetivo`, `titular` (para poner encima de la imagen con la tipografía de la marca), `texto`, `hashtags`, `idea_visual` e `imagen.url` (4:5).
@@ -78,11 +81,11 @@ Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
 Prueba sin pantalla: `node scripts/probar-contenidos.mjs`.
 
-## 7. Contenidos, motor completo (rama `contenidos`, en evaluación)
+## 7. Contenidos · el motor elegido · `POST /api/contenidos/lote`
 
 **Ruta principal:** `POST /api/contenidos/lote` con `{ brief, identidad }`: la ficha del paso 1 y la
 identidad del paso 3, tal cual vinieron. Sale el plan del mes y las piezas (posteos, carrusel, historias y
 reel), cada una dibujada en SVG con la marca del cliente por `componerPieza`. Todo el detalle (pasos,
 eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
 
-Convive con el motor simple de la sección 6 (`POST /api/contenidos`). El equipo decide cuál queda.
+**Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
