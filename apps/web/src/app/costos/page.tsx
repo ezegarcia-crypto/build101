@@ -5,7 +5,7 @@ import { armarReporte, partesDeVozPorMes } from "@/lib/ia/reporte-gastos";
 import { pasosDelModelo, USOS } from "@/lib/ia/usos";
 import { hayBaseDeDatos, listarPagos, parteDeBrandia, saldos } from "@/lib/pagos";
 
-import { numero, usd } from "./formato";
+import { minutos, numero, usd } from "./formato";
 import { GraficoEtapas } from "./grafico-etapas";
 import { ESTILOS_SERIES, familia, Muestra } from "./series";
 import { Precios } from "./precios";
@@ -411,14 +411,18 @@ export default async function Costos() {
             <>
               <p>
                 La suscripción es compartida con Gary. Este mes la cuenta usó <strong>{numero(r.voz.cuenta)}</strong>{" "}
-                créditos; el agente de BrandIA, <strong>{numero(r.voz.brandia)}</strong> en {numero(r.voz.conversaciones)}{" "}
-                conversaciones ({Math.round(r.voz.minutos)} minutos).
+                créditos; los audios pasados a texto de BrandIA, <strong>{numero(r.voz.audios)}</strong> (
+                {minutos(r.voz.minutosAudios)} de audio).
+                {r.voz.agenteViejo > 0 && (
+                  <>
+                    {" "}
+                    Además, el agente de voz que se usó hasta el 17/10 gastó <strong>{numero(r.voz.agenteViejo)}</strong>.
+                  </>
+                )}
               </p>
               <p className="font-display text-2xl">A BrandIA le toca el {Math.round(r.voz.parte * 1000) / 10} %</p>
               <p className="lead">
-                {r.voz.hayAgente
-                  ? "Ese porcentaje se aplica a lo que se pagó de ElevenLabs en el registro de pagos."
-                  : "Falta ELEVENLABS_AGENT_ID para separar lo de BrandIA."}
+                Ese porcentaje se aplica a lo que se pagó de ElevenLabs en el registro de pagos.
               </p>
             </>
           )}

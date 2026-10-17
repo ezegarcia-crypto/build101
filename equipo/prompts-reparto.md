@@ -4,6 +4,8 @@ Un prompt por persona, para pegar en una **conversación nueva** de la app de Cl
 
 Se basan en el reparto confirmado de `equipo/plan-finde.md`. Si ese plan cambia, manda el plan.
 
+> **Cambio del 17/10:** ya no hay agente de voz ni botón "Hablar con BrandIA". La persona manda audios desde la caja del chat de `/crear` y se pasan a texto con ElevenLabs Scribe (`POST /api/transcribir`). Lo que estos prompts dicen de la entrevista por voz quedó sin efecto.
+
 ---
 
 ## Lo que ya está decidido (sábado 17/10)

@@ -15,7 +15,6 @@ import { clienteValido, HEADER_CLIENTE } from "@/lib/cliente";
 
 export const PASOS = {
   entrevista: { modulo: "A", nombre: "Entrevista por chat", unidad: "conversación" },
-  "voz-ficha": { modulo: "A", nombre: "Ficha de la entrevista por voz", unidad: "llamada" },
   direcciones: { modulo: "A", nombre: "Tres direcciones visuales", unidad: "pedido" },
   nombres: { modulo: "A", nombre: "Nombres con trasfondo", unidad: "pedido" },
   identidad: { modulo: "A", nombre: "Identidad y brandbook", unidad: "pedido" },
@@ -28,6 +27,9 @@ export const PASOS = {
   "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
   "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
   "web-cambio": { modulo: "B", nombre: "Cambio de la web por chat", unidad: "cambio" },
+  "web-foto": { modulo: "B", nombre: "Una foto de la web", unidad: "foto" },
+  "web-publicar": { modulo: "B", nombre: "Web publicada (sin IA)", unidad: "publicación" },
+  branderia: { modulo: "C", nombre: "Foto de un producto con la marca", unidad: "foto" },
 } as const;
 
 export type Paso = keyof typeof PASOS;
@@ -46,7 +48,6 @@ const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; clien
 // Los topes son por servidor, no por persona: tienen que alcanzar para varios jurados probando a la vez.
 const POR_MINUTO: Record<Paso, number> = {
   entrevista: 90,
-  "voz-ficha": 15,
   direcciones: 15,
   nombres: 25,
   identidad: 15,
@@ -59,6 +60,10 @@ const POR_MINUTO: Record<Paso, number> = {
   "web-entrevista": 90,
   "web-armar": 15,
   "web-cambio": 40,
+  "web-foto": 30,
+  "web-publicar": 20, // no usa IA: el tope es solo para cortar abusos
+  // 12 fotos por marca: alcanza para 4 personas entrando a la vez
+  branderia: 48,
 };
 const recientes = new Map<Paso, number[]>();
 

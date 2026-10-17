@@ -148,6 +148,26 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
 
       {/* Esencia */}
       <Seccion titulo="Esencia" fondo={c.fondo} texto={c.texto}>
+        {/* Misión y visión: las marcas armadas antes del 17/10 no las tienen */}
+        {(esencia.mision || esencia.vision) && (
+          <div className="mb-10 grid gap-8 sm:grid-cols-2">
+            {(
+              [
+                ["Misión", esencia.mision],
+                ["Visión", esencia.vision],
+              ] as const
+            )
+              .filter(([, v]) => v)
+              .map(([t, v]) => (
+                <div key={t}>
+                  <Subtitulo>{t}</Subtitulo>
+                  <p className="mt-2 text-[clamp(1.25rem,1rem+1vw,1.6rem)] leading-snug" style={{ fontFamily: titulos }}>
+                    {v}
+                  </p>
+                </div>
+              ))}
+          </div>
+        )}
         <div className="grid gap-8 sm:grid-cols-2">
           {(
             [
@@ -279,7 +299,7 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
       </Seccion>
 
       {/* Voz */}
-      <Seccion titulo="Voz" fondo={c.principal} texto={sobrePrincipal}>
+      <Seccion titulo="Voz y tono" fondo={c.principal} texto={sobrePrincipal}>
         <p className="max-w-[28ch] text-[clamp(1.6rem,1.1rem+2vw,2.6rem)] leading-[1.1]" style={{ fontFamily: titulos }}>
           {voz.resumen}
         </p>
@@ -298,6 +318,23 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
             </div>
           ))}
         </div>
+        {(voz.tono ?? []).length > 0 && (
+          <div className="mt-10">
+            <Subtitulo>El tono según el momento</Subtitulo>
+            <p className="mt-1 max-w-[40em] text-[15px] leading-relaxed opacity-80">
+              La voz es siempre la misma; el tono se ajusta a cada situación.
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {voz.tono.map((m) => (
+                <div key={m.momento} className="rounded-[10px] p-5" style={{ boxShadow: `inset 0 0 0 1px ${sobrePrincipal}40` }}>
+                  <p className="text-lg font-semibold">{m.momento}</p>
+                  <p className="mt-2 text-[15px] leading-relaxed">{m.como}</p>
+                  <p className="mt-3 text-[15px] leading-relaxed italic opacity-85">«{m.ejemplo}»</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           <div>
             <Subtitulo>Palabras nuestras</Subtitulo>

@@ -10,3 +10,10 @@ export function usd(n: number) {
 export function numero(n: number | undefined) {
   return enteros.format(n ?? 0);
 }
+
+const unDecimal = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 1 });
+
+/** Minutos de audio, con un decimal: "0,6 minutos". */
+export function minutos(n: number) {
+  return `${unDecimal.format(n)} ${n === 1 ? "minuto" : "minutos"}`;
+}
