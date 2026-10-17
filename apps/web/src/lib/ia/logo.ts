@@ -63,6 +63,8 @@ export type PropuestaLogo = {
   tipo: TipoLogo;
   concepto: string;
   colores: string[];
+  /** El pedido en inglés que Claude le escribió al modelo de imágenes, para ver de dónde sale el dibujo. */
+  pedido: string;
   /** La imagen lista para usar en un <img src>: data URL (PNG o WebP), 1024 × 1024, fondo blanco. */
   imagen: string;
   modelo: string;
@@ -121,6 +123,7 @@ export async function generarLogos({ brief, direccion }: { brief: Brief; direcci
         tipo: tipos[i],
         concepto: p.concepto,
         colores: p.colores,
+        pedido: p.prompt,
         ...dibujo,
         segundos: Math.round((Date.now() - t0) / 100) / 10,
       } satisfies PropuestaLogo;
