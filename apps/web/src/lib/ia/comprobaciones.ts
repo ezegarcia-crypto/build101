@@ -93,6 +93,13 @@ export async function parametroGoogleFonts(familia: string) {
 
 const ETIQUETAS_PERMITIDAS = new Set(["svg", "g", "path", "circle", "rect", "ellipse", "polygon", "polyline", "line", "text", "tspan", "title"]);
 
+// Una etiqueta entera, respetando los ">" que caigan dentro de un valor entre comillas.
+const ETIQUETA = /<(\/?)([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
+// Un atributo con valor entre comillas o sin comillas (onload=alert(1)), aunque venga pegado a la comilla anterior.
+const atributo = (nombres: string) => new RegExp(`(?<=[\\s/"'])(?:${nombres})\\s*=\\s*("[^"]*"|'[^']*'|[^\\s>"']+)`, "gi");
+const ATRIBUTOS_PELIGROSOS = atributo("on\\w+|(?:xlink:)?href");
+const MEDIDAS = atributo("width|height");
+
 // Deja solo las etiquetas de dibujo permitidas y saca atributos peligrosos (eventos, links, estilos externos).
 export function limpiarSvg(svg: string): { svg: string; comprobacion: Comprobacion } {
   const inicio = svg.indexOf("<svg");
@@ -102,15 +109,22 @@ export function limpiarSvg(svg: string): { svg: string; comprobacion: Comprobaci
   }
   let limpio = svg.slice(inicio, fin + 6);
   let sacadas = 0;
-  limpio = limpio.replace(/<\/?([a-zA-Z][\w:-]*)[^>]*>/g, (etiqueta, nombre: string) => {
-    if (ETIQUETAS_PERMITIDAS.has(nombre.toLowerCase())) return etiqueta;
+  // Comentarios, CDATA y declaraciones (<!…>, <?…?>) no hacen falta para dibujar
+  limpio = limpio.replace(/<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[!?][^>]*>/g, () => {
     sacadas++;
     return "";
   });
-  limpio = limpio
-    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*')/gi, "")
-    .replace(/\s(xlink:)?href\s*=\s*("[^"]*"|'[^']*')/gi, "")
-    .replace(/\s(width|height)\s*=\s*("[^"]*"|'[^']*')/i, "");
+  limpio = limpio.replace(ETIQUETA, (_etiqueta, cierre: string, nombre: string, atributos: string) => {
+    const etiqueta = nombre.toLowerCase();
+    if (!ETIQUETAS_PERMITIDAS.has(etiqueta)) {
+      sacadas++;
+      return "";
+    }
+    let seguros = atributos.replace(ATRIBUTOS_PELIGROSOS, " ");
+    // El tamaño lo pone la pantalla: se saca solo del <svg> de afuera, no de las figuras
+    if (etiqueta === "svg") seguros = seguros.replace(MEDIDAS, " ");
+    return `<${cierre}${nombre}${seguros}>`;
+  });
   const tieneViewBox = /viewBox\s*=/.test(limpio);
   if (!tieneViewBox) limpio = limpio.replace("<svg", '<svg viewBox="0 0 100 100"');
   return {

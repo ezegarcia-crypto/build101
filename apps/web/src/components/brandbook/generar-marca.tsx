@@ -8,11 +8,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
+import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
 import { Brandbook, Controles } from "./brandbook";
 import { Direcciones } from "./direcciones";
+import { Nombres } from "./nombres";
 import {
   CLAVE_DIRECCIONES,
   CLAVE_IDENTIDAD,
@@ -22,6 +24,7 @@ import {
 } from "./identidad";
 
 // Paso 2 · Tu marca. Con la ficha de la entrevista:
+//   0. la IA propone nombres con su trasfondo (en paralelo con las direcciones) y la persona elige uno;
 //   1. la IA propone 3 direcciones visuales y la persona elige una;
 //   2. con esa, la IA arma la identidad y dibuja 3 logos (en paralelo);
 //   3. se muestra el brandbook.
@@ -70,6 +73,7 @@ async function pedir<T>(ruta: string, cuerpo: unknown, senal?: AbortSignal): Pro
 export function GenerarMarca() {
   const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
   const [ficha, setFicha] = useState<Ficha | null>(null);
+  const [nombreElegido, setNombreElegido] = useState<string | null>(null);
 
   const buscarDirecciones = useCallback(async (f: Ficha, senal?: AbortSignal) => {
     setEstado({ tipo: "buscando" });
@@ -87,27 +91,32 @@ export function GenerarMarca() {
     }
   }, []);
 
-  const elegir = useCallback(async (f: Ficha, direcciones: DireccionConControl[], direccion: DireccionConControl) => {
-    setEstado({ tipo: "armando", direcciones, direccion });
-    document.querySelector("main")?.scrollTo({ top: 0 });
-    const cuerpo = { brief: f.brief, direccion };
-    const [identidad, logos] = await Promise.allSettled([
-      pedir<{ identidad: IdentidadIA }>("/api/identidad", cuerpo),
-      pedir<{ propuestas: PropuestaLogo[] }>("/api/logo", cuerpo),
-    ]);
-    if (identidad.status === "rejected") {
-      return setEstado({
-        tipo: "error",
-        mensaje: (identidad.reason as Error).message,
-        reintentar: () => elegir(f, direcciones, direccion),
-      });
-    }
-    // Si los logos completos fallan, el brandbook sigue con el símbolo de la identidad
-    const propuestas = logos.status === "fulfilled" ? logos.value.propuestas : [];
-    const lista = { ficha: f.texto, identidad: identidad.value.identidad, logos: propuestas };
-    if (!guardar(CLAVE_IDENTIDAD, lista)) guardar(CLAVE_IDENTIDAD, { ...lista, logos: [] });
-    setEstado({ tipo: "lista", direcciones, identidad: lista.identidad, logos: propuestas });
-  }, []);
+  const elegir = useCallback(
+    async (f: Ficha, direcciones: DireccionConControl[], direccion: DireccionConControl, nombre: string | null) => {
+      setEstado({ tipo: "armando", direcciones, direccion });
+      document.querySelector("main")?.scrollTo({ top: 0 });
+      // El nombre elegido pasa a ser el de la marca: lo usan los textos del brandbook y los logos
+      const brief = nombre ? { ...f.brief, marca: { ...f.brief.marca, nombre } } : f.brief;
+      const cuerpo = { brief, direccion };
+      const [identidad, logos] = await Promise.allSettled([
+        pedir<{ identidad: IdentidadIA }>("/api/identidad", cuerpo),
+        pedir<{ propuestas: PropuestaLogo[] }>("/api/logo", cuerpo),
+      ]);
+      if (identidad.status === "rejected") {
+        return setEstado({
+          tipo: "error",
+          mensaje: (identidad.reason as Error).message,
+          reintentar: () => elegir(f, direcciones, direccion, nombre),
+        });
+      }
+      // Si los logos completos fallan, el brandbook sigue con el símbolo de la identidad
+      const propuestas = logos.status === "fulfilled" ? logos.value.propuestas : [];
+      const lista = { ficha: f.texto, identidad: identidad.value.identidad, logos: propuestas };
+      if (!guardar(CLAVE_IDENTIDAD, lista)) guardar(CLAVE_IDENTIDAD, { ...lista, logos: [] });
+      setEstado({ tipo: "lista", direcciones, identidad: lista.identidad, logos: propuestas });
+    },
+    [],
+  );
 
   useEffect(() => {
     const texto = sessionStorage.getItem(CLAVE_FICHA);
@@ -123,6 +132,10 @@ export function GenerarMarca() {
     }
     if (dirs?.ficha === texto) return setEstado({ tipo: "elegir", direcciones: dirs.direcciones });
 
+    // Si la página se recarga sola en loop, no se vuelve a pedir: queda el botón para hacerlo a mano
+    if (!puedoArrancarSolo("direcciones")) {
+      return setEstado({ tipo: "error", mensaje: MENSAJE_FRENO, reintentar: () => buscarDirecciones(f) });
+    }
     const control = new AbortController();
     buscarDirecciones(f, control.signal);
     return () => control.abort();
@@ -147,23 +160,38 @@ export function GenerarMarca() {
           </Link>
         </div>
 
-        {(estado.tipo === "cargando" || estado.tipo === "buscando") && (
+        {estado.tipo === "cargando" && (
           <div className="flex min-h-[60svh] flex-col items-start justify-center">
             <h1 className={`${s.seCocina} display max-w-[16ch]`}>
-              Pensando <span className={s.it}>tres</span> caminos para tu marca.
+              Pensando <span className={s.it}>tu</span> marca.
             </h1>
-            <p className="lead mt-4 max-w-[34em] text-base">
-              Con lo que nos contaste armamos tres direcciones distintas: colores, letras y estilo. Vos elegís. Tarda
-              unos 30 segundos.
+          </div>
+        )}
+
+        {/* Un solo lugar para los nombres: siguen a la vista mientras se piensan los caminos y al elegir */}
+        {ficha && (estado.tipo === "buscando" || estado.tipo === "elegir") && (
+          <Nombres brief={ficha.brief} ficha={ficha.texto} onElegir={setNombreElegido} />
+        )}
+
+        {estado.tipo === "buscando" && (
+          <div className="mt-16">
+            <h2 className={`${s.seCocina} display max-w-[18ch] text-[clamp(2rem,1.4rem+2vw,3rem)]`}>
+              Pensando <span className={s.it}>tres</span> caminos para tu marca.
+            </h2>
+            <p className="lead mt-3 max-w-[34em] text-base">
+              Mientras elegís el nombre, armamos tres direcciones distintas: colores, letras y estilo. Vos elegís.
+              Tarda unos 30 segundos.
             </p>
-            <div className="mt-8">{estado.tipo === "buscando" && <Armando que="direcciones" />}</div>
+            <div className="mt-6">
+              <Armando que="direcciones" />
+            </div>
           </div>
         )}
 
         {estado.tipo === "elegir" && (
           <>
-            <div className={`${s.entra} mt-10 mb-8`}>
-              <h1 className="display max-w-[18ch]">
+            <div className={`${s.entra} mt-16 mb-8`}>
+              <h1 className="display max-w-[18ch] text-[clamp(2rem,1.4rem+2vw,3rem)]">
                 Elegí <span className={s.it}>tu</span> camino.
               </h1>
               <p className="lead mt-3 max-w-[38em] text-base">
@@ -172,8 +200,8 @@ export function GenerarMarca() {
             </div>
             <Direcciones
               direcciones={estado.direcciones}
-              nombreMarca={nombreMarca}
-              onElegir={(d) => ficha && elegir(ficha, estado.direcciones, d)}
+              nombreMarca={nombreElegido ?? nombreMarca}
+              onElegir={(d) => ficha && elegir(ficha, estado.direcciones, d, nombreElegido)}
             />
           </>
         )}

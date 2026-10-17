@@ -20,6 +20,7 @@ import {
   promptRedactor,
 } from "@/lib/ia/contenidos/prompts";
 import type { Kit } from "@/lib/ia/contenidos/kit";
+import { etiquetar, senalDelPedido } from "@/lib/ia/gastos";
 
 // El motor del módulo B. Encadena cuatro pasos, cada uno con su entrada y su salida fijas:
 //
@@ -54,6 +55,8 @@ export async function planificar(o: {
   const mezcla = o.mezcla ?? MEZCLA_DEMO;
   const r = await generateText({
     model: MODELO_PLAN,
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar(),
     output: Output.object({ schema: planSchema }),
     prompt: promptPlanificador(o.kit, o.brief, mezcla),
   });
@@ -107,6 +110,8 @@ export async function redactar(o: {
     intentos++;
     const r = await generateText({
       model: MODELO_REDACCION,
+      abortSignal: senalDelPedido(),
+      providerOptions: etiquetar(),
       output: Output.object({ schema: schema as typeof ESQUEMAS.post }),
       messages: mensajes,
     });

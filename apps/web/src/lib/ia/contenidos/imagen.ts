@@ -2,6 +2,7 @@ import { generateImage } from "ai";
 
 import type { PedidoImagen } from "@/lib/ia/contenidos/esquemas";
 import type { Kit } from "@/lib/ia/contenidos/kit";
+import { etiquetar, senalDelPedido } from "@/lib/ia/gastos";
 
 // Las imágenes de las piezas. El redactor solo describe la escena; este motor le suma la marca
 // (estilo de foto, clima de color, lo que nunca aparece) y las reglas fijas: sin texto y sin
@@ -43,7 +44,8 @@ export async function generarImagen(pedido: PedidoImagen): Promise<{ clave: stri
     prompt: pedido.prompt,
     size: "1024x1536",
     // jpeg: pesa ~0,4 MB contra ~3 MB del png, y viaja dentro de la respuesta.
-    providerOptions: { openai: { outputFormat: "jpeg", outputCompression: 85 } },
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar({ openai: { outputFormat: "jpeg", outputCompression: 85 } }),
   });
   const usd = Number((providerMetadata as { gateway?: { cost?: string | number } } | undefined)?.gateway?.cost ?? 0);
   return { clave: pedido.clave, url: `data:${image.mediaType};base64,${image.base64}`, usd: Number.isFinite(usd) ? usd : 0 };

@@ -9,6 +9,12 @@ import s from "./entrevista.module.css";
 const FRASES = {
   pregunta: ["Leyendo lo que contaste…", "Pensando la próxima pregunta…", "Ordenando las ideas…"],
   ficha: ["Armando tu ficha…", "Juntando todo lo que contaste…", "Ya casi está…"],
+  nombres: [
+    "Buscando palabras de tu rubro…",
+    "Probando cómo suenan en voz alta…",
+    "Pensando qué historia cuenta cada uno…",
+    "Ya casi están…",
+  ],
   direcciones: [
     "Leyendo tu ficha…",
     "Pensando tres caminos distintos…",
@@ -32,7 +38,8 @@ const FRASES = {
   ],
 };
 
-export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {
+// `mensaje`: si la IA cuenta en qué está (el lote de contenidos lo hace), se muestra ese texto
+export function Armando({ que = "pregunta", mensaje }: { que?: keyof typeof FRASES; mensaje?: string }) {
   const frases = FRASES[que];
   const [i, setI] = useState(0);
 
@@ -60,8 +67,8 @@ export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {
           />
         </g>
       </svg>
-      <span key={`${que}-${i}`} className={s.progreso}>
-        {frases[i]}
+      <span key={mensaje ?? `${que}-${i}`} className={s.progreso}>
+        {mensaje ?? frases[i]}
       </span>
     </div>
   );

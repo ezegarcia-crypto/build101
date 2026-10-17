@@ -89,3 +89,15 @@ reel), cada una dibujada en SVG con la marca del cliente por `componerPieza`. To
 eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
 
 **Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
+
+## 8. Lo que gasta la IA · panel `/costos`
+
+**Panel del equipo:** `/costos` (en la web publicada, https://build101-bice.vercel.app/costos). Muestra el saldo del Gateway, lo gastado hoy, cuánto cuesta en promedio cada paso (y una marca completa), el gasto por modelo y por día, y una calculadora de margen para pensar precios. No tiene links desde la app y no lo indexan los buscadores.
+
+**Toda ruta nueva que use IA tiene que anotarse**, si no su gasto aparece como "sin paso" (`gastos.ts`):
+
+1. Sumá el paso a `PASOS`, en `gastos.ts`.
+2. Envolvé la ruta: `export const POST = medir("mi-paso", async (req: Request) => { ... });`
+3. En cada llamada a la IA: `providerOptions: etiquetar()`, o `etiquetar({ openai: {...} })` si ya tenía opciones.
+
+No hace falta base de datos: el Gateway guarda el costo de cada llamada con esas etiquetas, y el panel se las pide.
