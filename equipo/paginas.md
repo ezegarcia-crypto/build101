@@ -17,7 +17,7 @@ Las flechas son botones o links. Las punteadas son "volver" o "empezá por acá"
 flowchart LR
   portada["/ · Portada<br/>(web original)"]
   espera["/lista-de-espera"]
-  crear["/crear<br/>Paso 1 · Contanos<br/>(chat o voz)"]
+  crear["/crear<br/>Paso 1 · Contanos<br/>(chat, escrito o con audio)"]
   marca["/crear/marca<br/>Paso 2 · Tu marca<br/>nombres, caminos, brandbook"]
   contenido["/crear/contenido<br/>Paso 3 · Tu contenido<br/>feed"]
   branderia["/crear/branderia<br/>Paso 4 · Tus productos<br/>BranderIA"]
@@ -89,7 +89,7 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
-| `/crear` | **Paso 1 · Contanos.** Entrevista por chat. Con "Hablar con BrandIA" pasa a la entrevista por voz (ElevenLabs), en la misma página. Termina en la ficha de la marca | Los botones "BrandIAmos" de la portada, directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat), `/api/voz` y `/api/voz/ficha` (voz) |
+| `/crear` | **Paso 1 · Contanos.** Entrevista por chat. La persona escribe o manda audios con el micrófono de la caja (se pasan a texto con ElevenLabs); BrandIA contesta por escrito. Termina en la ficha de la marca | Los botones "BrandIAmos" de la portada, directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat) y `/api/transcribir` (audio a texto) |
 | `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué y "Otros nombres". Abajo, tres caminos para elegir. Después, el brandbook con logos | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Armar mi web" → `/crear/web` · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo` |
 | `/crear/contenido` | **Paso 3 · Tu contenido.** El feed con la marca aplicada: posteos, carrusel, historias y reel | "Ver mis contenidos" desde el brandbook | "Ver mis productos" → `/crear/branderia` · "Volver a tu marca" → `/crear/marca` | La marca (paso 2) | `/api/contenidos/lote` |
 | `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** La IA saca la foto de cada producto y el logo real cae encima. Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` | La marca (paso 2) | `/api/contenidos/imagen` |
@@ -114,7 +114,6 @@ Todos los textos de muestra están marcados como ejemplo: nada de esto lo gener�
 
 ## Solo en la compu
 
-- `/api/voz/prueba`: página para probar la voz mientras se programa. En la web publicada no existe (da 404, a
   propósito).
 
 ## Cómo mantener este registro

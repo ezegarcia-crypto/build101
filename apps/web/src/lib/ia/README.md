@@ -60,13 +60,13 @@ Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-e
 
 Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
-## 5. La entrevista por voz (lo hizo la sesión "Agente de voz de ElevenLabs para la entrevista")
+## 5. Contar con audio (cambió el 17/10: BrandIA ya no habla)
 
-- `GET /api/voz` devuelve `{ signedUrl }` para conectar la pantalla con el agente de ElevenLabs (`@elevenlabs/react`, ya instalado). La clave queda en el servidor.
-- Cuando termina la llamada: `POST /api/voz/ficha` con `{ transcripcion: [{ rol: "usuario" | "agente", texto }] }` → `{ ficha }`, **la misma ficha que la entrevista por chat**. Probado: unos 5 segundos.
-- El prompt del agente está en `voz.ts`. Se sube a ElevenLabs con `scripts/crear-agente-voz.ts`.
-- **Falta para que hable de verdad:** `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` en `.env.local` y en Vercel (las saca Eze), y correr el script.
-- `/api/voz/prueba`: página de prueba solo para desarrollo. En la web publicada no existe.
+- La persona cuenta su negocio con un audio desde la caja del chat de `/crear`, y la entrevista sigue por escrito. Antes había un agente de voz de ElevenLabs que conversaba hablando; se sacó (está en el historial de git, commit `a0b7633` y anteriores).
+- `POST /api/transcribir` con form-data (campo `audio`) → `{ texto }`. Pasa el audio a texto con **ElevenLabs Scribe** (`scribe_v2`, en español). La pantalla pone ese texto en la caja para que la persona lo revise y lo mande al chat como cualquier mensaje.
+- Necesita `ELEVENLABS_API_KEY` con el permiso **De voz a texto**. Gasta créditos de ElevenLabs, no del Gateway.
+- Frenos: 20 audios por minuto por servidor, hasta 5 MB por audio, y la pantalla corta la grabación a los 3 minutos.
+- La grabación está en `components/entrevista/grabadora.tsx` (Chrome graba en webm y Safari en mp4; Scribe entiende los dos).
 
 ## 6. Contenidos · el motor elegido · `POST /api/contenidos/lote`
 
