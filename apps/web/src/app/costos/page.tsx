@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 
-import { MODULOS, PASOS } from "@/lib/ia/gastos";
+import { MODULOS, PASOS, type Paso } from "@/lib/ia/gastos";
 import { armarReporte } from "@/lib/ia/reporte-gastos";
+import { pasosDelModelo, USOS } from "@/lib/ia/usos";
 
-import { Calculadora } from "./calculadora";
 import { numero, usd } from "./formato";
+import { GraficoEtapas } from "./grafico-etapas";
+import { ESTILOS_SERIES, familia, Muestra } from "./series";
+import { Precios } from "./precios";
 
 // Panel interno del equipo: cuánto gastamos en IA y cuánto cuesta cada paso, para pensar precios.
 // No tiene links desde la app y los buscadores no lo indexan.
@@ -56,13 +59,28 @@ function Tabla({ columnas, children }: { columnas: string[]; children: React.Rea
 
 export default async function Costos() {
   const r = await armarReporte();
+  // El orden de los modelos dentro de cada barra es fijo (el de las familias), no el del gasto
+  const ordenFamilia = (m: string) => ["sonnet", "recraft", "opus", "gpt-image", "otros"].indexOf(familia(m).clave);
+  const etapas = r.pasos
+    .filter((f) => f.total > 0)
+    .sort((a, b) => b.total - a.total)
+    .map((f) => ({
+      paso: f.paso,
+      nombre: PASOS[f.paso].nombre,
+      total: f.total,
+      modelos: [...f.modelos].sort((a, b) => ordenFamilia(a.modelo) - ordenFamilia(b.modelo)),
+    }));
+  const gastoDe = (paso: Paso, modelo: string) =>
+    r.pasos.find((f) => f.paso === paso)?.modelos.find((m) => m.modelo === modelo)?.total ?? 0;
+
   const porModulo = (Object.keys(MODULOS) as (keyof typeof MODULOS)[]).map((m) => ({
     modulo: m,
     filas: r.pasos.filter((f) => PASOS[f.paso].modulo === m),
   }));
 
   return (
-    <main className="mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-12 overflow-x-clip px-4 py-12 sm:py-16">
+    <main className="viz-etapas mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-12 overflow-x-clip px-4 py-12 sm:py-16">
+      <style>{ESTILOS_SERIES}</style>
       <header className="flex flex-col gap-4">
         <p className="label">BrandIA · solo para el equipo</p>
         <h1 className="display max-w-3xl text-balance">
@@ -146,20 +164,88 @@ export default async function Costos() {
 
       <section className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <h2>Para pensar los precios</h2>
-          <p className="lead max-w-2xl">Con el costo promedio de hoy. Cambiá el margen y mirá cuánto cobraríamos.</p>
+          <h2>Para qué se usa cada modelo</h2>
+          <p className="lead max-w-2xl">
+            Dónde se va la plata: cada barra es una etapa, partida por modelo. Pasá el mouse (o tocá) para ver el
+            detalle. Últimos 30 días.
+          </p>
         </div>
-        <Calculadora marca={r.estimados.marcaCompleta} feed={r.estimados.feed} />
+        {etapas.length > 0 ? (
+          <GraficoEtapas etapas={etapas} />
+        ) : (
+          <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
+            El gráfico aparece con la primera generación anotada. Mientras tanto, abajo está qué modelo usa cada etapa.
+          </p>
+        )}
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {(Object.keys(USOS) as Paso[]).map((paso) => {
+            const gastado = r.pasos.find((f) => f.paso === paso)?.total ?? 0;
+            return (
+              <li key={paso} className="flex flex-col gap-3 rounded-lg border bg-card p-5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="text-lg">{PASOS[paso].nombre}</h3>
+                  <span className="label shrink-0">
+                    {PASOS[paso].modulo} · {gastado ? usd(gastado) : "sin gasto"}
+                  </span>
+                </div>
+                <ul className="flex flex-col gap-2.5">
+                  {USOS[paso].map((u, i) => {
+                    // Si un modelo cumple dos funciones en la etapa, su gasto se muestra una sola vez
+                    const primera = USOS[paso].findIndex((x) => x.modelo === u.modelo) === i;
+                    const delModelo = gastoDe(paso, u.modelo);
+                    return (
+                      <li key={`${paso}-${i}`} className="flex flex-col gap-0.5 text-[0.9375rem]">
+                        <span>
+                          {u.para}
+                          {u.respaldo && <span className="text-muted-foreground"> (respaldo)</span>}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+                          <Muestra modelo={u.modelo} />
+                          {u.modelo}
+                          {primera && delModelo > 0 && <span className="font-sans">· {usd(delModelo)}</span>}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <h2>Para pensar los precios</h2>
+          <p className="lead max-w-2xl">
+            Con los costos medidos acá y los supuestos del documento de precios del equipo. Cambiá cualquier número y
+            se recalcula todo.
+          </p>
+        </div>
+        <Precios
+          pieza={{ valor: r.estimados.pieza, respaldo: 0.09 }}
+          marca={{ valor: r.estimados.marcaCompleta, respaldo: 1.2 }}
+          vistaPrevia={{ valor: r.estimados.vistaPrevia, respaldo: 0.38 }}
+        />
       </section>
 
       <hr className="costura my-0" />
 
       <section className="flex flex-col gap-5">
         <h2>Por modelo</h2>
-        <Tabla columnas={["Modelo", "Llamadas", "Tokens que entran", "Tokens que salen", "Total"]}>
+        <Tabla columnas={["Modelo y para qué se usa", "Llamadas", "Tokens que entran", "Tokens que salen", "Total"]}>
           {r.modelos.map((m) => (
             <tr key={m.model}>
-              <td className="font-mono text-sm">{m.model}</td>
+              <td>
+                <span className="inline-flex items-center gap-1.5 font-mono text-sm">
+                  <Muestra modelo={m.model ?? ""} />
+                  {m.model}
+                </span>
+                <span className="lead block">
+                  {[...new Set(pasosDelModelo(m.model ?? "").map((u) => PASOS[u.paso].nombre))].join(" · ") ||
+                    "Ya no lo usa ninguna etapa (pruebas anteriores)"}
+                </span>
+              </td>
               <td>{numero(m.requestCount)}</td>
               <td>{numero(m.inputTokens)}</td>
               <td>{numero(m.outputTokens)}</td>
@@ -184,14 +270,22 @@ export default async function Costos() {
 
       <section className="flex flex-col gap-5">
         <h2>La voz (ElevenLabs)</h2>
-        <div className="rounded-lg border bg-card p-5 text-[0.9375rem]">
+        <div className="flex flex-col gap-2 rounded-lg border bg-card p-5 text-[0.9375rem]">
           {r.voz === null && "No se pudo leer el uso de ElevenLabs."}
           {r.voz && !r.voz.hayClave && "Todavía no está la clave de ElevenLabs en este entorno."}
           {r.voz?.hayClave && (
             <>
-              Plan {r.voz.plan}: usamos {numero(r.voz.usados)} de {numero(r.voz.limite)} créditos
-              {r.voz.renueva && ` (se renuevan el ${dia.format(r.voz.renueva)})`}. La voz no pasa por el Gateway, por
-              eso va aparte.
+              <p>
+                La suscripción es compartida con Gary. Este mes la cuenta usó <strong>{numero(r.voz.cuenta)}</strong>{" "}
+                créditos; el agente de BrandIA, <strong>{numero(r.voz.brandia)}</strong> en {numero(r.voz.conversaciones)}{" "}
+                conversaciones ({Math.round(r.voz.minutos)} minutos).
+              </p>
+              <p className="font-display text-2xl">A BrandIA le toca el {Math.round(r.voz.parte * 1000) / 10} %</p>
+              <p className="lead">
+                {r.voz.hayAgente
+                  ? "Ese porcentaje se aplica a lo que se pagó de ElevenLabs en el registro de pagos."
+                  : "Falta ELEVENLABS_AGENT_ID para separar lo de BrandIA."}
+              </p>
             </>
           )}
         </div>

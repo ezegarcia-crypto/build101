@@ -1,0 +1,55 @@
+import { MODELO_IMAGEN as MODELO_FOTOS_FEED } from "@/lib/ia/contenidos/imagen";
+import { MODELO_PLAN, MODELO_REDACCION } from "@/lib/ia/contenidos/prompts";
+import { MODELO_CONTENIDOS, MODELO_IMAGENES, MODELO_IMAGENES_RESPALDO } from "@/lib/ia/contenidos";
+import { MODELO_DIRECCIONES } from "@/lib/ia/direcciones";
+import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
+import type { Paso } from "@/lib/ia/gastos";
+import { MODELO_LOGO, MODELO_TEXTOS } from "@/lib/ia/identidad";
+import {
+  MODELO_CONCEPTOS,
+  MODELO_IMAGEN as MODELO_DIBUJO_LOGO,
+  MODELO_IMAGEN_RESPALDO as MODELO_DIBUJO_LOGO_RESPALDO,
+} from "@/lib/ia/logo";
+import { MODELO_NOMBRES } from "@/lib/ia/nombres";
+
+// Para qué usa cada paso cada modelo. Sale de las mismas constantes que usa el código, así que si
+// alguien cambia un modelo, el panel /costos lo muestra solo. Lo medido (cuánto gastó cada modelo en
+// cada paso) lo trae el reporte del Gateway; esto es la intención.
+
+export type Uso = { modelo: string; para: string; respaldo?: boolean };
+
+export const USOS: Record<Paso, Uso[]> = {
+  entrevista: [{ modelo: MODELO_ENTREVISTA, para: "Conversa con la persona y arma la ficha de la marca" }],
+  "voz-ficha": [{ modelo: MODELO_ENTREVISTA, para: "Pasa la llamada de voz a la ficha de la marca" }],
+  direcciones: [{ modelo: MODELO_DIRECCIONES, para: "Propone las tres direcciones visuales" }],
+  nombres: [{ modelo: MODELO_NOMBRES, para: "Propone nombres con su porqué" }],
+  identidad: [
+    { modelo: MODELO_TEXTOS, para: "Escribe la esencia, la voz y el brandbook" },
+    { modelo: MODELO_LOGO, para: "Dibuja el símbolo del logo en SVG" },
+  ],
+  logo: [
+    { modelo: MODELO_CONCEPTOS, para: "Piensa las ideas de los tres logos" },
+    { modelo: MODELO_DIBUJO_LOGO, para: "Dibuja los logos" },
+    { modelo: MODELO_DIBUJO_LOGO_RESPALDO, para: "Dibuja los logos si falla el principal", respaldo: true },
+  ],
+  "contenidos-lote": [
+    { modelo: MODELO_PLAN, para: "Planifica el mes" },
+    { modelo: MODELO_REDACCION, para: "Escribe y corrige cada pieza" },
+    { modelo: MODELO_FOTOS_FEED, para: "Genera las fotos de las piezas" },
+  ],
+  "contenidos-plan": [{ modelo: MODELO_PLAN, para: "Planifica el mes" }],
+  "contenidos-pieza": [{ modelo: MODELO_REDACCION, para: "Escribe y corrige una pieza" }],
+  "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
+  "contenidos-simple": [
+    { modelo: MODELO_CONTENIDOS, para: "Planifica el feed simple" },
+    { modelo: MODELO_IMAGENES, para: "Genera sus imágenes" },
+    { modelo: MODELO_IMAGENES_RESPALDO, para: "Genera sus imágenes si falla el principal", respaldo: true },
+  ],
+};
+
+/** Los pasos que usan un modelo, con para qué. */
+export function pasosDelModelo(modelo: string) {
+  return (Object.entries(USOS) as [Paso, Uso[]][]).flatMap(([paso, usos]) =>
+    usos.filter((u) => u.modelo === modelo).map((u) => ({ paso, ...u })),
+  );
+}
