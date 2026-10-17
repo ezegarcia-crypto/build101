@@ -74,7 +74,9 @@ export const seccionSchema = z.object({
   items: z
     .array(z.object({ titulo: z.string(), texto: z.string() }))
     .max(8)
-    .describe("Productos, pasos o puntos. Solo lo que está en la ficha: nunca productos inventados"),
+    .describe(
+      "Productos, pasos o puntos. Solo lo que está en la ficha: nunca productos inventados, ni detalles o promesas que la persona no contó",
+    ),
   boton: botonSchema.nullable(),
   foto: z
     .string()
@@ -89,8 +91,8 @@ export const webSchema = z.object({
       "vidriera: fotos grandes y poco texto · accion_primero: lo principal (encargar, reservar) bien arriba y visible · cercana: la historia, quién está detrás y el lugar",
     ),
   por_que_estilo: z.string().describe("Una frase para la persona: por qué este estilo le sirve, según lo que contó"),
-  titulo_google: z.string().describe("El título que aparece en Google. Máximo 60 caracteres"),
-  descripcion_google: z.string().describe("La descripción que aparece en Google. Máximo 155 caracteres"),
+  titulo_google: z.string().describe("El título que aparece en Google. Corto: unos 50 caracteres, nunca más de 60"),
+  descripcion_google: z.string().describe("La descripción que aparece en Google. Una o dos frases cortas: unos 130 caracteres, nunca más de 155"),
   secciones: z.array(seccionSchema).min(3).max(7).describe("En el orden en que se ven. La primera es la portada"),
   pie: z.string().describe("Una frase corta para el pie de página"),
 });
@@ -101,6 +103,8 @@ export type Seccion = z.infer<typeof seccionSchema>;
 const REGLAS = `## Reglas
 - Escribís todos los textos con la voz de la marca: su trato, sus palabras sí y nunca sus palabras no.
 - Nunca inventes un dato: ni productos, ni precios, ni horarios, ni teléfonos, ni direcciones, ni premios, ni años de historia, ni reseñas. Usás solo lo que está en la ficha de la marca y en la ficha de la web.
+- Tampoco inventes cómo trabaja el negocio: ni servicios extra, ni promesas, ni detalles de lo que hace por el cliente que la persona no contó (por ejemplo «te avisamos cuando toca la vacuna», «envíos en el día», «ingredientes orgánicos», «garantía»). La voz de la marca está en cómo lo decís, no en agregar cosas nuevas.
+- El texto de cada producto o paso dice lo mismo que la ficha, con otras palabras. Si la ficha no tiene detalle de un producto, dejás el texto corto y general, o vacío.
 - Nunca escribas números de teléfono, mails ni direcciones dentro de los textos: los pone la app en los botones y en la sección de ubicación, desde la ficha.
 - Respetá lo que la persona no quiere mostrar (por ejemplo, precios).
 - Si un dato hace falta y no está (por ejemplo, el horario), armá la web igual sin ese dato: la app avisa que falta.

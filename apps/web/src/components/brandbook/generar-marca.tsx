@@ -235,6 +235,10 @@ export function GenerarMarca() {
                 Ver mis contenidos
                 <ArrowRight data-icon="inline-end" />
               </Link>
+              <Link href="/crear/web" className={buttonVariants({ variant: "outline", size: "lg" })}>
+                Armar mi web
+                <ArrowRight data-icon="inline-end" />
+              </Link>
             </div>
           </>
         )}
