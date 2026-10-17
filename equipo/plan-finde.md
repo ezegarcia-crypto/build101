@@ -39,6 +39,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 
 - **Modelo de texto** para entrevista, identidad y textos: Claude (Sonnet u Opus). Depende de los créditos.
 - **Voz:** agente de voz de ElevenLabs (natural, con voces en español). Depende de los créditos.
+  - **Voz según el rubro: para después de que ande una sola voz (decidido el 17/10).** Antes de hablar, una sola pregunta escrita, "¿A qué se dedica tu negocio?". Va un campo de texto y no botones, porque el jurado inventa rubros que no estarían en ningún botón. La IA elige entre 3 o 4 voces de un catálogo chico (profesional, cercana, joven y enérgica): no una tabla armada a mano tipo "contador = voz seria", que la consigna no acepta. El rubro cuenta como la primera respuesta de la entrevista, así el agente no lo vuelve a preguntar. En ElevenLabs se activa en el agente la opción de cambiar la voz en cada conversación y se le pasa la elegida al arrancar: no hace falta un agente por rubro. Lleva cerca de una hora: Juan Pedro el campo en la pantalla y Eze la IA que elige la voz. Orden: claves de ElevenLabs → voz funcionando con una voz → `pantallas` en `main` → esto.
 - **Imágenes** para logo, posteos y merch: modelo de imágenes por API (a elegir según los créditos).
 - **Reel:** la opción más segura es armarlo con imágenes generadas, textos animados y voz en off, en vez de un modelo de video (más caro y lento).
 - **Pauta en Meta: pasa a la siguiente etapa (decidido el 17/10).** Queda anotado para después:
