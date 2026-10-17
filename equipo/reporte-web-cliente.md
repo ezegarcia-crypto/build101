@@ -37,7 +37,7 @@ Para chequear con Eze antes de seguir. Revisado en la compu de Rodrigo.
 El plan dice "carpetas propias, a acordar con Eze". Propuesta, para no pisar a nadie:
 
 - `apps/web/src/lib/ia/web/` → los prompts y la lógica de la web (entrevista, armado, cambios).
-- `apps/web/src/app/api/web/` → las rutas de la IA (`/api/web/entrevista`, `/api/web/generar`, `/api/web/cambio`).
+- `apps/web/src/app/api/web/` → las rutas de la IA (`/api/web/entrevista`, `/api/web/armar`, `/api/web/cambio`).
 - `apps/web/src/app/crear/web/` y `apps/web/src/components/web/` → las pantallas.
 - Al final, el botón de `/crear/proximamente/web` apunta a `/crear/web`.
 
