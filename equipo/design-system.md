@@ -71,11 +71,13 @@ La app (barra, menús, botones) es BrandIA. **Todo lo que se genera para el clie
 
 Esos colores y tipografías salen de lo que generó la IA para esa marca, nunca escritos a mano en el código.
 
-## 6. BranderIA (el marketplace)
+## 6. BranderIA (producimos y te mandamos tu branding)
 
 - **Nombre:** BranderIA, sin espacio, "IA" en mayúsculas, sin tilde.
 - **Catálogo inicial (12):** tarjetas, folletos, carpetas, lapiceras, gorros, remeras, tote bags, vasos térmicos, termos para mate, mates, tazas de café y soportes de celular para videollamadas.
-- **En la demo:** está "en construcción", pero muestra cómo funciona. El logo del cliente cae sobre cada producto, la IA genera la foto del producto con su marca, y al tocar "Pedir" se explica que BranderIA le manda el pedido al proveedor y él lo entrega. Sin precios ni pedidos reales.
+- **Qué es (cambió el 17/10):** ya no es un marketplace de proveedores. **BrandIA produce los productos con la marca del cliente y se los manda.** Nunca se habla de proveedores en pantalla.
+- **En la demo:** está "en construcción", pero muestra cómo funciona. El logo del cliente cae sobre cada producto, la IA genera la foto del producto con su marca, la persona arma su kit y al tocar "Pedir" se explica que BrandIA lo produce y se lo manda. Sin precios ni pedidos reales.
+- **Ojo:** el texto de la sección Brandería de la web original todavía habla de que "el proveedor entrega". Hay que actualizarlo.
 - **Referencia:** la sección Brandería de `brandia/referencias/plataforma-web/index.html` (en el código, el array `P` y la sección `#branderia`).
 
 ## 7. Costa: el ejemplo

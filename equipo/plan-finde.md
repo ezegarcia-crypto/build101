@@ -19,7 +19,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 |---|---|---|---|---|
 | **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat y botón de voz), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
 | **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos. Junta las ramas en `main` |
-| **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" de newsletter, web y BranderIA |
+| **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" del módulo B (pauta en Meta, newsletter, LinkedIn, X, redes centralizadas y web) y de BranderIA (producimos y te mandamos) |
 
 **Datos de ejemplo:** sirven para dibujar pantallas mientras se desarrolla, pero en la demo todo sale de la IA. Antes de presentar se borran.
 
@@ -31,7 +31,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 | Sábado 18:00 | Con esa ficha sale la identidad completa: paleta, tipografías, logo y brandbook en pantalla |
 | Sábado 20:30 | El agente de voz hace la entrevista. Se dejan 2 o 3 agentes en la nube con tareas chicas |
 | Domingo 11:00 | Sale el feed: un par de posteos, historias y un reel con la marca aplicada |
-| Domingo 12:00 | Las pantallas "en construcción" de newsletter, web y BranderIA están hechas |
+| Domingo 12:00 | Las pantallas "en construcción" del módulo B y de BranderIA están hechas |
 | Domingo 13:00 | Se congela. Ensayo 3 veces, video de respaldo y pitch de 3 minutos |
 
 ## Decisiones pendientes

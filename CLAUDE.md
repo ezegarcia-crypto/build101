@@ -36,7 +36,15 @@ Detalle en `equipo/kickoff-consigna.md`. Lo esencial:
 
 ## El producto: BrandIA
 
-Una persona le cuenta su negocio a BrandIA **hablando (agente de voz) o por chat**. La IA le hace preguntas, arma su identidad de marca y después le genera los contenidos con esa marca. Contexto completo en `brandia/`.
+Una persona le cuenta su negocio a BrandIA **hablando (agente de voz) o por chat**. La IA le hace preguntas, arma su identidad de marca, le genera los contenidos con esa marca y le produce sus productos con la marca. Contexto completo en `brandia/`.
+
+**El modelo tiene tres módulos** (decidido el sábado 17/10). La app los deja previstos a los tres, aunque en la demo no todo funcione:
+
+| Módulo | Qué es |
+|---|---|
+| **A · Generá tu marca** | Entrevista por voz o chat → nombre y voz, paleta, tipografías, logo y brandbook |
+| **B · Generá tus contenidos** | Feed, historias, pauta en Meta, newsletter, LinkedIn y X, todas las redes centralizadas en un solo lugar, y página web opcional |
+| **C · BranderIA** | **BrandIA produce los productos con tu marca y te los manda.** Ya no es un marketplace de proveedores: el pedido lo resuelve BrandIA de punta a punta |
 
 **Está terminado cuando** alguien del jurado cuenta un negocio inventado en el momento y, en pocos minutos, ve su brandbook y su feed generados.
 
@@ -45,10 +53,10 @@ Lo que se muestra en la presentación:
 | # | Parte | Estado en la demo |
 |---|---|---|
 | 1 | **Generación de marca:** entrevista por voz o chat → ficha de la marca → nombre y voz, paleta, tipografías, logo y brandbook | **Funciona**, con IA real |
-| 2 | **Contenido:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real |
-| 2b | Piezas de pauta | Opcional: se generan si llegamos; publicar en Meta queda para después |
-| 2c | Newsletter y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción" |
-| 3 | **BranderIA** (marketplace de merch) | "En construcción": ejemplos de productos con la marca y cómo funcionaría con proveedores, sin proveedores reales |
+| 2 | **Contenido · feed e historias:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real |
+| 2b | Contenido · pauta en Meta | Opcional: las piezas se generan si llegamos; publicarlas en Meta queda para después |
+| 2c | Contenido · newsletter, LinkedIn, X, redes centralizadas y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción". Para centralizar y publicar en todas las redes, la opción evaluada es Zernio |
+| 3 | **BranderIA** (BrandIA produce y te manda tus productos) | "En construcción": la IA genera las fotos de los productos con la marca del cliente y se muestra cómo sería el pedido. Sin precios ni pedidos reales |
 
 Plan de tareas y reparto: `equipo/plan-finde.md`.
 
