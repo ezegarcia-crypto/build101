@@ -125,6 +125,10 @@ export default async function UnaPrueba({ params }: { params: Promise<{ cliente:
   const { cliente } = await params;
   const r = await leer(cliente);
   const inicio = inicioArchivos() ?? "\u0000";
+  // El nombre de la última identidad que se armó (puede haber probado más de un camino)
+  const marca = r.pedidos
+    ?.map((p) => (p.salida as { identidad?: { nombre?: string } } | null)?.identidad?.nombre)
+    .findLast(Boolean);
 
   return (
     <main className="mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-8 px-4 py-12 sm:py-16">
@@ -132,7 +136,8 @@ export default async function UnaPrueba({ params }: { params: Promise<{ cliente:
         <p className="label">
           <a href="/pruebas">← Todas las pruebas</a>
         </p>
-        <h1 className="display text-balance break-all">Cliente {cliente}</h1>
+        <h1 className="display text-balance">{marca ?? "Sin marca todavía"}</h1>
+        <p className="label break-all">Cliente {cliente}</p>
         {r.pedidos && (
           <p className="text-lg text-muted-foreground">
             {r.pedidos.length} {r.pedidos.length === 1 ? "pedido" : "pedidos"} a la IA, en el orden en que pasaron.{" "}

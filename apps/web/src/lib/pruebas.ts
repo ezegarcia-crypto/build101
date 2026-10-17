@@ -126,16 +126,18 @@ function json(texto: string) {
  */
 function armarChat(texto: string) {
   let respuesta = "";
+  let razonamiento = "";
   const eventos: unknown[] = [];
+  const pedacitos = ["text-start", "text-end", "reasoning-start", "reasoning-end", "start-step", "finish-step", "tool-input-delta"];
   for (const linea of texto.split("\n")) {
     if (!linea.startsWith("data: ")) continue;
     const evento = json(linea.slice(6)) as { type?: string; delta?: string } | undefined;
     if (!evento) continue;
     if (evento.type === "text-delta") respuesta += evento.delta ?? "";
-    else if (!["text-start", "text-end", "start-step", "finish-step", "tool-input-delta"].includes(evento.type ?? ""))
-      eventos.push(evento);
+    else if (evento.type === "reasoning-delta") razonamiento += evento.delta ?? "";
+    else if (!pedacitos.includes(evento.type ?? "")) eventos.push(evento);
   }
-  return { respuesta, eventos };
+  return { respuesta, ...(razonamiento && { razonamiento }), eventos };
 }
 
 async function leer(cuerpo: Request | Response) {

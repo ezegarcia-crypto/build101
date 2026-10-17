@@ -65,3 +65,6 @@ coverage
 .cache
 tmp
 temp
+
+# Archivos del CLI de Supabase (proyecto vinculado, versiones): no se suben
+supabase/.temp/
