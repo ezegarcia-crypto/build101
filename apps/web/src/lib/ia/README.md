@@ -88,3 +88,5 @@ eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/
 3. En cada llamada a la IA: `providerOptions: etiquetar()`, o `etiquetar({ openai: {...} })` si ya tenía opciones.
 
 No hace falta base de datos: el Gateway guarda el costo de cada llamada con esas etiquetas, y el panel se las pide.
+
+**Cuánto costó cada cliente.** El navegador genera un id por cliente (uno por pestaña, en `sessionStorage`, clave `brandia:cliente`) y lo manda en el header `x-brandia-cliente` en todos los pedidos a `/api` (`lib/cliente.ts`; se instala solo desde `app/layout.tsx`, no hace falta tocar cada pantalla). `medir()` lo lee y `etiquetar()` suma la etiqueta `cliente:<id>`. El panel muestra los 20 clientes más nuevos con su total y lo que gastó en cada paso, y el promedio, el mínimo y el máximo de los que llegaron a la marca completa. Una ruta nueva envuelta con `medir()` ya queda medida por cliente, sin hacer nada más.

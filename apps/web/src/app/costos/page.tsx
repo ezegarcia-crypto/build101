@@ -23,6 +23,13 @@ export const dynamic = "force-dynamic";
 
 const dia = new Intl.DateTimeFormat("es-UY", { weekday: "short", day: "numeric", month: "numeric", timeZone: "UTC" });
 const hora = new Intl.DateTimeFormat("es-UY", { hour: "2-digit", minute: "2-digit", timeZone: "America/Montevideo" });
+const diaYHora = new Intl.DateTimeFormat("es-UY", {
+  day: "numeric",
+  month: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "America/Montevideo",
+});
 
 function Clave({ children }: { children: React.ReactNode }) {
   return <span className="font-normal italic [font-variation-settings:'opsz'_144,'SOFT'_100,'WONK'_1]">{children}</span>;
@@ -38,14 +45,23 @@ function Dato({ titulo, valor, detalle }: { titulo: string; valor: string; detal
   );
 }
 
-function Tabla({ columnas, children }: { columnas: string[]; children: React.ReactNode }) {
+function Tabla({
+  columnas,
+  aIzquierda = [],
+  children,
+}: {
+  columnas: string[];
+  /** Columnas (además de la primera) que van alineadas a la izquierda. */
+  aIzquierda?: number[];
+  children: React.ReactNode;
+}) {
   return (
     <div className="overflow-x-auto rounded-lg border bg-card">
       <table className="w-full min-w-[560px] text-left text-[0.9375rem]">
         <thead>
           <tr className="border-b">
             {columnas.map((c, i) => (
-              <th key={c} className={`label px-4 py-3 font-semibold ${i ? "text-right" : ""}`}>
+              <th key={c} className={`label px-4 py-3 font-semibold ${i && !aIzquierda.includes(i) ? "text-right" : ""}`}>
                 {c}
               </th>
             ))}
@@ -93,6 +109,12 @@ export default async function Costos() {
   const gastoDe = (paso: Paso, modelo: string) =>
     r.pasos.find((f) => f.paso === paso)?.modelos.find((m) => m.modelo === modelo)?.total ?? 0;
 
+  // Lo que costó una marca: si ya hay clientes reales que la completaron, su promedio; si no, la suma de promedios por paso
+  const pc = r.porCliente;
+  const marcaReal = pc.completos?.promedio ?? null;
+  const resumenClientes = pc.completos ?? pc.todos;
+  const clientes = (n = 0) => `${numero(n)} ${n === 1 ? "cliente" : "clientes"}`;
+
   const porModulo = (Object.keys(MODULOS) as (keyof typeof MODULOS)[]).map((m) => ({
     modulo: m,
     filas: r.pasos.filter((f) => PASOS[f.paso].modulo === m),
@@ -132,8 +154,12 @@ export default async function Costos() {
         <Dato titulo="Gastado hoy" valor={usd(r.hoy.total)} detalle={`${numero(r.hoy.llamadas)} llamadas a la IA`} />
         <Dato
           titulo="Una marca completa"
-          valor={r.estimados.marcaCompleta === null ? "Faltan datos" : usd(r.estimados.marcaCompleta)}
-          detalle="Entrevista + direcciones + identidad + logos, en promedio"
+          valor={marcaReal !== null ? usd(marcaReal) : r.estimados.marcaCompleta === null ? "Faltan datos" : usd(r.estimados.marcaCompleta)}
+          detalle={
+            marcaReal !== null
+              ? `Promedio real de ${clientes(pc.completos?.cantidad)} que la completaron`
+              : "Entrevista + direcciones + identidad + logos, sumando el promedio de cada paso"
+          }
         />
       </section>
 
@@ -178,6 +204,63 @@ export default async function Costos() {
           <p className="lead">
             Además hay {usd(r.sinEtiqueta)} sin paso: lo que se generó antes de que existiera este panel, pruebas
             sueltas y rutas que todavía no usan <code>etiquetar()</code>.
+          </p>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <h2>
+            Lo que costó <Clave>cada cliente</Clave>
+          </h2>
+          <p className="lead max-w-2xl">
+            Cada persona que usa la app, de punta a punta: todo lo que pidió a la IA desde la misma pestaña del
+            navegador. Los {pc.enDetalle} más nuevos de los últimos 30 días.
+          </p>
+        </div>
+        {resumenClientes ? (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
+              <Dato
+                titulo={pc.completos ? "Promedio por marca completa" : "Promedio por cliente"}
+                valor={usd(resumenClientes.promedio)}
+                detalle={
+                  pc.completos
+                    ? `${numero(pc.completos.cantidad)} de ${numero(pc.todos?.cantidad)} llegaron a la identidad y los logos`
+                    : "Todavía ninguno llegó a la marca completa: se cuentan todos, lleguen hasta donde lleguen"
+                }
+              />
+              <Dato titulo="El más barato" valor={usd(resumenClientes.minimo)} />
+              <Dato titulo="El más caro" valor={usd(resumenClientes.maximo)} />
+            </div>
+            <Tabla columnas={["Cliente", "Pasos que hizo", "Total"]} aIzquierda={[1]}>
+              {r.clientes.map((c) => (
+                <tr key={c.id}>
+                  <td className="align-top">
+                    <span className="font-mono text-sm">{c.id.split("-").at(-1)}</span>
+                    <span className="lead block">
+                      {c.inicio ? diaYHora.format(c.inicio) : "—"}
+                      {c.completo && " · marca completa"}
+                    </span>
+                  </td>
+                  <td className="!text-left align-top">
+                    <ul className="flex flex-col gap-0.5">
+                      {c.pasos.map((f) => (
+                        <li key={f.paso} className="flex justify-between gap-4">
+                          <span>{PASOS[f.paso].nombre}</span>
+                          <span className="text-muted-foreground">{usd(f.total)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="align-top font-semibold">{usd(c.total)}</td>
+                </tr>
+              ))}
+            </Tabla>
+          </>
+        ) : (
+          <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
+            Todavía no hay clientes medidos. Aparecen acá apenas alguien hace la entrevista en la app.
           </p>
         )}
       </section>
@@ -244,8 +327,16 @@ export default async function Costos() {
         </div>
         <Precios
           pieza={{ valor: r.estimados.pieza, respaldo: 0.09 }}
-          marca={{ valor: r.estimados.marcaCompleta, respaldo: 1.2 }}
-          vistaPrevia={{ valor: r.estimados.vistaPrevia, respaldo: 0.38 }}
+          marca={
+            marcaReal !== null
+              ? { valor: marcaReal, respaldo: 1.2, fuente: `Promedio real de ${clientes(pc.completos?.cantidad)} que completaron la marca` }
+              : { valor: r.estimados.marcaCompleta, respaldo: 1.2, fuente: "Suma de los promedios de cada paso" }
+          }
+          vistaPrevia={
+            pc.vistaPrevia
+              ? { valor: pc.vistaPrevia.promedio, respaldo: 0.38, fuente: `Promedio real de ${clientes(pc.vistaPrevia.cantidad)}` }
+              : { valor: r.estimados.vistaPrevia, respaldo: 0.38 }
+          }
         />
       </section>
 

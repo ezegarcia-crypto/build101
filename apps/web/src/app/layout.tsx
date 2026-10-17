@@ -5,6 +5,8 @@ import "../index.css";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 
+import { ClienteEnPedidos } from "./cliente-en-pedidos";
+
 // Tipografías de BrandIA (manual v1.3): Fraunces para títulos, Instrument Sans para texto
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -30,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${fraunces.variable} ${instrumentSans.variable} antialiased`}>
+        <ClienteEnPedidos />
         <Providers>
           <div className="grid grid-rows-[auto_1fr] h-svh">
             <Header />

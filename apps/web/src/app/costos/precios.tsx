@@ -8,7 +8,8 @@ import { usd } from "./formato";
 // brandia/producto/motor-costos-y-precios.md (06/10) y se cambian acá mismo; los costos de IA
 // arrancan con lo medido en el panel y, si todavía no hay datos, con la estimación de ese documento.
 
-type Medido = { valor: number | null; respaldo: number };
+/** Un costo medido; `fuente` dice de dónde sale (por ejemplo, el promedio real por cliente). */
+type Medido = { valor: number | null; respaldo: number; fuente?: string };
 
 function Campo({
   etiqueta,
@@ -45,7 +46,8 @@ function Campo({
 }
 
 function origen(m: Medido) {
-  return m.valor === null ? "Todavía sin medir: estimación del documento de precios (06/10)" : "Medido en este panel";
+  if (m.valor === null) return "Todavía sin medir: estimación del documento de precios (06/10)";
+  return m.fuente ? `Medido: ${m.fuente.charAt(0).toLowerCase()}${m.fuente.slice(1)}` : "Medido en este panel";
 }
 
 /** Lo que queda de cada venta después del IVA, la comisión de cobro y los costos. */

@@ -2,10 +2,13 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 import type { generateText } from "ai";
 
+import { clienteValido, HEADER_CLIENTE } from "@/lib/cliente";
+
 // Cuánto cuesta cada generación. Cada pedido a la IA sale etiquetado con su paso y su módulo,
 // y con un número de corrida (un pedido de la pantalla = una corrida; en la entrevista por chat,
-// la conversación entera). El Gateway de Vercel guarda el costo de cada llamada con esas
-// etiquetas y el panel /costos las suma. No hace falta base de datos.
+// la conversación entera). Si el navegador manda su id de cliente (lib/cliente.ts), también sale
+// etiquetado con ese cliente, para ver cuánto costó cada uno de punta a punta. El Gateway de Vercel
+// guarda el costo de cada llamada con esas etiquetas y el panel /costos las suma. No hace falta base de datos.
 //
 // En una ruta nueva: `export const POST = medir("mi-paso", async (req: Request) => { ... })`
 // y en cada llamada a la IA: `providerOptions: etiquetar()` (o `etiquetar(lasQueYaTenía)`).
@@ -35,7 +38,7 @@ export const MODULOS = {
   C: "BranderIA",
 } as const;
 
-const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; senal?: AbortSignal }>();
+const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; cliente?: string; senal?: AbortSignal }>();
 
 // Freno de gasto: cuántos pedidos por minuto acepta cada paso en un mismo servidor. Alcanza de sobra
 // para una persona usando la app (y para la demo), y corta un loop de recargas antes de que se coma
@@ -84,8 +87,12 @@ export function medir<A extends unknown[], R>(paso: Paso, ruta: (...args: A) => 
         ) as R,
       );
     }
-    const senal = args[0] instanceof Request ? args[0].signal : undefined;
-    return corridaActual.run({ paso, corrida: crypto.randomUUID().slice(0, 8), senal }, () => ruta(...args));
+    const pedido = args[0] instanceof Request ? args[0] : undefined;
+    const cliente = clienteValido(pedido?.headers.get(HEADER_CLIENTE));
+    return corridaActual.run(
+      { paso, corrida: crypto.randomUUID().slice(0, 8), cliente, senal: pedido?.signal },
+      () => ruta(...args),
+    );
   };
 }
 
@@ -106,7 +113,14 @@ type OpcionesProveedor = NonNullable<Parameters<typeof generateText>[0]["provide
 export function etiquetar(opciones?: OpcionesProveedor): OpcionesProveedor {
   const actual = corridaActual.getStore();
   const gateway = actual
-    ? { tags: [`paso:${actual.paso}`, `modulo:${PASOS[actual.paso].modulo}`], user: `${actual.paso}:${actual.corrida}` }
+    ? {
+        tags: [
+          `paso:${actual.paso}`,
+          `modulo:${PASOS[actual.paso].modulo}`,
+          ...(actual.cliente ? [`cliente:${actual.cliente}`] : []),
+        ],
+        user: `${actual.paso}:${actual.corrida}`,
+      }
     : { tags: ["paso:sin-paso"] };
   return { ...opciones, gateway: { ...opciones?.gateway, ...gateway } };
 }

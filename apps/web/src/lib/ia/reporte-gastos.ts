@@ -1,5 +1,6 @@
 import { gateway } from "ai";
 
+import { inicioDelCliente } from "@/lib/cliente";
 import { MEZCLA_DEMO } from "@/lib/ia/contenidos/formatos";
 import { PASOS, type Paso } from "@/lib/ia/gastos";
 
@@ -22,6 +23,27 @@ export type FilaPaso = {
   /** Cuánto gastó cada modelo dentro de este paso, de mayor a menor. */
   modelos: { modelo: string; total: number; llamadas: number }[];
 };
+
+export type FilaCliente = {
+  id: string;
+  /** Cuándo empezó (sale del id). */
+  inicio: Date | null;
+  total: number;
+  llamadas: number;
+  /** Lo que gastó en cada paso, en el orden del recorrido. */
+  pasos: { paso: Paso; total: number; llamadas: number }[];
+  /** Hizo la entrevista, las direcciones, la identidad y los logos. */
+  completo: boolean;
+};
+
+/** Cuántos clientes se miran en detalle: uno por pedido al Gateway, así que no muchos. */
+const CLIENTES_EN_DETALLE = 20;
+
+function estadisticas(valores: number[]) {
+  if (!valores.length) return null;
+  const total = valores.reduce((a, b) => a + b, 0);
+  return { cantidad: valores.length, promedio: total / valores.length, minimo: Math.min(...valores), maximo: Math.max(...valores) };
+}
 
 export type ReporteGastos = Awaited<ReturnType<typeof armarReporte>>;
 
@@ -191,6 +213,39 @@ export async function armarReporte() {
   const marcaCompleta = sumar([entrevista, promedio("direcciones"), promedio("identidad"), promedio("logo")]);
   const feed = promedio("contenidos-lote");
 
+  // Cada cliente (un navegador que empezó el recorrido) llega como etiqueta "cliente:id". Para los más
+  // nuevos se pide su desglose por paso: todo lo que lleva su etiqueta, agrupado por las otras etiquetas.
+  const ordenPasos = Object.keys(PASOS) as Paso[];
+  const recientes = (porEtiqueta?.results ?? [])
+    .filter((f) => f.tag?.startsWith("cliente:"))
+    .map((f) => ({ id: (f.tag ?? "").slice("cliente:".length), total: f.totalCost, llamadas: f.requestCount ?? 0 }))
+    .map((c) => ({ ...c, inicio: inicioDelCliente(c.id) }))
+    .sort((a, b) => (b.inicio?.getTime() ?? 0) - (a.inicio?.getTime() ?? 0))
+    .slice(0, CLIENTES_EN_DETALLE);
+  const clientes: FilaCliente[] = await Promise.all(
+    recientes.map(async (c) => {
+      const desglose = await intentar(`el detalle del cliente ${c.id}`, () =>
+        gateway.getSpendReport({ ...rango, groupBy: "tag", tags: [`cliente:${c.id}`] }),
+      );
+      const pasosCliente = (desglose?.results ?? [])
+        .filter((f) => f.tag?.startsWith("paso:") && f.tag.slice(5) in PASOS)
+        .map((f) => ({ paso: f.tag!.slice(5) as Paso, total: f.totalCost, llamadas: f.requestCount ?? 0 }))
+        .sort((a, b) => ordenPasos.indexOf(a.paso) - ordenPasos.indexOf(b.paso));
+      const hizo = (p: Paso) => pasosCliente.some((f) => f.paso === p);
+      return {
+        ...c,
+        pasos: pasosCliente,
+        completo: (hizo("entrevista") || hizo("voz-ficha")) && hizo("direcciones") && hizo("identidad") && hizo("logo"),
+      };
+    }),
+  );
+  const completos = clientes.filter((c) => c.completo);
+  // La vista previa de cada cliente que llegó a ver las direcciones: entrevista, nombres y direcciones.
+  const PREVIA: Paso[] = ["entrevista", "voz-ficha", "nombres", "direcciones"];
+  const previas = clientes
+    .filter((c) => c.pasos.some((f) => f.paso === "direcciones"))
+    .map((c) => c.pasos.filter((f) => PREVIA.includes(f.paso)).reduce((a, f) => a + f.total, 0));
+
   const diaHoy = (porDia?.results ?? []).find((f) => f.day === fecha(hoy));
 
   return {
@@ -210,6 +265,16 @@ export async function armarReporte() {
       vistaPrevia: sumar([entrevista, promedio("direcciones")]) === null ? null : (entrevista ?? 0) + nombres + (promedio("direcciones") ?? 0),
       feed,
       pieza: feed === null ? null : feed / PIEZAS_POR_FEED,
+    },
+    clientes,
+    porCliente: {
+      /** Todos los clientes que se miraron, hayan llegado hasta donde hayan llegado. */
+      todos: estadisticas(clientes.map((c) => c.total)),
+      /** Solo los que llegaron a la marca completa (entrevista, direcciones, identidad y logos). */
+      completos: estadisticas(completos.map((c) => c.total)),
+      /** Lo que costó la vista previa (entrevista, nombres y direcciones) de cada uno. */
+      vistaPrevia: estadisticas(previas),
+      enDetalle: CLIENTES_EN_DETALLE,
     },
     modelos: [...(porModelo?.results ?? [])].sort((a, b) => b.totalCost - a.totalCost),
     dias: [...(porDia?.results ?? [])].sort((a, b) => (b.day ?? "").localeCompare(a.day ?? "")),
