@@ -46,6 +46,34 @@ const FORMULA = {
 const limpio = (t: string) => t.replace(/\*/g, "");
 const usuarioDe = (nombre: string) => nombre.toLowerCase().replace(/\s+/g, "");
 
+/** Para comparar datos a confirmar: sin mayúsculas, tildes, signos, «[a confirmar]» ni artículos. */
+const normal = (d: string) =>
+  d
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\[?a confirmar\]?/g, " ")
+    .replace(/[^a-z0-9ñ ]/g, " ")
+    .replace(/\b(el|la|los|las|un|una|del|de|al)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Los datos a confirmar sin repetidos: cada pieza los escribe a su manera ("La dirección", "dirección del local"). */
+function sinRepetidos(datos: string[]): string[] {
+  const vistos: { clave: string; texto: string }[] = [];
+  for (const texto of datos) {
+    const clave = normal(texto);
+    if (!clave) continue;
+    // Si uno está contenido en otro, queda el más corto, que nombra el dato sin detalles de la pieza
+    // (por palabras enteras: "dia" no se confunde con "medidas")
+    const dentro = (corta: string, larga: string) => ` ${larga} `.includes(` ${corta} `);
+    const igual = vistos.find((v) => dentro(clave, v.clave) || dentro(v.clave, clave));
+    if (!igual) vistos.push({ clave, texto });
+    else if (clave.length < igual.clave.length) Object.assign(igual, { clave, texto });
+  }
+  return vistos.map((v) => v.texto);
+}
+
 // ── Los lienzos ──────────────────────────────────────────────────────────────────────────────
 
 function SVG({ l }: { l: Lienzo }) {
@@ -219,7 +247,7 @@ function Guion({ r, actual }: { r: Extract<Pieza, { formato: "reel" }>["contenid
 /** Lo que la app le avisa a la persona sobre la pieza: con los colores de BrandIA, no del cliente. */
 function Avisos({ pieza, fallasImagen }: { pieza: Pieza; fallasImagen: number }) {
   const revisar = pieza.estado === "revisar" ? [...pieza.observaciones].sort((a, b) => Number(b.gravedad === "blocker") - Number(a.gravedad === "blocker")) : [];
-  const datos = pieza.contenido.datos_a_confirmar;
+  const datos = sinRepetidos(pieza.contenido.datos_a_confirmar);
   if (!revisar.length && !datos.length && !fallasImagen) return null;
   return (
     <div className="flex flex-col gap-3 border-t bg-card p-4 text-[13px] leading-relaxed text-card-foreground">
@@ -379,7 +407,7 @@ function Progreso({ lote, plan, generando }: { lote: Lote; plan: Plan; generando
 function Pendientes({ lote, plan }: { lote: Lote; plan: Plan }) {
   const piezas = plan.piezas.map((p) => lote.piezas[p.id]).filter(Boolean);
   const revisar = piezas.filter((p) => p.estado === "revisar");
-  const datos = [...new Set(piezas.flatMap((p) => p.contenido.datos_a_confirmar))];
+  const datos = sinRepetidos(piezas.flatMap((p) => p.contenido.datos_a_confirmar));
   if (!revisar.length && !datos.length) return null;
   return (
     <section className={`${s.entra} rounded-[14px] border bg-card p-6 text-card-foreground`}>

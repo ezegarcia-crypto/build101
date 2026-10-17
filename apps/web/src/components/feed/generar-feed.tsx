@@ -3,25 +3,30 @@
 import { Button, buttonVariants } from "@build101/ui/components/button";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CLAVE_IDENTIDAD, type IdentidadIA, type PropuestaLogo } from "@/components/brandbook/identidad";
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
+import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 import type { Evento } from "@/lib/ia/contenidos/motor";
 
 import s from "../entrevista/entrevista.module.css";
 import { Feed, type Lote } from "./feed";
+import { borrarLote, guardarLote, leerLote } from "./guardar-lote";
 
 // Paso 3 · Tu contenido. Con la ficha y la identidad, el motor de contenidos de Eze arma el lote:
 // plan del mes, posteos, carrusel, historias y reel, con sus imágenes (POST /api/contenidos/lote,
 // ver lib/ia/contenidos/README.md). La respuesta llega de a partes: cada pieza se muestra apenas
 // sale y se vuelve a dibujar cuando llegan sus imágenes. Tarda ~70 s.
-// El lote terminado queda guardado junto con su identidad: si se recarga, no se vuelve a generar.
+// El lote terminado queda guardado en IndexedDB (ver guardar-lote.ts) con la huella de su marca:
+// si se recarga o se vuelve a la pantalla, aparece al instante y no se vuelve a generar ni a cobrar.
+// Si la persona se va mientras se genera, el pedido se corta.
 
-export const CLAVE_FEED = "brandia:feed";
+/** Donde antes se guardaba el lote (no entraba): se limpia para no ocupar lugar. */
+const CLAVE_FEED_VIEJA = "brandia:feed";
 
 type Marca = { ficha: string; brief: Brief; identidad: IdentidadIA; logos: PropuestaLogo[] };
 
@@ -67,8 +72,14 @@ function aplicar(l: Lote, e: Evento): Lote {
 export function GenerarFeed() {
   const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
   const [marca, setMarca] = useState<Marca | null>(null);
+  // El pedido en curso: se corta si arranca otro o si la persona se va de la pantalla
+  const control = useRef<AbortController | null>(null);
 
-  const generar = useCallback(async (m: Marca, senal?: AbortSignal) => {
+  const generar = useCallback(async (m: Marca) => {
+    control.current?.abort();
+    const yo = new AbortController();
+    control.current = yo;
+    const senal = yo.signal;
     let lote = LOTE_VACIO;
     setEstado({ tipo: "lote", lote, generando: true });
     document.querySelector("main")?.scrollTo({ top: 0 });
@@ -90,6 +101,7 @@ export function GenerarFeed() {
       for (;;) {
         const { value, done } = await lector.read();
         if (done) break;
+        if (senal.aborted) return;
         const lineas = (resto + value).split("\n");
         resto = lineas.pop() ?? "";
         for (const linea of lineas) {
@@ -103,14 +115,14 @@ export function GenerarFeed() {
 
       if (!lote.plan || !lote.kit) throw new Error(lote.fallas.lote || "La respuesta llegó incompleta.");
       if (!lote.fin) lote = { ...lote, fin: { segundos: 0, imagenes: Object.values(lote.imagenes).flatMap(Object.keys).length } };
+      if (senal.aborted) return;
       setEstado({ tipo: "lote", lote, generando: false });
-      try {
-        sessionStorage.setItem(CLAVE_FEED, JSON.stringify({ huella: huella(m), lote }));
-      } catch {
-        // Las imágenes pesan: si no entran, el feed se ve igual, solo que no queda guardado
-      }
+      // Si no se pudiera guardar (ej. ventana privada sin lugar), el feed se ve igual
+      await guardarLote({ huella: huella(m), lote });
     } catch (e) {
-      if ((e as Error).name !== "AbortError") setEstado({ tipo: "error", mensaje: (e as Error).message });
+      if (!senal.aborted) setEstado({ tipo: "error", mensaje: (e as Error).message });
+    } finally {
+      if (control.current === yo) control.current = null;
     }
   }, []);
 
@@ -121,20 +133,25 @@ export function GenerarFeed() {
     if (!ficha || !brief || guardada?.ficha !== ficha) return setEstado({ tipo: "sin-marca" });
     const m = { ficha, brief, identidad: guardada.identidad, logos: guardada.logos ?? [] };
     setMarca(m);
+    sessionStorage.removeItem(CLAVE_FEED_VIEJA);
 
-    const previo = leer<{ huella: string; lote?: Lote }>(CLAVE_FEED);
-    if (previo?.huella === huella(m) && previo.lote?.plan) {
-      return setEstado({ tipo: "lote", lote: previo.lote, generando: false });
-    }
-
-    const control = new AbortController();
-    generar(m, control.signal);
-    return () => control.abort();
+    let fuera = false;
+    leerLote<Lote>().then((previo) => {
+      if (fuera) return;
+      if (previo?.huella === huella(m) && previo.lote.plan) return setEstado({ tipo: "lote", lote: previo.lote, generando: false });
+      // Si la página se recarga sola en loop, no se vuelve a pedir: queda "Probar de nuevo" para hacerlo a mano
+      if (!puedoArrancarSolo("feed")) return setEstado({ tipo: "error", mensaje: MENSAJE_FRENO });
+      generar(m);
+    });
+    return () => {
+      fuera = true;
+      control.current?.abort();
+    };
   }, [generar]);
 
-  function otroFeed() {
+  async function otroFeed() {
     if (!marca) return;
-    sessionStorage.removeItem(CLAVE_FEED);
+    await borrarLote();
     generar(marca);
   }
 
