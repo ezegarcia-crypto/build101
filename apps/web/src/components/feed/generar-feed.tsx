@@ -201,6 +201,12 @@ export function GenerarFeed() {
               </Button>
             </div>
             <Feed lote={lote} kit={lote.kit} plan={lote.plan} identidad={marca.identidad} logos={marca.logos} generando={generando} />
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href="/crear/branderia" className={buttonVariants({ size: "lg" })}>
+                Ver mis productos
+                <ArrowRight data-icon="inline-end" />
+              </Link>
+            </div>
           </>
         )}
       </div>
