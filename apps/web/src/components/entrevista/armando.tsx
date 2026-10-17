@@ -29,6 +29,12 @@ const FRASES = {
     "Revisando que todo se lea bien…",
     "Armando tu brandbook…",
   ],
+  paleta: ["Leyendo lo que pediste…", "Mezclando colores…", "Revisando que todo se lea bien…"],
+  productos: [
+    "Pensando qué usa tu negocio todos los días…",
+    "Eligiendo productos para tu rubro…",
+    "Ya casi están…",
+  ],
   feed: [
     "Pensando qué contar primero…",
     "Escribiendo con la voz de tu marca…",

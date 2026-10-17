@@ -24,6 +24,47 @@ export type IdentidadIA = Textos & {
 export const CLAVE_DIRECCIONES = "brandia:direcciones";
 export const CLAVE_IDENTIDAD = "brandia:identidad";
 
+/**
+ * El logo que eligió la persona: el número de una de las propuestas completas o "simbolo" (el isotipo
+ * solo). Queda guardado junto con la identidad: el feed, BranderIA y las descargas usan este, no el primero.
+ */
+export type LogoElegido = number | "simbolo";
+
+/** Lo que queda guardado en CLAVE_IDENTIDAD */
+export type MarcaGuardada = {
+  ficha: string;
+  identidad: IdentidadIA;
+  logos: PropuestaLogo[];
+  elegido?: LogoElegido;
+};
+
+/** La propuesta elegida, o null si eligió el símbolo solo (o no hay propuestas): entonces va el isotipo */
+export function logoDeMarca(logos: PropuestaLogo[], elegido: LogoElegido | undefined) {
+  if (elegido === "simbolo") return null;
+  return logos[elegido ?? 0] ?? logos[0] ?? null;
+}
+
+/** El isotipo con ancho y alto fijos, para dibujarlo en un lienzo o descargarlo (sin tamaño, el navegador lo hace de 300 × 150) */
+export function svgConTamano(svg: string, lado: number) {
+  return svgSeguro(svg)
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg/i, `<svg width="${lado}" height="${lado}"`);
+}
+
+/**
+ * Pasa los colores del isotipo de una paleta a otra: cada color de la paleta vieja se cambia por el del
+ * mismo rol en la nueva (o el de la misma posición, si el rol no está). Así el símbolo sigue a la paleta.
+ */
+export function recolorearSvg(svg: string, vieja: Color[], nueva: Color[]) {
+  const cambio = new Map<string, string>();
+  vieja.forEach((c, i) => {
+    const par = nueva.find((n) => n.rol === c.rol) ?? nueva[i];
+    if (par && esHex(c.hex)) cambio.set(c.hex.toLowerCase(), par.hex);
+  });
+  return svg.replace(/#[0-9a-f]{6}\b/gi, (h) => cambio.get(h.toLowerCase()) ?? h);
+}
+
 // --- Colores -------------------------------------------------------------
 
 function luminancia(hex: string) {

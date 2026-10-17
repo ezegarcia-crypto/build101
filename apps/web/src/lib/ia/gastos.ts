@@ -19,6 +19,7 @@ export const PASOS = {
   nombres: { modulo: "A", nombre: "Nombres con trasfondo", unidad: "pedido" },
   identidad: { modulo: "A", nombre: "Identidad y brandbook", unidad: "pedido" },
   logo: { modulo: "A", nombre: "Tres logos", unidad: "pedido" },
+  paleta: { modulo: "A", nombre: "Otra paleta de colores", unidad: "pedido" },
   "contenidos-lote": { modulo: "B", nombre: "Feed completo (motor)", unidad: "feed" },
   "contenidos-plan": { modulo: "B", nombre: "Plan del mes", unidad: "pedido" },
   "contenidos-pieza": { modulo: "B", nombre: "Una pieza del feed", unidad: "pieza" },
@@ -30,6 +31,7 @@ export const PASOS = {
   "web-foto": { modulo: "B", nombre: "Una foto de la web", unidad: "foto" },
   "web-publicar": { modulo: "B", nombre: "Web publicada (sin IA)", unidad: "publicación" },
   branderia: { modulo: "C", nombre: "Foto de un producto con la marca", unidad: "foto" },
+  "branderia-sugerir": { modulo: "C", nombre: "Productos sugeridos para el rubro", unidad: "pedido" },
 } as const;
 
 export type Paso = keyof typeof PASOS;
@@ -52,6 +54,7 @@ const POR_MINUTO: Record<Paso, number> = {
   nombres: 25,
   identidad: 15,
   logo: 15,
+  paleta: 25,
   "contenidos-lote": 8,
   "contenidos-plan": 15,
   "contenidos-pieza": 60,
@@ -62,8 +65,9 @@ const POR_MINUTO: Record<Paso, number> = {
   "web-cambio": 40,
   "web-foto": 30,
   "web-publicar": 20, // no usa IA: el tope es solo para cortar abusos
-  // 12 fotos por marca: alcanza para 4 personas entrando a la vez
-  branderia: 48,
+  // 12 fotos del catálogo + 5 sugeridas por marca: alcanza para 4 personas entrando a la vez
+  branderia: 68,
+  "branderia-sugerir": 15,
 };
 const recientes = new Map<Paso, number[]>();
 

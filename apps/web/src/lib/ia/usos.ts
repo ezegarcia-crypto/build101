@@ -9,7 +9,9 @@ import {
   MODELO_IMAGEN as MODELO_DIBUJO_LOGO,
   MODELO_IMAGEN_RESPALDO as MODELO_DIBUJO_LOGO_RESPALDO,
 } from "@/lib/ia/logo";
+import { MODELO_SUGERIR } from "@/lib/ia/branderia";
 import { MODELO_NOMBRES } from "@/lib/ia/nombres";
+import { MODELO_PALETA } from "@/lib/ia/paleta";
 import { MODELO_WEB } from "@/lib/ia/web/ficha-web";
 import { MODELO_FOTO_WEB } from "@/lib/ia/web/fotos";
 
@@ -32,6 +34,7 @@ export const USOS: Record<Paso, Uso[]> = {
     { modelo: MODELO_DIBUJO_LOGO, para: "Dibuja los logos" },
     { modelo: MODELO_DIBUJO_LOGO_RESPALDO, para: "Dibuja los logos si falla el principal", respaldo: true },
   ],
+  paleta: [{ modelo: MODELO_PALETA, para: "Propone otra paleta según lo que pide la persona" }],
   "contenidos-lote": [
     { modelo: MODELO_PLAN, para: "Planifica el mes" },
     { modelo: MODELO_REDACCION, para: "Escribe y corrige cada pieza" },
@@ -49,6 +52,7 @@ export const USOS: Record<Paso, Uso[]> = {
   // Publicar no usa IA (está en PASOS solo por el tope de pedidos por minuto)
   "web-publicar": [],
   branderia: [{ modelo: MODELO_FOTOS_FEED, para: "Saca la foto de un producto con el logo impreso" }],
+  "branderia-sugerir": [{ modelo: MODELO_SUGERIR, para: "Elige los productos con la marca que más le sirven a ese rubro" }],
 };
 
 /** Los pasos que usan un modelo, con para qué. */

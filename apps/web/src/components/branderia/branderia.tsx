@@ -1,28 +1,37 @@
 "use client";
 
 import { Button, buttonVariants } from "@build101/ui/components/button";
-import { ArrowLeft, ArrowRight, RotateCcw, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { EnConstruccion } from "@/app/crear/proximamente/_piezas/piezas";
+import { BotonWeb } from "@/components/boton-web";
 import {
   CLAVE_IDENTIDAD,
   contraste,
   type IdentidadIA,
+  logoDeMarca,
+  type MarcaGuardada,
   type PropuestaLogo,
   rolesDe,
+  svgConTamano,
   svgSeguro,
 } from "@/components/brandbook/identidad";
+import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
+import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
+import type { ProductoSugerido } from "@/lib/ia/branderia";
+import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
 import b from "./branderia.module.css";
 import { MUESTRAS } from "./muestras";
 
-// Paso 4 · Tus productos (módulo C, BranderIA). Al entrar, la IA saca la foto de los 12 productos del
-// catálogo con la marca impresa (POST /api/branderia): recibe el logo real del cliente como referencia y
+// Paso 4 · Tus productos (módulo C, BranderIA). Al entrar, la IA elige los productos que más le sirven a ese
+// rubro (POST /api/branderia/sugerir) y saca la foto realista de esos primero y después de los 12 productos
+// del catálogo, con la marca impresa (POST /api/branderia): recibe el logo real del cliente como referencia y
 // lo imprime siguiendo el material. Cada producto lleva algo distinto: solo el logo, el nombre, una frase
 // de la marca o combinaciones, como haría una marca de verdad con su merch.
 // Mientras la IA trabaja se ve la ilustración del producto de la web original, con el logo encima.
@@ -31,7 +40,8 @@ import { MUESTRAS } from "./muestras";
 
 export const CLAVE_BRANDERIA = "brandia:branderia";
 
-type Marca = { ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] };
+/** `logo`: el que eligió la persona en el brandbook (null: el símbolo solo) */
+type Marca = { ficha: string; brief: Brief; identidad: IdentidadIA; logo: PropuestaLogo | null };
 
 // Qué lleva impreso cada producto
 type Estampa = "logo" | "logo-nombre" | "nombre" | "frase" | "logo-frase";
@@ -46,6 +56,8 @@ type Producto = {
   estampa: Estampa;
   tecnica: string;
   color: "claro" | "marca";
+  /** Solo los sugeridos por la IA: para qué le sirve a este negocio */
+  por_que?: string;
 };
 
 const CATALOGO: Producto[] = [
@@ -80,6 +92,8 @@ const A_LA_VEZ = 4;
 
 type Foto = { estado: "pendiente" } | { estado: "sacando" } | { estado: "lista"; url: string } | { estado: "error" };
 
+const aProducto = (p: ProductoSugerido, i: number): Producto => ({ ...p, id: `sugerido-${i + 1}` });
+
 function leer<T>(clave: string): T | null {
   try {
     return JSON.parse(sessionStorage.getItem(clave) ?? "null");
@@ -88,8 +102,10 @@ function leer<T>(clave: string): T | null {
   }
 }
 
-// Para reconocer si las fotos guardadas son de esta misma marca (v2: el logo ya va impreso por la IA)
-const huella = (m: Marca) => `v2|${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}`;
+// Para reconocer si las fotos guardadas son de esta misma marca y de este mismo logo
+// (v3: el logo elegido, que puede no ser el primero, y los productos sugeridos para el rubro)
+const huella = (m: Marca) =>
+  `v3|${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}|${m.logo ? m.logo.imagen.slice(-48) : "simbolo"}`;
 
 /** Las frases de la marca para los productos: el eslogan y las palabras propias, en ese orden. */
 function frasesDe(id: IdentidadIA) {
@@ -146,15 +162,10 @@ async function aLienzo(src: string, lado: number, tipo: "image/png" | "image/jpe
   return lienzo.toDataURL(tipo, 0.82);
 }
 
-/** El logo del cliente en PNG de 512, para mandárselo a la IA: el elegido o, si no hay, el símbolo en SVG. */
+/** El logo del cliente en PNG de 512, para mandárselo a la IA: el elegido o, si eligió el símbolo, el SVG. */
 async function logoParaIA(m: Marca) {
-  if (m.logos[0]?.imagen) return aLienzo(m.logos[0].imagen, 512, "image/png");
-  // Sin ancho y alto, el navegador dibuja el SVG a 300 × 150 y el recorte cuadrado lo corta
-  const conTamano = svgSeguro(m.identidad.logo.isotipo_svg)
-    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
-    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
-    .replace(/<svg/i, '<svg width="512" height="512"');
-  const svg = new Blob([conTamano], { type: "image/svg+xml" });
+  if (m.logo?.imagen) return aLienzo(m.logo.imagen, 512, "image/png");
+  const svg = new Blob([svgConTamano(m.identidad.logo.isotipo_svg, 512)], { type: "image/svg+xml" });
   const url = URL.createObjectURL(svg);
   try {
     return await aLienzo(url, 512, "image/png");
@@ -170,8 +181,28 @@ export function Branderia() {
   );
   const [nivel, setNivel] = useState<Record<string, number>>({});
   const [pedido, setPedido] = useState(false);
+  // Los sugeridos para el rubro: cada vuelta suma productos nuevos, nunca borra los de antes
+  const [sugeridos, setSugeridos] = useState<Producto[]>([]);
+  const [pensando, setPensando] = useState(true);
+  const [errorSugeridos, setErrorSugeridos] = useState<string | null>(null);
+  // Las fotos de antes de cada producto (al sacar fotos nuevas, las anteriores quedan como alternativas)
+  const [otras, setOtras] = useState<Record<string, string[]>>({});
+  const otrasRef = useRef<Record<string, string[]>>({});
   const listas = useRef<Record<string, string>>({});
+  const productos = useRef<Producto[]>(CATALOGO);
+  const sugeridosGuardados = useRef<Producto[]>([]);
   const carrito = useRef<HTMLElement>(null);
+
+  const guardarFotos = useCallback((m: Marca) => {
+    try {
+      sessionStorage.setItem(
+        CLAVE_BRANDERIA,
+        JSON.stringify({ huella: huella(m), fotos: listas.current, otras: otrasRef.current, sugeridos: sugeridosGuardados.current }),
+      );
+    } catch {
+      // Si no entra, las fotos se ven igual, solo que no quedan guardadas
+    }
+  }, []);
 
   const sacar = useCallback(async (m: Marca, ids: string[], senal?: AbortSignal) => {
     setFotos((f) => ({ ...f, ...Object.fromEntries(ids.map((id) => [id, { estado: "sacando" } as Foto])) }));
@@ -185,8 +216,9 @@ export function Branderia() {
     const cola = [...ids];
     const trabajar = async () => {
       for (let id = cola.shift(); id; id = cola.shift()) {
-        const i = CATALOGO.findIndex((x) => x.id === id);
-        const p = CATALOGO[i]!;
+        const i = productos.current.findIndex((x) => x.id === id);
+        const p = productos.current[i];
+        if (!p) continue;
         try {
           const res = await fetch("/api/branderia", {
             method: "POST",
@@ -199,11 +231,7 @@ export function Branderia() {
           const chica = await aLienzo(url, 640, "image/jpeg");
           listas.current[p.id] = chica;
           setFotos((f) => ({ ...f, [p.id]: { estado: "lista", url: chica } }));
-          try {
-            sessionStorage.setItem(CLAVE_BRANDERIA, JSON.stringify({ huella: huella(m), fotos: listas.current }));
-          } catch {
-            // Si no entra, las fotos se ven igual, solo que no quedan guardadas
-          }
+          guardarFotos(m);
         } catch {
           if (senal?.aborted) return;
           setFotos((f) => ({ ...f, [p.id]: { estado: "error" } }));
@@ -211,36 +239,125 @@ export function Branderia() {
       }
     };
     await Promise.all(Array.from({ length: Math.min(A_LA_VEZ, ids.length) }, trabajar));
-  }, []);
+  }, [guardarFotos]);
+
+  /**
+   * La IA elige productos para el rubro y se suman a los que ya había (sin repetirlos). Después se sacan
+   * sus fotos, antes que las del catálogo.
+   */
+  const sugerir = useCallback(
+    async (m: Marca, senal?: AbortSignal) => {
+      setPensando(true);
+      setErrorSugeridos(null);
+      try {
+        const ya = sugeridosGuardados.current;
+        const res = await fetch("/api/branderia/sugerir", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            brief: m.brief,
+            marca: { nombre: m.identidad.nombre, eslogan: m.identidad.eslogan },
+            ya: ya.map((p) => p.nombre),
+          }),
+          signal: senal,
+        });
+        const datos = await res.json().catch(() => ({}));
+        if (!res.ok || !Array.isArray(datos.productos)) throw new Error(datos?.error || "No pudimos pensar productos para tu rubro.");
+        const nuevos = (datos.productos as ProductoSugerido[]).map((p, i) => aProducto(p, ya.length + i));
+        const todos = [...ya, ...nuevos];
+        sugeridosGuardados.current = todos;
+        productos.current = [...todos, ...CATALOGO];
+        setSugeridos(todos);
+        guardarFotos(m);
+        return nuevos;
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") setErrorSugeridos((e as Error).message);
+        return [];
+      } finally {
+        if (!senal?.aborted) setPensando(false);
+      }
+    },
+    [guardarFotos],
+  );
+
+  /** Saca fotos nuevas de todo: las de antes quedan como alternativas de cada producto */
+  function fotosNuevas(m: Marca, ids: string[]) {
+    for (const id of ids) {
+      const actual = listas.current[id];
+      if (actual) otrasRef.current = { ...otrasRef.current, [id]: [actual, ...(otrasRef.current[id] ?? [])].slice(0, 4) };
+      delete listas.current[id];
+    }
+    setOtras(otrasRef.current);
+    guardarFotos(m);
+    sacar(m, ids);
+  }
+
+  /** Pone una foto de antes como la principal (la que estaba pasa a las alternativas) */
+  function usarOtra(m: Marca, id: string, url: string) {
+    const actual = listas.current[id];
+    otrasRef.current = { ...otrasRef.current, [id]: [...(actual ? [actual] : []), ...(otrasRef.current[id] ?? []).filter((u) => u !== url)] };
+    listas.current[id] = url;
+    setOtras(otrasRef.current);
+    setFotos((f) => ({ ...f, [id]: { estado: "lista", url } }));
+    guardarFotos(m);
+  }
 
   useEffect(() => {
     const ficha = sessionStorage.getItem(CLAVE_FICHA);
-    const guardada = leer<{ ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] }>(CLAVE_IDENTIDAD);
-    if (!ficha || guardada?.ficha !== ficha) return setMarca("sin-marca");
-    const m = { ficha, identidad: guardada.identidad, logos: guardada.logos ?? [] };
+    const brief = leer<Brief>(CLAVE_FICHA);
+    const guardada = leer<MarcaGuardada>(CLAVE_IDENTIDAD);
+    if (!ficha || !brief || guardada?.ficha !== ficha) return setMarca("sin-marca");
+    const m = { ficha, brief, identidad: guardada.identidad, logo: logoDeMarca(guardada.logos ?? [], guardada.elegido) };
     setMarca(m);
 
-    const previo = leer<{ huella: string; fotos: Record<string, string> }>(CLAVE_BRANDERIA);
+    const previo = leer<{
+      huella: string;
+      fotos: Record<string, string>;
+      otras?: Record<string, string[]>;
+      sugeridos?: Producto[];
+    }>(CLAVE_BRANDERIA);
     if (previo?.huella === huella(m)) {
       listas.current = previo.fotos;
+      otrasRef.current = previo.otras ?? {};
+      setOtras(otrasRef.current);
+      if (previo.sugeridos?.length) {
+        sugeridosGuardados.current = previo.sugeridos;
+        productos.current = [...previo.sugeridos, ...CATALOGO];
+        setSugeridos(previo.sugeridos);
+        setPensando(false);
+      }
       setFotos((f) => ({
         ...f,
         ...Object.fromEntries(Object.entries(previo.fotos).map(([id, url]) => [id, { estado: "lista", url } as Foto])),
       }));
     }
-    // Al entrar, la IA saca las fotos de los 12 productos (las que no estaban guardadas)
-    const faltan = CATALOGO.filter((p) => !listas.current[p.id]).map((p) => p.id);
-    if (!faltan.length) return;
+
     const control = new AbortController();
-    sacar(m, faltan, control.signal);
+    (async () => {
+      // Si la página se recarga sola en loop, no se vuelve a pedir: quedan los botones para hacerlo a mano
+      if (!puedoArrancarSolo("branderia")) {
+        if (!sugeridosGuardados.current.length) {
+          setPensando(false);
+          setErrorSugeridos(MENSAJE_FRENO);
+        }
+        return;
+      }
+      // Primero los productos para su rubro (si no estaban guardados), después las fotos que falten:
+      // las de los sugeridos van primero en la cola
+      if (!sugeridosGuardados.current.length) await sugerir(m, control.signal);
+      if (control.signal.aborted) return;
+      const faltan = productos.current.filter((p) => !listas.current[p.id]).map((p) => p.id);
+      if (faltan.length) await sacar(m, faltan, control.signal);
+    })();
     return () => control.abort();
-  }, [sacar]);
+  }, [sacar, sugerir]);
 
   if (marca === null) return <main className="min-h-0 overflow-y-auto" />;
 
-  const errores = CATALOGO.filter((p) => fotos[p.id]?.estado === "error");
-  const sacando = CATALOGO.some((p) => fotos[p.id]?.estado === "sacando");
-  const elegidos = CATALOGO.filter((p) => (nivel[p.id] ?? 0) > 0);
+  const lista = [...sugeridos, ...CATALOGO];
+  const errores = lista.filter((p) => fotos[p.id]?.estado === "error");
+  const sacando = lista.some((p) => fotos[p.id]?.estado === "sacando");
+  const elegidos = lista.filter((p) => (nivel[p.id] ?? 0) > 0);
   const unidades = elegidos.reduce((t, p) => t + (CANTIDADES[nivel[p.id] ?? 0] ?? 0), 0);
 
   function cambiar(id: string, paso: number) {
@@ -317,6 +434,59 @@ export function Branderia() {
                     Volver a probar {errores.length === 1 ? "1 foto" : `${errores.length} fotos`}
                   </Button>
                 )}
+                <section aria-labelledby="titulo-sugeridos" className="flex flex-col gap-3">
+                  <div>
+                    <p className="label flex items-center gap-1.5">
+                      <Sparkles className="size-3.5" aria-hidden="true" />
+                      Pensados para tu negocio
+                    </p>
+                    <h2 id="titulo-sugeridos" className="mt-1 text-[clamp(1.4rem,1.1rem+1vw,1.9rem)]">
+                      Lo que más vas a <span className={s.it}>usar</span>.
+                    </h2>
+                  </div>
+                  {sugeridos.length > 0 && (
+                    <ul className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
+                      {sugeridos.map((p) => (
+                        <Tarjeta
+                          key={p.id}
+                          producto={p}
+                          foto={fotos[p.id] ?? { estado: "pendiente" }}
+                          marca={marca}
+                          cantidad={nivel[p.id] ?? 0}
+                          onCambiar={(paso) => cambiar(p.id, paso)}
+                          onSacar={() => sacar(marca, [p.id])}
+                          otras={otras[p.id] ?? []}
+                          onUsarOtra={(url) => usarOtra(marca, p.id, url)}
+                        />
+                      ))}
+                    </ul>
+                  )}
+                  {pensando && (
+                    <div className="rounded-lg border bg-card p-4">
+                      <Armando que="productos" />
+                    </div>
+                  )}
+                  {errorSugeridos && !pensando && (
+                    <p className="text-sm text-muted-foreground" role="alert">
+                      {errorSugeridos}
+                    </p>
+                  )}
+                  {!pensando && (
+                    <Button
+                      variant="outline"
+                      className="self-start"
+                      onClick={async () => {
+                        const nuevos = await sugerir(marca);
+                        if (nuevos.length) sacar(marca, nuevos.map((p) => p.id));
+                      }}
+                    >
+                      <Sparkles data-icon="inline-start" />
+                      {sugeridos.length ? "Sugerir otros productos" : "Pensar productos para mi rubro"}
+                    </Button>
+                  )}
+                </section>
+
+                <p className="label mt-6">El catálogo</p>
                 <ul className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
                   {CATALOGO.map((p) => (
                     <Tarjeta
@@ -327,6 +497,8 @@ export function Branderia() {
                       cantidad={nivel[p.id] ?? 0}
                       onCambiar={(paso) => cambiar(p.id, paso)}
                       onSacar={() => sacar(marca, [p.id])}
+                      otras={otras[p.id] ?? []}
+                      onUsarOtra={(url) => usarOtra(marca, p.id, url)}
                     />
                   ))}
                 </ul>
@@ -441,15 +613,15 @@ export function Branderia() {
               size="sm"
               className="mt-2"
               disabled={sacando}
-              onClick={() => {
-                sessionStorage.removeItem(CLAVE_BRANDERIA);
-                listas.current = {};
-                sacar(marca, CATALOGO.map((p) => p.id));
-              }}
+              onClick={() => fotosNuevas(marca, lista.map((p) => p.id))}
             >
               <RotateCcw data-icon="inline-start" />
               Sacar fotos nuevas
             </Button>
+            <p className="mt-1 text-xs text-muted-foreground">Las de ahora no se borran: quedan como alternativas de cada producto.</p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <BotonWeb />
+            </div>
           </>
         )}
       </div>
@@ -464,6 +636,8 @@ function Tarjeta({
   cantidad,
   onCambiar,
   onSacar,
+  otras,
+  onUsarOtra,
 }: {
   producto: Producto;
   foto: Foto;
@@ -471,6 +645,9 @@ function Tarjeta({
   cantidad: number;
   onCambiar: (paso: number) => void;
   onSacar: () => void;
+  /** Fotos de antes del producto, para volver a una */
+  otras: string[];
+  onUsarOtra: (url: string) => void;
 }) {
   return (
     <li className="flex flex-col gap-2.5 rounded-lg border bg-card p-3 transition-[transform,box-shadow] duration-500 ease-brandia hover:-translate-y-1.5 hover:shadow-[0_24px_40px_-24px_rgba(30,30,28,.35)]">
@@ -494,11 +671,27 @@ function Tarjeta({
           </button>
         )}
       </div>
+      {otras.length > 0 && foto.estado !== "sacando" && (
+        <div className="flex items-center gap-1.5" aria-label="Fotos anteriores">
+          {otras.map((url, i) => (
+            <button
+              key={url.slice(-40)}
+              type="button"
+              onClick={() => onUsarOtra(url)}
+              aria-label={`Usar la foto anterior ${i + 1} de ${p.nombre}`}
+              className="size-9 overflow-hidden rounded-[4px] border transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
+            >
+              <img src={url} alt="" className="size-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
       <div className="leading-tight">
         <p className="text-[0.9375rem] font-semibold">{p.nombre}</p>
         <p className="text-xs text-muted-foreground">{p.detalle}</p>
+        {p.por_que && <p className="mt-1.5 text-xs leading-snug">{p.por_que}</p>}
       </div>
-      <div className="flex items-center justify-between gap-1">
+      <div className="mt-auto flex items-center justify-between gap-1">
         <Paso etiqueta={`Menos ${p.nombre}`} disabled={cantidad === 0} onClick={() => onCambiar(-1)}>
           −
         </Paso>
@@ -525,7 +718,7 @@ function Vista({ producto: p, foto, marca }: { producto: Producto; foto: Foto; m
     );
   }
   const m = MUESTRAS[p.id];
-  const logo = marca.logos[0]?.imagen;
+  const logo = marca.logo?.imagen;
   return (
     <div className="relative size-full">
       {m && (

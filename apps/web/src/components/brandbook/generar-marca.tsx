@@ -7,27 +7,34 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
+import { BotonWeb } from "@/components/boton-web";
 import { Pasos } from "@/components/pasos";
 import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
 import { Brandbook, Controles } from "./brandbook";
+import { Descargas } from "./descargas";
 import { Direcciones } from "./direcciones";
 import { Nombres } from "./nombres";
+import { OtraPaleta, type PaletaNueva, type VersionPaleta } from "./otra-paleta";
 import {
   CLAVE_DIRECCIONES,
   CLAVE_IDENTIDAD,
   type DireccionConControl,
   type IdentidadIA,
+  type LogoElegido,
+  type MarcaGuardada,
   type PropuestaLogo,
+  recolorearSvg,
 } from "./identidad";
 
 // Paso 2 · Tu marca. Con la ficha de la entrevista:
 //   0. la IA propone nombres con su trasfondo (en paralelo con las direcciones) y la persona elige uno;
 //   1. la IA propone 3 direcciones visuales y la persona elige una;
 //   2. con esa, la IA arma la identidad y dibuja 3 logos (en paralelo);
-//   3. se muestra el brandbook.
+//   3. se muestra el brandbook. Ahí se puede elegir el logo (o el símbolo solo), pedir otras paletas y logos
+//      nuevos: cada vuelta suma opciones, nunca borra las anteriores.
 // Todo queda guardado junto con su ficha: si se recarga la página, no se vuelve a generar.
 
 type Ficha = { texto: string; brief: Brief };
@@ -38,8 +45,58 @@ type Estado =
   | { tipo: "buscando" }
   | { tipo: "elegir"; direcciones: DireccionConControl[] }
   | { tipo: "armando"; direcciones: DireccionConControl[]; direccion: DireccionConControl }
-  | { tipo: "lista"; direcciones: DireccionConControl[]; identidad: IdentidadIA; logos: PropuestaLogo[] }
+  | {
+      tipo: "lista";
+      direcciones: DireccionConControl[];
+      identidad: IdentidadIA;
+      logos: PropuestaLogo[];
+      elegido?: LogoElegido;
+      /** Todas las paletas que se probaron (la primera es la de la dirección): iterar suma, no borra */
+      paletas: VersionPaleta[];
+      /** Las paletas con las que ya se dibujaron logos completos: con otra, se ofrece dibujar logos nuevos */
+      paletasConLogos: string[];
+    }
   | { tipo: "error"; mensaje: string; reintentar: () => void };
+
+type Lista = Extract<Estado, { tipo: "lista" }>;
+
+const huellaPaleta = (i: { paleta: IdentidadIA["paleta"] }) => i.paleta.map((c) => c.hex).join();
+
+const DE_PALETA = ["Contraste del texto", "Color principal"];
+
+/** La paleta de una identidad como versión, con su símbolo y sus controles */
+const versionDe = (i: IdentidadIA, explicacion?: string): VersionPaleta => ({
+  paleta: i.paleta,
+  isotipo_svg: i.logo.isotipo_svg,
+  comprobaciones: i.comprobaciones.filter((c) => DE_PALETA.includes(c.que)),
+  explicacion,
+  uso_de_colores: i.estilo.uso_de_colores,
+});
+
+/** La identidad con otra de sus paletas aplicada */
+const conPaleta = (i: IdentidadIA, v: VersionPaleta): IdentidadIA => ({
+  ...i,
+  paleta: v.paleta,
+  logo: { ...i.logo, isotipo_svg: v.isotipo_svg },
+  estilo: { ...i.estilo, uso_de_colores: v.uso_de_colores ?? i.estilo.uso_de_colores },
+  comprobaciones: [...v.comprobaciones, ...i.comprobaciones.filter((c) => !DE_PALETA.includes(c.que))],
+});
+
+type Guardada = MarcaGuardada & { paletas?: VersionPaleta[]; paletasConLogos?: string[] };
+
+/** La identidad con el logo elegido y todo lo demás, guardada junto con su ficha */
+function guardarMarca(ficha: string, l: Lista) {
+  const marca: Guardada = {
+    ficha,
+    identidad: l.identidad,
+    logos: l.logos,
+    elegido: l.elegido,
+    paletas: l.paletas,
+    paletasConLogos: l.paletasConLogos,
+  };
+  // Sin lugar (los logos pesan): se guarda sin los logos completos
+  if (!guardar(CLAVE_IDENTIDAD, marca)) guardar(CLAVE_IDENTIDAD, { ...marca, logos: [], elegido: undefined });
+}
 
 function leer<T>(clave: string): T | null {
   try {
@@ -111,9 +168,17 @@ export function GenerarMarca() {
       }
       // Si los logos completos fallan, el brandbook sigue con el símbolo de la identidad
       const propuestas = logos.status === "fulfilled" ? logos.value.propuestas : [];
-      const lista = { ficha: f.texto, identidad: identidad.value.identidad, logos: propuestas };
-      if (!guardar(CLAVE_IDENTIDAD, lista)) guardar(CLAVE_IDENTIDAD, { ...lista, logos: [] });
-      setEstado({ tipo: "lista", direcciones, identidad: lista.identidad, logos: propuestas });
+      const lista: Lista = {
+        tipo: "lista",
+        direcciones,
+        identidad: identidad.value.identidad,
+        logos: propuestas,
+        elegido: propuestas.length ? 0 : "simbolo",
+        paletas: [versionDe(identidad.value.identidad)],
+        paletasConLogos: [huellaPaleta(identidad.value.identidad)],
+      };
+      guardarMarca(f.texto, lista);
+      setEstado(lista);
     },
     [],
   );
@@ -126,9 +191,18 @@ export function GenerarMarca() {
     setFicha(f);
 
     const dirs = leer<{ ficha: string; direcciones: DireccionConControl[] }>(CLAVE_DIRECCIONES);
-    const ident = leer<{ ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] }>(CLAVE_IDENTIDAD);
+    const ident = leer<Guardada>(CLAVE_IDENTIDAD);
     if (dirs?.ficha === texto && ident?.ficha === texto) {
-      return setEstado({ tipo: "lista", direcciones: dirs.direcciones, identidad: ident.identidad, logos: ident.logos });
+      return setEstado({
+        tipo: "lista",
+        direcciones: dirs.direcciones,
+        identidad: ident.identidad,
+        logos: ident.logos ?? [],
+        elegido: ident.elegido,
+        // Las marcas guardadas antes de iterar la paleta: una sola, con la que se dibujaron los logos
+        paletas: ident.paletas ?? [versionDe(ident.identidad)],
+        paletasConLogos: ident.paletasConLogos ?? [huellaPaleta(ident.identidad)],
+      });
     }
     if (dirs?.ficha === texto) return setEstado({ tipo: "elegir", direcciones: dirs.direcciones });
 
@@ -140,6 +214,82 @@ export function GenerarMarca() {
     buscarDirecciones(f, control.signal);
     return () => control.abort();
   }, [buscarDirecciones]);
+
+  const [redibujando, setRedibujando] = useState(false);
+  const [errorLogos, setErrorLogos] = useState<string>();
+
+  /** Cambia la marca lista y la guarda */
+  const actualizar = useCallback(
+    (cambio: (l: Lista) => Lista) => {
+      setEstado((e) => {
+        if (e.tipo !== "lista" || !ficha) return e;
+        const nueva = cambio(e);
+        guardarMarca(ficha.texto, nueva);
+        return nueva;
+      });
+    },
+    [ficha],
+  );
+
+  /** La ficha con el nombre final y la dirección completa de esta marca, para volver a pedirle a la IA */
+  function contexto(l: Lista) {
+    const direccion = l.direcciones.find((d) => d.id === l.identidad.direccion.id) ?? l.direcciones[0]!;
+    const brief = ficha ? { ...ficha.brief, marca: { ...ficha.brief.marca, nombre: l.identidad.nombre } } : null;
+    return { brief, direccion };
+  }
+
+  async function pedirPaleta(l: Lista, pedido: string) {
+    const { brief, direccion } = contexto(l);
+    const { comprobaciones: _, ...dir } = direccion;
+    return pedir<PaletaNueva>("/api/paleta", {
+      brief,
+      direccion: dir,
+      paleta: l.identidad.paleta,
+      vistas: l.paletas.map((v) => v.paleta),
+      pedido: pedido.trim() || undefined,
+    });
+  }
+
+  /** La paleta nueva se suma a las que ya había y queda aplicada (el símbolo la sigue, color por rol) */
+  function nuevaPaleta(p: PaletaNueva) {
+    actualizar((l) => {
+      const version: VersionPaleta = {
+        paleta: p.paleta,
+        isotipo_svg: recolorearSvg(l.identidad.logo.isotipo_svg, l.identidad.paleta, p.paleta),
+        comprobaciones: p.comprobaciones,
+        explicacion: p.explicacion,
+        uso_de_colores: p.uso_de_colores,
+      };
+      return { ...l, paletas: [...l.paletas, version], identidad: conPaleta(l.identidad, version) };
+    });
+  }
+
+  function elegirPaleta(i: number) {
+    actualizar((l) => (l.paletas[i] ? { ...l, identidad: conPaleta(l.identidad, l.paletas[i]) } : l));
+  }
+
+  async function redibujarLogos(l: Lista) {
+    const { brief, direccion } = contexto(l);
+    const { comprobaciones: _, ...dir } = direccion;
+    setRedibujando(true);
+    setErrorLogos(undefined);
+    try {
+      const { propuestas } = await pedir<{ propuestas: PropuestaLogo[] }>("/api/logo", {
+        brief,
+        direccion: { ...dir, paleta: l.identidad.paleta },
+      });
+      // Los logos nuevos se suman a los de antes: el elegido no cambia hasta que la persona elija otro
+      actualizar((actual) => ({
+        ...actual,
+        logos: [...actual.logos, ...propuestas],
+        paletasConLogos: [...actual.paletasConLogos, huellaPaleta(actual.identidad)],
+      }));
+    } catch (e) {
+      setErrorLogos((e as Error).message);
+    } finally {
+      setRedibujando(false);
+    }
+  }
 
   function otroCamino(direcciones: DireccionConControl[]) {
     sessionStorage.removeItem(CLAVE_IDENTIDAD);
@@ -251,22 +401,40 @@ export function GenerarMarca() {
                 Esta es <span className={s.it}>{estado.identidad.nombre}</span>.
               </h1>
               <Button variant="outline" size="sm" onClick={() => otroCamino(estado.direcciones)}>
-                Probar otro camino
+                Cambiar nombre o camino
               </Button>
             </div>
-            <Brandbook identidad={estado.identidad} logos={estado.logos} />
-            <div className="mt-4">
+            <Brandbook
+              identidad={estado.identidad}
+              logos={estado.logos}
+              elegido={estado.elegido}
+              onElegir={(elegido) => actualizar((l) => ({ ...l, elegido }))}
+              extra={{
+                paleta: (
+                  <OtraPaleta
+                    versiones={estado.paletas}
+                    actual={estado.paletas.findIndex((v) => huellaPaleta(v) === huellaPaleta(estado.identidad))}
+                    onElegir={elegirPaleta}
+                    pedir={(pedido) => pedirPaleta(estado, pedido)}
+                    onNueva={nuevaPaleta}
+                    logosViejos={estado.logos.length > 0 && !estado.paletasConLogos.includes(huellaPaleta(estado.identidad))}
+                    onRedibujar={() => redibujarLogos(estado)}
+                    redibujando={redibujando}
+                    errorLogos={errorLogos}
+                  />
+                ),
+              }}
+            />
+            <div className="mt-4 flex flex-col gap-4">
               <Controles comprobaciones={estado.identidad.comprobaciones} />
+              <Descargas identidad={estado.identidad} logos={estado.logos} elegido={estado.elegido} />
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/crear/contenido" className={buttonVariants({ size: "lg" })}>
                 Ver mis contenidos
                 <ArrowRight data-icon="inline-end" />
               </Link>
-              <Link href="/crear/web" className={buttonVariants({ variant: "outline", size: "lg" })}>
-                Armar mi web
-                <ArrowRight data-icon="inline-end" />
-              </Link>
+              <BotonWeb />
             </div>
           </>
         )}

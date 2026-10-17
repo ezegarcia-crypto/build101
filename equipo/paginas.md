@@ -30,8 +30,10 @@ flowchart LR
 
   crear -->|Armar mi marca| marca
   marca -->|Ver mis contenidos| contenido
-  marca -->|Armar mi web| web
+  marca -->|Crear mi sitio web · pestaña nueva| web
   contenido -->|Ver mis productos| branderia
+  contenido -->|Crear mi sitio web · pestaña nueva| web
+  branderia -->|Crear mi sitio web · pestaña nueva| web
   web -->|Ver cómo va a funcionar| proxweb
   web -->|Me gusta, quiero publicarla| publicada
   proxweb -->|Armar mi web| web
@@ -74,7 +76,9 @@ Por eso:
   más de 3 veces en 2 minutos, deja de pedirle a la IA y muestra un botón para hacerlo a mano (freno de gasto).
 
 Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brandia:direcciones`,
-`brandia:identidad` (marca), `brandia:feed` (contenido), `brandia:branderia` (fotos de productos) y
+`brandia:identidad` (marca, con el logo elegido y todas las paletas probadas), `brandia:feed` (contenido, con los
+feeds anteriores), `brandia:me-gusta` (piezas del feed marcadas), `brandia:branderia` (fotos de productos, sugeridos
+para el rubro y fotos anteriores) y
 `brandia:web` (web del cliente).
 
 ## Página por página
@@ -93,10 +97,10 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
 | `/crear` | **Paso 1 · Contanos.** Entrevista por chat. La persona escribe o manda audios con el micrófono de la caja (se pasan a texto con ElevenLabs); BrandIA contesta por escrito. Termina en la ficha de la marca | Los botones "BrandIAmos" de la portada, directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat) y `/api/transcribir` (audio a texto) |
-| `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué y "Otros nombres". Abajo, tres caminos para elegir. Después, el brandbook con logos: esencia (con misión y visión), logo, paleta, tipografías, voz y tono (cómo cambia el tono según el momento, con ejemplos) y cómo se usa | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Armar mi web" → `/crear/web` · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo` |
-| `/crear/contenido` | **Paso 3 · Tu contenido.** El feed con la marca aplicada: posteos, carrusel, historias y reel | "Ver mis contenidos" desde el brandbook | "Ver mis productos" → `/crear/branderia` · "Volver a tu marca" → `/crear/marca` | La marca (paso 2) | `/api/contenidos/lote` |
-| `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** Al entrar, la IA saca la foto de los 12 productos con la marca impresa: recibe el logo real como referencia y lo imprime siguiendo el material (a diferencia del feed, acá el logo sí lo dibuja la IA). Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` | La marca (paso 2) | `/api/branderia` (gpt-image-2, una foto por pedido, 4 a la vez) |
-| `/crear/web` | **Tu web.** Mini entrevista, la IA arma la web con la marca del cliente (con fotos generadas si la persona lo pide, marcadas como ilustrativas) y se cambia por chat. "Me gusta, quiero publicarla" la publica en `/w/…` y entrega el link y un QR con los colores de la marca; volver a publicar actualiza el mismo link. El dominio propio sigue en construcción | "Armar mi web" desde el brandbook o desde `/crear/proximamente/web` | El link publicado → `/w/…` · "Ver cómo va a funcionar" → `/crear/proximamente/web` | La marca (paso 2). Para publicar, la tabla `webs` y la carpeta `webs-fotos` de Supabase (`apps/web/supabase/webs.sql`) | `/api/web/entrevista`, `/api/web/armar`, `/api/web/cambio`, `/api/web/foto` (gpt-image-2, una foto por pedido) · `/api/web/publicar` (sin IA) |
+| `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué, "Otros nombres" (se suman, no reemplazan), "Variantes de «el elegido»" y "¿Se te ocurrió otro?" para escribir uno propio. Abajo, tres caminos para elegir. Después, el brandbook con logos: esencia (con misión y visión), logo (se elige entre las propuestas o "solo el símbolo", y ese es el que usan el feed, BranderIA y las descargas), paleta ("Otra paleta" con un pedido en palabras: todas las paletas quedan para volver, y se pueden sumar logos con la nueva), tipografías, voz y tono y cómo se usa. "Tus archivos": todo en un .zip (logo, símbolo SVG y PNG, propuestas, paleta, tipografías, brandbook) y el brandbook en PDF | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Crear mi sitio web" → `/crear/web` en pestaña nueva · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo`, `/api/paleta` |
+| `/crear/contenido` | **Paso 3 · Tu contenido.** El feed con la marca aplicada: posteos, carrusel, historias y reel. Cada pieza tiene ♥ (me gusta) y descarga (PNG listos para subir y su texto); "Descargar todo el contenido" baja el feed entero en un .zip. "Sumar otro feed" no borra: los anteriores quedan en "Tus feeds" y lo marcado con ♥ guía al nuevo | "Ver mis contenidos" desde el brandbook | "Ver mis productos" → `/crear/branderia` · "Crear mi sitio web" → `/crear/web` en pestaña nueva · "Volver a tu marca" → `/crear/marca` | La marca (paso 2) | `/api/contenidos/lote` (recibe `gustaron`) |
+| `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** Al entrar, la IA elige 5 productos para ese rubro ("Pensados para tu negocio", con su porqué) y les saca la foto primero; "Sugerir otros productos" suma 5 más sin repetir. Después saca la foto de los 12 productos del catálogo con la marca impresa (el logo elegido en el brandbook); "Sacar fotos nuevas" deja las anteriores como alternativas: recibe el logo real como referencia y lo imprime siguiendo el material (a diferencia del feed, acá el logo sí lo dibuja la IA). Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` · "Crear mi sitio web" → `/crear/web` en pestaña nueva | La marca (paso 2) | `/api/branderia/sugerir` (Claude) y `/api/branderia` (gpt-image-2, una foto por pedido, 4 a la vez) |
+| `/crear/web` | **Tu web.** Mini entrevista, la IA arma la web con la marca del cliente (con fotos generadas si la persona lo pide, marcadas como ilustrativas) y se cambia por chat. "Me gusta, quiero publicarla" la publica en `/w/…` y entrega el link y un QR con los colores de la marca; volver a publicar actualiza el mismo link. El dominio propio sigue en construcción | "Crear mi sitio web" (pestaña nueva) desde el brandbook, el feed o BranderIA; "Armar mi web" desde `/crear/proximamente/web`. La pestaña nueva hereda la marca de la que la abrió | El link publicado → `/w/…` · "Ver cómo va a funcionar" → `/crear/proximamente/web` | La marca (paso 2). Para publicar, la tabla `webs` y la carpeta `webs-fotos` de Supabase (`apps/web/supabase/webs.sql`) | `/api/web/entrevista`, `/api/web/armar`, `/api/web/cambio`, `/api/web/foto` (gpt-image-2, una foto por pedido) · `/api/web/publicar` (sin IA) |
 
 Si falta lo que "Necesita", la página muestra un aviso con un botón a `/crear`.
 

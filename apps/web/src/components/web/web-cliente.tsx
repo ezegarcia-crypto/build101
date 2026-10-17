@@ -7,6 +7,7 @@ import { ArrowRight, ArrowUp, Check, Laptop, RotateCcw, Smartphone, TriangleAler
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { heredarDeLaQueAbrio } from "@/components/boton-web";
 import { CLAVE_IDENTIDAD, type Comprobacion, type IdentidadIA } from "@/components/brandbook/identidad";
 import { Armando } from "@/components/entrevista/armando";
 import s from "@/components/entrevista/entrevista.module.css";
@@ -458,6 +459,7 @@ export function WebCliente() {
   const [vuelta, setVuelta] = useState(0); // para reiniciar la entrevista desde cero
 
   useEffect(() => {
+    heredarDeLaQueAbrio();
     const texto = sessionStorage.getItem(CLAVE_FICHA);
     const brief = leer<Brief>(CLAVE_FICHA);
     const ident = leer<{ ficha: string; identidad: IdentidadIA }>(CLAVE_IDENTIDAD);

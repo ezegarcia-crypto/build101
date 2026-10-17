@@ -2,6 +2,7 @@ import { gateway } from "ai";
 
 import { inicioDelCliente } from "@/lib/cliente";
 import { MEZCLA_DEMO } from "@/lib/ia/contenidos/formatos";
+import { PRODUCTOS_SUGERIDOS } from "@/lib/ia/branderia";
 import { PASOS, type Paso } from "@/lib/ia/gastos";
 
 // Junta lo que gastamos en IA para el panel /costos. Todo sale del Gateway de Vercel (que ya
@@ -10,8 +11,11 @@ import { PASOS, type Paso } from "@/lib/ia/gastos";
 const DIAS = 30;
 
 /** Cuántas piezas trae un feed del motor (un lote). Sirve para sacar el costo por pieza. */
-/** Las fotos que saca BranderIA por marca: los 12 productos del catálogo (components/branderia/branderia.tsx). */
-const FOTOS_BRANDERIA = 12;
+/**
+ * Las fotos que saca BranderIA por marca: los 12 productos del catálogo (components/branderia/branderia.tsx)
+ * y los que sugiere la IA para el rubro (lib/ia/branderia.ts).
+ */
+const FOTOS_BRANDERIA = 12 + PRODUCTOS_SUGERIDOS;
 
 export const PIEZAS_POR_FEED = Object.values(MEZCLA_DEMO).reduce((a, b) => a + b, 0);
 
@@ -264,8 +268,8 @@ export async function armarReporte() {
     },
     {
       parte: "BranderIA",
-      detalle: `${FOTOS_BRANDERIA} fotos de productos con la marca`,
-      valor: fotoBranderia === null ? null : fotoBranderia * FOTOS_BRANDERIA,
+      detalle: `Los productos sugeridos para su rubro y ${FOTOS_BRANDERIA} fotos de productos con la marca`,
+      valor: fotoBranderia === null ? null : fotoBranderia * FOTOS_BRANDERIA + (promedio("branderia-sugerir") ?? 0),
     },
   ];
 

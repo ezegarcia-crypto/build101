@@ -60,6 +60,10 @@ Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-e
 
 Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
+### 4b. Otra paleta · `POST /api/paleta`
+
+Con la marca armada, `{ brief, direccion, paleta, vistas?, pedido? }` → `{ paleta, explicacion, uso_de_colores, comprobaciones }` (`paleta.ts`). La persona pide el cambio en palabras ("más cálida"); el contraste se asegura igual que en la identidad. La pantalla suma cada paleta a las anteriores (no borra), recolorea el símbolo por rol y ofrece sumar logos dibujados con la nueva (`/api/logo` con la dirección y esa paleta).
+
 ## 5. Contar con audio (cambió el 17/10: BrandIA ya no habla)
 
 - La persona cuenta su negocio con un audio desde la caja del chat de `/crear`, y la entrevista sigue por escrito. Antes había un agente de voz de ElevenLabs que conversaba hablando; se sacó (está en el historial de git, commit `a0b7633` y anteriores).
@@ -76,6 +80,12 @@ reel), cada una dibujada en SVG con la marca del cliente por `componerPieza`. To
 eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
 
 **Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
+
+### 6b. BranderIA · productos para el rubro · `POST /api/branderia/sugerir`
+
+`{ brief, marca: { nombre, eslogan }, ya? }` → `{ productos }`: 5 productos con la marca pensados para ese negocio (bolsas, delantales, etiquetas…), con su porqué y cómo se ve la foto (`branderia.ts`). No repite el catálogo fijo ni los de `ya`. La pantalla les saca la foto con `/api/branderia` antes que al catálogo.
+
+El lote de contenidos también acepta `gustaron` (las piezas que la persona marcó con ♥ en feeds anteriores): el planificador sigue esa línea con ideas nuevas.
 
 ## 7. Lo que gasta la IA · panel `/costos`
 

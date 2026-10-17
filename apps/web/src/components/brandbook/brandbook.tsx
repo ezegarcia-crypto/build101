@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, CircleAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import s from "../entrevista/entrevista.module.css";
 import {
@@ -10,6 +10,8 @@ import {
   fondoParaSimbolo,
   fuente,
   type IdentidadIA,
+  type LogoElegido,
+  logoDeMarca,
   type PropuestaLogo,
   rolesDe,
   svgSeguro,
@@ -51,6 +53,17 @@ function Subtitulo({ children }: { children: React.ReactNode }) {
   return <p className="text-sm font-semibold">{children}</p>;
 }
 
+/** El isotipo solo, sin el nombre (la opción "Solo el símbolo") */
+function Simbolo({ svg, className }: { svg: string; className: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`block shrink-0 [&>svg]:size-full ${className}`}
+      dangerouslySetInnerHTML={{ __html: svgSeguro(svg) }}
+    />
+  );
+}
+
 /** El isotipo (SVG) con el nombre compuesto al lado en la tipografía de títulos */
 function Isotipo({ identidad, color, grande }: { identidad: IdentidadIA; color: string; grande?: boolean }) {
   const { logo, nombre, tipografias } = identidad;
@@ -76,12 +89,16 @@ function Isotipo({ identidad, color, grande }: { identidad: IdentidadIA; color: 
 function LogoPrincipal({
   identidad,
   logo,
+  soloSimbolo,
   c,
 }: {
   identidad: IdentidadIA;
   logo: PropuestaLogo | null;
+  soloSimbolo: boolean;
   c: Colores;
 }) {
+  if (soloSimbolo && identidad.logo.isotipo_svg)
+    return <Simbolo svg={identidad.logo.isotipo_svg} className="size-28 sm:size-36" />;
   if (logo)
     return (
       <img
@@ -106,15 +123,31 @@ function Lista({ items, tachada }: { items: string[]; tachada?: boolean }) {
   );
 }
 
-export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos: PropuestaLogo[] }) {
+export function Brandbook({
+  identidad,
+  logos,
+  elegido,
+  onElegir,
+  extra,
+}: {
+  identidad: IdentidadIA;
+  logos: PropuestaLogo[];
+  /** El logo elegido: queda guardado con la marca (lo usan el feed, BranderIA y las descargas) */
+  elegido: LogoElegido | undefined;
+  onElegir: (e: LogoElegido) => void;
+  /** Controles de la app que van dentro de una sección (por ejemplo, pedir otra paleta) */
+  extra?: { logo?: React.ReactNode; paleta?: React.ReactNode };
+}) {
   const { nombre, eslogan, esencia, voz, estilo, brandbook, paleta, tipografias, logo } = identidad;
   const c = rolesDe(paleta);
   const titulos = fuente(tipografias.titulos, "serif");
   const cuerpo = fuente(tipografias.texto, "sans-serif");
   const sobrePrincipal = textoSobre(c.principal, paleta);
   const fondoSimbolo = fondoParaSimbolo(logo.isotipo_svg, paleta, c.fondo, c.principal);
-  const [elegido, setElegido] = useState(0);
-  const logoActual = logos[elegido] ?? null;
+  const soloSimbolo = elegido === "simbolo" && !!logo.isotipo_svg;
+  const logoActual = soloSimbolo ? null : logoDeMarca(logos, elegido);
+  const indiceActual = logoActual ? logos.indexOf(logoActual) : -1;
+  const opciones = logos.length + (logo.isotipo_svg ? 1 : 0);
 
   useEffect(() => cargarFuentes(identidad.fuentes_url), [identidad.fuentes_url]);
 
@@ -134,7 +167,7 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
       >
         <p className="text-[11px] font-semibold tracking-[0.14em] uppercase opacity-70">Brandbook · {nombre}</p>
         <div className="py-10">
-          <LogoPrincipal identidad={identidad} logo={logoActual} c={c} />
+          <LogoPrincipal identidad={identidad} logo={logoActual} soloSimbolo={soloSimbolo} c={c} />
           <h1
             className={`${s.seCocina} mt-8 max-w-[16ch] text-[clamp(2.6rem,1.6rem+4.5vw,5.5rem)] leading-[0.98] font-normal`}
             style={{ fontFamily: titulos }}
@@ -197,37 +230,63 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
 
       {/* Logo */}
       <Seccion titulo="Logo" fondo={c.fondo} texto={c.texto}>
-        {logos.length > 0 && (
+        {(logos.length > 0 || soloSimbolo) && (
           <>
             <div className="grid items-start gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-              <img
-                src={logoActual?.imagen}
-                alt={`Logo de ${nombre}`}
-                className="aspect-square w-full rounded-[10px] bg-white object-contain"
-              />
+              {soloSimbolo ? (
+                <div
+                  className="grid aspect-square w-full place-items-center rounded-[10px] p-[18%]"
+                  style={{ boxShadow: `inset 0 0 0 1px ${c.texto}22` }}
+                >
+                  <Simbolo svg={logo.isotipo_svg} className="size-full" />
+                </div>
+              ) : (
+                <img
+                  src={logoActual?.imagen}
+                  alt={`Logo de ${nombre}`}
+                  className="aspect-square w-full rounded-[10px] bg-white object-contain"
+                />
+              )}
               <div>
                 <p className="text-2xl leading-tight" style={{ fontFamily: titulos }}>
-                  {TIPO_LOGO[logoActual?.tipo ?? ""] ?? logoActual?.tipo}
+                  {soloSimbolo ? "Solo el símbolo" : (TIPO_LOGO[logoActual?.tipo ?? ""] ?? logoActual?.tipo)}
                 </p>
-                <p className="mt-3 text-[15px] leading-relaxed opacity-85">{logoActual?.concepto}</p>
-                {logos.length > 1 && (
+                <p className="mt-3 text-[15px] leading-relaxed opacity-85">
+                  {soloSimbolo ? logo.explicacion : logoActual?.concepto}
+                </p>
+                {opciones > 1 && (
                   <>
-                    <p className="mt-8 text-sm font-semibold">Otras propuestas</p>
-                    <div className="mt-3 flex gap-3">
+                    <p className="mt-8 text-sm font-semibold">Elegí tu logo</p>
+                    <div className="mt-3 flex flex-wrap gap-3">
                       {logos.map((l, i) => (
                         <button
                           key={`${i}-${l.tipo}`}
                           type="button"
-                          onClick={() => setElegido(i)}
-                          aria-label={`Ver la propuesta ${i + 1}: ${TIPO_LOGO[l.tipo] ?? l.tipo}`}
-                          aria-pressed={i === elegido}
+                          onClick={() => onElegir(i)}
+                          aria-label={`Elegir la propuesta ${i + 1}: ${TIPO_LOGO[l.tipo] ?? l.tipo}`}
+                          aria-pressed={i === indiceActual}
                           className="size-20 overflow-hidden rounded-[8px] bg-white transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
-                          style={{ boxShadow: i === elegido ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
+                          style={{ boxShadow: i === indiceActual ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
                         >
                           <img src={l.imagen} alt="" className="size-full object-contain" />
                         </button>
                       ))}
+                      {logo.isotipo_svg && (
+                        <button
+                          type="button"
+                          onClick={() => onElegir("simbolo")}
+                          aria-label="Elegir solo el símbolo"
+                          aria-pressed={soloSimbolo}
+                          className="grid size-20 place-items-center rounded-[8px] p-3 transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
+                          style={{ boxShadow: soloSimbolo ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
+                        >
+                          <Simbolo svg={logo.isotipo_svg} className="size-full" />
+                        </button>
+                      )}
                     </div>
+                    <p className="mt-2 text-[13px] opacity-70">
+                      El que elijas es el que va en tu feed, tus productos y tus archivos.
+                    </p>
                   </>
                 )}
               </div>
@@ -247,7 +306,10 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
             <Isotipo identidad={identidad} color={textoSobre(fondoSimbolo, paleta)} />
           </div>
         </div>
-        {logo.explicacion && <p className="mt-5 max-w-[40em] text-[15px] leading-relaxed opacity-85">{logo.explicacion}</p>}
+        {logo.explicacion && !soloSimbolo && (
+          <p className="mt-5 max-w-[40em] text-[15px] leading-relaxed opacity-85">{logo.explicacion}</p>
+        )}
+        {extra?.logo}
       </Seccion>
 
       {/* Paleta */}
@@ -270,6 +332,7 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
           ))}
         </div>
         <p className="mt-6 max-w-[40em] text-[15px] leading-relaxed opacity-85">{estilo.uso_de_colores}</p>
+        {extra?.paleta}
       </Seccion>
 
       {/* Tipografías */}
