@@ -9,6 +9,12 @@ import s from "./entrevista.module.css";
 const FRASES = {
   pregunta: ["Leyendo lo que contaste…", "Pensando la próxima pregunta…", "Ordenando las ideas…"],
   ficha: ["Armando tu ficha…", "Juntando todo lo que contaste…", "Ya casi está…"],
+  nombres: [
+    "Buscando palabras de tu rubro…",
+    "Probando cómo suenan en voz alta…",
+    "Pensando qué historia cuenta cada uno…",
+    "Ya casi están…",
+  ],
   direcciones: [
     "Leyendo tu ficha…",
     "Pensando tres caminos distintos…",
