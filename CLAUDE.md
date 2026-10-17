@@ -54,7 +54,7 @@ Lo que se muestra en la presentación:
 |---|---|---|
 | 1 | **Generación de marca:** entrevista por voz o chat → ficha de la marca → nombre y voz, paleta, tipografías, logo y brandbook | **Funciona**, con IA real |
 | 2 | **Contenido · feed e historias:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real |
-| 2b | Contenido · pauta en Meta | Opcional, si llegamos. **"Qué funciona en tu rubro":** la IA busca en la librería de anuncios de Meta los avisos del rubro, descarta los que no son del rubro, detecta patrones (ganchos, ofertas, formatos, los que llevan más tiempo activos) y con eso genera las piezas de pauta del cliente. Publicarlas en Meta queda para después. Detalle y limitaciones en `equipo/plan-finde.md` |
+| 2b | Contenido · pauta en Meta | **Siguiente etapa, no entra en la demo.** Previsto: "qué funciona en tu rubro" con la librería de anuncios de Meta y medir el rendimiento de los contenidos (Higgsfield tiene una sección que lo predice, a evaluar). Detalle en `equipo/plan-finde.md` |
 | 2c | Contenido · newsletter, LinkedIn, X, redes centralizadas y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción". Para centralizar y publicar en todas las redes, la opción evaluada es Zernio |
 | 3 | **BranderIA** (BrandIA produce y te manda tus productos) | "En construcción": la IA genera las fotos de los productos con la marca del cliente y se muestra cómo sería el pedido. Sin precios ni pedidos reales |
 
