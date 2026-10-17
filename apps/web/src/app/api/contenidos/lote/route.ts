@@ -1,4 +1,4 @@
-import { entradaLote, leer } from "@/app/api/contenidos/entrada";
+import { entradaLote, leerConKit } from "@/app/api/contenidos/entrada";
 import { generarLote } from "@/lib/ia/contenidos/motor";
 
 // El lote completo del módulo B: plan, piezas e imágenes, en una sola llamada.
@@ -8,7 +8,7 @@ import { generarLote } from "@/lib/ia/contenidos/motor";
 export const maxDuration = 300;
 
 export async function POST(req: Request) {
-  const entrada = await leer(req, entradaLote);
+  const entrada = await leerConKit(req, entradaLote);
   if (entrada instanceof Response) return entrada;
 
   const codificar = new TextEncoder();

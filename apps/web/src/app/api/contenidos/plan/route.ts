@@ -1,4 +1,4 @@
-import { entradaLote, leer } from "@/app/api/contenidos/entrada";
+import { entradaLote, leerConKit } from "@/app/api/contenidos/entrada";
 import { planificar } from "@/lib/ia/contenidos/motor";
 
 // Solo el plan del mes (pilares y piezas), sin escribirlas. Tarda unos segundos.
@@ -6,7 +6,7 @@ import { planificar } from "@/lib/ia/contenidos/motor";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const entrada = await leer(req, entradaLote);
+  const entrada = await leerConKit(req, entradaLote);
   if (entrada instanceof Response) return entrada;
   return Response.json(await planificar(entrada));
 }

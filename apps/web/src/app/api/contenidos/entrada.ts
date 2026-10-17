@@ -2,9 +2,10 @@ import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
 import { planSchema } from "@/lib/ia/contenidos/esquemas";
-import { identidadSchema } from "@/lib/ia/identidad";
+import { armarKit, identidadEntradaSchema } from "@/lib/ia/contenidos/kit";
 
-// Lo que reciben las rutas del módulo B. Se valida antes de gastar en la IA.
+// Lo que reciben las rutas del módulo B: la ficha y la identidad tal cual las devolvieron
+// /api/entrevista y /api/identidad. Se valida antes de gastar en la IA y se arma el kit.
 
 const mezcla = z.object({
   post: z.number().int().min(0).max(6),
@@ -15,14 +16,14 @@ const mezcla = z.object({
 
 export const entradaLote = z.object({
   brief: briefSchema,
-  identidad: identidadSchema,
+  identidad: identidadEntradaSchema,
   mezcla: mezcla.optional(),
   imagenes: z.boolean().default(true),
 });
 
 export const entradaPieza = z.object({
   brief: briefSchema,
-  identidad: identidadSchema,
+  identidad: identidadEntradaSchema,
   plan: planSchema,
   id: z.string().describe("El id de la pieza del plan a (re)generar"),
 });
@@ -33,6 +34,14 @@ export const entradaImagen = z.object({
   ancho: z.number(),
   alto: z.number(),
 });
+
+/** Lee y valida el cuerpo y, si trae ficha e identidad, le suma el kit de contenidos. */
+export async function leerConKit<T extends typeof entradaLote | typeof entradaPieza>(req: Request, esquema: T) {
+  const entrada = await leer(req, esquema);
+  if (entrada instanceof Response) return entrada;
+  const e = entrada as z.infer<T>;
+  return { ...e, kit: armarKit(e.identidad, e.brief) };
+}
 
 /** Lee y valida el cuerpo; si no sirve, devuelve la respuesta 400 con el motivo. */
 export async function leer<T extends z.ZodType>(req: Request, esquema: T): Promise<z.infer<T> | Response> {

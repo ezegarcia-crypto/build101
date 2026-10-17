@@ -8,7 +8,7 @@ import type {
 } from "@/lib/ia/contenidos/esquemas";
 import { FORMATOS, type IdFormato } from "@/lib/ia/contenidos/formatos";
 import { CLICHES } from "@/lib/ia/contenidos/prompts";
-import type { Identidad } from "@/lib/ia/identidad";
+import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // El control de calidad de cada pieza, sin IA: reglas que se pueden verificar con código.
 // blocker = la pieza vuelve al redactor una vez con el problema anotado; si sigue, sale marcada
@@ -87,7 +87,7 @@ function textosConAcento(formato: IdFormato, c: Contenido): { ranura: string; te
   return (c as ContenidoReel).escenas.map((e, i) => ({ ranura: `escena ${i + 1}`, texto: e.texto_en_pantalla }));
 }
 
-export function controlarPieza(formato: IdFormato, c: Contenido, identidad: Identidad, brief: Brief): Observacion[] {
+export function controlarPieza(formato: IdFormato, c: Contenido, identidad: Kit, brief: Brief): Observacion[] {
   const obs: Observacion[] = [];
   const L = FORMATOS[formato].limites;
   const textos = textosDe(formato, c);

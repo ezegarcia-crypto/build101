@@ -19,11 +19,12 @@ import {
   promptPlanificador,
   promptRedactor,
 } from "@/lib/ia/contenidos/prompts";
-import type { Identidad } from "@/lib/ia/identidad";
+import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // El motor del módulo B. Encadena cuatro pasos, cada uno con su entrada y su salida fijas:
 //
-//   1. planificar   brief + identidad      → plan del mes (pilares y piezas)        IA
+//   0. armarKit     identidad del módulo A → lo que los motores necesitan de la marca  sin IA
+//   1. planificar   ficha + kit            → plan del mes (pilares y piezas)        IA
 //   2. redactar     plan + una pieza        → el contenido de la pieza               IA
 //   3. controlar    contenido               → observaciones; si hay blocker, vuelve
 //                                             al redactor UNA vez con el problema    sin IA
@@ -45,7 +46,7 @@ function sumarUso(acc: Uso, r: { usage: { inputTokens?: number; outputTokens?: n
 // ── 1. Planificar ────────────────────────────────────────────────────────────────────────────
 
 export async function planificar(o: {
-  identidad: Identidad;
+  kit: Kit;
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
 }): Promise<{ plan: Plan; uso: Uso }> {
@@ -54,7 +55,7 @@ export async function planificar(o: {
   const r = await generateText({
     model: MODELO_PLAN,
     output: Output.object({ schema: planSchema }),
-    prompt: promptPlanificador(o.identidad, o.brief, mezcla),
+    prompt: promptPlanificador(o.kit, o.brief, mezcla),
   });
   sumarUso(uso, r);
   return { plan: r.output, uso };
@@ -63,7 +64,7 @@ export async function planificar(o: {
 // ── 2 y 3. Redactar y controlar ──────────────────────────────────────────────────────────────
 
 /** Las imágenes que necesita la pieza, con la marca ya aplicada al prompt. */
-function pedidosDeImagen(formato: IdFormato, contenido: Pieza["contenido"], identidad: Identidad): PedidoImagen[] {
+function pedidosDeImagen(formato: IdFormato, contenido: Pieza["contenido"], identidad: Kit): PedidoImagen[] {
   const { ancho, alto } = FORMATOS[formato];
   const pedido = (clave: string, escena: string | null | undefined, zona: "abajo" | "centro") =>
     escena ? [{ clave, prompt: promptImagen(escena, identidad, ancho, alto, zona), ancho, alto }] : [];
@@ -87,7 +88,7 @@ function pedidosDeImagen(formato: IdFormato, contenido: Pieza["contenido"], iden
 }
 
 export async function redactar(o: {
-  identidad: Identidad;
+  kit: Kit;
   brief: Brief;
   plan: Plan;
   item: ItemPlan;
@@ -95,7 +96,7 @@ export async function redactar(o: {
   const uso = uso0();
   const formato = o.item.formato;
   const schema = ESQUEMAS[formato];
-  const mensajes: ModelMessage[] = [{ role: "user", content: promptRedactor(o.identidad, o.brief, o.plan, o.item) }];
+  const mensajes: ModelMessage[] = [{ role: "user", content: promptRedactor(o.kit, o.brief, o.plan, o.item) }];
 
   let contenido: Pieza["contenido"] | undefined;
   let observaciones: ReturnType<typeof controlarPieza> = [];
@@ -111,7 +112,7 @@ export async function redactar(o: {
     });
     sumarUso(uso, r);
     contenido = r.output as Pieza["contenido"];
-    observaciones = controlarPieza(formato, contenido, o.identidad, o.brief);
+    observaciones = controlarPieza(formato, contenido, o.kit, o.brief);
     const bloqueantes = observaciones.filter((x) => x.gravedad === "blocker");
     if (!bloqueantes.length) break;
     mensajes.push({ role: "assistant", content: JSON.stringify(contenido) }, { role: "user", content: promptCorreccion(bloqueantes) });
@@ -124,7 +125,7 @@ export async function redactar(o: {
     contenido,
     estado: observaciones.some((x) => x.gravedad === "blocker") ? "revisar" : "aprobada",
     observaciones,
-    imagenes: pedidosDeImagen(formato, contenido!, o.identidad),
+    imagenes: pedidosDeImagen(formato, contenido!, o.kit),
     intentos,
   } as Pieza;
   return { pieza, uso };
@@ -134,6 +135,7 @@ export async function redactar(o: {
 
 export type Evento =
   | { tipo: "progreso"; mensaje: string }
+  | { tipo: "kit"; kit: Kit }
   | { tipo: "plan"; plan: Plan }
   | { tipo: "pieza"; pieza: Pieza }
   | { tipo: "imagen"; pieza: string; clave: string; url: string }
@@ -145,7 +147,7 @@ export type Evento =
  * Emite cada resultado apenas está listo. Un error en una pieza no frena a las demás.
  */
 export async function* generarLote(o: {
-  identidad: Identidad;
+  kit: Kit;
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
   imagenes?: boolean;
@@ -158,6 +160,7 @@ export async function* generarLote(o: {
     total.usd += u.usd;
   };
 
+  yield { tipo: "kit", kit: o.kit };
   yield { tipo: "progreso", mensaje: "Pensando qué tiene que contar tu marca este mes" };
   const { plan, uso } = await planificar(o);
   sumar(uso);

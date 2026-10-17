@@ -1,6 +1,6 @@
 import type { Pieza } from "@/lib/ia/contenidos/esquemas";
 import { FORMATOS } from "@/lib/ia/contenidos/formatos";
-import { urlsGoogleFonts, type Identidad } from "@/lib/ia/identidad";
+import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // El compositor: dibuja cada pieza en SVG con la marca del cliente. Sin IA y sin dependencias de
 // servidor, así que corre igual en la pantalla (para redibujar cuando llegan las imágenes) que en
@@ -9,7 +9,7 @@ import { urlsGoogleFonts, type Identidad } from "@/lib/ia/identidad";
 // Lo que garantiza:
 // - Colores y tipografías salen de la identidad; si un par de colores no se lee, elige otro.
 // - El texto se achica y se parte en líneas hasta entrar; nunca se corta.
-// - El logo se usa tal cual (SVG de la identidad). Si todavía no hay, firma con el nombre.
+// - El isotipo se usa tal cual (SVG del módulo A), con el nombre al lado. Nunca se redibuja.
 // - Historias y reels respetan la zona segura de arriba y de abajo.
 // - Mientras una imagen no llegó, su lugar se pinta con un color de la marca.
 
@@ -48,7 +48,7 @@ export type Colores = {
   apoyo: string;
 };
 
-export function coloresDeMarca(identidad: Identidad): Colores {
+export function coloresDeMarca(identidad: Kit): Colores {
   const p = identidad.paleta;
   const rol = (r: string) => p.find((c) => c.rol === r)?.hex;
   const hexes = p.map((c) => c.hex);
@@ -165,25 +165,30 @@ function bloque(b: Bloque): { svg: string; alto: number } {
 const aBase64 = (s: string) =>
   typeof Buffer !== "undefined" ? Buffer.from(s, "utf8").toString("base64") : btoa(unescape(encodeURIComponent(s)));
 
-/** El logo real, tal cual. Sin logo, el nombre con la tipografía de títulos (no es un logo nuevo). */
-function firma(id: Identidad, x: number, y: number, alto: number, sobre: string, ancla: "inicio" | "fin" | "centro" = "inicio"): string {
-  const oscuro = luminancia(sobre) < 0.3;
-  const svg = (oscuro && id.logo.svg_sobre_oscuro) || id.logo.svg;
-  const anchoMax = alto * 5;
-  if (svg) {
-    const xx = ancla === "fin" ? x - anchoMax : ancla === "centro" ? x - anchoMax / 2 : x;
-    const alinear = { inicio: "xMinYMid", fin: "xMaxYMid", centro: "xMidYMid" }[ancla];
-    return `<image href="data:image/svg+xml;base64,${aBase64(svg)}" x="${xx}" y="${y}" width="${anchoMax}" height="${alto}" preserveAspectRatio="${alinear} meet"/>`;
-  }
+/** Ancho de la firma: el isotipo (cuadrado) más el nombre al lado. */
+function anchoFirma(id: Kit, alto: number): number {
+  return (id.isotipo_svg ? alto * 1.3 : 0) + id.nombre.length * alto * 0.8 * ANCHO_LETRA;
+}
+
+/**
+ * La firma de la marca: el isotipo del módulo A tal cual (nunca se redibuja) y el nombre al lado
+ * con la tipografía de títulos, como lo compone el brandbook. Sin isotipo, solo el nombre.
+ */
+function firma(id: Kit, x: number, y: number, alto: number, sobre: string, ancla: "inicio" | "fin" | "centro" = "inicio"): string {
+  const ancho = anchoFirma(id, alto);
+  const x0 = ancla === "fin" ? x - ancho : ancla === "centro" ? x - ancho / 2 : x;
   const t = id.tipografias.titulos;
   const color = elMasLegible(sobre, id.paleta.map((c) => c.hex));
-  const anclaSvg = ancla === "fin" ? ` text-anchor="end"` : ancla === "centro" ? ` text-anchor="middle"` : "";
-  return `<text x="${x}" y="${y + alto * 0.78}" font-family="${esc(t.familia)}" font-size="${alto * 0.8}" font-weight="${t.peso}" fill="${color}"${anclaSvg}>${esc(id.nombre)}</text>`;
+  const iso = id.isotipo_svg
+    ? `<image href="data:image/svg+xml;base64,${aBase64(id.isotipo_svg)}" x="${x0}" y="${y}" width="${alto}" height="${alto}" preserveAspectRatio="xMidYMid meet"/>`
+    : "";
+  const xNombre = x0 + (id.isotipo_svg ? alto * 1.3 : 0);
+  return `${iso}<text x="${xNombre}" y="${y + alto * 0.78}" font-family="${esc(t.familia)}" font-size="${alto * 0.8}" font-weight="${t.peso}" fill="${color}">${esc(id.nombre)}</text>`;
 }
 
 /** La firma sobre una foto va en una placa del color de fondo, para que se lea sobre cualquier imagen. */
-function firmaSobreFoto(id: Identidad, x: number, y: number, alto: number, c: Colores): string {
-  const ancho = id.logo.svg ? alto * 5 : id.nombre.length * alto * 0.8 * ANCHO_LETRA;
+function firmaSobreFoto(id: Kit, x: number, y: number, alto: number, c: Colores): string {
+  const ancho = anchoFirma(id, alto);
   const pad = alto * 0.45;
   return `<rect x="${x - pad}" y="${y - pad}" width="${ancho + pad * 2}" height="${alto + pad * 2}" rx="${pad}" fill="${c.fondo}"/>${firma(id, x, y, alto, c.fondo)}`;
 }
@@ -199,8 +204,8 @@ function boton(texto: string, x: number, y: number, c: Colores, familia: string,
   return `<rect x="${x}" y="${y}" width="${ancho}" height="${alto}" rx="${alto / 2}" fill="${c.principal}"/><text x="${x + ancho / 2}" y="${y + alto / 2 + tamaño * 0.35}" text-anchor="middle" font-family="${esc(familia)}" font-size="${tamaño}" font-weight="600" fill="${c.sobrePrincipal}">${esc(texto)}</text>`;
 }
 
-function lienzo(id: Identidad, ancho: number, alto: number, fondo: string, cuerpo: string, alt: string): string {
-  const fuentes = urlsGoogleFonts(id)
+function lienzo(id: Kit, ancho: number, alto: number, fondo: string, cuerpo: string, alt: string): string {
+  const fuentes = id.fuentes
     .map((u) => `@import url('${u}');`)
     .join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ancho} ${alto}" width="${ancho}" height="${alto}" role="img" aria-label="${esc(alt)}"><style>${fuentes}</style><rect width="${ancho}" height="${alto}" fill="${fondo}"/>${cuerpo}</svg>`;
@@ -214,11 +219,12 @@ function semilla(s: string): number {
 }
 
 const DESLIZA = { vos: "Deslizá →", tu: "Desliza →", usted: "Deslice →" } as const;
+const ESCRIBI = { vos: "Escribí algo…", tu: "Escribe algo…", usted: "Escriba algo…" } as const;
 
 // ── Composiciones ────────────────────────────────────────────────────────────────────────────
 
 type Cuadro = {
-  id: Identidad;
+  id: Kit;
   c: Colores;
   ancho: number;
   alto: number;
@@ -292,7 +298,7 @@ function cuadroTipografico(k: Cuadro, invertido = false, maxLineas = 5): string 
 }
 
 /** El sticker de la historia, dibujado como se va a ver (la red lo reemplaza por el real). */
-function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, y: number, c: Colores, id: Identidad, ancho: number): string {
+function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, y: number, c: Colores, id: Kit, ancho: number): string {
   if (s.tipo === "ninguno") return "";
   const fam = esc(id.tipografias.texto.familia);
   const w = 760;
@@ -307,7 +313,7 @@ function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, 
       .join("");
     h = 340;
   } else if (s.tipo === "pregunta") {
-    cuerpo = `<rect x="${x + 40}" y="${y + 110}" width="${w - 80}" height="90" rx="20" fill="#EFEFEF"/><text x="${ancho / 2}" y="${y + 166}" text-anchor="middle" font-family="${fam}" font-size="30" fill="#8A8A8A">Escribí algo…</text>`;
+    cuerpo = `<rect x="${x + 40}" y="${y + 110}" width="${w - 80}" height="90" rx="20" fill="#EFEFEF"/><text x="${ancho / 2}" y="${y + 166}" text-anchor="middle" font-family="${fam}" font-size="30" fill="#8A8A8A">${ESCRIBI[id.voz.trato]}</text>`;
     h = 240;
   } else if (s.tipo === "cuenta_regresiva") {
     cuerpo = `<text x="${ancho / 2}" y="${y + 180}" text-anchor="middle" font-family="${fam}" font-size="80" font-weight="700" fill="${c.principal}">00 : 00 : 00</text>`;
@@ -319,7 +325,7 @@ function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, 
 }
 
 /** El texto de una escena de reel: grande, sobre una caja de la marca para que se lea sobre cualquier foto. */
-function textoEscena(texto: string, y: number, c: Colores, id: Identidad, ancho: number): string {
+function textoEscena(texto: string, y: number, c: Colores, id: Kit, ancho: number): string {
   const T = id.tipografias.titulos;
   const { lineas, tamaño } = ajustar(texto, { anchoMax: ancho - 220, maxLineas: 3, max: 86, min: 52 });
   const paso = tamaño * 1.25;
@@ -336,7 +342,7 @@ function textoEscena(texto: string, y: number, c: Colores, id: Identidad, ancho:
 // ── La función pública ───────────────────────────────────────────────────────────────────────
 
 /** Dibuja todos los lienzos de una pieza. `imagenes` es clave → URL (o data URL) de la imagen. */
-export function componerPieza(pieza: Pieza, identidad: Identidad, imagenes: Imagenes = {}): Lienzo[] {
+export function componerPieza(pieza: Pieza, identidad: Kit, imagenes: Imagenes = {}): Lienzo[] {
   const c = coloresDeMarca(identidad);
   const f = FORMATOS[pieza.formato];
   const { ancho, alto } = f;

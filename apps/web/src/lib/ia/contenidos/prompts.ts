@@ -1,7 +1,7 @@
 import type { Brief } from "@/lib/ia/brief";
 import type { ItemPlan, Observacion, Plan } from "@/lib/ia/contenidos/esquemas";
 import { FORMATOS, type IdFormato } from "@/lib/ia/contenidos/formatos";
-import type { Identidad } from "@/lib/ia/identidad";
+import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // Los prompts del módulo B. Se arman con funciones porque cada uno inyecta la marca del cliente
 // (su voz, sus reglas, sus palabras prohibidas) y las reglas del formato desde el registro.
@@ -10,7 +10,7 @@ import type { Identidad } from "@/lib/ia/identidad";
 export const MODELO_PLAN = "anthropic/claude-sonnet-5.5";
 export const MODELO_REDACCION = "anthropic/claude-sonnet-5.5";
 
-const TRATO: Record<Identidad["voz"]["trato"], string> = {
+const TRATO: Record<Kit["voz"]["trato"], string> = {
   vos: "de vos, en español rioplatense (tenés, querés, vení)",
   tu: "de tú (tienes, quieres, ven)",
   usted: "de usted (tiene, quiere, venga)",
@@ -46,15 +46,15 @@ function bloqueNegocio(brief: Brief): string {
     .join("\n");
 }
 
-function bloqueVoz(identidad: Identidad): string {
+function bloqueVoz(identidad: Kit): string {
   const v = identidad.voz;
-  const ejemplos = v.ejemplos.map((e) => `  Sí: «${e.si}» · No: «${e.no}»`).join("\n");
+  const ejemplos = v.ejemplos.map((e) => `  «${e}»`).join("\n");
   return [
     `Marca: ${identidad.nombre}. ${identidad.esencia}`,
     `Promesa: ${identidad.promesa}`,
     `Mensajes que repite: ${identidad.mensajes_clave.join(" / ")}`,
     `Trato: ${TRATO[v.trato]}. Tono: ${v.tono.join(", ")}.`,
-    v.reglas.length ? `Cómo escribe: ${v.reglas.join("; ")}.` : "",
+    v.reglas.length ? `Cómo escribe:\n${v.reglas.map((r) => `- ${r}`).join("\n")}` : "",
     v.lexico_si.length ? `Palabras suyas: ${v.lexico_si.join(", ")}.` : "",
     `Nunca usa: ${[...v.lexico_no, ...CLICHES].join(", ")}.`,
     ejemplos ? `Así suena:\n${ejemplos}` : "",
@@ -65,7 +65,7 @@ function bloqueVoz(identidad: Identidad): string {
 
 // ── Planificador ─────────────────────────────────────────────────────────────────────────────
 
-export function promptPlanificador(identidad: Identidad, brief: Brief, mezcla: Record<IdFormato, number>): string {
+export function promptPlanificador(identidad: Kit, brief: Brief, mezcla: Record<IdFormato, number>): string {
   const total = Object.values(mezcla).reduce((a, b) => a + b, 0);
   const formatos = (Object.keys(mezcla) as IdFormato[])
     .filter((f) => mezcla[f] > 0)
@@ -96,7 +96,7 @@ ${formatos}
 
 // ── Redactor ─────────────────────────────────────────────────────────────────────────────────
 
-export function promptRedactor(identidad: Identidad, brief: Brief, plan: Plan, item: ItemPlan): string {
+export function promptRedactor(identidad: Kit, brief: Brief, plan: Plan, item: ItemPlan): string {
   const f = FORMATOS[item.formato];
   const limites = Object.entries(f.limites)
     .map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`)

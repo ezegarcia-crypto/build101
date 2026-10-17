@@ -2,15 +2,15 @@
 
 Esta carpeta la mantiene Eze (rama `contenidos`, después `ia`). Las pantallas la usan, no la cambian.
 
-Con la ficha de la marca (`Brief`, sale de la entrevista) y la identidad (`Identidad`, sale del
-módulo A), genera un lote de contenidos para redes: el plan del mes y las piezas escritas con la voz
+Con la ficha de la marca (`Brief`, sale de `/api/entrevista`) y la identidad (sale de
+`/api/identidad`, módulo A), genera un lote de contenidos para redes: el plan del mes y las piezas escritas con la voz
 de la marca, con sus imágenes, y las dibuja con los colores, las tipografías y el logo del cliente.
 
 ## La idea: la IA escribe, el motor diseña
 
 | Paso | Archivo | Entra | Sale | IA |
 |---|---|---|---|---|
-| 0 · Contrato | `../identidad.ts` | — | Lo mínimo que el módulo A tiene que entregar: voz, paleta con roles, 2 tipografías de Google Fonts, estilo de foto y logo | — |
+| 0 · Kit | `kit.ts` → `armarKit` | Ficha + identidad del módulo A, tal cual | Lo que los motores necesitan de la marca: voz y trato, mensajes, paleta con roles, tipografías y su link, estilo de foto, isotipo. Si la identidad cambia de forma, solo se toca acá | Sin IA |
 | 1 · Registro de formatos | `formatos.ts` | — | Medidas, zona segura, límites y reglas de post, carrusel, historia y reel. Lo leen los prompts, el control y el compositor | — |
 | 2 · Planificar | `motor.ts` → `planificar` | Ficha + identidad + mezcla | 3 o 4 pilares propios del negocio y las piezas con idea, objetivo, día y hora | Sonnet 5.5 |
 | 3 · Redactar | `motor.ts` → `redactar` | Una pieza del plan | Las ranuras del formato (titular, bajada, láminas, pantallas, escenas…) y la escena de cada imagen | Sonnet 5.5 |
@@ -22,7 +22,7 @@ de la marca, con sus imágenes, y las dibuja con los colores, las tipografías y
 Reglas que el motor garantiza y no dependen de la IA:
 
 - **La marca del cliente manda en su lienzo** (retirada visual): ni el naranja ni el logo de BrandIA.
-- **El logo nunca lo dibuja una IA.** El compositor usa el SVG de la identidad tal cual; si todavía no hay logo, firma con el nombre en su tipografía de títulos.
+- **El logo nunca lo dibuja una IA de imágenes.** El compositor usa el isotipo SVG del módulo A tal cual, con el nombre al lado en la tipografía de títulos (como en el brandbook).
 - **Contraste:** si el color de texto o el de acento no se leen sobre el fondo, el compositor elige otro de la paleta (WCAG 4,5 para texto, 3 para el acento).
 - **El texto entra siempre:** se achica y se parte en líneas; nunca se corta. Historias y reels respetan 250 px de zona segura arriba y abajo.
 - **Nada inventado:** lo que falta va «[a confirmar]» y queda listado en `datos_a_confirmar`.
@@ -38,6 +38,7 @@ Marcado mínimo en los textos de la imagen: `*palabra*` va en el color de acento
 const res = await fetch("/api/contenidos/lote", {
   method: "POST",
   headers: { "content-type": "application/json" },
+  // brief y identidad tal cual vinieron de /api/entrevista y /api/identidad
   body: JSON.stringify({ brief, identidad, imagenes: true }), // mezcla opcional: { post: 2, carrusel: 1, historia: 2, reel: 1 }
 });
 // Responde una línea JSON por evento, apenas cada cosa está lista (NDJSON).
@@ -56,17 +57,18 @@ Eventos, en este orden aproximado:
 
 | `tipo` | Trae | Qué hacer en pantalla |
 |---|---|---|
+| `kit` | `kit` | Guardarlo: es lo que se le pasa a `componerPieza` |
 | `progreso` | `mensaje` | Mostrarlo con la animación de carga |
 | `plan` | `plan` (pilares y piezas) | Dibujar el calendario o el feed vacío con sus lugares |
-| `pieza` | `pieza` | `componerPieza(pieza, identidad)` y mostrar los SVG (sin imágenes todavía, el lugar se pinta con un color de la marca) |
-| `imagen` | `pieza`, `clave`, `url` (data URL jpeg) | Guardarla y volver a componer esa pieza con `componerPieza(pieza, identidad, imagenesDeEsaPieza)` |
+| `pieza` | `pieza` | `componerPieza(pieza, kit)` y mostrar los SVG (sin imágenes todavía, el lugar se pinta con un color de la marca) |
+| `imagen` | `pieza`, `clave`, `url` (data URL jpeg) | Guardarla y volver a componer esa pieza con `componerPieza(pieza, kit, imagenesDeEsaPieza)` |
 | `error` | `donde`, `mensaje` | Esa pieza o imagen falló; las demás siguen |
 | `fin` | `uso` (tokens y USD), `imagenes`, `segundos` | Cerrar la carga |
 
 `componerPieza` (de `@/lib/ia/contenidos/componer`) no usa nada de servidor: se importa directo en
 un componente de cliente. Devuelve `[{ clave, svg, ancho, alto, segundos? }]`. Para mostrar el SVG:
 `<div dangerouslySetInnerHTML={{ __html: l.svg }} />` con el ancho que quieras (es responsive por
-`viewBox`). Las tipografías: cargá en la página los links de `urlsGoogleFonts(identidad)`.
+`viewBox`). Las tipografías: cargá en la página `identidad.fuentes_url` (o `kit.fuentes`).
 
 - **Reel:** cada lienzo es una escena con sus `segundos`. La pantalla los pasa en secuencia (con
   la animación que quiera) y muestra `pieza.contenido.ganchos`, `voz_en_off`, `toma` y `musica`
@@ -81,13 +83,17 @@ un componente de cliente. Devuelve `[{ clave, svg, ancho, alto, segundos? }]`. P
 - `POST /api/contenidos/pieza` con `{ brief, identidad, plan, id }` → `{ pieza, uso }`. Para el botón "otra versión".
 - `POST /api/contenidos/imagen` con uno de `pieza.imagenes` → `{ clave, url, usd }`.
 
-## Tiempos y costos medidos (17/10, por el Gateway)
+## Tiempos y costos medidos (17/10, por el Gateway, 3 negocios distintos)
 
-| Qué | Tiempo | Costo |
-|---|---|---|
-| Plan del mes | ~18 s | incluido abajo |
-| 6 piezas (2 posts, 1 carrusel, 2 historias, 1 reel), en paralelo | ~30 s después del plan | USD ~0,15 el lote, solo texto |
-| Una imagen (gpt-image-2, 1024×1536, jpeg) | 10 a 25 s, en paralelo | se suma en `uso.usd` del evento `fin` |
+| Qué | Tiempo |
+|---|---|
+| Plan del mes | ~18 s |
+| 6 piezas (2 posts, 1 carrusel, 2 historias, 1 reel), en paralelo | ~30 s después del plan (el reel es la más lenta) |
+| 9 a 11 imágenes (gpt-image-2, 1024×1536, jpeg), en paralelo | 10 a 25 s cada una, empiezan apenas sale su pieza |
+| **Lote completo con imágenes** | **~70 s** |
+
+Costo del lote que informa el Gateway en `uso.usd` del evento `fin`: USD 0,15 a 0,18 solo texto y
+USD ~0,25 con imágenes. Para el pitch conviene confirmar el costo de las imágenes en el panel de Vercel.
 
 ## Probar sin pantalla
 
@@ -95,14 +101,13 @@ un componente de cliente. Devuelve `[{ clave, svg, ancho, alto, segundos? }]`. P
 npx tsx --tsconfig apps/web/tsconfig.json --env-file=.env.local scripts/probar-contenidos.ts <carpeta> [--imagenes] [--solo=bicis|psicologa|parrilla]
 ```
 
-Como el módulo A todavía no existe, para cada negocio de prueba otra IA inventa la ficha y la
-identidad con los formatos reales. Deja, por negocio, `index.html` (piezas + JSON), `galeria.html`
-(solo las piezas) y `resultado.json`. Ese banco es solo de prueba: nada de eso entra a la app.
+Otra IA inventa la ficha de cada negocio (como si saliera de la entrevista) y desde ahí corre lo
+real: `/api/direcciones` (elige la A), `/api/identidad` y el lote. Deja, por negocio, `index.html`
+(piezas y textos), `galeria.html` (solo las piezas) y `resultado.json`. Solo es banco de prueba.
 
 ## Lo que sigue
 
-1. **Módulo A:** el motor de identidad tiene que devolver una `Identidad` (ver `../identidad.ts`).
-   Con eso, la pantalla encadena entrevista → identidad → `/api/contenidos/lote`.
+1. **Juntar con `ia` y después con `main`:** esta rama ya trae el módulo A mergeado y probado junto.
 2. **Pantalla del feed** (Juan Pedro): consumir el lote como está arriba. Carrusel 3D de piezas.
 3. **Reel con voz en off:** ElevenLabs lee `voz_en_off` de cada escena.
 4. **Pauta en Meta, "qué funciona en tu rubro"** (siguiente formato del registro, `FORMATOS_PROXIMOS`):

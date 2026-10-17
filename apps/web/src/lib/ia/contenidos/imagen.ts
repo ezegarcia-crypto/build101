@@ -1,7 +1,7 @@
 import { generateImage } from "ai";
 
 import type { PedidoImagen } from "@/lib/ia/contenidos/esquemas";
-import type { Identidad } from "@/lib/ia/identidad";
+import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // Las imágenes de las piezas. El redactor solo describe la escena; este motor le suma la marca
 // (estilo de foto, clima de color, lo que nunca aparece) y las reglas fijas: sin texto y sin
@@ -20,14 +20,14 @@ function relacion(ancho: number, alto: number): `${number}:${number}` {
 }
 
 /** Arma el prompt de la imagen con la marca aplicada. Sin IA: siempre igual para la misma entrada. */
-export function promptImagen(escena: string, identidad: Identidad, ancho: number, alto: number, zona: "abajo" | "centro"): string {
+export function promptImagen(escena: string, identidad: Kit, ancho: number, alto: number, zona: "abajo" | "centro"): string {
   const colores = identidad.paleta.map((c) => `${c.nombre} ${c.hex}`).join(", ");
   const evitar = identidad.estilo_visual.evitar.join(", ");
   return [
     `Fotografía realista para una publicación de redes de la marca «${identidad.nombre}».`,
     `Escena: ${escena}`,
     `Estilo de foto de la marca: ${identidad.estilo_visual.fotografia}`,
-    `Clima de color: que dialogue con la paleta (${colores}) en objetos, materiales y luz, sin teñir la foto de un color.`,
+    `Clima de color: que dialogue con la paleta (${colores}) en objetos, materiales y luz, sin teñir la foto de un color. ${identidad.estilo_visual.uso_de_colores}`,
     `Encuadre vertical ${relacion(ancho, alto)}. Dejá una zona tranquila y despejada ${zona === "abajo" ? "en el tercio de abajo" : "en el centro"}: ahí va texto encima.`,
     "Natural y con imperfecciones reales: nada de simetría perfecta, piel de plástico ni aspecto de render.",
     "Sin ningún texto, letras, números, carteles legibles, logos, marcas de agua ni marcas comerciales reconocibles.",

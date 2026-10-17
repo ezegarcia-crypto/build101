@@ -25,16 +25,44 @@ const { messages, sendMessage, status } = useChat({
 - **Tiempos medidos:** cada respuesta tarda de 3 a 8 segundos; el cierre con la ficha, unos 15. Mientras `status` sea `"submitted"` o `"streaming"`, mostrá un mensaje de progreso animado (ver `equipo/design-system.md`).
 - Prueba de punta a punta sin pantalla: con la web corriendo, `node --env-file=.env.local scripts/probar-entrevista.mjs`. Simula 3 clientes distintos y muestra las fichas.
 
-## 2. Contenidos (módulo B): plan, piezas e imágenes con la marca
+## 2. Tres direcciones visuales para elegir
 
-**Ruta principal:** `POST /api/contenidos/lote`. Todo el detalle (pasos, eventos, cómo dibujar las
-piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
+**Ruta:** `POST /api/direcciones` con `{ brief }` (la ficha del paso 1). Devuelve JSON (no es un chat):
 
-Entra la ficha (`Brief`) más la identidad (`Identidad`, contrato en `identidad.ts`), y sale el
-plan del mes y las piezas (posteos, carrusel, historias y reel), cada una dibujada en SVG con la
-marca del cliente por `componerPieza`.
+```ts
+const r = await fetch("/api/direcciones", { method: "POST", body: JSON.stringify({ brief }) });
+const { direcciones } = await r.json(); // 3: A (la esperada), B (la vecina), C (la que se anima)
+```
+
+Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (una frase para el cliente), `palabras`, `paleta` (4 a 6 colores con `hex`, `nombre` y `rol`), `tipografias` (de Google Fonts), `formas`, `logo_sugerido` y, si la marca no tenía nombre, `nombre_marca`. Es lo que se muestra para que la persona elija. **Tarda unos 30 segundos.**
+
+## 3. La identidad de la dirección elegida
+
+**Ruta:** `POST /api/identidad` con `{ brief, direccion }` (la dirección que eligió la persona, tal cual vino). Devuelve `{ identidad }`:
+
+- `nombre`, `eslogan`
+- `esencia`: idea, propósito, promesa, posicionamiento, público y valores
+- `voz`: resumen, rasgos (qué es y qué no es), palabras sí y no, y ejemplos (bio de Instagram, posteo, respuesta a un cliente, cartel)
+- `estilo`: uso de colores, fotografía e íconos
+- `brandbook`: introducción, usos correctos e incorrectos, aplicaciones
+- `paleta` (ya con el contraste corregido si hacía falta) y `tipografias` (`titulos` y `texto`)
+- `fuentes_url`: el link de Google Fonts. En la pantalla: `<link rel="stylesheet" href={identidad.fuentes_url} />` y después `font-family` con esos nombres
+- `logo.isotipo_svg`: el símbolo en SVG (viewBox 100×100), ya limpio y seguro. Se muestra con `dangerouslySetInnerHTML`. El nombre se compone al lado con la tipografía de títulos
+- `comprobaciones`: lista de `{ que, ok, detalle }` (contraste del texto, color principal, tipografías y logo). **Mostrarlas en el brandbook**: son la prueba de calidad que pide la rúbrica
+
+**Tarda unos 30 segundos** (textos y logo se generan en paralelo). Mostrá progreso animado mientras tanto.
+
+Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-entrevistas.json]`. Genera 3 marcas fijas (más las de las entrevistas si se las pasás) y arma una página para mirarlas. La última corrida está en `equipo/identidades-de-prueba.html`.
+
+## 4. Contenidos (módulo B): plan, piezas e imágenes con la marca
+
+**Ruta principal:** `POST /api/contenidos/lote` con `{ brief, identidad }`: la ficha del paso 1 y la
+identidad del paso 3, tal cual vinieron. Todo el detalle (pasos, eventos, cómo dibujar las piezas en
+pantalla, tiempos y costos) en `contenidos/README.md`.
+
+Sale el plan del mes y las piezas (posteos, carrusel, historias y reel), cada una dibujada en SVG con
+la marca del cliente por `componerPieza`.
 
 ## Lo que viene
 
-- La identidad: con la ficha, Claude Opus genera estrategia, voz, paleta, tipografías y logo. Tiene que devolver, como mínimo, el formato de `identidad.ts`: es lo que necesitan los contenidos.
 - La voz: el agente de ElevenLabs hace la misma entrevista hablando y termina en la misma ficha.
