@@ -3,6 +3,9 @@
 // La clave (ELEVENLABS_API_KEY, con el permiso "De voz a texto") se queda en el servidor.
 //
 // POST /api/transcribir  (form-data, campo "audio")  →  { texto }
+// El audio y su texto quedan guardados con el resto de la prueba (lib/pruebas.ts).
+
+import { conGrabacion } from "@/lib/pruebas";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,7 +19,7 @@ const MAXIMO_BYTES = 5 * 1024 * 1024;
 const AUDIOS_POR_MINUTO = 20; // por servidor, como en lib/ia/gastos.ts: varios jurados a la vez
 let recientes: number[] = [];
 
-export async function POST(req: Request) {
+export const POST = conGrabacion("transcribir", async (req: Request) => {
   const clave = process.env.ELEVENLABS_API_KEY;
   if (!clave) {
     return Response.json({ error: "Falta ELEVENLABS_API_KEY en las variables de entorno." }, { status: 503 });
@@ -71,4 +74,4 @@ export async function POST(req: Request) {
     );
   }
   return Response.json({ texto });
-}
+});
