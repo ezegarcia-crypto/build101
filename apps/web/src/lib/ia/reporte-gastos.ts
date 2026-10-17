@@ -206,6 +206,8 @@ export async function armarReporte() {
     .filter((f) => f.tag?.startsWith("cliente:"))
     .map((f) => ({ id: (f.tag ?? "").slice("cliente:".length), total: f.totalCost, llamadas: f.requestCount ?? 0 }))
     .map((c) => ({ ...c, inicio: inicioDelCliente(c.id) }))
+    // Los ids reales traen la hora en que se crearon; uno sin fecha creíble es una prueba a mano, no un cliente
+    .filter((c) => c.inicio !== null)
     .sort((a, b) => (b.inicio?.getTime() ?? 0) - (a.inicio?.getTime() ?? 0))
     .slice(0, CLIENTES_EN_DETALLE);
   let sinDetalle = 0;
