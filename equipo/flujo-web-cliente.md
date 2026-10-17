@@ -25,6 +25,7 @@ En cada paso:
 | 4 | Vista previa y cambios por chat | Marina + IA | 5–10 min |
 | 5 | Elegir el dominio | Marina + IA + chequeo automático | 3 min |
 | 6 | Datos del titular, confirmación y pago | Marina | 3 min |
+| 6b | BrandIA compra el dominio a nombre del cliente | Automático + Marina confirma su mail | Minutos |
 | 7 | Publicación | Automático | De minutos a unas horas |
 | 8 | Entrega: link, QR y próximos pasos | IA | 1 min |
 | 9 | Después: cambios, renovación y visitas | Marina + IA | Siempre |
@@ -178,8 +179,9 @@ Antes de armar la web, BrandIA mira **qué hacen otras webs del mismo rubro**: q
 **BrandIA hace:** propone nombres a partir del nombre, el rubro y el barrio. Si el nombre ideal está ocupado, busca alternativas que suenen bien, como "costapocitos.com".
 
 **Detrás de escena:** cada nombre se revisa **en vivo**, sin lista armada a mano:
-- los `.com`, `.net` y `.store` se consultan en el registro público de dominios;
-- los `.uy` se consultan con NIC.uy, el registro de Uruguay.
+- los que vende Vercel (`.com`, `.net`, `.store` y unos 550 más) se consultan con la búsqueda de Vercel, que devuelve si está libre y el precio real de compra y de renovación, en dólares. No pide clave ni compra nada;
+- los `.uy` **no los vende Vercel**: la búsqueda los da como "no disponibles" aunque estén libres. Se consultan aparte (NIC.uy o un registrador uruguayo) y, si no se puede, se muestran como "se confirma con NIC.uy".
+- Se ocultan los dominios "premium" (los que el registro cobra mucho más caro).
 
 **Las 3 opciones:**
 1. **Comprar un dominio nuevo.** Es lo más común.
@@ -208,6 +210,44 @@ Antes de armar la web, BrandIA mira **qué hacen otras webs del mismo rubro**: q
 
 ---
 
+## Paso 6b · BrandIA compra el dominio
+
+El paso intermedio entre el pago y la publicación. Lo hace BrandIA sola, sin IA: es una compra.
+
+**Marina ve:** "Registrando panaderiacosta.com a tu nombre…" y, al rato, un aviso: **"Te llegó un mail para confirmar que el dominio es tuyo. Tocá el link antes del [fecha]"**.
+
+**Detrás de escena, en orden:**
+
+1. **Primero se cobra, después se compra.** Vercel le cobra la compra a la tarjeta de BrandIA, así que solo se compra cuando Mercado Pago confirma que Marina pagó (el aviso automático de Mercado Pago, no la pantalla).
+2. **Se revisa de nuevo** que siga libre y que el precio sea el mismo que se le mostró. Si cambió, no se compra: se le avisa y se le devuelve la plata o se le ofrece otro.
+3. **Se compra a nombre de Marina** con la API de Vercel (`POST /v1/registrar/domains/{dominio}/buy`). Los datos del titular son los de ella: nombre, mail, teléfono y dirección. Va con el precio esperado (`expectedPrice`): si Vercel lo tiene distinto, rechaza la compra y no se cobra nada de más.
+4. **Se espera a que termine** (`GET /v1/registrar/orders/{id}`: `purchasing` → `completed` o `failed`). Si falla, se le devuelve el pago a Marina y se avisa al equipo.
+5. **Se conecta a la web:** el dominio se suma al proyecto de Vercel y se anota de qué web es. Como lo compró BrandIA en Vercel, el DNS y el candado se arman solos.
+6. **Marina confirma su mail.** El registro le manda un mail para verificar que los datos son de ella. Si no lo confirma a tiempo, el dominio se suspende. BrandIA lo controla (`GET /v1/registrar/domains/{dominio}/contact-verification`) y se lo recuerda por mail y WhatsApp.
+
+**Reglas de seguridad:**
+- Nunca se compra sin pago aprobado, y nunca dos veces el mismo pedido (cada pedido tiene su número y se anota antes de comprar).
+- Tope de gasto: un máximo por dominio (sin "premium") y por día, para que un error no vacíe la tarjeta.
+- La clave de Vercel para comprar vive solo en el servidor (variables de entorno de Vercel), nunca en la pantalla.
+- **Renovación:** con renovación automática, Vercel le cobra a BrandIA cada año. Por eso BrandIA le cobra antes a Marina (o va dentro de la suscripción) y, si no paga, se apaga la renovación y se le avisa con tiempo.
+- **El dominio es de Marina:** si se quiere ir, BrandIA le da el código de traspaso (lo da la API de Vercel) para llevárselo a otro proveedor.
+
+**Otros proveedores (para lo que Vercel no vende):**
+
+| Proveedor | Para qué | Cómo |
+|---|---|---|
+| **Vercel** | Primera opción: `.com`, `.net`, `.store` y más | API completa: buscar, precio, comprar, renovar y traspasar. Queda conectado solo |
+| Registrador uruguayo habilitado por NIC.uy | `.uy` y `.com.uy` | Ver si tiene API. Si no, se compra a mano por el equipo y después se conecta como "dominio que ya tenía" |
+| Namecheap, Porkbun, Name.com u OpenSRS | Si Vercel no vende una terminación o sale mucho más barato | Tienen API. Después de comprar, hay que apuntar el DNS a Vercel |
+
+El código de la compra se arma con un "enchufe" por proveedor (buscar, comprar, ver el pedido y renovar), así sumar otro proveedor no cambia el resto del recorrido.
+
+**Terminado cuando:** el pedido figura `completed`, el dominio está en el proyecto de Vercel conectado a la web de Marina y ella confirmó su mail.
+
+**Prueba real (17/10):** la búsqueda de Vercel dio `huellasdellitoral.com` libre a USD 11,25 por año (lo mismo para renovar), y `.uy` y `.com.uy` como no disponibles porque Vercel no los vende.
+
+---
+
 ## Paso 7 · Publicación
 
 **Marina ve:** una barra de progreso con estados en palabras simples.
@@ -224,7 +264,7 @@ Si algo tarda, lo dice: "Algunas conexiones demoran hasta unas horas. Te avisamo
 
 | Etapa | Qué pasa | Herramienta posible |
 |---|---|---|
-| Registrar el dominio | Se compra a nombre de Marina | API (conexión automática) de un registrador: Vercel Domains, u otro con API; para `.uy`, un registrador habilitado por NIC.uy |
+| Registrar el dominio | Se compra a nombre de Marina | Paso 6b: la API de Vercel; para `.uy`, un registrador habilitado por NIC.uy |
 | Subir la web | La web queda alojada | Vercel. Una sola app de BrandIA sirve las webs de todos los clientes y reconoce cada una por su dominio |
 | Conectar el dominio | Se configura el DNS: la "guía telefónica" de internet que dice dónde está cada web | Automático si el dominio se compró por BrandIA; guiado si ya lo tenía |
 | Activar el candado | Certificado de seguridad (https) | Vercel lo hace solo y gratis |
@@ -291,9 +331,9 @@ Si algo tarda, lo dice: "Algunas conexiones demoran hasta unas horas. Te avisamo
 
 ## Decisiones pendientes
 
-1. **Registrador de dominios:** cuál, con API para revisar y comprar. Y cómo se compran los `.uy`.
+1. **Registrador de dominios:** Vercel para todo lo que vende (paso 6b). Falta: con qué registrador se compran los `.uy` y si tiene API.
 2. **Precios:** cuánto cobra BrandIA por la web y por el dominio, y si la web entra en la suscripción.
-3. **Dirección gratis:** `cliente.brandiamos.com` necesita que `brandiamos.com` apunte a Vercel. Hoy muestra la página de GoDaddy.
+3. **Dirección gratis:** `cliente.brandiamos.com` necesita un comodín `*.brandiamos.com` en Vercel. Decidido (17/10): no se toca el DNS este finde; en la demo se usa `app.brandiamos.com/w/...`.
 4. **Titularidad:** confirmar que el dominio va siempre a nombre del cliente.
 5. **Búsqueda de competencia:** qué herramienta busca en internet (la búsqueda web del modelo de IA u otra) y cuántas webs se analizan por cliente, por el costo.
 6. **Fotos generadas:** cómo se marcan para no engañar a quien visita la web.
