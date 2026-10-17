@@ -118,7 +118,7 @@ export function Branderia() {
   const listas = useRef<Record<string, string>>({});
   const aviso = useRef<HTMLDivElement>(null);
 
-  // Al pedir, el aviso aparece arriba del catálogo: se lleva la vista hasta ahí
+  // Al pedir, el resumen aparece abajo del catálogo: se lleva la vista hasta ahí
   useEffect(() => {
     if (pedido) aviso.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [pedido]);
@@ -250,11 +250,25 @@ export function Branderia() {
               </div>
             </div>
 
+            <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+              {CATALOGO.map((p) => (
+                <Tarjeta
+                  key={p.id}
+                  producto={p}
+                  foto={fotos[p.id] ?? { estado: "pendiente" }}
+                  marca={marca}
+                  cantidad={nivel[p.id] ?? 0}
+                  onCambiar={(paso) => cambiar(p.id, paso)}
+                  onSacar={() => sacar(marca, [p.id])}
+                />
+              ))}
+            </ul>
+
             {pedido && (
               <div
                 ref={aviso}
                 role="status"
-                className={`${s.entra} mb-3 flex flex-col gap-3 rounded-[16px] bg-primary p-4 text-primary-foreground sm:p-6`}
+                className={`${s.entra} mt-3 flex flex-col gap-3 rounded-[16px] bg-primary p-4 text-primary-foreground sm:p-6`}
               >
                 <div>
                   <EnConstruccion texto="El pedido está en construcción" />
@@ -273,20 +287,6 @@ export function Branderia() {
                 </p>
               </div>
             )}
-
-            <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
-              {CATALOGO.map((p) => (
-                <Tarjeta
-                  key={p.id}
-                  producto={p}
-                  foto={fotos[p.id] ?? { estado: "pendiente" }}
-                  marca={marca}
-                  cantidad={nivel[p.id] ?? 0}
-                  onCambiar={(paso) => cambiar(p.id, paso)}
-                  onSacar={() => sacar(marca, [p.id])}
-                />
-              ))}
-            </ul>
 
             <p className="mt-6 max-w-[40em] text-sm text-muted-foreground">
               Las fotos las genera la IA con el estilo de {marca.identidad.nombre}; el logo es el tuyo, tal cual. Sin
