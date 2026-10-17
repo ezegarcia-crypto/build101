@@ -12,7 +12,7 @@ Es el repo del equipo para **build 101**, la hackathon de IA de Montevideo (sáb
 ## Quiénes somos y cómo hablarnos
 
 - Equipo de 3, **ninguno es programador** ("vibe coders"): **Eze** (Ezequiel García), **Juan Pedro Portas** y **Rodrigo Portas**, los socios de **BrandIA**. Coordina Eze, que usa Claude Code todos los días.
-- En la hackathon se construye un **producto nuevo, desde cero**, según la consigna. De BrandIA se puede aprovechar la experiencia y las plantillas (por ejemplo, el pitch para inversores), pero no su código ni su producto.
+- **El producto de la hackathon es BrandIA** (decidido el sábado 17/10, después del kickoff). Lo que BrandIA tenía antes (idea, marca, pitch, landing y prototipos sin IA) está en `brandia/`. El producto que funciona se construye acá, durante el evento.
 - Hablanos en **español rioplatense** (voseo), simple y sin jerga. Si usás un término técnico, explicalo en la misma frase.
 - Pasos cortos y numerados, de a uno. Antes de hacer algo, decí qué vas a hacer y para qué.
 
@@ -20,13 +20,52 @@ Es el repo del equipo para **build 101**, la hackathon de IA de Montevideo (sáb
 
 - **Sábado 17:** 9 a 21 h. **Domingo 18:** 9 a 16 h. Universidad de Montevideo, FIUM (LATU). De noche la sede cierra.
 - La consigna se revela en el kickoff del sábado. Se evalúa el **producto de IA funcionando** (la IA tiene que ir *adentro* del producto) y el **pitch en vivo** ante un jurado de fundadores e inversores.
-- **Regla clave:** el producto se construye recién después del kickoff. Antes solo se preparan herramientas, cuentas, plantillas y métodos. No adelantes nada del producto.
+- **Regla clave:** la parte que funciona (pantallas, IA, datos) se construye durante el evento, en este repo.
+
+## La consigna (kickoff del sábado 17/10)
+
+Detalle en `equipo/kickoff-consigna.md`. Lo esencial:
+
+- Producto libre, pero su **función principal tiene que depender de la IA**. Prueba: si funciona igual sin IA, no vale. No vale un chat genérico, ni la IA como función secundaria, ni reglas armadas a mano.
+- En la demo, el jurado prueba con **casos propios**, no con los que preparamos. Nada armado a mano para que la demo salga bien.
+- Evaluación: 35 % producto funcionando, 25 % problema y valor, 20 % calidad del uso de la IA, 10 % experiencia de usuario, 10 % originalidad (confirmado en `equipo/build101-consigna.pdf`). Demo de 3 minutos y 3 de preguntas.
+- En el kickoff dijeron que **el repo tiene que ser público**; el PDF oficial habla de "acceso de lectura". Confirmar con un mentor. Hay que sumar al organizador como colaborador y hay revisión técnica del historial.
+- **Prohibido hardcodear:** nada de resultados escritos a mano en el código presentados como si los generara la IA. Costa sirve para ensayar, pero todo tiene que funcionar con cualquier marca que invente el jurado. Lo que todavía no funciona se muestra marcado como "en construcción".
+- El evento da Claude Code (una cuenta por equipo), Kiro de AWS y USD 250 de Tenki. **No se habló de créditos de API para la IA del producto**: preguntar.
+- En la sede el wifi bloquea SSH: usar git por HTTPS (ver el final de `equipo/kickoff-consigna.md`).
+
+## El producto: BrandIA
+
+Una persona le cuenta su negocio a BrandIA **hablando (agente de voz) o por chat**. La IA le hace preguntas, arma su identidad de marca y después le genera los contenidos con esa marca. Contexto completo en `brandia/`.
+
+**Está terminado cuando** alguien del jurado cuenta un negocio inventado en el momento y, en pocos minutos, ve su brandbook y su feed generados.
+
+Lo que se muestra en la presentación:
+
+| # | Parte | Estado en la demo |
+|---|---|---|
+| 1 | **Generación de marca:** entrevista por voz o chat → ficha de la marca → nombre y voz, paleta, tipografías, logo y brandbook | **Funciona**, con IA real |
+| 2 | **Contenido:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real |
+| 2b | Piezas de pauta | Opcional: se generan si llegamos; publicar en Meta queda para después |
+| 2c | Newsletter y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción" |
+| 3 | **BranderIA** (marketplace de merch) | "En construcción": ejemplos de productos con la marca y cómo funcionaría con proveedores, sin proveedores reales |
+
+Plan de tareas y reparto: `equipo/plan-finde.md`.
 
 ## Archivos
 
 | Archivo | Qué es |
 |---|---|
 | `equipo/EMPEZA-ACA.md` | Guía para las personas: qué leer y qué hacer hoy |
+| `equipo/build101-consigna.pdf` | **La consigna oficial**: consigna, rúbrica y cómo se evalúa (3 páginas) |
+| `equipo/kickoff-consigna.md` | La consigna, la evaluación y las reglas, resumidas del kickoff |
+| `equipo/plan-finde.md` | Plan de tareas y reparto para el finde |
+| `brandia/negocio/` | Contexto de BrandIA, decisiones, modelo de negocio, mercado y competencia |
+| `brandia/producto/` | Qué hace cada capa (identidad, suscripción, plus, marketplace), arquitectura y costos |
+| `brandia/motor-ia/` | Borrador de los prompts del motor (entrevista, referencias, direcciones) y `brief.schema.json` |
+| `brandia/marca/` | Logo v2 (SVG), `tokens.css` (colores y tipografías) y manual en texto |
+| `brandia/referencias/` | Prototipos, plataforma web, landing de lista de espera y copy: ideas de diseño y textos |
+| `equipo/kickoff-transcripcion.md` | Transcripción automática del kickoff (con errores) |
 | `equipo/warmup-explicado.pdf` | El warm up explicado para no programadores (28 páginas) |
 | `equipo/machete-build101.html` | Resumen del warm up, plan del finde y frases para pedirle al agente (abrir en el navegador) |
 | `equipo/checklist.md` | Checklist de preparación, por persona |
