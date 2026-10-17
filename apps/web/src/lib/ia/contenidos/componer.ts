@@ -181,6 +181,13 @@ function firma(id: Identidad, x: number, y: number, alto: number, sobre: string,
   return `<text x="${x}" y="${y + alto * 0.78}" font-family="${esc(t.familia)}" font-size="${alto * 0.8}" font-weight="${t.peso}" fill="${color}"${anclaSvg}>${esc(id.nombre)}</text>`;
 }
 
+/** La firma sobre una foto va en una placa del color de fondo, para que se lea sobre cualquier imagen. */
+function firmaSobreFoto(id: Identidad, x: number, y: number, alto: number, c: Colores): string {
+  const ancho = id.logo.svg ? alto * 5 : id.nombre.length * alto * 0.8 * ANCHO_LETRA;
+  const pad = alto * 0.45;
+  return `<rect x="${x - pad}" y="${y - pad}" width="${ancho + pad * 2}" height="${alto + pad * 2}" rx="${pad}" fill="${c.fondo}"/>${firma(id, x, y, alto, c.fondo)}`;
+}
+
 function foto(url: string | undefined, x: number, y: number, ancho: number, alto: number, relleno: string): string {
   if (!url) return `<rect x="${x}" y="${y}" width="${ancho}" height="${alto}" fill="${relleno}" opacity="0.35"/>`;
   return `<image href="${esc(url)}" x="${x}" y="${y}" width="${ancho}" height="${alto}" preserveAspectRatio="xMidYMid slice"/>`;
@@ -363,7 +370,7 @@ export function componerPieza(pieza: Pieza, identidad: Identidad, imagenes: Imag
         const conSticker = p.sticker.tipo !== "ninguno";
         const yStk = alto - f.zona_segura - 380;
         const cuerpo = (k.conFoto
-          ? [foto(k.url, 0, 0, ancho, alto, c.apoyo), firma(identidad, margen, f.zona_segura, 48, c.fondo), textoEscena(p.texto, alto * (conSticker ? 0.34 : 0.42), c, identidad, ancho)].join("")
+          ? [foto(k.url, 0, 0, ancho, alto, c.apoyo), firmaSobreFoto(identidad, margen, f.zona_segura, 44, c), textoEscena(p.texto, alto * (conSticker ? 0.34 : 0.42), c, identidad, ancho)].join("")
           : cuadroTipografico(k, false, conSticker ? 4 : 6)) + sticker(p.sticker, yStk, c, identidad, ancho);
         return { clave: `pantalla-${i + 1}`, ancho, alto, segundos: 5, svg: lienzo(identidad, ancho, alto, c.fondo, cuerpo, p.visual.alt) };
       });
