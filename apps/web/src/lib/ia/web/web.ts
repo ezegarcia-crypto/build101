@@ -109,7 +109,9 @@ const REGLAS = `## Reglas
 - Respetá lo que la persona no quiere mostrar (por ejemplo, precios).
 - Si un dato hace falta y no está (por ejemplo, el horario), armá la web igual sin ese dato: la app avisa que falta.
 - Un solo botón principal en la portada, con la acción principal de la ficha de la web. Si no hay dato para esa acción (por ejemplo, no hay WhatsApp), elegí la que sí tenga dato, o "ninguna".
-- Textos cortos, para leer en el celular.`;
+- Textos cortos, para leer en el celular.
+- No repitas: cada sección cuenta algo distinto (qué hay, cómo se pide, quién está detrás, dónde y cuándo). El diferencial de la marca va en la portada y, como mucho, una vez más; el eslogan, una sola vez. Ni el pie ni los títulos repiten frases de otras secciones.
+- Cada foto describe una escena distinta y concreta del negocio (un producto, el lugar, las manos trabajando, un cliente usándolo), no la misma escena con otras palabras.`;
 
 export const PROMPT_ARMAR_WEB = `Sos el diseñador web de BrandIA, una app que arma marcas con IA para emprendedores y PyMEs.
 Con la ficha de la marca, su identidad y la ficha de la web, armás una web de una sola página: elegís el estilo, el orden de las secciones y escribís todos los textos, también el título y la descripción para Google.

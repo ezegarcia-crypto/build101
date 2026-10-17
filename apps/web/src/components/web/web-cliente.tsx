@@ -17,6 +17,7 @@ import { type FichaWeb, primeraPregunta } from "@/lib/ia/web/ficha-web";
 import type { MarcaWeb, Web } from "@/lib/ia/web/web";
 
 import { Publicar } from "./publicar";
+import { useFotosWeb } from "./usar-fotos";
 import { VistaWeb } from "./vista-web";
 
 // La web del cliente, pasos 1, 3 y 4 de equipo/flujo-web-cliente.md:
@@ -312,6 +313,13 @@ function WebLista({
   const [error, setError] = useState<string | null>(null);
   const charla = useRef<HTMLDivElement>(null);
   const { web, ficha_web } = guardada;
+  const { fotos, generando } = useFotosWeb({
+    ficha: guardada.ficha,
+    web,
+    fichaWeb: ficha_web,
+    identidad,
+    rubro: marca.brief.marca.rubro,
+  });
 
   useEffect(() => {
     charla.current?.scrollTo({ top: charla.current.scrollHeight, behavior: "smooth" });
@@ -365,7 +373,7 @@ function WebLista({
                 celular ? "max-w-[390px]" : "max-w-full"
               }`}
             >
-              <VistaWeb web={web} ficha={ficha_web} identidad={identidad} />
+              <VistaWeb web={web} ficha={ficha_web} identidad={identidad} fotos={fotos} generandoFotos={generando} />
             </div>
           </div>
         </section>
@@ -421,7 +429,14 @@ function WebLista({
           </div>
 
           <div className="flex flex-col gap-3 pb-4">
-            <Publicar ficha={guardada.ficha} web={web} fichaWeb={ficha_web} identidad={identidad} ocupado={ocupado} />
+            <Publicar
+              ficha={guardada.ficha}
+              web={web}
+              fichaWeb={ficha_web}
+              identidad={identidad}
+              fotos={fotos}
+              ocupado={ocupado || generando}
+            />
             <Button variant="ghost" size="sm" onClick={onReiniciar} disabled={ocupado}>
               <RotateCcw data-icon="inline-start" />
               Empezar la web de nuevo

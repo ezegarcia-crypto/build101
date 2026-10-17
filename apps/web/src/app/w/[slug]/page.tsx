@@ -29,7 +29,7 @@ export default async function WebPublicada({ params }: Props) {
 
   return (
     <div className="row-span-full min-h-0 overflow-y-auto" style={{ background: fondo }}>
-      <VistaWeb web={datos.web} ficha={datos.ficha_web} identidad={datos.identidad} />
+      <VistaWeb web={datos.web} ficha={datos.ficha_web} identidad={datos.identidad} fotos={datos.fotos} />
       <p className="px-5 pt-2 pb-6 text-center text-xs" style={{ color: texto, opacity: 0.55 }}>
         Hecha con{" "}
         <a href="/" className="underline underline-offset-2" style={{ color: "inherit" }}>

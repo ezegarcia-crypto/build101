@@ -1,9 +1,9 @@
 import { medir } from "@/lib/ia/gastos";
 import { limpiarSvg } from "@/lib/ia/comprobaciones";
-import { publicarWeb, webPublicadaSchema } from "@/lib/webs";
+import { inicioFotos, publicarWeb, webPublicadaSchema } from "@/lib/webs";
 
 // Web del cliente, paso 7 (versión demo): publica la web en /w/[slug]. No usa IA.
-// Entra: { web, ficha_web, identidad, anterior?: { slug, clave } }. Sale: { slug, clave, url }.
+// Entra: { web, ficha_web, identidad, fotos, anterior?: { slug, clave } }. Sale: { slug, clave, url }.
 // Con `anterior` (lo que devolvió la publicación anterior), actualiza la misma dirección en vez de crear otra.
 
 const MAXIMO = 200_000; // bytes: una web con su logo pesa bastante menos
@@ -26,6 +26,13 @@ export const POST = medir("web-publicar", async (req: Request) => {
   // El logo se guarda limpio: solo etiquetas de dibujo, sin scripts ni eventos
   const { svg } = limpiarSvg(datos.data.identidad.logo.isotipo_svg);
   datos.data.identidad.logo.isotipo_svg = svg;
+
+  // Solo fotos de nuestra carpeta y que la web use: nada de imágenes de afuera
+  const inicio = inicioFotos();
+  const usadas = new Set(datos.data.web.secciones.map((s) => s.foto).filter(Boolean));
+  datos.data.fotos = Object.fromEntries(
+    Object.entries(datos.data.fotos).filter(([descripcion, url]) => inicio && url.startsWith(inicio) && usadas.has(descripcion)),
+  );
 
   const a = cuerpo.anterior as { slug?: unknown; clave?: unknown } | undefined;
   const anterior =

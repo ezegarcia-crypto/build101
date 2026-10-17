@@ -11,6 +11,7 @@ import {
 } from "@/lib/ia/logo";
 import { MODELO_NOMBRES } from "@/lib/ia/nombres";
 import { MODELO_WEB } from "@/lib/ia/web/ficha-web";
+import { MODELO_FOTO_WEB } from "@/lib/ia/web/fotos";
 
 // Para qué usa cada paso cada modelo. Sale de las mismas constantes que usa el código, así que si
 // alguien cambia un modelo, el panel /costos lo muestra solo. Lo medido (cuánto gastó cada modelo en
@@ -45,6 +46,7 @@ export const USOS: Record<Paso, Uso[]> = {
   "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],
   "web-armar": [{ modelo: MODELO_WEB, para: "Arma la web con la marca del cliente" }],
   "web-cambio": [{ modelo: MODELO_WEB, para: "Cambia la web según lo que pide la persona" }],
+  "web-foto": [{ modelo: MODELO_FOTO_WEB, para: "Genera las fotos de la web con la marca" }],
   // Publicar no usa IA (está en PASOS solo por el tope de pedidos por minuto)
   "web-publicar": [],
 };

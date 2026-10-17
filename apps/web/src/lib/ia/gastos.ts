@@ -25,6 +25,7 @@ export const PASOS = {
   "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
   "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
   "web-cambio": { modulo: "B", nombre: "Cambio de la web por chat", unidad: "cambio" },
+  "web-foto": { modulo: "B", nombre: "Una foto de la web", unidad: "foto" },
   "web-publicar": { modulo: "B", nombre: "Web publicada (sin IA)", unidad: "publicación" },
 } as const;
 
@@ -57,6 +58,7 @@ const POR_MINUTO: Record<Paso, number> = {
   "web-entrevista": 90,
   "web-armar": 15,
   "web-cambio": 40,
+  "web-foto": 30,
   "web-publicar": 20, // no usa IA: el tope es solo para cortar abusos
 };
 const recientes = new Map<Paso, number[]>();

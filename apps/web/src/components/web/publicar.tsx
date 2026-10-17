@@ -59,19 +59,21 @@ export function Publicar({
   web,
   fichaWeb,
   identidad,
+  fotos,
   ocupado,
 }: {
   ficha: string;
   web: Web;
   fichaWeb: FichaWeb;
   identidad: IdentidadIA;
+  fotos: Record<string, string>;
   ocupado: boolean;
 }) {
   const [publicada, setPublicada] = useState<Publicada | null>(null);
   const [publicando, setPublicando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
-  const version = useMemo(() => JSON.stringify({ web, fichaWeb }), [web, fichaWeb]);
+  const version = useMemo(() => JSON.stringify({ web, fichaWeb, fotos }), [web, fichaWeb, fotos]);
   const qr = useQr(publicada?.url ?? null, identidad);
 
   useEffect(() => setPublicada(leerPublicada(ficha)), [ficha]);
@@ -95,6 +97,7 @@ export function Publicar({
             fuentes_url: identidad.fuentes_url,
             logo: { isotipo_svg: identidad.logo.isotipo_svg },
           },
+          fotos,
           anterior: publicada ? { slug: publicada.slug, clave: publicada.clave } : undefined,
         }),
       });

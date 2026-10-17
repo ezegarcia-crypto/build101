@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 import {
   cargarFuentes,
@@ -76,14 +76,33 @@ function BotonWeb({ boton, ficha, colores, grande }: { boton: Boton; ficha: Fich
   );
 }
 
-/** El lugar de la foto. No hay fotos todavía: se dice qué foto va, sin hacerla pasar por real */
+/** Las fotos que generó la IA, por su descripción (la que escribió en `seccion.foto`), y si hay alguna en camino */
+const FotosWeb = createContext<{ fotos: Record<string, string>; generando: boolean }>({ fotos: {}, generando: false });
+
+/**
+ * El lugar de la foto. Si la IA ya la generó, va la foto, marcada como ilustrativa (no es del negocio).
+ * Si no, se dice qué foto va, sin hacerla pasar por real.
+ */
 function Foto({ texto, colores, alto }: { texto: string; colores: Colores; alto?: boolean }) {
+  const { fotos, generando } = useContext(FotosWeb);
+  const url = fotos[texto];
   return (
     <figure
-      className={`relative grid place-items-end overflow-hidden rounded-[14px] p-4 ${alto ? "aspect-[4/3]" : "aspect-[16/9] @2xl:aspect-[4/3]"}`}
+      className={`relative grid place-items-end overflow-hidden rounded-[14px] p-4 ${alto ? "aspect-[4/3]" : "aspect-[16/9] @2xl:aspect-[4/3]"} ${!url && generando ? "animate-pulse" : ""}`}
       style={{ background: colores.acento, color: colores.sobreAcento }}
     >
-      <figcaption className="text-xs leading-snug opacity-80">Foto · {texto}</figcaption>
+      {url ? (
+        <>
+          <img src={url} alt={texto} className="absolute inset-0 size-full object-cover" />
+          <figcaption className="relative rounded-full bg-black/45 px-2.5 py-1 text-[11px] leading-none text-white">
+            Foto ilustrativa
+          </figcaption>
+        </>
+      ) : (
+        <figcaption className="text-xs leading-snug opacity-80">
+          {generando ? "Generando la foto…" : `Foto · ${texto}`}
+        </figcaption>
+      )}
     </figure>
   );
 }
@@ -242,8 +261,22 @@ export type IdentidadVista = Pick<IdentidadIA, "nombre" | "paleta" | "tipografia
   logo: Pick<IdentidadIA["logo"], "isotipo_svg">;
 };
 
-export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb; identidad: IdentidadVista }) {
+export function VistaWeb({
+  web,
+  ficha,
+  identidad,
+  fotos,
+  generandoFotos = false,
+}: {
+  web: Web;
+  ficha: FichaWeb;
+  identidad: IdentidadVista;
+  /** Las fotos generadas, por su descripción. Sin fotos, cada lugar dice qué foto va */
+  fotos?: Record<string, string>;
+  generandoFotos?: boolean;
+}) {
   useEffect(() => cargarFuentes(identidad.fuentes_url), [identidad.fuentes_url]);
+  const contextoFotos = useMemo(() => ({ fotos: fotos ?? {}, generando: generandoFotos }), [fotos, generandoFotos]);
 
   const roles = rolesDe(identidad.paleta);
   const colores: Colores = {
@@ -257,6 +290,7 @@ export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb;
   const ig = ficha.contacto.instagram;
 
   return (
+    <FotosWeb.Provider value={contextoFotos}>
     <div
       // Los links toman el color de la marca, no el naranja de BrandIA (design-system.md, punto 5)
       className="@container min-h-full [&_a]:[color:inherit]"
@@ -297,5 +331,6 @@ export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb;
         {ig && <span>{ig}</span>}
       </footer>
     </div>
+    </FotosWeb.Provider>
   );
 }

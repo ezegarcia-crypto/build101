@@ -23,6 +23,8 @@ export const webPublicadaSchema = z.object({
   web: webSchema,
   ficha_web: fichaWebSchema,
   identidad: identidadWebSchema,
+  // Las fotos generadas, por su descripción (la de `seccion.foto`). El link tiene que ser de nuestra carpeta
+  fotos: z.record(z.string().max(300), z.string().max(500)).default({}),
 });
 
 export type WebPublicada = z.infer<typeof webPublicadaSchema>;
@@ -89,6 +91,31 @@ export async function publicarWeb(datos: WebPublicada, anterior?: { slug: string
     if (r.status !== 409) throw new Error(`Supabase respondió ${r.status}: ${(await r.text()).slice(0, 200)}`);
   }
   throw new Error("No encontramos una dirección libre para la web.");
+}
+
+// ---- Las fotos generadas (carpeta pública `webs-fotos` de Supabase Storage) ----
+
+const CARPETA_FOTOS = "webs-fotos";
+
+/** Dónde empiezan los links de las fotos: solo se aceptan fotos de nuestra carpeta */
+export function inicioFotos() {
+  const url = process.env.SUPABASE_URL;
+  return url ? `${url.replace(/\/$/, "")}/storage/v1/object/public/${CARPETA_FOTOS}/` : null;
+}
+
+/** Sube una foto y devuelve su link público */
+export async function subirFoto(bytes: Uint8Array, tipo: string) {
+  const url = process.env.SUPABASE_URL;
+  const clave = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !clave) throw new Error("Falta conectar la base de datos (SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY).");
+  const nombre = `${crypto.randomUUID()}.${tipo === "image/png" ? "png" : "jpg"}`;
+  const r = await fetch(`${url.replace(/\/$/, "")}/storage/v1/object/${CARPETA_FOTOS}/${nombre}`, {
+    method: "POST",
+    headers: { apikey: clave, Authorization: `Bearer ${clave}`, "content-type": tipo, "cache-control": "max-age=31536000" },
+    body: bytes as BodyInit,
+  });
+  if (!r.ok) throw new Error(`Supabase Storage respondió ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return `${inicioFotos()}${nombre}`;
 }
 
 /** La web publicada en esa dirección, o null si no existe */

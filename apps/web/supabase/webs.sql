@@ -18,3 +18,9 @@ alter table public.webs enable row level security;
 -- El proyecto no expone tablas nuevas solo: el permiso se da a mano y únicamente al servidor
 -- (service_role). La pantalla y cualquiera de afuera no tienen acceso.
 grant select, insert, update on public.webs to service_role;
+
+-- Las fotos que genera la IA para las webs (/api/web/foto). Carpeta pública: cualquiera puede VER una foto
+-- con su link (hace falta para la web publicada); solo el servidor, con la clave de servicio, puede subir.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('webs-fotos', 'webs-fotos', true, 2097152, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do nothing;
