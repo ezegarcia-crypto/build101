@@ -41,8 +41,8 @@ Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (un
 **Ruta:** `POST /api/identidad` con `{ brief, direccion }` (la dirección que eligió la persona, tal cual vino). Devuelve `{ identidad }`:
 
 - `nombre`, `eslogan`
-- `esencia`: idea, propósito, promesa, posicionamiento, público y valores
-- `voz`: resumen, rasgos (qué es y qué no es), palabras sí y no, y ejemplos (bio de Instagram, posteo, respuesta a un cliente, cartel)
+- `esencia`: idea, misión, visión, propósito, promesa, posicionamiento, público y valores
+- `voz`: resumen, rasgos (qué es y qué no es), tono según el momento (cómo se ajusta y un ejemplo), palabras sí y no, y ejemplos (bio de Instagram, posteo, respuesta a un cliente, cartel)
 - `estilo`: uso de colores, fotografía e íconos
 - `brandbook`: introducción, usos correctos e incorrectos, aplicaciones
 - `paleta` (ya con el contraste corregido si hacía falta) y `tipografias` (`titulos` y `texto`)

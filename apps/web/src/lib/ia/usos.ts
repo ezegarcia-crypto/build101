@@ -23,7 +23,7 @@ export const USOS: Record<Paso, Uso[]> = {
   direcciones: [{ modelo: MODELO_DIRECCIONES, para: "Propone las tres direcciones visuales" }],
   nombres: [{ modelo: MODELO_NOMBRES, para: "Propone nombres con su porqué" }],
   identidad: [
-    { modelo: MODELO_TEXTOS, para: "Escribe la esencia, la voz y el brandbook" },
+    { modelo: MODELO_TEXTOS, para: "Escribe la esencia (misión y visión), la voz, el tono y el brandbook" },
     { modelo: MODELO_LOGO, para: "Dibuja el símbolo del logo en SVG" },
   ],
   logo: [
