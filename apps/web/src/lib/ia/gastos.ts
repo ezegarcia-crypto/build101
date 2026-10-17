@@ -37,18 +37,19 @@ const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; senal
 // Freno de gasto: cuántos pedidos por minuto acepta cada paso en un mismo servidor. Alcanza de sobra
 // para una persona usando la app (y para la demo), y corta un loop de recargas antes de que se coma
 // el crédito: el 17/10 una página que se recargaba sola pidió más de 1.000 veces las direcciones.
+// Los topes son por servidor, no por persona: tienen que alcanzar para varios jurados probando a la vez.
 const POR_MINUTO: Record<Paso, number> = {
-  entrevista: 30,
-  "voz-ficha": 6,
-  direcciones: 6,
-  nombres: 10,
-  identidad: 6,
-  logo: 6,
-  "contenidos-lote": 3,
-  "contenidos-plan": 6,
-  "contenidos-pieza": 20,
-  "contenidos-imagen": 40,
-  "contenidos-simple": 3,
+  entrevista: 90,
+  "voz-ficha": 15,
+  direcciones: 15,
+  nombres: 25,
+  identidad: 15,
+  logo: 15,
+  "contenidos-lote": 8,
+  "contenidos-plan": 15,
+  "contenidos-pieza": 60,
+  "contenidos-imagen": 120,
+  "contenidos-simple": 8,
 };
 const recientes = new Map<Paso, number[]>();
 
