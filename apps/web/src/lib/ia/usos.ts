@@ -10,6 +10,7 @@ import {
   MODELO_IMAGEN_RESPALDO as MODELO_DIBUJO_LOGO_RESPALDO,
 } from "@/lib/ia/logo";
 import { MODELO_NOMBRES } from "@/lib/ia/nombres";
+import { MODELO_WEB } from "@/lib/ia/web/ficha-web";
 
 // Para qué usa cada paso cada modelo. Sale de las mismas constantes que usa el código, así que si
 // alguien cambia un modelo, el panel /costos lo muestra solo. Lo medido (cuánto gastó cada modelo en
@@ -41,6 +42,9 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
   // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
   "contenidos-simple": [],
+  "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],
+  "web-armar": [{ modelo: MODELO_WEB, para: "Arma la web con la marca del cliente" }],
+  "web-cambio": [{ modelo: MODELO_WEB, para: "Cambia la web según lo que pide la persona" }],
 };
 
 /** Los pasos que usan un modelo, con para qué. */
