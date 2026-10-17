@@ -9,6 +9,7 @@
 // - Con --ver: muestra lo que se mandaría, sin mandar nada.
 
 import {
+  DURACION_MAXIMA_VOZ_SEGUNDOS,
   LLM_VOZ,
   MODELO_TTS_VOZ,
   NOMBRE_AGENTE_VOZ,
@@ -25,6 +26,7 @@ const soloVer = process.argv.includes("--ver");
 const configuracion = {
   name: NOMBRE_AGENTE_VOZ,
   conversation_config: {
+    conversation: { max_duration_seconds: DURACION_MAXIMA_VOZ_SEGUNDOS },
     agent: {
       language: "es",
       first_message: PRIMER_MENSAJE_VOZ,

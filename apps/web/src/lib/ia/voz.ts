@@ -16,6 +16,10 @@ export const MODELO_TTS_VOZ = "eleven_flash_v2_5";
 
 export const NOMBRE_AGENTE_VOZ = "BrandIA · entrevista por voz";
 
+// Freno de gasto: ElevenLabs corta la llamada a los 8 minutos aunque nadie la cierre (una pestaña
+// olvidada, una charla que no termina). La entrevista completa dura entre 3 y 5.
+export const DURACION_MAXIMA_VOZ_SEGUNDOS = 8 * 60;
+
 export const PRIMER_MENSAJE_VOZ =
   "¡Hola! Soy BrandIA. Contame de tu negocio como se lo contarías a un amigo: qué hacés, cómo se llama y dónde vendés.";
 

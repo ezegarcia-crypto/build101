@@ -14,10 +14,13 @@ import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 export const maxDuration = 60;
 
+// Topes: una llamada de 8 minutos (lo máximo que deja el agente) no llega ni cerca. Frenan un pedido
+// armado a mano con una transcripción gigante, que se cobraría entera al Gateway.
 const pedidoSchema = z.object({
   transcripcion: z
-    .array(z.object({ rol: z.enum(["usuario", "agente"]), texto: z.string() }))
-    .min(1),
+    .array(z.object({ rol: z.enum(["usuario", "agente"]), texto: z.string().max(4_000) }))
+    .min(1)
+    .max(300),
 });
 
 export const POST = medir("voz-ficha", async (req: Request) => {

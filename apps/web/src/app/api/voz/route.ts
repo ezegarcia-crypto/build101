@@ -9,7 +9,24 @@ export const dynamic = "force-dynamic";
 
 const API = "https://api.elevenlabs.io/v1/convai/conversation";
 
+// Freno de gasto: cada permiso abre una llamada que cobra créditos de ElevenLabs (no del Gateway,
+// por eso no pasa por medir()). Tope por servidor, como en lib/ia/gastos.ts: alcanza para varios
+// jurados a la vez y corta un loop que pida llamadas sin parar.
+const LLAMADAS_POR_MINUTO = 10;
+let recientes: number[] = [];
+
 export async function GET(req: Request) {
+  const ahora = Date.now();
+  recientes = recientes.filter((t) => ahora - t < 60_000);
+  if (recientes.length >= LLAMADAS_POR_MINUTO) {
+    console.warn(`[gastos] frenado: más de ${LLAMADAS_POR_MINUTO} llamadas de voz por minuto`);
+    return Response.json(
+      { error: "Recibimos muchas llamadas seguidas. Esperá un minuto y probá de nuevo." },
+      { status: 429 },
+    );
+  }
+  recientes.push(ahora);
+
   const clave = process.env.ELEVENLABS_API_KEY;
   const agente = process.env.ELEVENLABS_AGENT_ID;
   if (!clave || !agente) {
