@@ -99,8 +99,8 @@ for (const r of resultados) {
     const ext = p.imagen.slice(5, p.imagen.indexOf(";")).split("/")[1];
     const archivo = `${r.id}-${d.id}-${p.tipo}.${ext}`;
     writeFileSync(join(SALIDA, archivo), Buffer.from(p.imagen.split(",")[1], "base64"));
-    console.log(`- ${p.tipo} (${p.modelo}, ${p.segundos} s) ${p.colores.join(" ")}\n  ${p.concepto}`);
-    html += `<div class="c"><img src="${archivo}"><p><b>${p.tipo}</b> · ${p.colores.map((c) => `<span class="chip" style="background:${c}"></span>`).join("")}</p><p>${p.concepto}</p></div>`;
+    console.log(`- ${p.tipo} (${p.modelo}, ${p.segundos} s) ${p.colores.join(" ")}\n  ${p.concepto}\n  PEDIDO: ${p.pedido}`);
+    html += `<div class="c"><img src="${archivo}"><p><b>${p.tipo}</b> · ${p.colores.map((c) => `<span class="chip" style="background:${c}"></span>`).join("")}</p><p>${p.concepto}</p><p style="color:#777"><i>${p.pedido}</i></p></div>`;
   }
   html += `</div>`;
 }

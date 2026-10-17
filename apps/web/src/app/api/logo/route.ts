@@ -2,7 +2,7 @@ import { generarLogos, pedidoLogoSchema } from "@/lib/ia/logo";
 
 // El logo completo para el brandbook y el feed. Recibe { brief, direccion } (la dirección elegida, como sale
 // de /api/direcciones) y devuelve { propuestas }: 3 logos, el primero del tipo que sugiere la dirección,
-// cada uno con su concepto y la imagen como data URL.
+// cada uno con su concepto, el pedido en inglés que dibujó el modelo de imágenes y la imagen como data URL.
 
 export const maxDuration = 120;
 
