@@ -19,10 +19,13 @@ import { Pasos } from "@/components/pasos";
 
 import s from "../entrevista/entrevista.module.css";
 import b from "./branderia.module.css";
+import { MUESTRAS } from "./muestras";
 
-// Paso 4 · Tus productos (módulo C, BranderIA). Con la identidad de la marca, la IA saca la foto de
-// cada producto del catálogo (POST /api/contenidos/imagen, el mismo modelo de imágenes del feed).
-// La foto sale lisa, sin logo: el logo real del cliente "cae" encima, nunca lo dibuja una IA.
+// Paso 4 · Tus productos (módulo C, BranderIA). Al entrar, la IA saca la foto de los 12 productos del
+// catálogo con la marca impresa (POST /api/branderia): recibe el logo real del cliente como referencia y
+// lo imprime siguiendo el material. Cada producto lleva algo distinto: solo el logo, el nombre, una frase
+// de la marca o combinaciones, como haría una marca de verdad con su merch.
+// Mientras la IA trabaja se ve la ilustración del producto de la web original, con el logo encima.
 // La cotización está en construcción: se arma el kit, pero no se cotiza, cobra ni pide nada.
 // Las fotos quedan guardadas (achicadas) junto con su identidad: si se recarga, no se vuelven a pedir.
 
@@ -30,34 +33,46 @@ export const CLAVE_BRANDERIA = "brandia:branderia";
 
 type Marca = { ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] };
 
-// El catálogo inicial (equipo/design-system.md § 6). `tam`: ancho del logo sobre la foto, en %.
-type Producto = { id: string; nombre: string; detalle: string; escena: string; tam: number; destacado?: boolean };
+// Qué lleva impreso cada producto
+type Estampa = "logo" | "logo-nombre" | "nombre" | "frase" | "logo-frase";
+
+// El catálogo inicial (equipo/design-system.md § 6). `color`: "claro" (blanco, crudo o el fondo de la
+// marca) o "marca" (el color principal). `tecnica`: cómo se marca ese material.
+type Producto = {
+  id: string;
+  nombre: string;
+  detalle: string;
+  escena: string;
+  estampa: Estampa;
+  tecnica: string;
+  color: "claro" | "marca";
+};
 
 const CATALOGO: Producto[] = [
-  { id: "remera", nombre: "Remeras", detalle: "Algodón", tam: 30, destacado: true,
-    escena: "una remera de algodón lisa, doblada prolijo o colgada de frente, con el pecho liso mirando a cámara" },
-  { id: "taza", nombre: "Tazas de café", detalle: "Cerámica", tam: 26, destacado: true,
-    escena: "una taza de café de cerámica lisa, de frente, con el cuerpo liso mirando a cámara y el asa a un costado" },
-  { id: "tote", nombre: "Tote bags", detalle: "Algodón crudo", tam: 32, destacado: true,
-    escena: "una tote bag de algodón crudo lisa, colgada o apoyada de frente, con la cara grande lisa mirando a cámara" },
-  { id: "tarjetas", nombre: "Tarjetas", detalle: "Papel grueso", tam: 26, destacado: true,
-    escena: "una pila de tarjetas personales de papel grueso, lisas, vistas desde arriba, con la de arriba en el centro" },
-  { id: "termo", nombre: "Termos para mate", detalle: "Acero, pico cebador", tam: 20,
-    escena: "un termo de acero para mate con pico cebador, parado de frente, con el cuerpo liso mirando a cámara" },
-  { id: "mate", nombre: "Mates", detalle: "Con bombilla", tam: 22,
-    escena: "un mate con bombilla de acero, de frente, con la parte lisa del mate mirando a cámara" },
-  { id: "vaso", nombre: "Vasos térmicos", detalle: "Con tapa", tam: 22,
-    escena: "un vaso térmico con tapa, parado de frente, con el cuerpo liso mirando a cámara" },
-  { id: "gorro", nombre: "Gorros", detalle: "Bordados", tam: 24,
-    escena: "un gorro tipo cap liso, de frente, con el frente liso mirando a cámara" },
-  { id: "folletos", nombre: "Folletos", detalle: "Tríptico", tam: 26,
-    escena: "un folleto tríptico de papel, cerrado y apoyado de frente, con la tapa lisa en el centro" },
-  { id: "carpeta", nombre: "Carpetas", detalle: "Con bolsillo", tam: 28,
-    escena: "una carpeta institucional con bolsillo, cerrada, vista de frente, con la tapa lisa en el centro" },
-  { id: "lapicera", nombre: "Lapiceras", detalle: "Grabadas", tam: 16,
-    escena: "una lapicera lisa acostada en horizontal, cruzando el centro de la imagen, con el cuerpo liso a la vista" },
-  { id: "soporte", nombre: "Soportes de celular", detalle: "Para videollamadas", tam: 22,
-    escena: "un soporte de escritorio para celular, liso, de frente, con su parte plana mirando a cámara" },
+  { id: "remera", nombre: "Remeras", detalle: "Algodón", estampa: "logo-frase", tecnica: "estampado en serigrafía", color: "claro",
+    escena: "una remera de algodón colgada de frente en una percha de madera, con el pecho a cámara" },
+  { id: "taza", nombre: "Tazas de café", detalle: "Cerámica", estampa: "logo-nombre", tecnica: "impreso en la cerámica", color: "claro",
+    escena: "una taza de café de cerámica, de frente, con el asa a un costado" },
+  { id: "tote", nombre: "Tote bags", detalle: "Algodón crudo", estampa: "frase", tecnica: "estampado en serigrafía", color: "claro",
+    escena: "una tote bag de algodón crudo colgada o apoyada de frente, con la cara grande a cámara" },
+  { id: "tarjetas", nombre: "Tarjetas", detalle: "Papel grueso", estampa: "logo-nombre", tecnica: "impreso", color: "claro",
+    escena: "una pila de tarjetas personales de papel grueso vistas desde arriba, con la de arriba en el centro" },
+  { id: "termo", nombre: "Termos para mate", detalle: "Acero, pico cebador", estampa: "logo", tecnica: "grabado láser", color: "marca",
+    escena: "un termo de acero para mate con pico cebador, parado de frente" },
+  { id: "mate", nombre: "Mates", detalle: "Con bombilla", estampa: "logo", tecnica: "grabado", color: "claro",
+    escena: "un mate con bombilla de acero, de frente" },
+  { id: "vaso", nombre: "Vasos térmicos", detalle: "Con tapa", estampa: "nombre", tecnica: "impreso", color: "claro",
+    escena: "un vaso térmico con tapa, parado de frente" },
+  { id: "gorro", nombre: "Gorros", detalle: "Bordados", estampa: "logo", tecnica: "bordado", color: "marca",
+    escena: "un gorro tipo cap, de frente, con el frente a cámara" },
+  { id: "folletos", nombre: "Folletos", detalle: "Tríptico", estampa: "logo-frase", tecnica: "impreso en la tapa", color: "claro",
+    escena: "un folleto tríptico de papel, cerrado y apoyado de frente, con otro abierto atrás" },
+  { id: "carpeta", nombre: "Carpetas", detalle: "Con bolsillo", estampa: "logo-nombre", tecnica: "impreso en la tapa", color: "marca",
+    escena: "una carpeta institucional con bolsillo, cerrada, vista de frente" },
+  { id: "lapicera", nombre: "Lapiceras", detalle: "Grabadas", estampa: "nombre", tecnica: "grabado a lo largo del cuerpo", color: "claro",
+    escena: "dos lapiceras acostadas en diagonal sobre una libreta, con el cuerpo a la vista" },
+  { id: "soporte", nombre: "Soportes de celular", detalle: "Para videollamadas", estampa: "logo", tecnica: "impreso", color: "claro",
+    escena: "un soporte de escritorio para celular, de frente, con un celular apoyado" },
 ];
 
 const CANTIDADES = [0, 25, 50, 100, 250, 500];
@@ -73,39 +88,79 @@ function leer<T>(clave: string): T | null {
   }
 }
 
-// Para reconocer si las fotos guardadas son de esta misma marca
-const huella = (m: Marca) => `${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}`;
+// Para reconocer si las fotos guardadas son de esta misma marca (v2: el logo ya va impreso por la IA)
+const huella = (m: Marca) => `v2|${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}`;
+
+/** Las frases de la marca para los productos: el eslogan y las palabras propias, en ese orden. */
+function frasesDe(id: IdentidadIA) {
+  return [id.eslogan, ...id.voz.palabras_si].map((f) => f?.trim()).filter((f): f is string => !!f);
+}
 
 /** El pedido de la foto, con la marca aplicada. Sin IA: siempre igual para la misma entrada. */
-function promptProducto(p: Producto, id: IdentidadIA) {
+function promptProducto(p: Producto, id: IdentidadIA, i: number) {
   const { fondo, principal, acento } = rolesDe(id.paleta);
-  // El logo se apoya con "multiplicar": sobre un producto claro se ve tal cual, sobre uno oscuro se perdería
+  const frases = frasesDe(id);
+  // Cada producto con frase toma una distinta, para que el kit no repita
+  const frase = frases.length ? frases[i % frases.length] : id.nombre;
+  const letras = `en letras al estilo de la tipografía ${id.tipografias.titulos}`;
+  const nombre = `el nombre «${id.nombre}» ${letras}`;
+  const queLleva = {
+    logo: "solo el logo de la imagen adjunta",
+    "logo-nombre": `el logo de la imagen adjunta y, debajo, ${nombre}`,
+    nombre: `solo ${nombre}, sin el logo`,
+    frase: `solo la frase «${frase}» ${letras}, sin el logo`,
+    "logo-frase": `el logo de la imagen adjunta y, cerca, la frase «${frase}» ${letras}`,
+  }[p.estampa];
   const claro = contraste(fondo, "#000000") >= 12;
-  const color = claro ? `del color ${fondo} (o blanco o crudo, lo que quede más natural para el material)` : "blanco o crudo";
+  const color =
+    p.color === "marca"
+      ? `del color ${principal}`
+      : claro
+        ? `del color ${fondo} (o blanco o crudo, lo que quede más natural para el material)`
+        : "blanco o crudo";
   return [
-    `Foto de producto realista, de catálogo, para la marca «${id.nombre}»: ${p.escena}.`,
-    `El producto es ${color}, completamente liso y sin estampar. Algún detalle chico (una tapa, un cordón, el borde) puede ser ${principal} o ${acento}.`,
-    "El lugar donde se imprime el logo está plano, limpio y de frente, exactamente en el centro de la imagen.",
-    "El producto ocupa el centro y entra entero en el cuadrado central: la foto se recorta cuadrada.",
+    `Foto de producto realista, de catálogo, de la marca «${id.nombre}»: ${p.escena}. El producto es ${color}.`,
+    `Lleva ${queLleva}, ${p.tecnica}. Es un producto real ya fabricado: la marca sigue la forma, la curva y la textura del material, y toma su luz, sus sombras y su brillo.`,
+    "El logo se copia exactamente igual al de la imagen adjunta: misma forma y mismos colores. Si no se lee sobre el color del producto, va en un solo color que contraste. El fondo blanco de la imagen adjunta no se imprime.",
+    `Los textos se escriben exactamente como están, sin errores, en ${principal} o ${acento} (o en claro si el producto es oscuro).`,
+    "El producto ocupa el centro, entero y bien a la vista.",
     `Fondo, luz y ambiente como las fotos de la marca: ${id.estilo.fotografia}`,
     `Que el fondo dialogue con la paleta (${id.paleta.map((c) => c.hex).join(", ")}) sin teñir la foto de un color.`,
-    "Natural, con texturas reales del material, nada de aspecto de render.",
-    "Sin ningún texto, letras, números, logos, marcas de agua ni marcas comerciales.",
+    "Natural, con texturas reales, nada de aspecto de render. Ningún otro texto, logo ni marca comercial.",
   ].join("\n");
 }
 
-/** Recorta la foto vertical al cuadrado del centro y la achica, para que entre guardada. */
-async function achicar(url: string, lado = 640): Promise<string> {
+/** Dibuja una imagen en un lienzo cuadrado y la devuelve como data URL. */
+async function aLienzo(src: string, lado: number, tipo: "image/png" | "image/jpeg") {
   const img = new Image();
-  img.src = url;
+  img.src = src;
   await img.decode();
   const corte = Math.min(img.naturalWidth, img.naturalHeight);
   const lienzo = document.createElement("canvas");
   lienzo.width = lienzo.height = lado;
-  lienzo
-    .getContext("2d")
-    ?.drawImage(img, (img.naturalWidth - corte) / 2, (img.naturalHeight - corte) / 2, corte, corte, 0, 0, lado, lado);
-  return lienzo.toDataURL("image/jpeg", 0.82);
+  const c = lienzo.getContext("2d");
+  if (!c) throw new Error("Sin lienzo");
+  c.fillStyle = "#ffffff";
+  c.fillRect(0, 0, lado, lado);
+  c.drawImage(img, (img.naturalWidth - corte) / 2, (img.naturalHeight - corte) / 2, corte, corte, 0, 0, lado, lado);
+  return lienzo.toDataURL(tipo, 0.82);
+}
+
+/** El logo del cliente en PNG de 512, para mandárselo a la IA: el elegido o, si no hay, el símbolo en SVG. */
+async function logoParaIA(m: Marca) {
+  if (m.logos[0]?.imagen) return aLienzo(m.logos[0].imagen, 512, "image/png");
+  // Sin ancho y alto, el navegador dibuja el SVG a 300 × 150 y el recorte cuadrado lo corta
+  const conTamano = svgSeguro(m.identidad.logo.isotipo_svg)
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg/i, '<svg width="512" height="512"');
+  const svg = new Blob([conTamano], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(svg);
+  try {
+    return await aLienzo(url, 512, "image/png");
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 export function Branderia() {
@@ -120,20 +175,28 @@ export function Branderia() {
 
   const sacar = useCallback(async (m: Marca, ids: string[], senal?: AbortSignal) => {
     setFotos((f) => ({ ...f, ...Object.fromEntries(ids.map((id) => [id, { estado: "sacando" } as Foto])) }));
+    let logo: string;
+    try {
+      logo = await logoParaIA(m);
+    } catch {
+      setFotos((f) => ({ ...f, ...Object.fromEntries(ids.map((id) => [id, { estado: "error" } as Foto])) }));
+      return;
+    }
     const cola = [...ids];
     const trabajar = async () => {
       for (let id = cola.shift(); id; id = cola.shift()) {
-        const p = CATALOGO.find((x) => x.id === id)!;
+        const i = CATALOGO.findIndex((x) => x.id === id);
+        const p = CATALOGO[i]!;
         try {
-          const res = await fetch("/api/contenidos/imagen", {
+          const res = await fetch("/api/branderia", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ clave: p.id, prompt: promptProducto(p, m.identidad), ancho: 1024, alto: 1024 }),
+            body: JSON.stringify({ prompt: promptProducto(p, m.identidad, i), logo }),
             signal: senal,
           });
           if (!res.ok) throw new Error();
           const { url } = (await res.json()) as { url: string };
-          const chica = await achicar(url);
+          const chica = await aLienzo(url, 640, "image/jpeg");
           listas.current[p.id] = chica;
           setFotos((f) => ({ ...f, [p.id]: { estado: "lista", url: chica } }));
           try {
@@ -158,23 +221,24 @@ export function Branderia() {
     setMarca(m);
 
     const previo = leer<{ huella: string; fotos: Record<string, string> }>(CLAVE_BRANDERIA);
-    if (previo?.huella === huella(m) && Object.keys(previo.fotos).length) {
+    if (previo?.huella === huella(m)) {
       listas.current = previo.fotos;
       setFotos((f) => ({
         ...f,
         ...Object.fromEntries(Object.entries(previo.fotos).map(([id, url]) => [id, { estado: "lista", url } as Foto])),
       }));
-      return;
     }
-    // Al entrar, la IA saca las fotos de los destacados; el resto, cuando la persona lo pide
+    // Al entrar, la IA saca las fotos de los 12 productos (las que no estaban guardadas)
+    const faltan = CATALOGO.filter((p) => !listas.current[p.id]).map((p) => p.id);
+    if (!faltan.length) return;
     const control = new AbortController();
-    sacar(m, CATALOGO.filter((p) => p.destacado).map((p) => p.id), control.signal);
+    sacar(m, faltan, control.signal);
     return () => control.abort();
   }, [sacar]);
 
   if (marca === null) return <main className="min-h-0 overflow-y-auto" />;
 
-  const pendientes = CATALOGO.filter((p) => fotos[p.id]?.estado === "pendiente" || fotos[p.id]?.estado === "error");
+  const errores = CATALOGO.filter((p) => fotos[p.id]?.estado === "error");
   const sacando = CATALOGO.some((p) => fotos[p.id]?.estado === "sacando");
   const elegidos = CATALOGO.filter((p) => (nivel[p.id] ?? 0) > 0);
   const unidades = elegidos.reduce((t, p) => t + (CANTIDADES[nivel[p.id] ?? 0] ?? 0), 0);
@@ -221,13 +285,13 @@ export function Branderia() {
                 {marca.identidad.nombre}, <span className={s.it}>en tus manos.</span>
               </h1>
               <p className="lead max-w-[34em] text-base">
-                La IA saca la foto de cada producto con el estilo de tu marca, y tu logo cae encima. Elegí cantidades y
-                armá tu kit: BrandIA lo produce y te lo manda.
+                La IA saca la foto de cada producto con tu marca impresa: tu logo, tu nombre y tus frases. Elegí
+                cantidades y armá tu kit: BrandIA lo produce y te lo manda.
               </p>
             </div>
 
             {/* En celular el carrito queda abajo del catálogo: esta barra lo deja a mano */}
-            <div className="sticky top-0 z-10 -mx-4 mb-3 bg-background/85 px-4 py-2 backdrop-blur lg:hidden">
+            <div className="sticky top-0 z-10 -mx-4 mb-3 bg-background/85 px-4 py-2 backdrop-blur md:hidden">
               <div className="flex items-center gap-3 rounded-[16px] border bg-card p-3 pl-4">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Tu kit</span>
@@ -245,19 +309,15 @@ export function Branderia() {
               </div>
             </div>
 
-            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1fr)_280px] lg:grid-cols-[minmax(0,1fr)_320px]">
               <div className="flex flex-col gap-3">
-                {pendientes.length > 0 && (
-                  <Button
-                    variant="outline"
-                    className="self-start"
-                    disabled={sacando}
-                    onClick={() => sacar(marca, pendientes.map((p) => p.id))}
-                  >
-                    Ver {pendientes.length} más con mi marca
+                {errores.length > 0 && !sacando && (
+                  <Button variant="outline" className="self-start" onClick={() => sacar(marca, errores.map((p) => p.id))}>
+                    <RotateCcw data-icon="inline-start" />
+                    Volver a probar {errores.length === 1 ? "1 foto" : `${errores.length} fotos`}
                   </Button>
                 )}
-                <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                <ul className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
                   {CATALOGO.map((p) => (
                     <Tarjeta
                       key={p.id}
@@ -272,11 +332,11 @@ export function Branderia() {
                 </ul>
               </div>
 
-              {/* El carrito: en compu queda fijo a la derecha mientras se recorre el catálogo */}
+              {/* El carrito: desde pantallas medianas queda fijo a la derecha mientras se recorre el catálogo */}
               <aside
                 ref={carrito}
                 aria-label="Tu kit"
-                className="flex scroll-mt-24 flex-col gap-4 rounded-[16px] border bg-card p-4 lg:sticky lg:top-4 lg:max-h-[calc(100svh-6rem)] lg:overflow-y-auto"
+                className="flex scroll-mt-24 flex-col gap-4 rounded-[16px] border bg-card p-4 md:sticky md:top-4 md:max-h-[calc(100svh-6rem)] md:overflow-y-auto"
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <h2 className="text-xl">Tu kit</h2>
@@ -293,12 +353,7 @@ export function Branderia() {
                       return (
                         <li key={p.id} className={`${s.entra} flex items-center gap-3 py-3 first:pt-0`}>
                           <div className="relative size-14 shrink-0 overflow-hidden rounded-[8px] bg-muted">
-                            {foto?.estado === "lista" && (
-                              <>
-                                <img src={foto.url} alt="" className="size-full object-cover" />
-                                <Logo marca={marca} className="absolute top-1/2 left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2" ancho={p.tam} />
-                              </>
-                            )}
+                            <Vista producto={p} foto={foto ?? { estado: "pendiente" }} marca={marca} />
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-2">
@@ -378,8 +433,8 @@ export function Branderia() {
             </div>
 
             <p className="mt-6 max-w-[40em] text-sm text-muted-foreground">
-              Las fotos las genera la IA con el estilo de {marca.identidad.nombre}; el logo es el tuyo, tal cual. Sin
-              precios ni pedidos reales por ahora.
+              Las fotos las genera la IA con tu logo y el estilo de {marca.identidad.nombre}. Sin precios ni pedidos
+              reales por ahora.
             </p>
             <Button
               variant="ghost"
@@ -389,7 +444,7 @@ export function Branderia() {
               onClick={() => {
                 sessionStorage.removeItem(CLAVE_BRANDERIA);
                 listas.current = {};
-                sacar(marca, CATALOGO.filter((p) => fotos[p.id]?.estado === "lista").map((p) => p.id));
+                sacar(marca, CATALOGO.map((p) => p.id));
               }}
             >
               <RotateCcw data-icon="inline-start" />
@@ -420,38 +475,23 @@ function Tarjeta({
   return (
     <li className="flex flex-col gap-2.5 rounded-lg border bg-card p-3 transition-[transform,box-shadow] duration-500 ease-brandia hover:-translate-y-1.5 hover:shadow-[0_24px_40px_-24px_rgba(30,30,28,.35)]">
       <div className="relative aspect-square overflow-hidden rounded-[10px] bg-muted">
-        {foto.estado === "lista" ? (
-          <>
-            <img src={foto.url} alt={`${p.nombre} con la marca ${marca.identidad.nombre}`} className={`${b.foto} size-full object-cover`} />
-            {/* El logo real, apoyado con "multiplicar" para que tome la textura del producto */}
-            <Logo
-              marca={marca}
-              ancho={p.tam}
-              retraso
-              className={`${b.cae} absolute top-1/2 left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2`}
-            />
-          </>
-        ) : (
-          <div
-            className={`grid size-full place-items-center border border-dashed border-foreground/20 p-3 text-center text-[0.6875rem] leading-snug text-muted-foreground ${
-              foto.estado === "sacando" ? b.respira : ""
-            }`}
+        <Vista producto={p} foto={foto} marca={marca} />
+        {foto.estado === "sacando" && (
+          <span
+            role="status"
+            className={`${b.respira} absolute inset-x-2 bottom-2 rounded-full bg-card/90 px-2 py-1 text-center text-[0.6875rem] font-semibold`}
           >
-            {foto.estado === "sacando" && <span role="status">Sacando la foto con tu marca…</span>}
-            {foto.estado === "pendiente" && (
-              <button type="button" onClick={onSacar} className="font-semibold text-foreground underline-offset-4 hover:underline">
-                Verlo con mi marca
-              </button>
-            )}
-            {foto.estado === "error" && (
-              <span className="flex flex-col items-center gap-1">
-                No salió la foto.
-                <button type="button" onClick={onSacar} className="font-semibold text-foreground underline-offset-4 hover:underline">
-                  Probar de nuevo
-                </button>
-              </span>
-            )}
-          </div>
+            Sacando la foto con tu marca…
+          </span>
+        )}
+        {(foto.estado === "error" || foto.estado === "pendiente") && (
+          <button
+            type="button"
+            onClick={onSacar}
+            className="absolute inset-x-2 bottom-2 rounded-full bg-card/90 px-2 py-1 text-[0.6875rem] font-semibold underline-offset-4 hover:underline"
+          >
+            {foto.estado === "error" ? "No salió la foto · Probar de nuevo" : "Verlo con mi marca"}
+          </button>
         )}
       </div>
       <div className="leading-tight">
@@ -474,24 +514,38 @@ function Tarjeta({
 const resumen = (productos: number, unidades: number) =>
   `${productos} producto${productos > 1 ? "s" : ""} · ${unidades} unidades`;
 
-/** El logo real, apoyado con "multiplicar" para que tome la textura del producto. `ancho`: en % de la foto. */
-function Logo({ marca, ancho, retraso, className }: { marca: Marca; ancho: number; retraso?: boolean; className: string }) {
+/**
+ * La foto del producto con la marca impresa por la IA. Mientras no está, la ilustración del producto de
+ * la web original con el logo del cliente que "cae" en su lugar.
+ */
+function Vista({ producto: p, foto, marca }: { producto: Producto; foto: Foto; marca: Marca }) {
+  if (foto.estado === "lista") {
+    return (
+      <img src={foto.url} alt={`${p.nombre} con la marca ${marca.identidad.nombre}`} className={`${b.foto} size-full object-cover`} />
+    );
+  }
+  const m = MUESTRAS[p.id];
   const logo = marca.logos[0]?.imagen;
   return (
-    <span
-      aria-hidden
-      className={`${className} mix-blend-multiply`}
-      style={{ width: `${ancho}%`, animationDelay: retraso ? "0.35s" : undefined }}
-    >
-      {logo ? (
-        <img src={logo} alt="" className="size-full object-contain" />
-      ) : (
-        <span
-          className="block size-full [&>svg]:size-full"
-          dangerouslySetInnerHTML={{ __html: svgSeguro(marca.identidad.logo.isotipo_svg) }}
-        />
+    <div className="relative size-full">
+      {m && (
+        <svg viewBox="0 0 100 100" aria-hidden className="size-full" dangerouslySetInnerHTML={{ __html: m.svg }} />
       )}
-    </span>
+      <span
+        aria-hidden
+        className={`${b.cae} absolute aspect-square -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[3px]`}
+        style={{ left: m?.x ?? "50%", top: m?.y ?? "50%", width: m?.ancho ?? "24%", animationDelay: "0.35s" }}
+      >
+        {logo ? (
+          <img src={logo} alt="" className="size-full object-contain" />
+        ) : (
+          <span
+            className="block size-full [&>svg]:size-full"
+            dangerouslySetInnerHTML={{ __html: svgSeguro(marca.identidad.logo.isotipo_svg) }}
+          />
+        )}
+      </span>
+    </div>
   );
 }
 
