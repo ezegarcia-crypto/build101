@@ -1,5 +1,7 @@
 # La web del cliente, de punta a punta · ejemplo Costa · BORRADOR
 
+> **Estado (decidido el 17/10):** se trabaja en paralelo a los contenidos, para llegar a la demo. La hace Rodrigo, en la rama `web-cliente`. Hasta que funcione, la web se muestra como pantalla "en construcción".
+
 El recorrido completo de una clienta de BrandIA desde que pide su web hasta que la ve publicada en internet, con su propio dominio (la dirección de la web, como `panaderiacosta.com`).
 
 **El ejemplo:** Marina, dueña de **Costa**, una panadería de barrio en Montevideo (ficticia, del manual de BrandIA). Instagram: @panaderiacosta. Ya hizo su identidad con BrandIA, así que tiene ficha, logo, paleta, tipografías y voz de marca.
@@ -285,7 +287,7 @@ Si algo tarda, lo dice: "Algunas conexiones demoran hasta unas horas. Te avisamo
 | 7 · Publicar en una dirección gratis de BrandIA | **Real**, si se llega | No cuesta plata |
 | 6 · Pago y compra del dominio | **"En construcción"**, mostrado tal cual | No se compran dominios en una demo |
 
-**Atención:** en `equipo/plan-finde.md`, la web del cliente figura como **"en construcción"** (parte 2c). Hacer reales los pasos 1 a 5 es **sumar alcance**, y lo tiene que decidir el equipo sin poner en riesgo los hitos de las 15:00 y las 18:00.
+**Decidido (17/10):** se trabaja **en paralelo a los contenidos**, en la rama `web-cliente`, para que llegue a la demo. Primero van los pasos 1, 3 y 4; después, si llega, el 2 y el 5. No puede frenar los hitos de las 15:00 y las 18:00. Hasta que funcione, la web sigue como pantalla "en construcción" (parte 2c de `CLAUDE.md`).
 
 ## Decisiones pendientes
 
