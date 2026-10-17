@@ -32,7 +32,8 @@ const FRASES = {
   ],
 };
 
-export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {
+// `mensaje`: si la IA cuenta en qué está (el lote de contenidos lo hace), se muestra ese texto
+export function Armando({ que = "pregunta", mensaje }: { que?: keyof typeof FRASES; mensaje?: string }) {
   const frases = FRASES[que];
   const [i, setI] = useState(0);
 
@@ -60,8 +61,8 @@ export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {
           />
         </g>
       </svg>
-      <span key={`${que}-${i}`} className={s.progreso}>
-        {frases[i]}
+      <span key={mensaje ?? `${que}-${i}`} className={s.progreso}>
+        {mensaje ?? frases[i]}
       </span>
     </div>
   );
