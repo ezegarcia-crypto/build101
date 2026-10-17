@@ -221,13 +221,13 @@ export async function armarReporte() {
       return {
         ...c,
         pasos: pasosCliente,
-        completo: (hizo("entrevista") || hizo("voz-ficha")) && hizo("direcciones") && hizo("identidad") && hizo("logo"),
+        completo: hizo("entrevista") && hizo("direcciones") && hizo("identidad") && hizo("logo"),
       };
     }),
   );
   const completos = clientes.filter((c) => c.completo);
   // La vista previa de cada cliente que llegó a ver las direcciones: entrevista, nombres y direcciones.
-  const PREVIA: Paso[] = ["entrevista", "voz-ficha", "nombres", "direcciones"];
+  const PREVIA: Paso[] = ["entrevista", "nombres", "direcciones"];
   const previas = clientes
     .filter((c) => c.pasos.some((f) => f.paso === "direcciones"))
     .map((c) => c.pasos.filter((f) => PREVIA.includes(f.paso)).reduce((a, f) => a + f.total, 0));
