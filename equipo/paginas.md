@@ -6,7 +6,8 @@ también en https://build101-bice.vercel.app (la dirección automática de Verce
 Cada push a `main` se publica solo en las dos. **Toda página nueva se suma a este registro**: qué es, cómo se
 llega, a dónde lleva y qué necesita para funcionar.
 
-Relevado el sábado 17/10 a las 17:30, sobre `main`. Las 15 páginas cargan en app.brandiamos.com.
+Relevado el sábado 17/10 a las 17:30, sobre `main`. Las 15 páginas cargan en app.brandiamos.com. A las 17:50 se
+conectó la portada con la app: sus botones "BrandIAmos" llevan a `/crear`.
 
 ## El mapa
 
@@ -41,7 +42,7 @@ flowchart LR
   contenido -.->|Volver a tu marca| marca
   branderia -.->|Volver a tu contenido| contenido
 
-  portada ~~~ crear
+  portada -->|BrandIAmos · Quiero BrandIAr mi marca| crear
   espera ~~~ portada
   costos ~~~ espera
 ```
@@ -50,10 +51,8 @@ En todas las páginas de la app, el logo de BrandIA de arriba lleva a la portada
 
 ## Lo que no está conectado (revisar antes de la demo)
 
-1. **La portada no lleva a la app.** En https://app.brandiamos.com no hay ningún link a `/crear`. El botón
-   "BrandIAmos la tuya →" del formulario solo muestra "Listo" y **no guarda los datos** (no está conectado a
-   nada). Para la demo hay que entrar directo a https://app.brandiamos.com/crear, o sumar el link en la portada
-   (la regla es que la portada no se rehace: se cambia solo ese link).
+1. **El formulario de la portada no guarda.** Los botones de la portada ya llevan a la app, pero el formulario de
+   abajo ("BrandIAmos la tuya →") solo muestra "Listo" y **no guarda los datos**: no está conectado a nada.
 2. **"Lo que viene" (`/crear/proximamente`) no tiene entrada desde el recorrido.** Solo se llega con el link o
    desde la web del cliente. Juan Pedro iba a sumar el acceso desde `/crear`.
 3. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
@@ -82,7 +81,7 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Estado |
 |---|---|---|---|---|
-| `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | Solo a sus propias secciones. **No lleva a `/crear`** | Funciona. El formulario no guarda |
+| `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | **A la app (`/crear`)** con "BrandIAmos" (barra de arriba), "Quiero BrandIAr mi marca →" (inicio) y "BrandIAmos →". Los demás links ("Cómo funciona", "Productos"…) bajan dentro de la misma portada | Funciona. El formulario de abajo no guarda |
 | `/lista-de-espera` | La landing de lista de espera, tal cual (`public/lista-de-espera.html`) | Solo con el link | A ningún lado | Carga. El formulario no guarda |
 | `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso y de una marca completa | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
 
@@ -90,7 +89,7 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
-| `/crear` | **Paso 1 · Contanos.** Entrevista por chat. Con "Hablar con BrandIA" pasa a la entrevista por voz (ElevenLabs), en la misma página. Termina en la ficha de la marca | Directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat), `/api/voz` y `/api/voz/ficha` (voz) |
+| `/crear` | **Paso 1 · Contanos.** Entrevista por chat. Con "Hablar con BrandIA" pasa a la entrevista por voz (ElevenLabs), en la misma página. Termina en la ficha de la marca | Los botones "BrandIAmos" de la portada, directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat), `/api/voz` y `/api/voz/ficha` (voz) |
 | `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué y "Otros nombres". Abajo, tres caminos para elegir. Después, el brandbook con logos | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Armar mi web" → `/crear/web` · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo` |
 | `/crear/contenido` | **Paso 3 · Tu contenido.** El feed con la marca aplicada: posteos, carrusel, historias y reel | "Ver mis contenidos" desde el brandbook | "Ver mis productos" → `/crear/branderia` · "Volver a tu marca" → `/crear/marca` | La marca (paso 2) | `/api/contenidos/lote` |
 | `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** La IA saca la foto de cada producto y el logo real cae encima. Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` | La marca (paso 2) | `/api/contenidos/imagen` |
