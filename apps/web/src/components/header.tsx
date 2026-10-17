@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { ModeToggle } from "./mode-toggle";
 
 export default function Header() {
+  // Las webs publicadas de los clientes (/w/...) son de su marca: ahí no va la barra de BrandIA
+  const ruta = usePathname();
+  if (ruta?.startsWith("/w/")) return null;
   return (
     <header className="border-b">
       <div className="mx-auto flex max-w-[1080px] items-center justify-between px-4 py-3">

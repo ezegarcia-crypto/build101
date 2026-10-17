@@ -237,7 +237,12 @@ function SeccionWeb({
   );
 }
 
-export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb; identidad: IdentidadIA }) {
+/** Lo que la vista usa de la identidad (lo mismo que se guarda al publicar, ver lib/webs.ts) */
+export type IdentidadVista = Pick<IdentidadIA, "nombre" | "paleta" | "tipografias" | "fuentes_url"> & {
+  logo: Pick<IdentidadIA["logo"], "isotipo_svg">;
+};
+
+export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb; identidad: IdentidadVista }) {
   useEffect(() => cargarFuentes(identidad.fuentes_url), [identidad.fuentes_url]);
 
   const roles = rolesDe(identidad.paleta);

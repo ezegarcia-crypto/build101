@@ -45,6 +45,8 @@ export const USOS: Record<Paso, Uso[]> = {
   "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],
   "web-armar": [{ modelo: MODELO_WEB, para: "Arma la web con la marca del cliente" }],
   "web-cambio": [{ modelo: MODELO_WEB, para: "Cambia la web según lo que pide la persona" }],
+  // Publicar no usa IA (está en PASOS solo por el tope de pedidos por minuto)
+  "web-publicar": [],
 };
 
 /** Los pasos que usan un modelo, con para qué. */
