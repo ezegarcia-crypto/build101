@@ -10,7 +10,7 @@ Qué se muestra el domingo, qué queda para el primer cliente real y cómo se ll
 |---|---|---|---|
 | **1 · Maqueta de la demo** | Web de una sola página, armada por IA, publicada en `app.brandiamos.com/w/...` con link y QR | El jurado, con una marca inventada en el momento | Domingo 18/10 |
 | **2 · Web del cliente real** | La misma web, con dominio propio comprado por BrandIA, cobro y la web que sigue viva | Los primeros clientes de BrandIA | Después de la hackathon |
-| **3 · Webs completas** | Varias páginas, catálogo, turnos, blog y código propio del cliente | Clientes que necesitan más que una vidriera | Más adelante, según la demanda |
+| **3 · Webs completas** | Primero con bloques (varias páginas, catálogo, turnos, blog); más adelante, código propio del cliente | Clientes que necesitan más que una vidriera | Más adelante, según la demanda |
 
 ---
 
@@ -69,7 +69,7 @@ Cuando una página no alcanza. Se ofrecen por partes, según lo que pida el rubr
 | **A · Bloques** (sigue lo de hoy) | La IA elige y llena bloques ya construidos (catálogo, turnos, blog). Una sola app sirve a todos los clientes | Seguro, barato de mantener y siempre con la marca | Hace solo lo que los bloques permiten |
 | **B · Código propio** | Una IA que programa (Claude Code o la API de v0) arma un proyecto de Next.js para cada cliente, en su propio repo, y lo publica en Vercel | Puede hacer cualquier cosa, y el cliente se puede llevar el código | Más caro, más lento y cada web hay que mantenerla aparte |
 
-**Recomendación:** empezar por **A** y sumar bloques a medida que los pidan los clientes. Usar **B** solo para clientes que pagan un plan "a medida", revisado por una persona antes de publicar.
+**Decidido (17/10):** se empieza por **A · Bloques** y se suman bloques a medida que los pidan los clientes. **B · Código propio** queda para el desarrollo futuro, para clientes que paguen un plan "a medida", con una persona que revise cada web antes de publicarla.
 
 **Para tener en cuenta en el camino B:**
 - Un repo y un proyecto de Vercel por cliente, creados por la API.
@@ -85,4 +85,4 @@ Cuando una página no alcanza. Se ofrecen por partes, según lo que pida el rubr
 2. **Registrador para `.uy`.**
 3. **Cuándo se mueve el DNS de `brandiamos.com`** para las direcciones gratis.
 4. **Qué bloques van primero** en la etapa 3: preguntarles a los primeros clientes.
-5. **Camino B:** si se ofrece, con qué herramienta y quién revisa cada web antes de publicarla.
+5. **Camino B (futuro):** con qué herramienta (Claude Code o la API de v0), cuánto cuesta cada web y quién la revisa antes de publicarla.
