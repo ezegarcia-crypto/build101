@@ -16,12 +16,15 @@ import type { Brief } from "@/lib/ia/brief";
 import { type FichaWeb, primeraPregunta } from "@/lib/ia/web/ficha-web";
 import type { MarcaWeb, Web } from "@/lib/ia/web/web";
 
+import { Publicar } from "./publicar";
+import { useFotosWeb } from "./usar-fotos";
 import { VistaWeb } from "./vista-web";
 
 // La web del cliente, pasos 1, 3 y 4 de equipo/flujo-web-cliente.md:
 //   1. la entrevista de la web por chat (/api/web/entrevista), que termina en la ficha de la web;
 //   3. la IA arma la web con la marca (/api/web/armar);
-//   4. vista previa (celular o compu) y cambios pedidos en palabras (/api/web/cambio).
+//   4. vista previa (celular o compu) y cambios pedidos en palabras (/api/web/cambio);
+//   7 y 8. publicar en /w/[slug] y entregar el link y el QR (publicar.tsx, /api/web/publicar).
 // Parte de la ficha y la identidad que dejaron /crear y /crear/marca. Todo queda guardado en la sesión.
 
 const CLAVE_WEB = "brandia:web";
@@ -308,9 +311,15 @@ function WebLista({
   const [celular, setCelular] = useState(true);
   const [ocupado, setOcupado] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [publicar, setPublicar] = useState(false);
   const charla = useRef<HTMLDivElement>(null);
   const { web, ficha_web } = guardada;
+  const { fotos, generando } = useFotosWeb({
+    ficha: guardada.ficha,
+    web,
+    fichaWeb: ficha_web,
+    identidad,
+    rubro: marca.brief.marca.rubro,
+  });
 
   useEffect(() => {
     charla.current?.scrollTo({ top: charla.current.scrollHeight, behavior: "smooth" });
@@ -364,7 +373,7 @@ function WebLista({
                 celular ? "max-w-[390px]" : "max-w-full"
               }`}
             >
-              <VistaWeb web={web} ficha={ficha_web} identidad={identidad} />
+              <VistaWeb web={web} ficha={ficha_web} identidad={identidad} fotos={fotos} generandoFotos={generando} />
             </div>
           </div>
         </section>
@@ -420,22 +429,14 @@ function WebLista({
           </div>
 
           <div className="flex flex-col gap-3 pb-4">
-            <Button size="lg" onClick={() => setPublicar(true)} disabled={ocupado}>
-              Me gusta, quiero publicarla
-              <ArrowRight data-icon="inline-end" />
-            </Button>
-            {publicar && (
-              <div className={`${s.entra} rounded-[14px] border border-dashed p-4 text-sm`}>
-                <p className="font-semibold">Elegir tu dirección y publicar · en construcción</p>
-                <p className="mt-1 text-muted-foreground">
-                  El próximo paso es elegir tu dominio (la dirección de tu web), revisar que esté libre y publicarla. En esta
-                  versión no se compra ningún dominio ni se cobra nada.
-                </p>
-                <Link href="/crear/proximamente/web" className="mt-2 inline-block underline underline-offset-4">
-                  Ver cómo va a funcionar
-                </Link>
-              </div>
-            )}
+            <Publicar
+              ficha={guardada.ficha}
+              web={web}
+              fichaWeb={ficha_web}
+              identidad={identidad}
+              fotos={fotos}
+              ocupado={ocupado || generando}
+            />
             <Button variant="ghost" size="sm" onClick={onReiniciar} disabled={ocupado}>
               <RotateCcw data-icon="inline-start" />
               Empezar la web de nuevo

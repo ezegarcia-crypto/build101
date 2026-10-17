@@ -1,5 +1,5 @@
 // Prompt del entrevistador, versión corta para la app (la completa está en brandia/motor-ia/01-entrevistador.md).
-// La misma entrevista corre por chat (/api/entrevista) y, más adelante, por voz.
+// La entrevista corre por chat (/api/entrevista); los audios de la persona llegan pasados a texto (/api/transcribir).
 
 export const MODELO_ENTREVISTA = "anthropic/claude-sonnet-5.5";
 

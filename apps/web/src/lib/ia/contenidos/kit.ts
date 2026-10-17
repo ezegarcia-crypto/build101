@@ -22,6 +22,8 @@ export const identidadEntradaSchema = z.object({
   voz: z.object({
     resumen: z.string(),
     rasgos: z.array(z.object({ rasgo: z.string(), es: z.string(), no_es: z.string() })),
+    // Opcional: las marcas armadas antes del 17/10 no lo tienen
+    tono: z.array(z.object({ momento: z.string(), como: z.string() })).optional(),
     palabras_si: z.array(z.string()),
     palabras_no: z.array(z.string()),
     ejemplos: z.object({ bio_instagram: z.string(), posteo: z.string(), respuesta_cliente: z.string(), cartel: z.string() }),
@@ -78,7 +80,11 @@ export function armarKit(identidad: IdentidadEntrada, brief: Brief): Kit {
     voz: {
       trato: brief.marca.trato,
       tono: v.rasgos.map((r) => r.rasgo),
-      reglas: [v.resumen, ...v.rasgos.map((r) => `${r.rasgo}: ${r.es}; no ${r.no_es}`)],
+      reglas: [
+        v.resumen,
+        ...v.rasgos.map((r) => `${r.rasgo}: ${r.es}; no ${r.no_es}`),
+        ...(v.tono ?? []).map((t) => `Tono para «${t.momento}»: ${t.como}`),
+      ],
       lexico_si: v.palabras_si,
       lexico_no: v.palabras_no,
       ejemplos: [v.ejemplos.posteo, v.ejemplos.cartel, v.ejemplos.bio_instagram].filter(Boolean),

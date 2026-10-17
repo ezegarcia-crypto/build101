@@ -9,7 +9,7 @@ Qué construimos y en qué orden. El alcance está en `CLAUDE.md` → "El produc
 - Consigna leída, material de BrandIA en `brandia/`, repo público y organizador invitado.
 - Web publicada en Vercel en https://app.brandiamos.com (también responde en https://build101-bice.vercel.app).
 - Design system de BrandIA cargado en la app y la web original como portada. **Guía obligatoria: `equipo/design-system.md`.**
-- Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y la voz por ElevenLabs.
+- Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y los audios de la persona se pasan a texto con ElevenLabs (Scribe).
 
 ## Reparto (confirmado)
 
@@ -17,8 +17,8 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 
 | Quién | Rama | Parte | Toca solo | Qué hace |
 |---|---|---|---|---|
-| **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat y botón de voz), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
-| **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos. Junta las ramas en `main` |
+| **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat, con audios desde la caja), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
+| **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, los audios a texto y los contenidos. Junta las ramas en `main` |
 | **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" del módulo B (pauta en Meta, newsletter, LinkedIn, X, redes centralizadas y web) y de BranderIA (producimos y te mandamos) |
 | **Rodrigo** | `web-cliente` | La web del cliente | Carpetas propias, a acordar con Eze antes de escribir código | La web del cliente con IA real, en paralelo a los contenidos, siguiendo `equipo/flujo-web-cliente.md` |
 
@@ -30,7 +30,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 |---|---|
 | Sábado 15:00 | La entrevista por chat genera la ficha de una marca nueva (no Costa) |
 | Sábado 18:00 | Con esa ficha sale la identidad completa: paleta, tipografías, logo y brandbook en pantalla |
-| Sábado 20:30 | El agente de voz hace la entrevista. Se dejan 2 o 3 agentes en la nube con tareas chicas |
+| Sábado 20:30 | La persona puede contar su negocio con audios desde el chat (reemplazó al agente de voz, decidido el 17/10). Se dejan 2 o 3 agentes en la nube con tareas chicas |
 | Domingo 11:00 | Sale el feed: un par de posteos, historias y un reel con la marca aplicada |
 | Domingo 12:00 | Las pantallas "en construcción" del módulo B y de BranderIA están hechas |
 | Domingo 13:00 | Se congela. Ensayo 3 veces, video de respaldo y pitch de 3 minutos |
@@ -38,8 +38,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 ## Decisiones pendientes
 
 - **Modelo de texto** para entrevista, identidad y textos: Claude (Sonnet u Opus). Depende de los créditos.
-- **Voz:** agente de voz de ElevenLabs (natural, con voces en español). Depende de los créditos.
-  - **Voz según el rubro: para después de que ande una sola voz (decidido el 17/10).** Antes de hablar, una sola pregunta escrita, "¿A qué se dedica tu negocio?". Va un campo de texto y no botones, porque el jurado inventa rubros que no estarían en ningún botón. La IA elige entre 3 o 4 voces de un catálogo chico (profesional, cercana, joven y enérgica): no una tabla armada a mano tipo "contador = voz seria", que la consigna no acepta. El rubro cuenta como la primera respuesta de la entrevista, así el agente no lo vuelve a preguntar. En ElevenLabs se activa en el agente la opción de cambiar la voz en cada conversación y se le pasa la elegida al arrancar: no hace falta un agente por rubro. Lleva cerca de una hora: Juan Pedro el campo en la pantalla y Eze la IA que elige la voz. Orden: claves de ElevenLabs → voz funcionando con una voz → `pantallas` en `main` → esto.
+- **Voz: decidido el 17/10.** BrandIA no habla: la persona manda audios desde la caja del chat de `/crear` y se pasan a texto con ElevenLabs Scribe (`POST /api/transcribir`). La entrevista sigue por escrito. El agente de voz que conversaba hablando se retiró, y con él la idea de elegir la voz según el rubro.
 - **Imágenes** para logo, posteos y merch: modelo de imágenes por API (a elegir según los créditos).
 - **Reel:** la opción más segura es armarlo con imágenes generadas, textos animados y voz en off, en vez de un modelo de video (más caro y lento).
 - **Pauta en Meta: pasa a la siguiente etapa (decidido el 17/10).** Queda anotado para después:

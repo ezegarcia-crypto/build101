@@ -22,6 +22,7 @@ flowchart LR
   contenido["/crear/contenido<br/>Paso 3 · Tu contenido<br/>feed"]
   branderia["/crear/branderia<br/>Paso 4 · Tus productos<br/>BranderIA"]
   web["/crear/web<br/>Tu web"]
+  publicada["/w/[slug]<br/>La web publicada<br/>(link y QR)"]
   prox["/crear/proximamente<br/>Lo que viene"]
   proxweb["/crear/proximamente/web"]
   proxotras["/crear/proximamente/<br/>redes · pauta · newsletter ·<br/>linkedin · x · branderia"]
@@ -32,6 +33,7 @@ flowchart LR
   marca -->|Armar mi web| web
   contenido -->|Ver mis productos| branderia
   web -->|Ver cómo va a funcionar| proxweb
+  web -->|Me gusta, quiero publicarla| publicada
   proxweb -->|Armar mi web| web
   prox --> proxweb
   prox --> proxotras
@@ -83,17 +85,18 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 |---|---|---|---|---|
 | `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | **A la app (`/crear`)** con "BrandIAmos" (barra de arriba), "Quiero BrandIAr mi marca →" (inicio) y "BrandIAmos →". Los demás links ("Cómo funciona", "Productos"…) bajan dentro de la misma portada | Funciona. El formulario de abajo no guarda |
 | `/lista-de-espera` | La landing de lista de espera, tal cual (`public/lista-de-espera.html`) | Solo con el link | A ningún lado | Carga. El formulario no guarda |
-| `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso y de una marca completa | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
+| `/w/[slug]` | **La web publicada de un cliente** (por ejemplo `/w/hoy-rueda`), con SU marca: sin la barra de BrandIA, solo un "Hecha con BrandIA" chico al final. Si la dirección no existe, "Acá no hay ninguna web" | El link o el QR que entrega `/crear/web` | Los botones de la web (WhatsApp, mapa, Instagram…) · "BrandIA" del pie → `/` | Funciona. Lee la tabla `webs` de Supabase; no usa IA |
+| `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso, de una marca completa y de cada cliente de punta a punta | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
 
 ### El recorrido (la demo)
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
 | `/crear` | **Paso 1 · Contanos.** Entrevista por chat. La persona escribe o manda audios con el micrófono de la caja (se pasan a texto con ElevenLabs); BrandIA contesta por escrito. Termina en la ficha de la marca | Los botones "BrandIAmos" de la portada, directo, o desde los "empezá por acá" de las otras páginas | "Armar mi marca" → `/crear/marca` | Nada | `/api/entrevista` (chat) y `/api/transcribir` (audio a texto) |
-| `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué y "Otros nombres". Abajo, tres caminos para elegir. Después, el brandbook con logos | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Armar mi web" → `/crear/web` · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo` |
+| `/crear/marca` | **Paso 2 · Tu marca.** Arriba, "Un nombre con historia": 5 nombres con su porqué y "Otros nombres". Abajo, tres caminos para elegir. Después, el brandbook con logos: esencia (con misión y visión), logo, paleta, tipografías, voz y tono (cómo cambia el tono según el momento, con ejemplos) y cómo se usa | "Armar mi marca" desde `/crear` | "Ver mis contenidos" → `/crear/contenido` · "Armar mi web" → `/crear/web` · "Volver a la entrevista" → `/crear` | La ficha (paso 1) | `/api/nombres`, `/api/direcciones`, `/api/identidad`, `/api/logo` |
 | `/crear/contenido` | **Paso 3 · Tu contenido.** El feed con la marca aplicada: posteos, carrusel, historias y reel | "Ver mis contenidos" desde el brandbook | "Ver mis productos" → `/crear/branderia` · "Volver a tu marca" → `/crear/marca` | La marca (paso 2) | `/api/contenidos/lote` |
-| `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** La IA saca la foto de cada producto y el logo real cae encima. Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` | La marca (paso 2) | `/api/contenidos/imagen` |
-| `/crear/web` | **Tu web.** Mini entrevista, la IA arma la web con la marca del cliente y se cambia por chat. Dominio y publicar siguen en construcción | "Armar mi web" desde el brandbook o desde `/crear/proximamente/web` | "Ver cómo va a funcionar" → `/crear/proximamente/web` | La marca (paso 2) | `/api/web/entrevista`, `/api/web/armar`, `/api/web/cambio` |
+| `/crear/branderia` | **Paso 4 · Tus productos (BranderIA).** Al entrar, la IA saca la foto de los 12 productos con la marca impresa: recibe el logo real como referencia y lo imprime siguiendo el material (a diferencia del feed, acá el logo sí lo dibuja la IA). Kit en un carrito y botón "Cotizar" (en construcción: no se cotiza ni se cobra nada) | "Ver mis productos" desde el feed | "Volver a tu contenido" → `/crear/contenido` | La marca (paso 2) | `/api/branderia` (gpt-image-2, una foto por pedido, 4 a la vez) |
+| `/crear/web` | **Tu web.** Mini entrevista, la IA arma la web con la marca del cliente (con fotos generadas si la persona lo pide, marcadas como ilustrativas) y se cambia por chat. "Me gusta, quiero publicarla" la publica en `/w/…` y entrega el link y un QR con los colores de la marca; volver a publicar actualiza el mismo link. El dominio propio sigue en construcción | "Armar mi web" desde el brandbook o desde `/crear/proximamente/web` | El link publicado → `/w/…` · "Ver cómo va a funcionar" → `/crear/proximamente/web` | La marca (paso 2). Para publicar, la tabla `webs` y la carpeta `webs-fotos` de Supabase (`apps/web/supabase/webs.sql`) | `/api/web/entrevista`, `/api/web/armar`, `/api/web/cambio`, `/api/web/foto` (gpt-image-2, una foto por pedido) · `/api/web/publicar` (sin IA) |
 
 Si falta lo que "Necesita", la página muestra un aviso con un botón a `/crear`.
 
