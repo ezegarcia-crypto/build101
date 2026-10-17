@@ -1,0 +1,29 @@
+/* Movimiento del feed: curva y tiempos de equipo/design-system.md (punto 4) */
+
+/* Historias y reel: cada lienzo entra con un fundido de 0,5 s */
+.capa {
+  transition: opacity 0.5s var(--ease-brandia);
+}
+
+/* La barrita de arriba de cada pantalla se llena en lo que dura (la duración va en línea) */
+.llenar {
+  animation-name: llenar;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+@keyframes llenar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* El carrusel se desliza sin barra de scroll a la vista */
+.desliza {
+  scrollbar-width: none;
+}
+.desliza::-webkit-scrollbar {
+  display: none;
+}

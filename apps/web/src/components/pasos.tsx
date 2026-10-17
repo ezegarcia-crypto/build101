@@ -1,5 +1,5 @@
-// Los pasos del recorrido de la demo: la entrevista, el brandbook y el feed
-const PASOS = ["Contanos", "Tu marca", "Tu contenido"];
+// Los pasos del recorrido de la demo: la entrevista, el brandbook, el feed y los productos (BranderIA)
+const PASOS = ["Contanos", "Tu marca", "Tu contenido", "Tus productos"];
 
 export function Pasos({ actual }: { actual: number }) {
   return (
