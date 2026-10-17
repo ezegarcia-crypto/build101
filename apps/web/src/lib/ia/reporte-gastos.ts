@@ -50,25 +50,26 @@ async function eleven<T>(ruta: string, clave: string): Promise<T> {
 
 type Conversacion = { conversation_id: string; call_duration_secs?: number };
 
-async function usoElevenLabs(inicioMes: Date) {
+export async function usoElevenLabs(inicioMes: Date, finMes = new Date()) {
   const clave = process.env.ELEVENLABS_API_KEY;
   const agente = process.env.ELEVENLABS_AGENT_ID;
   if (!clave) return { hayClave: false as const };
 
   const stats = await eleven<{ usage: Record<string, number[]> }>(
-    `/v1/usage/character-stats?start_unix=${inicioMes.getTime()}&end_unix=${Date.now()}&aggregation_interval=cumulative`,
+    `/v1/usage/character-stats?start_unix=${inicioMes.getTime()}&end_unix=${finMes.getTime()}&aggregation_interval=cumulative`,
     clave,
   );
   const cuenta = Object.values(stats.usage).flat().reduce((a, b) => a + b, 0);
 
   // Las conversaciones del agente de BrandIA en el mes (hasta 300), con el costo de cada una.
   const desde = Math.floor(inicioMes.getTime() / 1000);
+  const hasta = Math.floor(finMes.getTime() / 1000);
   const conversaciones: Conversacion[] = [];
   let cursor: string | null = null;
   if (agente) {
     for (let pagina = 0; pagina < 3; pagina++) {
       const r: { conversations: Conversacion[]; next_cursor: string | null; has_more: boolean } = await eleven(
-        `/v1/convai/conversations?agent_id=${agente}&call_start_after_unix=${desde}&page_size=100${cursor ? `&cursor=${cursor}` : ""}`,
+        `/v1/convai/conversations?agent_id=${agente}&call_start_after_unix=${desde}&call_start_before_unix=${hasta}&page_size=100${cursor ? `&cursor=${cursor}` : ""}`,
         clave,
       );
       conversaciones.push(...r.conversations);
@@ -96,6 +97,21 @@ async function usoElevenLabs(inicioMes: Date) {
     /** La parte de la suscripción que le toca a BrandIA este mes (0 a 1). */
     parte: cuenta > 0 ? Math.min(1, brandia / cuenta) : 0,
   };
+}
+
+/** La parte de la voz que le toca a BrandIA en cada mes pedido ("2026-10" → 0 a 1). */
+export async function partesDeVozPorMes(meses: string[]) {
+  const ahora = new Date();
+  const pares = await Promise.all(
+    [...new Set(meses)].map(async (mes) => {
+      const [anio, m] = mes.split("-").map(Number);
+      const inicio = new Date(Date.UTC(anio, m - 1, 1));
+      const fin = new Date(Math.min(Date.UTC(anio, m, 1), ahora.getTime()));
+      const uso = await intentar(`ElevenLabs de ${mes}`, () => usoElevenLabs(inicio, fin));
+      return [mes, uso?.hayClave ? uso.parte : 0] as const;
+    }),
+  );
+  return new Map(pares);
 }
 
 export async function armarReporte() {

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 
 import { MODULOS, PASOS, type Paso } from "@/lib/ia/gastos";
-import { armarReporte } from "@/lib/ia/reporte-gastos";
+import { armarReporte, partesDeVozPorMes } from "@/lib/ia/reporte-gastos";
 import { pasosDelModelo, USOS } from "@/lib/ia/usos";
+import { hayBaseDeDatos, listarPagos, parteDeBrandia, saldos } from "@/lib/pagos";
 
 import { numero, usd } from "./formato";
 import { GraficoEtapas } from "./grafico-etapas";
 import { ESTILOS_SERIES, familia, Muestra } from "./series";
 import { Precios } from "./precios";
+import { type FilaPago, Registro } from "./registro";
 
 // Panel interno del equipo: cuánto gastamos en IA y cuánto cuesta cada paso, para pensar precios.
 // No tiene links desde la app y los buscadores no lo indexan.
@@ -57,8 +59,26 @@ function Tabla({ columnas, children }: { columnas: string[]; children: React.Rea
   );
 }
 
+// El registro de pagos del equipo (Supabase). Si todavía no está conectado o falla, el panel sigue.
+async function leerRegistro() {
+  if (!hayBaseDeDatos()) return { estado: "sin-base" as const };
+  try {
+    const pagos = await listarPagos();
+    const partes = await partesDeVozPorMes(pagos.filter((p) => p.reparto === "uso_voz").map((p) => p.fecha.slice(0, 7)));
+    const filas: FilaPago[] = pagos.map((p) => {
+      const parte = parteDeBrandia(p, partes);
+      return { ...p, parte, brandia: p.monto_usd * parte };
+    });
+    return { estado: "ok" as const, filas, ...saldos(pagos, partes) };
+  } catch (error) {
+    console.error("[costos] no se pudo leer el registro de pagos", error);
+    return { estado: "error" as const };
+  }
+}
+
 export default async function Costos() {
-  const r = await armarReporte();
+  const [r, registro] = await Promise.all([armarReporte(), leerRegistro()]);
+  const hoy = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Montevideo" }).format(new Date());
   // El orden de los modelos dentro de cada barra es fijo (el de las familias), no el del gasto
   const ordenFamilia = (m: string) => ["sonnet", "recraft", "opus", "gpt-image", "otros"].indexOf(familia(m).clave);
   const etapas = r.pasos
@@ -227,6 +247,29 @@ export default async function Costos() {
           marca={{ valor: r.estimados.marcaCompleta, respaldo: 1.2 }}
           vistaPrevia={{ valor: r.estimados.vistaPrevia, respaldo: 0.38 }}
         />
+      </section>
+
+      <section className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <h2>Lo que puso cada uno</h2>
+          <p className="lead max-w-2xl">
+            Cada pago que alguien hizo para BrandIA (créditos, ElevenLabs, dominio…). El gasto se reparte en tres y acá
+            se ve a quién le debe BrandIA.
+          </p>
+        </div>
+        {registro.estado === "ok" && (
+          <Registro pagos={registro.filas} socios={registro.socios} total={registro.total} hoy={hoy} />
+        )}
+        {registro.estado === "sin-base" && (
+          <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
+            Falta conectar la base de datos (Supabase) para guardar los pagos.
+          </p>
+        )}
+        {registro.estado === "error" && (
+          <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
+            No se pudo leer el registro de pagos. Probá actualizar en un rato.
+          </p>
+        )}
       </section>
 
       <hr className="costura my-0" />
