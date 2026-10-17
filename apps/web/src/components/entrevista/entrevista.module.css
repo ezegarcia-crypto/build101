@@ -1,0 +1,71 @@
+/* Movimiento de la entrevista: curva y tiempos de equipo/design-system.md (punto 4) */
+
+/* Cada mensaje entra en 0,5 s */
+.entra {
+  animation: entra 0.5s var(--ease-brandia) both;
+}
+@keyframes entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Fraunces "se cocina": el peso pasa de 300 a 500 al cargar (1,6 s, momento de marca) */
+.seCocina {
+  animation: seCocina 1.6s var(--ease-brandia) both;
+}
+@keyframes seCocina {
+  from {
+    font-variation-settings: "wght" 300, "SOFT" 0, "opsz" 144;
+  }
+  to {
+    font-variation-settings: "wght" 500, "SOFT" 50, "opsz" 144;
+  }
+}
+
+/* La palabra clave en itálica, como en la web */
+.it {
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+}
+
+/* La B modular que se arma: las dos piezas encastran y se vuelven a separar */
+.piezaArriba {
+  animation: arriba 1.6s var(--ease-brandia) infinite alternate;
+}
+.piezaAbajo {
+  animation: abajo 1.6s var(--ease-brandia) infinite alternate;
+}
+@keyframes arriba {
+  from {
+    transform: translateY(-14px);
+    opacity: 0.35;
+  }
+  70%,
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes abajo {
+  from {
+    transform: translateY(14px);
+    opacity: 0.35;
+  }
+  70%,
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* El texto de progreso cambia con un fundido corto */
+.progreso {
+  animation: entra 0.3s var(--ease-brandia) both;
+}
