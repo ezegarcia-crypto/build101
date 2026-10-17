@@ -1,14 +1,15 @@
 import { generarLogos, pedidoLogoSchema } from "@/lib/ia/logo";
 
-// La generación del logo. Recibe { brief, paleta? } y devuelve { propuestas }: 3 logos
-// (logotipo, isotipo y emblema), cada uno con su concepto y la imagen como data URL.
+// El logo completo para el brandbook y el feed. Recibe { brief, direccion } (la dirección elegida, como sale
+// de /api/direcciones) y devuelve { propuestas }: 3 logos, el primero del tipo que sugiere la dirección,
+// cada uno con su concepto y la imagen como data URL.
 
 export const maxDuration = 120;
 
 export async function POST(req: Request) {
   const pedido = pedidoLogoSchema.safeParse(await req.json().catch(() => null));
   if (!pedido.success) {
-    return Response.json({ error: "Falta la ficha de la marca o viene mal armada." }, { status: 400 });
+    return Response.json({ error: "Falta la ficha de la marca o la dirección elegida, o vienen mal armadas." }, { status: 400 });
   }
 
   const t0 = Date.now();
