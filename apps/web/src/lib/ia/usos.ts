@@ -20,7 +20,6 @@ export type Uso = { modelo: string; para: string; respaldo?: boolean };
 
 export const USOS: Record<Paso, Uso[]> = {
   entrevista: [{ modelo: MODELO_ENTREVISTA, para: "Conversa con la persona y arma la ficha de la marca" }],
-  "voz-ficha": [{ modelo: MODELO_ENTREVISTA, para: "Pasa la llamada de voz a la ficha de la marca" }],
   direcciones: [{ modelo: MODELO_DIRECCIONES, para: "Propone las tres direcciones visuales" }],
   nombres: [{ modelo: MODELO_NOMBRES, para: "Propone nombres con su porqué" }],
   identidad: [
