@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, buttonVariants } from "@build101/ui/components/button";
-import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -116,12 +116,7 @@ export function Branderia() {
   const [nivel, setNivel] = useState<Record<string, number>>({});
   const [pedido, setPedido] = useState(false);
   const listas = useRef<Record<string, string>>({});
-  const aviso = useRef<HTMLDivElement>(null);
-
-  // Al pedir, el resumen aparece abajo del catálogo: se lleva la vista hasta ahí
-  useEffect(() => {
-    if (pedido) aviso.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [pedido]);
+  const carrito = useRef<HTMLElement>(null);
 
   const sacar = useCallback(async (m: Marca, ids: string[], senal?: AbortSignal) => {
     setFotos((f) => ({ ...f, ...Object.fromEntries(ids.map((id) => [id, { estado: "sacando" } as Foto])) }));
@@ -189,6 +184,11 @@ export function Branderia() {
     setNivel((n) => ({ ...n, [id]: Math.min(Math.max((n[id] ?? 0) + paso, 0), CANTIDADES.length - 1) }));
   }
 
+  function quitar(id: string) {
+    setPedido(false);
+    setNivel((n) => ({ ...n, [id]: 0 }));
+  }
+
   return (
     <main className="min-h-0 overflow-y-auto">
       <div className="mx-auto w-full max-w-[1080px] px-4 pt-5 pb-16">
@@ -226,67 +226,156 @@ export function Branderia() {
               </p>
             </div>
 
-            {/* La barra del kit queda a mano mientras se recorre el catálogo */}
-            <div className="sticky top-0 z-10 -mx-4 mb-3 bg-background/85 px-4 py-2 backdrop-blur">
-              <div className="flex flex-wrap items-center gap-3 rounded-[16px] border bg-card p-3 pl-4">
+            {/* En celular el carrito queda abajo del catálogo: esta barra lo deja a mano */}
+            <div className="sticky top-0 z-10 -mx-4 mb-3 bg-background/85 px-4 py-2 backdrop-blur lg:hidden">
+              <div className="flex items-center gap-3 rounded-[16px] border bg-card p-3 pl-4">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Tu kit</span>
                   <span aria-live="polite" className="font-semibold">
-                    {elegidos.length
-                      ? `${elegidos.length} producto${elegidos.length > 1 ? "s" : ""} · ${unidades} unidades`
-                      : "Elegí productos y cantidades"}
+                    {elegidos.length ? resumen(elegidos.length, unidades) : "Elegí productos y cantidades"}
                   </span>
                 </div>
-                <div className="ml-auto flex flex-wrap gap-2">
-                  {pendientes.length > 0 && (
-                    <Button variant="outline" disabled={sacando} onClick={() => sacar(marca, pendientes.map((p) => p.id))}>
-                      Ver {pendientes.length} más con mi marca
-                    </Button>
-                  )}
-                  <Button disabled={!elegidos.length} onClick={() => setPedido(true)}>
-                    Pedir <span aria-hidden>→</span>
-                  </Button>
-                </div>
+                <Button
+                  className="ml-auto"
+                  disabled={!elegidos.length}
+                  onClick={() => carrito.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                >
+                  Ver kit <span aria-hidden>↓</span>
+                </Button>
               </div>
             </div>
 
-            <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
-              {CATALOGO.map((p) => (
-                <Tarjeta
-                  key={p.id}
-                  producto={p}
-                  foto={fotos[p.id] ?? { estado: "pendiente" }}
-                  marca={marca}
-                  cantidad={nivel[p.id] ?? 0}
-                  onCambiar={(paso) => cambiar(p.id, paso)}
-                  onSacar={() => sacar(marca, [p.id])}
-                />
-              ))}
-            </ul>
-
-            {pedido && (
-              <div
-                ref={aviso}
-                role="status"
-                className={`${s.entra} mt-3 flex flex-col gap-3 rounded-[16px] bg-primary p-4 text-primary-foreground sm:p-6`}
-              >
-                <div>
-                  <EnConstruccion texto="El pedido está en construcción" />
-                </div>
-                <p className="text-lg font-semibold">Así va a funcionar.</p>
-                <ul className="flex flex-wrap gap-2 text-sm">
-                  {elegidos.map((p) => (
-                    <li key={p.id} className="rounded-full bg-primary-foreground/12 px-3 py-1">
-                      {CANTIDADES[nivel[p.id] ?? 0]} {p.nombre.toLowerCase()}
-                    </li>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="flex flex-col gap-3">
+                {pendientes.length > 0 && (
+                  <Button
+                    variant="outline"
+                    className="self-start"
+                    disabled={sacando}
+                    onClick={() => sacar(marca, pendientes.map((p) => p.id))}
+                  >
+                    Ver {pendientes.length} más con mi marca
+                  </Button>
+                )}
+                <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                  {CATALOGO.map((p) => (
+                    <Tarjeta
+                      key={p.id}
+                      producto={p}
+                      foto={fotos[p.id] ?? { estado: "pendiente" }}
+                      marca={marca}
+                      cantidad={nivel[p.id] ?? 0}
+                      onCambiar={(paso) => cambiar(p.id, paso)}
+                      onSacar={() => sacar(marca, [p.id])}
+                    />
                   ))}
                 </ul>
-                <p className="max-w-[40em] text-[0.9375rem] opacity-85">
-                  BrandIA produce cada producto con tu marca, controla que salga bien y te lo manda a tu puerta. Todavía
-                  no se hizo ningún pedido ni se cobró nada.
-                </p>
               </div>
-            )}
+
+              {/* El carrito: en compu queda fijo a la derecha mientras se recorre el catálogo */}
+              <aside
+                ref={carrito}
+                aria-label="Tu kit"
+                className="flex scroll-mt-24 flex-col gap-4 rounded-[16px] border bg-card p-4 lg:sticky lg:top-4 lg:max-h-[calc(100svh-6rem)] lg:overflow-y-auto"
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <h2 className="text-xl">Tu kit</h2>
+                  {elegidos.length > 0 && (
+                    <span className="text-sm text-muted-foreground">{resumen(elegidos.length, unidades)}</span>
+                  )}
+                </div>
+
+                {elegidos.length ? (
+                  <ul className="flex flex-col divide-y">
+                    {elegidos.map((p) => {
+                      const n = nivel[p.id] ?? 0;
+                      const foto = fotos[p.id];
+                      return (
+                        <li key={p.id} className={`${s.entra} flex items-center gap-3 py-3 first:pt-0`}>
+                          <div className="relative size-14 shrink-0 overflow-hidden rounded-[8px] bg-muted">
+                            {foto?.estado === "lista" && (
+                              <>
+                                <img src={foto.url} alt="" className="size-full object-cover" />
+                                <Logo marca={marca} className="absolute top-1/2 left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2" ancho={p.tam} />
+                              </>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 leading-tight">
+                                <p className="truncate text-[0.9375rem] font-semibold">{p.nombre}</p>
+                                <p className="truncate text-xs text-muted-foreground">{p.detalle}</p>
+                              </div>
+                              <button
+                                type="button"
+                                aria-label={`Sacar ${p.nombre} del kit`}
+                                onClick={() => quitar(p.id)}
+                                className="grid size-6 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-300 ease-brandia hover:bg-muted hover:text-foreground"
+                              >
+                                <X className="size-3.5" />
+                              </button>
+                            </div>
+                            <div className="mt-1.5 flex items-center gap-2">
+                              <Paso etiqueta={`Menos ${p.nombre}`} disabled={n === 0} onClick={() => cambiar(p.id, -1)} chico>
+                                −
+                              </Paso>
+                              <span className="w-14 text-center text-sm tabular-nums">{CANTIDADES[n]} u.</span>
+                              <Paso
+                                etiqueta={`Más ${p.nombre}`}
+                                disabled={n === CANTIDADES.length - 1}
+                                onClick={() => cambiar(p.id, 1)}
+                                chico
+                              >
+                                +
+                              </Paso>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="rounded-[10px] border border-dashed border-foreground/20 p-4 text-center text-sm text-muted-foreground">
+                    Tu kit está vacío. Sumá productos con el <span className="font-semibold text-foreground">+</span>.
+                  </p>
+                )}
+
+                <dl className="flex flex-col gap-1.5 border-t pt-4 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Unidades</dt>
+                    <dd className="font-semibold tabular-nums">{unidades}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Envío</dt>
+                    <dd>A tu puerta</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-muted-foreground">Precio</dt>
+                    <dd className="text-muted-foreground">Todavía sin precios</dd>
+                  </div>
+                </dl>
+
+                <Button size="lg" disabled={!elegidos.length} onClick={() => setPedido(true)}>
+                  Pedir <span aria-hidden>→</span>
+                </Button>
+
+                {pedido && (
+                  <div
+                    role="status"
+                    className={`${s.entra} flex flex-col gap-2.5 rounded-[12px] bg-primary p-4 text-primary-foreground`}
+                  >
+                    <div>
+                      <EnConstruccion texto="El pedido está en construcción" />
+                    </div>
+                    <p className="font-semibold">Así va a funcionar.</p>
+                    <p className="text-sm opacity-85">
+                      BrandIA produce cada producto con tu marca, controla que salga bien y te lo manda a tu puerta.
+                      Todavía no se hizo ningún pedido ni se cobró nada.
+                    </p>
+                  </div>
+                )}
+              </aside>
+            </div>
 
             <p className="mt-6 max-w-[40em] text-sm text-muted-foreground">
               Las fotos las genera la IA con el estilo de {marca.identidad.nombre}; el logo es el tuyo, tal cual. Sin
@@ -328,7 +417,6 @@ function Tarjeta({
   onCambiar: (paso: number) => void;
   onSacar: () => void;
 }) {
-  const logo = marca.logos[0]?.imagen;
   return (
     <li className="flex flex-col gap-2.5 rounded-lg border bg-card p-3 transition-[transform,box-shadow] duration-500 ease-brandia hover:-translate-y-1.5 hover:shadow-[0_24px_40px_-24px_rgba(30,30,28,.35)]">
       <div className="relative aspect-square overflow-hidden rounded-[10px] bg-muted">
@@ -336,20 +424,12 @@ function Tarjeta({
           <>
             <img src={foto.url} alt={`${p.nombre} con la marca ${marca.identidad.nombre}`} className={`${b.foto} size-full object-cover`} />
             {/* El logo real, apoyado con "multiplicar" para que tome la textura del producto */}
-            <span
-              aria-hidden
-              className={`${b.cae} absolute top-1/2 left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 mix-blend-multiply`}
-              style={{ width: `${p.tam}%`, animationDelay: "0.35s" }}
-            >
-              {logo ? (
-                <img src={logo} alt="" className="size-full object-contain" />
-              ) : (
-                <span
-                  className="block size-full [&>svg]:size-full"
-                  dangerouslySetInnerHTML={{ __html: svgSeguro(marca.identidad.logo.isotipo_svg) }}
-                />
-              )}
-            </span>
+            <Logo
+              marca={marca}
+              ancho={p.tam}
+              retraso
+              className={`${b.cae} absolute top-1/2 left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2`}
+            />
           </>
         ) : (
           <div
@@ -379,26 +459,65 @@ function Tarjeta({
         <p className="text-xs text-muted-foreground">{p.detalle}</p>
       </div>
       <div className="flex items-center justify-between gap-1">
-        <button
-          type="button"
-          aria-label={`Menos ${p.nombre}`}
-          disabled={cantidad === 0}
-          onClick={() => onCambiar(-1)}
-          className="grid size-8 place-items-center rounded-full border text-base transition-colors duration-300 ease-brandia hover:bg-muted disabled:opacity-35"
-        >
+        <Paso etiqueta={`Menos ${p.nombre}`} disabled={cantidad === 0} onClick={() => onCambiar(-1)}>
           −
-        </button>
+        </Paso>
         <span className="text-sm tabular-nums">{CANTIDADES[cantidad] ? `${CANTIDADES[cantidad]} u.` : "—"}</span>
-        <button
-          type="button"
-          aria-label={`Más ${p.nombre}`}
-          disabled={cantidad === CANTIDADES.length - 1}
-          onClick={() => onCambiar(1)}
-          className="grid size-8 place-items-center rounded-full border text-base transition-colors duration-300 ease-brandia hover:bg-muted disabled:opacity-35"
-        >
+        <Paso etiqueta={`Más ${p.nombre}`} disabled={cantidad === CANTIDADES.length - 1} onClick={() => onCambiar(1)}>
           +
-        </button>
+        </Paso>
       </div>
     </li>
+  );
+}
+
+const resumen = (productos: number, unidades: number) =>
+  `${productos} producto${productos > 1 ? "s" : ""} · ${unidades} unidades`;
+
+/** El logo real, apoyado con "multiplicar" para que tome la textura del producto. `ancho`: en % de la foto. */
+function Logo({ marca, ancho, retraso, className }: { marca: Marca; ancho: number; retraso?: boolean; className: string }) {
+  const logo = marca.logos[0]?.imagen;
+  return (
+    <span
+      aria-hidden
+      className={`${className} mix-blend-multiply`}
+      style={{ width: `${ancho}%`, animationDelay: retraso ? "0.35s" : undefined }}
+    >
+      {logo ? (
+        <img src={logo} alt="" className="size-full object-contain" />
+      ) : (
+        <span
+          className="block size-full [&>svg]:size-full"
+          dangerouslySetInnerHTML={{ __html: svgSeguro(marca.identidad.logo.isotipo_svg) }}
+        />
+      )}
+    </span>
+  );
+}
+
+/** El botón redondo de − y + de las cantidades */
+function Paso({
+  etiqueta,
+  disabled,
+  onClick,
+  chico,
+  children,
+}: {
+  etiqueta: string;
+  disabled: boolean;
+  onClick: () => void;
+  chico?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={etiqueta}
+      disabled={disabled}
+      onClick={onClick}
+      className={`grid ${chico ? "size-7 text-sm" : "size-8 text-base"} place-items-center rounded-full border transition-colors duration-300 ease-brandia hover:bg-muted disabled:opacity-35`}
+    >
+      {children}
+    </button>
   );
 }
