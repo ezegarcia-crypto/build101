@@ -5,7 +5,7 @@
 //
 // - Sin ELEVENLABS_AGENT_ID en apps/web/.env.local: crea el agente y muestra su ID para que lo copies ahí.
 // - Con ELEVENLABS_AGENT_ID: actualiza ese agente (prompt, primer mensaje, idioma y modelo).
-//   La voz elegida en el panel no se toca, salvo que pongas ELEVENLABS_VOICE_ID en apps/web/.env.local.
+//   La voz es VOZ_AGENTE (voz.ts), salvo que pongas otra en ELEVENLABS_VOICE_ID.
 // - Con --ver: muestra lo que se mandaría, sin mandar nada.
 
 import {
@@ -15,12 +15,13 @@ import {
   NOMBRE_AGENTE_VOZ,
   PRIMER_MENSAJE_VOZ,
   PROMPT_VOZ,
+  VOZ_AGENTE,
 } from "../apps/web/src/lib/ia/voz.ts";
 
 const API = "https://api.elevenlabs.io/v1/convai/agents";
 const clave = process.env.ELEVENLABS_API_KEY;
 const agente = process.env.ELEVENLABS_AGENT_ID;
-const voz = process.env.ELEVENLABS_VOICE_ID;
+const voz = process.env.ELEVENLABS_VOICE_ID ?? VOZ_AGENTE;
 const soloVer = process.argv.includes("--ver");
 
 const configuracion = {

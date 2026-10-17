@@ -14,6 +14,11 @@ export const LLM_VOZ = "claude-haiku-5-5";
 // después se puede cambiar desde el panel sin que el script la pise.
 export const MODELO_TTS_VOZ = "eleven_flash_v2_5";
 
+// La voz del agente (elegida por Eze el 17/10): "Rita - Friendly, lively", mujer con acento
+// rioplatense de la biblioteca de ElevenLabs. Para usarla en otra cuenta, primero hay que sumarla
+// a "Mis voces" desde la biblioteca; si no, ElevenLabs responde voice_not_found.
+export const VOZ_AGENTE = "klD8ai7tOs4cUL3kcChn";
+
 export const NOMBRE_AGENTE_VOZ = "BrandIA · entrevista por voz";
 
 // Freno de gasto: ElevenLabs corta la llamada a los 8 minutos aunque nadie la cierre (una pestaña
