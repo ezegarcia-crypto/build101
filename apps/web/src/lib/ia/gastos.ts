@@ -25,6 +25,7 @@ export const PASOS = {
   "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
   "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
   "web-cambio": { modulo: "B", nombre: "Cambio de la web por chat", unidad: "cambio" },
+  branderia: { modulo: "C", nombre: "Foto de un producto con la marca", unidad: "foto" },
 } as const;
 
 export type Paso = keyof typeof PASOS;
@@ -56,6 +57,8 @@ const POR_MINUTO: Record<Paso, number> = {
   "web-entrevista": 90,
   "web-armar": 15,
   "web-cambio": 40,
+  // 12 fotos por marca: alcanza para 4 personas entrando a la vez
+  branderia: 48,
 };
 const recientes = new Map<Paso, number[]>();
 
