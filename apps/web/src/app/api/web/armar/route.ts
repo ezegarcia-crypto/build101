@@ -1,5 +1,6 @@
 import { generateText, Output } from "ai";
 
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 import { conReintento } from "@/lib/ia/reintentar";
 import { fichaWebSchema, MODELO_WEB } from "@/lib/ia/web/ficha-web";
 import { comprobarWeb, describirMarca, marcaWebSchema, PROMPT_ARMAR_WEB, webSchema } from "@/lib/ia/web/web";
@@ -9,7 +10,7 @@ import { comprobarWeb, describirMarca, marcaWebSchema, PROMPT_ARMAR_WEB, webSche
 
 export const maxDuration = 120;
 
-export async function POST(req: Request) {
+export const POST = medir("web-armar", async (req: Request) => {
   const cuerpo = await req.json();
   const marca = marcaWebSchema.safeParse(cuerpo.marca);
   const ficha = fichaWebSchema.safeParse(cuerpo.ficha_web);
@@ -21,6 +22,8 @@ export async function POST(req: Request) {
     const { output: web } = await conReintento(() =>
       generateText({
         model: MODELO_WEB,
+        abortSignal: senalDelPedido(),
+        providerOptions: etiquetar(),
         instructions: PROMPT_ARMAR_WEB,
         output: Output.object({ schema: webSchema }),
         prompt: `Ficha de la marca e identidad:\n${describirMarca(marca.data)}\n\nFicha de la web:\n${JSON.stringify(ficha.data, null, 2)}`,
@@ -31,4 +34,4 @@ export async function POST(req: Request) {
     console.error("[api/web/armar]", error);
     return Response.json({ error: "No pudimos armar la web. Probá de nuevo." }, { status: 502 });
   }
-}
+});

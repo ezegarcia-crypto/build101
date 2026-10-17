@@ -6,6 +6,7 @@ import {
   type UIMessage,
 } from "ai";
 
+import { etiquetar, fijarCorrida, medir, senalDelPedido } from "@/lib/ia/gastos";
 import { fichaWebSchema, MODELO_WEB, promptEntrevistaWeb } from "@/lib/ia/web/ficha-web";
 import { describirMarca, marcaWebSchema } from "@/lib/ia/web/web";
 
@@ -15,13 +16,16 @@ import { describirMarca, marcaWebSchema } from "@/lib/ia/web/web";
 
 export const maxDuration = 60;
 
-export async function POST(req: Request) {
-  const { messages, marca }: { messages: UIMessage[]; marca: unknown } = await req.json();
+export const POST = medir("web-entrevista", async (req: Request) => {
+  const { messages, marca, id }: { messages: UIMessage[]; marca: unknown; id?: string } = await req.json();
   const datos = marcaWebSchema.safeParse(marca);
   if (!datos.success) return Response.json({ error: "Falta la marca: primero hay que armarla" }, { status: 400 });
+  fijarCorrida(id); // toda la conversación cuenta como una sola corrida
 
   const result = streamText({
     model: MODELO_WEB,
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar(),
     instructions: promptEntrevistaWeb(describirMarca(datos.data), datos.data.identidad.nombre),
     messages: await convertToModelMessages(messages),
     tools: {
@@ -36,4 +40,4 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({ stream: result.stream }),
   });
-}
+});

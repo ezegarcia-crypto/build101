@@ -1,6 +1,7 @@
 import { generateText, Output } from "ai";
 import { z } from "zod";
 
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 import { conReintento } from "@/lib/ia/reintentar";
 import { fichaWebSchema, MODELO_WEB } from "@/lib/ia/web/ficha-web";
 import { comprobarWeb, describirMarca, marcaWebSchema, PROMPT_CAMBIAR_WEB, webSchema } from "@/lib/ia/web/web";
@@ -16,7 +17,7 @@ const cambioSchema = z.object({
   ficha_web: fichaWebSchema,
 });
 
-export async function POST(req: Request) {
+export const POST = medir("web-cambio", async (req: Request) => {
   const cuerpo = await req.json();
   const marca = marcaWebSchema.safeParse(cuerpo.marca);
   const ficha = fichaWebSchema.safeParse(cuerpo.ficha_web);
@@ -30,6 +31,8 @@ export async function POST(req: Request) {
     const { output } = await conReintento(() =>
       generateText({
         model: MODELO_WEB,
+        abortSignal: senalDelPedido(),
+        providerOptions: etiquetar(),
         instructions: PROMPT_CAMBIAR_WEB,
         output: Output.object({ schema: cambioSchema }),
         prompt: `Ficha de la marca e identidad:\n${describirMarca(marca.data)}\n\nFicha de la web:\n${JSON.stringify(ficha.data, null, 2)}\n\nLa web actual:\n${JSON.stringify(web.data, null, 2)}\n\nEl pedido de la persona:\n«${pedido}»`,
@@ -40,4 +43,4 @@ export async function POST(req: Request) {
     console.error("[api/web/cambio]", error);
     return Response.json({ error: "No pudimos hacer el cambio. Probá de nuevo." }, { status: 502 });
   }
-}
+});

@@ -22,6 +22,9 @@ export const PASOS = {
   "contenidos-pieza": { modulo: "B", nombre: "Una pieza del feed", unidad: "pieza" },
   "contenidos-imagen": { modulo: "B", nombre: "Una imagen del feed", unidad: "imagen" },
   "contenidos-simple": { modulo: "B", nombre: "Feed simple (se retira)", unidad: "feed" },
+  "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
+  "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
+  "web-cambio": { modulo: "B", nombre: "Cambio de la web por chat", unidad: "cambio" },
 } as const;
 
 export type Paso = keyof typeof PASOS;
@@ -50,6 +53,9 @@ const POR_MINUTO: Record<Paso, number> = {
   "contenidos-pieza": 60,
   "contenidos-imagen": 120,
   "contenidos-simple": 8,
+  "web-entrevista": 90,
+  "web-armar": 15,
+  "web-cambio": 40,
 };
 const recientes = new Map<Paso, number[]>();
 
