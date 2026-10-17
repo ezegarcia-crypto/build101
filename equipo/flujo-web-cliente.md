@@ -2,6 +2,8 @@
 
 > **Estado (decidido el 17/10):** se trabaja en paralelo a los contenidos, para llegar a la demo. La hace Rodrigo, en la rama `web-cliente`. Hasta que funcione, la web se muestra como pantalla "en construcción".
 
+> **Etapas:** qué se presenta en la demo, qué falta para el cliente real y las webs completas a futuro, en `equipo/web-cliente-futuro.md`.
+
 El recorrido completo de una clienta de BrandIA desde que pide su web hasta que la ve publicada en internet, con su propio dominio (la dirección de la web, como `panaderiacosta.com`).
 
 **El ejemplo:** Marina, dueña de **Costa**, una panadería de barrio en Montevideo (ficticia, del manual de BrandIA). Instagram: @panaderiacosta. Ya hizo su identidad con BrandIA, así que tiene ficha, logo, paleta, tipografías y voz de marca.
