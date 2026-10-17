@@ -6,12 +6,49 @@ Hecha el sábado 17/10 a las 15:50, en la rama `web-cliente` (código al día co
 
 La consulta al Gateway de Vercel (`/v1/credits`, con la clave de `apps/web/.env.local`) devolvió:
 
-- **Saldo: USD −19,68** (está en negativo)
-- **Gastado hasta ahora: USD 55**
+- **Saldo: USD −19,71** (está en negativo)
+- **Crédito cargado: USD 55.** Gastado: USD 74,62, todo el sábado 17/10 (ver punto 0b)
 
 Con saldo negativo **toda llamada a la IA falla** con el error 402 `insufficient_funds`: entrevista, marca, logo, contenidos y web. Si la web publicada usa el mismo team (`ezegb`), la demo hoy no anda. **Eze tiene que cargar crédito** en Vercel → AI Gateway → Top up. Con USD 40 alcanza para volver a positivo y tener unas 30 corridas completas.
 
 Por eso esta auditoría **no midió en vivo**: los tokens de entrada salen de medir los prompts reales del código con una ficha real (Miga, de `entrevistas-simuladas.md`); los de salida, de los tiempos medidos y del tamaño de lo que devuelve cada paso. Donde hay costo medido por el Gateway (contenidos), se usa ese.
+
+## 0b. En qué se fueron los USD 74,62 (datos reales del Gateway)
+
+Sale del reporte del Gateway (`/v1/report`, agrupado por modelo, por día y por clave). Todo el gasto es del sábado 17/10: 2.116 pedidos a la IA.
+
+**Por modelo:**
+
+| Modelo | Pedidos | Tokens entrada | Tokens salida | Tokens "pensando" | USD | % |
+|---|---|---|---|---|---|---|
+| Claude Sonnet 5.5 | 1.834 | 5,19 M | 3,52 M | 2,06 M | **66,15** | 89 % |
+| Recraft v4.1 (logos y feed simple) | 177 imágenes | | | | 6,03 | 8 % |
+| Claude Opus 5.5 (isotipo) | 29 | 0,08 M | 0,03 M | 0,03 M | 1,51 | 2 % |
+| GPT Image 2 (fotos del feed) | 59 imágenes | | | | 0,67 | 1 % |
+| Otros (pruebas sueltas de Flux, Seedream, Gemini, Haiku) | 17 | | | | 0,26 | 0 % |
+
+**Por quién lo pidió:**
+
+| Origen | Pedidos | USD |
+|---|---|---|
+| El proyecto `build101` de Vercel (la web publicada y las compus que usan `vercel env pull`) | 2.045 | **73,12** |
+| La clave `brandia-vercel-gate` (la de `.env.local` en la compu de Rodrigo) | 71 | 1,50 |
+
+**La causa principal: una pantalla que se recargaba sola.** Lo dice el commit de Eze `e93e95e` (16:01): *una página que se recargaba sola pidió más de 1.000 veces las direcciones*. Las cuentas cierran:
+
+- Cada pedido de direcciones a Sonnet cuesta unos USD 0,045 (unos 2.400 tokens de entrada y unos 4.000 de salida contando lo que "piensa").
+- 1.000 a 1.100 pedidos × USD 0,045 ≈ **USD 45 a 50**: **dos tercios de todo el gasto**.
+- El pedido promedio de Sonnet del día (2.800 tokens de entrada) se parece mucho a uno de direcciones, otra señal de que la mayoría fueron esos.
+- El resto (unos USD 25) es el trabajo normal del día: pruebas de las entrevistas, unas 29 identidades (29 pedidos a Opus, uno por identidad), logos y feeds simples con Recraft, y unos 5 lotes de contenidos con fotos.
+
+Eze ya lo frenó (commits `e93e95e` y `0379be6`): tope de pedidos por minuto por paso, la IA deja de generar si la persona se va de la página, y las pantallas que arrancan solas no arrancan más de 3 veces en 2 minutos. También sumó el panel `/costos` (commit `875c02c`), que etiqueta cada llamada por paso: desde ahora el Gateway puede separar el gasto por paso, algo que hasta las 15:40 no se podía.
+
+**Dos cosas que corrigen las estimaciones de abajo:**
+
+1. **Sonnet "piensa" antes de responder, y eso se cobra como salida.** Fueron 2,06 millones de tokens, USD 20,6, casi un tercio de lo de Sonnet. Las salidas de la tabla del punto 2 no lo incluían: hay que sumarles más o menos un 60 %.
+2. **Las fotos de GPT Image 2 salen baratas:** USD 0,67 por 59 fotos, **USD 0,011 por foto**. Las 10 fotos de un lote cuestan unos USD 0,11, no hasta 1,90 como estimaba el punto 4.1.
+
+Con esas dos correcciones, **un cliente completo cuesta alrededor de USD 0,90** (no 0,75).
 
 ## 1. Precios (del Gateway, hoy)
 
@@ -56,13 +93,13 @@ Un token es un pedacito de palabra: en español, unos 3,3 caracteres.
 | + Web con 3 cambios (W1 + W2 + 3 × W3) | + 0,20 |
 | **Total, un cliente completo** | **≈ 0,75** |
 | Lo mismo con entrevista por voz en vez de chat | ≈ 1,20 |
-| Peor caso, si las fotos salen en calidad alta | ≈ 2,50 |
+| Con lo que "piensa" Sonnet y el costo real de las fotos (punto 0b) | ≈ 0,90 |
 
-Para el finde: 10 ensayos + 10 pruebas del jurado ≈ **USD 15 a 25** (hasta 50 si las fotos salen en calidad alta).
+Para el finde: 10 ensayos + 10 pruebas del jurado ≈ **USD 20** (con la corrección del punto 0b). Lo que de verdad dispara el gasto es una pantalla que repite pedidos sola: eso costó USD 45 a 50 en una tarde.
 
 ## 4. Hallazgos y qué conviene hacer
 
-1. **Las fotos son lo más caro y lo más incierto.** `contenidos/imagen.ts` no fija la calidad de GPT Image 2, así que queda en automático. Según la calidad, 10 fotos cuestan entre USD 0,12 (baja) y 1,90 (alta). El README ya pedía confirmar este número en el panel de Vercel. **Propuesta:** fijar `quality: "medium"` (≈ USD 0,05 por foto) y mirar el panel después de un lote.
+1. **Las fotos: resuelto con datos reales.** `contenidos/imagen.ts` no fija la calidad de GPT Image 2, pero el Gateway muestra que cada foto costó USD 0,011. No hace falta tocarlo.
 2. **El Gateway quedó en negativo (punto 0).** Lo más urgente de todo.
 3. **Las entrevistas reenvían todo en cada turno.** En cada respuesta vuelven a viajar las instrucciones, el molde de la ficha (~1.300 tokens) y toda la charla. Es la mitad del costo de A1 y W1. Se puede activar la caché de Anthropic (pagar 10 % por lo repetido), pero ahorra ~USD 0,03 por cliente: **no vale la pena antes de la demo**.
 4. **Opus para el isotipo cuesta el doble que Sonnet**, pero son USD 0,04: si el logo sale mejor, dejarlo.
