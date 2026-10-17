@@ -18,6 +18,7 @@ import {
   textosSchema,
 } from "@/lib/ia/identidad";
 import { conReintento } from "@/lib/ia/reintentar";
+import { etiquetar, medir } from "@/lib/ia/gastos";
 
 // Módulo A, paso 3: con la ficha y la dirección elegida, el contenido del brandbook y el símbolo del logo.
 // Entra: { brief, direccion }. Sale: { identidad }, con las comprobaciones de calidad
@@ -28,7 +29,7 @@ export const maxDuration = 180;
 // Si una tipografía no existe en Google Fonts, se reemplaza por una segura del mismo uso
 const REEMPLAZO = { titulos: "DM Serif Display", texto: "DM Sans" } as const;
 
-export async function POST(req: Request) {
+export const POST = medir("identidad", async (req: Request) => {
   const cuerpo = await req.json();
   const ficha = briefSchema.safeParse(cuerpo.brief);
   const elegida = direccionSchema.safeParse(cuerpo.direccion);
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
     conReintento(() =>
       generateText({
         model: MODELO_TEXTOS,
+        providerOptions: etiquetar(),
         instructions: PROMPT_TEXTOS,
         output: Output.object({ schema: textosSchema }),
         prompt: contexto,
@@ -51,6 +53,7 @@ export async function POST(req: Request) {
     conReintento(() =>
       generateText({
         model: MODELO_LOGO,
+        providerOptions: etiquetar(),
         instructions: PROMPT_LOGO,
         output: Output.object({ schema: logoSchema }),
         prompt: `${contexto}\n\nTipo de logo: ${direccion.logo_sugerido.tipo}. Formas: ${direccion.formas}.`,
@@ -99,4 +102,4 @@ export async function POST(req: Request) {
       comprobaciones,
     },
   });
-}
+});

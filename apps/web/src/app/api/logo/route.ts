@@ -1,4 +1,5 @@
 import { generarLogos, pedidoLogoSchema } from "@/lib/ia/logo";
+import { medir } from "@/lib/ia/gastos";
 
 // El logo completo para el brandbook y el feed. Recibe { brief, direccion } (la dirección elegida, como sale
 // de /api/direcciones) y devuelve { propuestas }: 3 logos, el primero del tipo que sugiere la dirección,
@@ -6,7 +7,7 @@ import { generarLogos, pedidoLogoSchema } from "@/lib/ia/logo";
 
 export const maxDuration = 120;
 
-export async function POST(req: Request) {
+export const POST = medir("logo", async (req: Request) => {
   const pedido = pedidoLogoSchema.safeParse(await req.json().catch(() => null));
   if (!pedido.success) {
     return Response.json({ error: "Falta la ficha de la marca o la dirección elegida, o vienen mal armadas." }, { status: 400 });
@@ -23,4 +24,4 @@ export async function POST(req: Request) {
     console.error("[logo]", error);
     return Response.json({ error: "No se pudieron pensar los logos. Probá de nuevo." }, { status: 502 });
   }
-}
+});

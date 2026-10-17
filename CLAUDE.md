@@ -183,3 +183,4 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 - **La web publicada:** https://build101-bice.vercel.app (proyecto `build101` del team `ezegb`, conectado a GitHub: cada push a `main` se publica solo). Ojo: `build101.vercel.app` es de otra persona.
 - Probar en la compu: `npm install` y después `npm run dev:web` → http://localhost:3001
 - La IA va por **Vercel AI Gateway** (texto, imágenes y video) y la voz por **ElevenLabs**. En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
+- **Lo que gasta la IA:** https://build101-bice.vercel.app/costos (saldo, costo de cada paso y de una marca completa). Toda ruta nueva con IA se anota con `medir()` y `etiquetar()`: ver la sección 8 de `apps/web/src/lib/ia/README.md`.

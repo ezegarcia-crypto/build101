@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
 import { conReintento } from "@/lib/ia/reintentar";
+import { etiquetar } from "@/lib/ia/gastos";
 
 // Módulo B · el feed: con la ficha de la marca y su identidad, la IA arma posteos e historias.
 // 1) Claude planifica el feed (textos, hashtags, idea visual y el pedido para cada imagen).
@@ -170,7 +171,7 @@ async function generarImagen(prompt: string, formato: keyof typeof MEDIDAS, pale
         model: intento.modelo,
         prompt,
         size: intento.size,
-        providerOptions: intento.providerOptions,
+        providerOptions: etiquetar(intento.providerOptions),
         maxRetries: 1,
       });
       costo += costoDe(resultado.providerMetadata) || costoDe(resultado.calls[0]?.providerMetadata);
@@ -191,6 +192,7 @@ export async function generarFeed({ brief, identidad }: EntradaContenidos): Prom
   const { output: plan, providerMetadata } = await conReintento(() =>
     generateText({
       model: MODELO_CONTENIDOS,
+      providerOptions: etiquetar(),
       instructions: PROMPT_CONTENIDOS,
       prompt: `## La identidad\n${JSON.stringify(identidad, null, 2)}\n\n## La ficha de la marca\n${JSON.stringify(brief, null, 2)}`,
       output: Output.object({ schema: planSchema }),

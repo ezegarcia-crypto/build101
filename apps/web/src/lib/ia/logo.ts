@@ -4,6 +4,7 @@ import { z } from "zod";
 import { briefSchema, type Brief } from "@/lib/ia/brief";
 import { direccionSchema, type Direccion } from "@/lib/ia/direcciones";
 import { conReintento } from "@/lib/ia/reintentar";
+import { etiquetar } from "@/lib/ia/gastos";
 
 // El logo completo (símbolo + nombre) para el brandbook y el feed, a partir de la ficha y la dirección elegida.
 // Claude piensa 3 propuestas (concepto + pedido al dibujante) y un modelo de imágenes las dibuja en paralelo.
@@ -74,7 +75,7 @@ export type PropuestaLogo = {
 async function dibujar(prompt: string) {
   for (const modelo of [MODELO_IMAGEN, MODELO_IMAGEN_RESPALDO]) {
     try {
-      const { image } = await generateImage({ model: modelo, prompt, size: "1024x1024" });
+      const { image } = await generateImage({ model: modelo, prompt, size: "1024x1024", providerOptions: etiquetar() });
       return { imagen: `data:${image.mediaType ?? "image/png"};base64,${image.base64}`, modelo };
     } catch (error) {
       console.error(`[logo] ${modelo} falló:`, error);
@@ -91,6 +92,7 @@ export async function generarLogos({ brief, direccion }: { brief: Brief; direcci
   const { output } = await conReintento(() =>
     generateText({
       model: MODELO_CONCEPTOS,
+      providerOptions: etiquetar(),
       instructions: PROMPT_LOGO,
       output: Output.object({ schema: conceptosSchema }),
       prompt: [

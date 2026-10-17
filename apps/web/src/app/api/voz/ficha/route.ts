@@ -5,6 +5,7 @@ import { briefSchema } from "@/lib/ia/brief";
 import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
 import { conReintento } from "@/lib/ia/reintentar";
 import { PROMPT_FICHA_VOZ } from "@/lib/ia/voz";
+import { etiquetar, medir } from "@/lib/ia/gastos";
 
 // Cuando termina la llamada, la pantalla manda acá la transcripción y recibe la ficha de la marca,
 // con el mismo formato (Brief) que devuelve la entrevista por chat.
@@ -19,7 +20,7 @@ const pedidoSchema = z.object({
     .min(1),
 });
 
-export async function POST(req: Request) {
+export const POST = medir("voz-ficha", async (req: Request) => {
   const pedido = pedidoSchema.safeParse(await req.json().catch(() => null));
   if (!pedido.success) {
     return Response.json({ error: "Falta la transcripción de la llamada." }, { status: 400 });
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
     const { output } = await conReintento(() =>
       generateText({
         model: MODELO_ENTREVISTA,
+        providerOptions: etiquetar(),
         instructions: PROMPT_FICHA_VOZ,
         prompt: charla,
         output: Output.object({ schema: briefSchema, name: "ficha_de_la_marca" }),
@@ -48,4 +50,4 @@ export async function POST(req: Request) {
     console.error("No se pudo armar la ficha de la voz", error);
     return Response.json({ error: "No se pudo armar la ficha. Probá de nuevo." }, { status: 500 });
   }
-}
+});
