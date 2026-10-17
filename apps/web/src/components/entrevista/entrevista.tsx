@@ -15,6 +15,7 @@ import { Armando } from "./armando";
 import s from "./entrevista.module.css";
 import { CLAVE_FICHA, Ficha, type FichaMarca } from "./ficha";
 import { TextoIA } from "./texto-ia";
+import { EntrevistaVoz } from "./voz";
 
 // Paso 1 · Contanos. La entrevista por chat contra /api/entrevista (la arma Eze en la rama ia).
 // Cuando la persona confirma el resumen, la IA devuelve la ficha en una parte
@@ -96,6 +97,7 @@ function CajaDeTexto({
 }
 
 export function Entrevista() {
+  const [modo, setModo] = useState<"chat" | "voz">("chat");
   const { messages, sendMessage, status, error, regenerate, setMessages } = useChat({
     transport: new DefaultChatTransport({ api: "/api/entrevista" }),
   });
@@ -135,8 +137,11 @@ export function Entrevista() {
 
   // Antes del primer mensaje: la invitación a contar el negocio
   if (messages.length === 0) {
+    const porVoz = modo === "voz";
     return (
-      <main className="mx-auto flex min-h-0 w-full max-w-[720px] flex-col justify-center overflow-y-auto px-4 py-12 sm:py-20">
+      <main
+        className={`mx-auto flex min-h-0 w-full max-w-[720px] flex-col overflow-y-auto px-4 py-12 sm:py-20 ${porVoz ? "" : "justify-center"}`}
+      >
         <Pasos actual={0} />
         <h1 className={`${s.seCocina} display mt-8`}>
           Contanos lo que <span className={s.it}>hacés</span>.
@@ -145,16 +150,22 @@ export function Entrevista() {
           Contanos tu negocio como se lo contarías a un amigo: qué hacés, para quién y dónde vendés. Te hacemos
           unas pocas preguntas y armamos la ficha de tu marca.
         </p>
-        <div className={`${s.entra} mt-8`}>
-          <CajaDeTexto onEnviar={enviar} ocupado={ocupado} grande />
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          <span>¿Preferís hablar?</span>
-          <Button variant="outline" size="sm" disabled>
-            <Mic data-icon="inline-start" />
-            Hablar con BrandIA · en construcción
-          </Button>
-        </div>
+        {porVoz ? (
+          <EntrevistaVoz onVolverAlChat={() => setModo("chat")} />
+        ) : (
+          <>
+            <div className={`${s.entra} mt-8`}>
+              <CajaDeTexto onEnviar={enviar} ocupado={ocupado} grande />
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span>¿Preferís hablar?</span>
+              <Button variant="outline" size="sm" onClick={() => setModo("voz")}>
+                <Mic data-icon="inline-start" />
+                Hablar con BrandIA
+              </Button>
+            </div>
+          </>
+        )}
       </main>
     );
   }
