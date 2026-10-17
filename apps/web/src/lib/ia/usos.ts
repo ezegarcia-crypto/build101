@@ -21,11 +21,10 @@ export type Uso = { modelo: string; para: string; respaldo?: boolean };
 
 export const USOS: Record<Paso, Uso[]> = {
   entrevista: [{ modelo: MODELO_ENTREVISTA, para: "Conversa con la persona y arma la ficha de la marca" }],
-  "voz-ficha": [{ modelo: MODELO_ENTREVISTA, para: "Pasa la llamada de voz a la ficha de la marca" }],
   direcciones: [{ modelo: MODELO_DIRECCIONES, para: "Propone las tres direcciones visuales" }],
   nombres: [{ modelo: MODELO_NOMBRES, para: "Propone nombres con su porqué" }],
   identidad: [
-    { modelo: MODELO_TEXTOS, para: "Escribe la esencia, la voz y el brandbook" },
+    { modelo: MODELO_TEXTOS, para: "Escribe la esencia (misión y visión), la voz, el tono y el brandbook" },
     { modelo: MODELO_LOGO, para: "Dibuja el símbolo del logo en SVG" },
   ],
   logo: [
@@ -49,6 +48,7 @@ export const USOS: Record<Paso, Uso[]> = {
   "web-foto": [{ modelo: MODELO_FOTO_WEB, para: "Genera las fotos de la web con la marca" }],
   // Publicar no usa IA (está en PASOS solo por el tope de pedidos por minuto)
   "web-publicar": [],
+  branderia: [{ modelo: MODELO_FOTOS_FEED, para: "Saca la foto de un producto con el logo impreso" }],
 };
 
 /** Los pasos que usan un modelo, con para qué. */

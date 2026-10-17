@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { Button, buttonVariants } from "@build101/ui/components/button";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { ArrowRight, ArrowUp, Mic, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, LoaderCircle, Mic, RotateCcw, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -14,12 +14,14 @@ import { CLAVE_DIRECCIONES, CLAVE_IDENTIDAD } from "@/components/brandbook/ident
 import { Armando } from "./armando";
 import s from "./entrevista.module.css";
 import { CLAVE_FICHA, Ficha, type FichaMarca } from "./ficha";
+import { MAXIMO_SEGUNDOS, minutos, useGrabadora } from "./grabadora";
 import { TextoIA } from "./texto-ia";
-import { EntrevistaVoz } from "./voz";
 
 // Paso 1 · Contanos. La entrevista por chat contra /api/entrevista (la arma Eze en la rama ia).
 // Cuando la persona confirma el resumen, la IA devuelve la ficha en una parte
 // "tool-terminar_entrevista" (ver apps/web/src/lib/ia/README.md).
+// La persona puede escribir o contar con audio: el micrófono de la caja pasa el audio a texto
+// (grabadora.tsx → /api/transcribir) y BrandIA sigue la entrevista por escrito.
 
 function buscarFicha(messages: UIMessage[]): FichaMarca | null {
   for (const m of messages) {
@@ -54,7 +56,15 @@ function CajaDeTexto({
   grande?: boolean;
 }) {
   const [texto, setTexto] = useState("");
-  const listo = texto.trim().length > 0 && !ocupado;
+  const campo = useRef<HTMLTextAreaElement>(null);
+  // Lo que se dijo en el audio se suma a lo que ya estaba escrito, para revisarlo antes de mandar
+  const audio = useGrabadora((dicho) => {
+    setTexto((antes) => (antes.trim() ? `${antes.trim()} ${dicho}` : dicho));
+    campo.current?.focus();
+  });
+  const grabando = audio.estado === "grabando";
+  const transcribiendo = audio.estado === "transcribiendo";
+  const listo = texto.trim().length > 0 && !ocupado && audio.estado === "quieto";
 
   function enviar() {
     if (!listo) return;
@@ -63,41 +73,93 @@ function CajaDeTexto({
   }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        enviar();
-      }}
-      className="flex items-end gap-2 rounded-[26px] border bg-card p-2 pl-5 shadow-[0_30px_60px_-40px_rgba(30,30,28,.4)] transition-colors duration-300 ease-brandia focus-within:border-foreground/40"
-    >
-      <label htmlFor="mensaje" className="sr-only">
-        Tu mensaje
-      </label>
-      <textarea
-        id="mensaje"
-        value={texto}
-        onChange={(e) => setTexto(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-            e.preventDefault();
-            enviar();
-          }
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          enviar();
         }}
-        rows={1}
-        autoFocus={grande}
-        placeholder={grande ? "Tengo una… en… y le vendo a…" : "Escribí tu respuesta"}
-        className={`field-sizing-content max-h-48 flex-1 resize-none bg-transparent py-2.5 text-base leading-snug outline-none placeholder:text-muted-foreground ${grande ? "min-h-20" : ""}`}
-      />
-      {/* El único punto naranja de la pantalla */}
-      <Button type="submit" variant="secondary" size="icon" disabled={!listo} aria-label="Enviar">
-        <ArrowUp className="size-5" strokeWidth={2.4} />
-      </Button>
-    </form>
+        className="flex items-end gap-2 rounded-[26px] border bg-card p-2 pl-5 shadow-[0_30px_60px_-40px_rgba(30,30,28,.4)] transition-colors duration-300 ease-brandia focus-within:border-foreground/40"
+      >
+        <label htmlFor="mensaje" className="sr-only">
+          Tu mensaje
+        </label>
+        {grabando ? (
+          <div className="flex flex-1 items-center gap-3 py-2.5" role="status" aria-live="polite">
+            <span className="relative flex size-2.5 shrink-0" aria-hidden="true">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-foreground/40" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-foreground" />
+            </span>
+            <span className="text-base">Te escucho</span>
+            <span className="text-sm text-muted-foreground tabular-nums">
+              {minutos(audio.segundos)} / {minutos(MAXIMO_SEGUNDOS)}
+            </span>
+          </div>
+        ) : (
+          <textarea
+            ref={campo}
+            id="mensaje"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                enviar();
+              }
+            }}
+            rows={1}
+            autoFocus={grande}
+            readOnly={transcribiendo}
+            placeholder={
+              transcribiendo
+                ? "Pasando tu audio a texto…"
+                : grande
+                  ? "Tengo una… en… y le vendo a…"
+                  : "Escribí o mandá un audio"
+            }
+            className={`field-sizing-content max-h-48 flex-1 resize-none bg-transparent py-2.5 text-base leading-snug outline-none placeholder:text-muted-foreground ${grande ? "min-h-20" : ""}`}
+          />
+        )}
+        {grabando ? (
+          <>
+            <Button type="button" variant="ghost" size="icon" onClick={audio.cancelar} aria-label="Descartar el audio">
+              <X className="size-5" />
+            </Button>
+            <Button type="button" size="icon" onClick={audio.terminar} aria-label="Listo, pasar el audio a texto">
+              <Check className="size-5" strokeWidth={2.4} />
+            </Button>
+          </>
+        ) : (
+          <>
+            {audio.disponible && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={audio.empezar}
+                disabled={ocupado || transcribiendo}
+                aria-label={transcribiendo ? "Pasando tu audio a texto" : "Contar con audio"}
+              >
+                {transcribiendo ? <LoaderCircle className="size-5 animate-spin" /> : <Mic className="size-5" />}
+              </Button>
+            )}
+            {/* El único punto naranja de la pantalla */}
+            <Button type="submit" variant="secondary" size="icon" disabled={!listo} aria-label="Enviar">
+              <ArrowUp className="size-5" strokeWidth={2.4} />
+            </Button>
+          </>
+        )}
+      </form>
+      {audio.error && (
+        <p role="alert" className="mt-2 px-5 text-sm text-accent-text">
+          {audio.error}
+        </p>
+      )}
+    </>
   );
 }
 
 export function Entrevista() {
-  const [modo, setModo] = useState<"chat" | "voz">("chat");
   const { messages, sendMessage, status, error, regenerate, setMessages } = useChat({
     transport: new DefaultChatTransport({ api: "/api/entrevista" }),
   });
@@ -112,7 +174,10 @@ export function Entrevista() {
     ultimo.parts.some((p) => p.type === "tool-terminar_entrevista" && "state" in p && p.state === "input-streaming");
   // Se muestra la carga hasta que BrandIA empieza a escribir, o mientras arma la ficha
   const cargando =
-    !ficha && (status === "submitted" || armandoFicha || (status === "streaming" && ultimo?.role === "assistant" && !textoDe(ultimo)));
+    !ficha &&
+    (status === "submitted" ||
+      armandoFicha ||
+      (status === "streaming" && ultimo?.role === "assistant" && !textoDe(ultimo)));
 
   useEffect(() => {
     if (ficha) sessionStorage.setItem(CLAVE_FICHA, JSON.stringify(ficha));
@@ -137,35 +202,23 @@ export function Entrevista() {
 
   // Antes del primer mensaje: la invitación a contar el negocio
   if (messages.length === 0) {
-    const porVoz = modo === "voz";
     return (
-      <main
-        className={`mx-auto flex min-h-0 w-full max-w-[720px] flex-col overflow-y-auto px-4 py-12 sm:py-20 ${porVoz ? "" : "justify-center"}`}
-      >
+      <main className="mx-auto flex min-h-0 w-full max-w-[720px] flex-col justify-center overflow-y-auto px-4 py-12 sm:py-20">
         <Pasos actual={0} />
         <h1 className={`${s.seCocina} display mt-8`}>
           Contanos lo que <span className={s.it}>hacés</span>.
         </h1>
         <p className="lead mt-4 max-w-[34em] text-base">
-          Contanos tu negocio como se lo contarías a un amigo: qué hacés, para quién y dónde vendés. Te hacemos
-          unas pocas preguntas y armamos la ficha de tu marca.
+          Contanos tu negocio como se lo contarías a un amigo: qué hacés, para quién y dónde vendés. Te hacemos unas
+          pocas preguntas y armamos la ficha de tu marca.
         </p>
-        {porVoz ? (
-          <EntrevistaVoz onVolverAlChat={() => setModo("chat")} />
-        ) : (
-          <>
-            <div className={`${s.entra} mt-8`}>
-              <CajaDeTexto onEnviar={enviar} ocupado={ocupado} grande />
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span>¿Preferís hablar?</span>
-              <Button variant="outline" size="sm" onClick={() => setModo("voz")}>
-                <Mic data-icon="inline-start" />
-                Hablar con BrandIA
-              </Button>
-            </div>
-          </>
-        )}
+        <div className={`${s.entra} mt-8`}>
+          <CajaDeTexto onEnviar={enviar} ocupado={ocupado} grande />
+        </div>
+        <p className="mt-4 px-5 text-sm text-muted-foreground">
+          ¿Preferís contarlo con audio? Tocá el <Mic className="inline size-4 align-[-3px]" aria-label="micrófono" />,
+          hablá y revisá el texto antes de mandarlo.
+        </p>
       </main>
     );
   }
@@ -209,7 +262,9 @@ export function Entrevista() {
           )}
 
           {error && !ocupado && (
-            <div className={`${s.entra} flex flex-wrap items-center gap-3 self-start rounded-lg border px-4 py-3 text-sm`}>
+            <div
+              className={`${s.entra} flex flex-wrap items-center gap-3 self-start rounded-lg border px-4 py-3 text-sm`}
+            >
               <span>Se cortó la conexión con BrandIA.</span>
               <Button variant="outline" size="xs" onClick={() => regenerate()}>
                 Probar de nuevo

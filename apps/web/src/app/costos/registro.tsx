@@ -94,7 +94,7 @@ function Formulario({ hoy }: { hoy: string }) {
       </div>
       {reparto === "uso_voz" && (
         <p className="lead">
-          A BrandIA le toca lo que gastó su agente de voz ese mes sobre el total de la cuenta; el resto es de Gary.
+          A BrandIA le toca lo que gastaron sus audios pasados a texto ese mes sobre el total de la cuenta; el resto es de Gary.
         </p>
       )}
       <div className="flex flex-wrap items-center gap-4">

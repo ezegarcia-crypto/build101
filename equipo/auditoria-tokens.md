@@ -56,7 +56,7 @@ Con esas dos correcciones, **un cliente completo cuesta alrededor de USD 0,90** 
 |---|---|---|---|
 | Claude Sonnet 5.5 | Casi todo el texto | USD 2 por millón de tokens | USD 10 por millón |
 | Claude Opus 5.5 | Solo el isotipo SVG de la identidad | USD 4 por millón | USD 20 por millón |
-| Claude Haiku 5.5 | Agente de voz (vía ElevenLabs) y el "cliente simulado" de las pruebas | USD 0,10 por millón | USD 0,50 por millón |
+| Claude Haiku 5.5 | El "cliente simulado" de las pruebas | USD 0,10 por millón | USD 0,50 por millón |
 | Recraft v4.1 | Los 3 logos dibujados | USD 0,035 por imagen (0,08 si es vectorial) | |
 | GPT Image 2 | Fotos del feed y respaldo del logo | USD 5 por millón | USD 30 por millón (de tokens de imagen) |
 
@@ -67,8 +67,7 @@ Un token es un pedacito de palabra: en español, unos 3,3 caracteres.
 | # | Paso (ruta) | Modelo | Tokens entrada | Tokens salida | USD aprox. |
 |---|---|---|---|---|---|
 | A1 | Entrevista por chat (`/api/entrevista`), ~5 turnos | Sonnet | ~14.500 | ~2.000 | **0,05** |
-| A1v | Entrevista por voz, llamada de 5 min (ElevenLabs + Haiku) | — | — | — | **0,40 a 0,50** (a confirmar en ElevenLabs) |
-| A1v | Ficha de la voz (`/api/voz/ficha`) | Sonnet | ~2.800 | ~1.000 | 0,02 |
+| A1a | Audios pasados a texto (`/api/transcribir`, ElevenLabs Scribe) | — | — | — | Unos 19 créditos de ElevenLabs por minuto de audio (medido el 17/10). Salen de la suscripción, no del Gateway: se ven en `/costos` |
 | A2 | 3 direcciones visuales (`/api/direcciones`) | Sonnet | ~2.400 | ~2.500 | **0,03** |
 | A3 | Identidad: textos del brandbook (`/api/identidad`) | Sonnet | ~3.500 | ~3.000 | 0,04 |
 | A3 | Identidad: isotipo SVG | **Opus** | ~2.400 | ~1.500 | 0,04 |
@@ -92,7 +91,7 @@ Un token es un pedacito de palabra: en español, unos 3,3 caracteres.
 | + Contenidos con fotos, si las fotos salen baratas | + 0,25 |
 | + Web con 3 cambios (W1 + W2 + 3 × W3) | + 0,20 |
 | **Total, un cliente completo** | **≈ 0,75** |
-| Lo mismo con entrevista por voz en vez de chat | ≈ 1,20 |
+| Si cuenta su negocio con audios | + los créditos de ElevenLabs de esos minutos (ver `/costos`) |
 | Con lo que "piensa" Sonnet y el costo real de las fotos (punto 0b) | ≈ 0,90 |
 
 Para el finde: 10 ensayos + 10 pruebas del jurado ≈ **USD 20** (con la corrección del punto 0b). Lo que de verdad dispara el gasto es una pantalla que repite pedidos sola: eso costó USD 45 a 50 en una tarde.
@@ -146,7 +145,7 @@ Todavía no hay datos reales por paso: el etiquetado de Eze (`/costos`) entró a
 | Ya tiene nombre, entrevista por chat | Lo de la tabla | **0,34** |
 | Sin nombre, pide 2 vueltas de nombres | + 2 × 0,017 | **0,37** |
 | Cambia de dirección después de ver la identidad | + identidad y logos otra vez (pasos 4 a 7) | **0,57** |
-| Entrevista por voz en vez de chat (5 min) | − chat 0,061 + ficha de la voz 0,022 + ElevenLabs ~0,40 a 0,50 (a confirmar en su panel) | **≈ 0,70 a 0,80** |
+| Cuenta su negocio con audios en vez de escribir | La entrevista es la misma; se suman unos 19 créditos de ElevenLabs por minuto de audio | **0,34** + los créditos de los audios |
 | Falla un paso y se reintenta | Ese paso se paga dos veces | + 0,02 a 0,10 |
 
 ### Dónde se va la plata de una marca (caso base, USD 0,34)
@@ -198,8 +197,8 @@ Mismo criterio que el punto 6: precios reales, razonamiento de Sonnet incluido (
 | Marca + web con 3 cambios | 0,62 |
 | Marca + contenidos | 0,62 |
 | **Marca + contenidos + web con 3 cambios** | **0,90** |
-| Lo mismo, con entrevista por voz | ≈ 1,30 |
-| Uso intenso: voz, 2 vueltas de nombres, cambia de dirección, 5 cambios en la web y 2 "otra versión" de piezas | ≈ 1,75 |
+| Lo mismo, contando con audios | 0,90 + los créditos de ElevenLabs de esos minutos |
+| Uso intenso: 2 vueltas de nombres, cambia de dirección, 5 cambios en la web y 2 "otra versión" de piezas | ≈ 1,35 |
 
 ### Lo que suma cada cosa extra
 
@@ -209,7 +208,7 @@ Mismo criterio que el punto 6: precios reales, razonamiento de Sonnet incluido (
 | Cambiar de dirección (identidad y logos otra vez) | + 0,23 |
 | Un cambio más en la web | + 0,059 |
 | "Otra versión" de una pieza, con su foto | + 0,03 |
-| Entrevista por voz en vez de chat (5 min) | + 0,41 (ElevenLabs a confirmar) |
+| Contar el negocio con audios | + unos 19 créditos de ElevenLabs por minuto de audio |
 
 ### Qué no está incluido
 

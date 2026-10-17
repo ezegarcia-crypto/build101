@@ -43,7 +43,7 @@ Marina ya pasó por la generación de marca de BrandIA. Tiene guardadas:
 
 ## Paso 1 · "Quiero mi web": la entrevista de la web
 
-**Marina ve / hace:** en su panel toca **"Quiero mi web"**. Se abre el mismo chat (o la voz) de siempre. BrandIA ya sabe todo lo de la marca, así que **no repite preguntas**: solo pregunta lo que la web necesita, en tandas cortas.
+**Marina ve / hace:** en su panel toca **"Quiero mi web"**. Se abre el mismo chat de siempre (puede escribir o mandar audios). BrandIA ya sabe todo lo de la marca, así que **no repite preguntas**: solo pregunta lo que la web necesita, en tandas cortas.
 
 > **BrandIA:** ¡Vamos con la web de Costa! Ya tengo tu marca, así que te hago solo lo que falta. Primero: ¿para qué querés que te sirva la web? Por ejemplo, que te encuentren, mostrar lo que hacés, tomar encargos de tortas o recibir pedidos por WhatsApp.
 >

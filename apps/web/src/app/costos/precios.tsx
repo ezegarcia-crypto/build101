@@ -183,7 +183,7 @@ export function Precios({ pieza, marca, vistaPrevia }: { pieza: Medido; marca: M
           <Campo etiqueta="Comisión de cobro" valor={comision} onChange={setComision} paso={0.01} sufijo="%" />
           <Campo etiqueta="Costos fijos por mes" valor={fijos} onChange={setFijos} sufijo="USD" ayuda="Supabase, Vercel, Workspace, dominio, pruebas y demos." />
         </div>
-        <p className="lead">No incluye ElevenLabs (la entrevista por voz), ni el video, ni nuestro tiempo.</p>
+        <p className="lead">No incluye ElevenLabs (los audios pasados a texto), ni el video, ni nuestro tiempo.</p>
       </section>
     </div>
   );
