@@ -18,3 +18,7 @@ create table if not exists public.pagos (
 );
 
 alter table public.pagos enable row level security;
+
+-- El proyecto no expone tablas nuevas solo: el permiso se da a mano y únicamente al servidor
+-- (service_role). La pantalla y cualquiera de afuera no tienen acceso.
+grant select, insert, delete on public.pagos to service_role;
