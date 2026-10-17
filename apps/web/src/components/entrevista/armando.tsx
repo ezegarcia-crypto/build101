@@ -9,6 +9,14 @@ import s from "./entrevista.module.css";
 const FRASES = {
   pregunta: ["Leyendo lo que contaste…", "Pensando la próxima pregunta…", "Ordenando las ideas…"],
   ficha: ["Armando tu ficha…", "Juntando todo lo que contaste…", "Ya casi está…"],
+  identidad: [
+    "Leyendo tu ficha…",
+    "Buscando la idea de tu marca…",
+    "Eligiendo tu paleta…",
+    "Probando tipografías…",
+    "Dibujando tu logo…",
+    "Armando tu brandbook…",
+  ],
 };
 
 export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {

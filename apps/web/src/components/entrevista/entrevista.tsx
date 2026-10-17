@@ -1,12 +1,15 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Button } from "@build101/ui/components/button";
+import { Button, buttonVariants } from "@build101/ui/components/button";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { ArrowRight, ArrowUp, Mic, RotateCcw } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Pasos } from "@/components/pasos";
+
+import { CLAVE_IDENTIDAD } from "@/components/brandbook/identidad";
 
 import { Armando } from "./armando";
 import s from "./entrevista.module.css";
@@ -126,6 +129,7 @@ export function Entrevista() {
   function empezarDeNuevo() {
     setMessages([]);
     sessionStorage.removeItem(CLAVE_FICHA);
+    sessionStorage.removeItem(CLAVE_IDENTIDAD);
   }
 
   // Antes del primer mensaje: la invitación a contar el negocio
@@ -205,11 +209,10 @@ export function Entrevista() {
             <div ref={tarjeta} className="mt-4 flex flex-col gap-4">
               <Ficha ficha={ficha} />
               <div className="flex flex-wrap items-center gap-3">
-                <Button size="lg" disabled>
-                  Armar mi identidad
+                <Link href="/crear/marca" className={buttonVariants({ size: "lg" })}>
+                  Armar mi marca
                   <ArrowRight data-icon="inline-end" />
-                </Button>
-                <span className="text-sm text-muted-foreground">Siguiente paso · en construcción</span>
+                </Link>
               </div>
             </div>
           )}
