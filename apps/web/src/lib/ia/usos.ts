@@ -42,9 +42,9 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
   // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
   "contenidos-simple": [],
-  "web-entrevista": [{ modelo: MODELO_WEB, para: "Conversa con la persona y arma la ficha de la web" }],
-  "web-armar": [{ modelo: MODELO_WEB, para: "Arma la web: estilo, secciones y textos" }],
-  "web-cambio": [{ modelo: MODELO_WEB, para: "Cambia la web con lo que se pide por chat" }],
+  "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],
+  "web-armar": [{ modelo: MODELO_WEB, para: "Arma la web con la marca del cliente" }],
+  "web-cambio": [{ modelo: MODELO_WEB, para: "Cambia la web según lo que pide la persona" }],
 };
 
 /** Los pasos que usan un modelo, con para qué. */
