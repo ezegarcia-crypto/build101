@@ -4,7 +4,7 @@ import { type Brief, briefSchema } from "@/lib/ia/brief";
 import { asegurarContraste } from "@/lib/ia/comprobaciones";
 import { direccionesSchema, MODELO_DIRECCIONES, PROMPT_DIRECCIONES } from "@/lib/ia/direcciones";
 import { conReintento } from "@/lib/ia/reintentar";
-import { etiquetar, medir } from "@/lib/ia/gastos";
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 // Módulo A, paso 2: con la ficha, tres direcciones visuales para elegir.
 // Entra: { brief }. Sale: { direcciones }, con el contraste del texto ya comprobado en cada una.
@@ -21,6 +21,7 @@ export const POST = medir("direcciones", async (req: Request) => {
   const { output } = await conReintento(() =>
     generateText({
       model: MODELO_DIRECCIONES,
+      abortSignal: senalDelPedido(),
       providerOptions: etiquetar(),
       instructions: PROMPT_DIRECCIONES,
       output: Output.object({ schema: direccionesSchema }),

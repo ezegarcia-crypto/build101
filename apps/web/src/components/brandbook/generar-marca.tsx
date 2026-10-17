@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
+import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
@@ -131,6 +132,10 @@ export function GenerarMarca() {
     }
     if (dirs?.ficha === texto) return setEstado({ tipo: "elegir", direcciones: dirs.direcciones });
 
+    // Si la página se recarga sola en loop, no se vuelve a pedir: queda el botón para hacerlo a mano
+    if (!puedoArrancarSolo("direcciones")) {
+      return setEstado({ tipo: "error", mensaje: MENSAJE_FRENO, reintentar: () => buscarDirecciones(f) });
+    }
     const control = new AbortController();
     buscarDirecciones(f, control.signal);
     return () => control.abort();

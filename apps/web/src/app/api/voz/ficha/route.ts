@@ -5,7 +5,7 @@ import { briefSchema } from "@/lib/ia/brief";
 import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
 import { conReintento } from "@/lib/ia/reintentar";
 import { PROMPT_FICHA_VOZ } from "@/lib/ia/voz";
-import { etiquetar, medir } from "@/lib/ia/gastos";
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 // Cuando termina la llamada, la pantalla manda acá la transcripción y recibe la ficha de la marca,
 // con el mismo formato (Brief) que devuelve la entrevista por chat.
@@ -39,6 +39,7 @@ export const POST = medir("voz-ficha", async (req: Request) => {
     const { output } = await conReintento(() =>
       generateText({
         model: MODELO_ENTREVISTA,
+        abortSignal: senalDelPedido(),
         providerOptions: etiquetar(),
         instructions: PROMPT_FICHA_VOZ,
         prompt: charla,

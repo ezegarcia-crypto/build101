@@ -5,6 +5,7 @@ import { Check, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Armando } from "@/components/entrevista/armando";
+import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 import { ESTRATEGIAS, type NombrePropuesto } from "@/lib/ia/nombres";
 
@@ -112,6 +113,7 @@ export function Nombres({
       return;
     }
     avisar.current(propio);
+    if (!puedoArrancarSolo("nombres")) return setError(MENSAJE_FRENO); // "Otros nombres" los pide a mano
     pedir({ descartados: [], gustan: [], actual: propio });
   }, [ficha, propio, pedir]);
 

@@ -18,7 +18,7 @@ import {
   textosSchema,
 } from "@/lib/ia/identidad";
 import { conReintento } from "@/lib/ia/reintentar";
-import { etiquetar, medir } from "@/lib/ia/gastos";
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 // Módulo A, paso 3: con la ficha y la dirección elegida, el contenido del brandbook y el símbolo del logo.
 // Entra: { brief, direccion }. Sale: { identidad }, con las comprobaciones de calidad
@@ -44,6 +44,7 @@ export const POST = medir("identidad", async (req: Request) => {
     conReintento(() =>
       generateText({
         model: MODELO_TEXTOS,
+        abortSignal: senalDelPedido(),
         providerOptions: etiquetar(),
         instructions: PROMPT_TEXTOS,
         output: Output.object({ schema: textosSchema }),
@@ -53,6 +54,7 @@ export const POST = medir("identidad", async (req: Request) => {
     conReintento(() =>
       generateText({
         model: MODELO_LOGO,
+        abortSignal: senalDelPedido(),
         providerOptions: etiquetar(),
         instructions: PROMPT_LOGO,
         output: Output.object({ schema: logoSchema }),

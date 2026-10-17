@@ -2,6 +2,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 import { MODELO_NOMBRES, nombresSchema, PROMPT_NOMBRES, pedidoNombres } from "@/lib/ia/nombres";
 import { conReintento } from "@/lib/ia/reintentar";
 
@@ -16,7 +17,7 @@ const iteracionSchema = z.object({
   pedido: z.string().max(500).optional(),
 });
 
-export async function POST(req: Request) {
+export const POST = medir("nombres", async (req: Request) => {
   const cuerpo = await req.json();
   const ficha = briefSchema.safeParse(cuerpo.brief);
   const iteracion = iteracionSchema.safeParse(cuerpo);
@@ -27,6 +28,8 @@ export async function POST(req: Request) {
   const { output } = await conReintento(() =>
     generateText({
       model: MODELO_NOMBRES,
+      abortSignal: senalDelPedido(),
+      providerOptions: etiquetar(),
       instructions: PROMPT_NOMBRES,
       output: Output.object({ schema: nombresSchema }),
       prompt: pedidoNombres(ficha.data, iteracion.data),
@@ -38,4 +41,4 @@ export async function POST(req: Request) {
   const nombres = output.nombres.filter((n) => !fuera.has(n.nombre.trim().toLowerCase()));
 
   return Response.json({ nombres });
-}
+});

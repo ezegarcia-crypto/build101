@@ -14,6 +14,7 @@ export const PASOS = {
   entrevista: { modulo: "A", nombre: "Entrevista por chat", unidad: "conversación" },
   "voz-ficha": { modulo: "A", nombre: "Ficha de la entrevista por voz", unidad: "llamada" },
   direcciones: { modulo: "A", nombre: "Tres direcciones visuales", unidad: "pedido" },
+  nombres: { modulo: "A", nombre: "Nombres con trasfondo", unidad: "pedido" },
   identidad: { modulo: "A", nombre: "Identidad y brandbook", unidad: "pedido" },
   logo: { modulo: "A", nombre: "Tres logos", unidad: "pedido" },
   "contenidos-lote": { modulo: "B", nombre: "Feed completo (motor)", unidad: "feed" },
@@ -31,11 +32,59 @@ export const MODULOS = {
   C: "BranderIA",
 } as const;
 
-const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string }>();
+const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; senal?: AbortSignal }>();
 
-/** Envuelve una ruta: todo lo que la IA genere adentro queda anotado a ese paso, como una corrida. */
+// Freno de gasto: cuántos pedidos por minuto acepta cada paso en un mismo servidor. Alcanza de sobra
+// para una persona usando la app (y para la demo), y corta un loop de recargas antes de que se coma
+// el crédito: el 17/10 una página que se recargaba sola pidió más de 1.000 veces las direcciones.
+const POR_MINUTO: Record<Paso, number> = {
+  entrevista: 30,
+  "voz-ficha": 6,
+  direcciones: 6,
+  nombres: 10,
+  identidad: 6,
+  logo: 6,
+  "contenidos-lote": 3,
+  "contenidos-plan": 6,
+  "contenidos-pieza": 20,
+  "contenidos-imagen": 40,
+  "contenidos-simple": 3,
+};
+const recientes = new Map<Paso, number[]>();
+
+function frenar(paso: Paso) {
+  const ahora = Date.now();
+  const lista = (recientes.get(paso) ?? []).filter((t) => ahora - t < 60_000);
+  const pasado = lista.length >= POR_MINUTO[paso];
+  if (!pasado) lista.push(ahora);
+  recientes.set(paso, lista);
+  return pasado;
+}
+
+/**
+ * Envuelve una ruta: todo lo que la IA genere adentro queda anotado a ese paso, como una corrida.
+ * Además frena los pedidos de más (ver POR_MINUTO) y guarda la señal del pedido: si la persona se va
+ * de la página, la IA deja de generar (y de cobrar) en vez de terminar una respuesta que nadie va a ver.
+ */
 export function medir<A extends unknown[], R>(paso: Paso, ruta: (...args: A) => Promise<R>) {
-  return (...args: A) => corridaActual.run({ paso, corrida: crypto.randomUUID().slice(0, 8) }, () => ruta(...args));
+  return (...args: A) => {
+    if (frenar(paso)) {
+      console.warn(`[gastos] frenado: más de ${POR_MINUTO[paso]} pedidos por minuto a ${paso}`);
+      return Promise.resolve(
+        Response.json(
+          { error: "Recibimos muchos pedidos seguidos. Esperá un minuto y probá de nuevo." },
+          { status: 429 },
+        ) as R,
+      );
+    }
+    const senal = args[0] instanceof Request ? args[0].signal : undefined;
+    return corridaActual.run({ paso, corrida: crypto.randomUUID().slice(0, 8), senal }, () => ruta(...args));
+  };
+}
+
+/** La señal del pedido en curso, para pasarla como `abortSignal` a cada llamada a la IA. */
+export function senalDelPedido() {
+  return corridaActual.getStore()?.senal;
 }
 
 /** Para agrupar varios pedidos en una sola corrida (por ejemplo, todos los mensajes de una conversación). */
