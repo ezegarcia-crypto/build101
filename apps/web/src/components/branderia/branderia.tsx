@@ -23,7 +23,7 @@ import b from "./branderia.module.css";
 // Paso 4 · Tus productos (módulo C, BranderIA). Con la identidad de la marca, la IA saca la foto de
 // cada producto del catálogo (POST /api/contenidos/imagen, el mismo modelo de imágenes del feed).
 // La foto sale lisa, sin logo: el logo real del cliente "cae" encima, nunca lo dibuja una IA.
-// El pedido está en construcción: se arma el kit, pero no se cobra ni se pide nada.
+// La cotización está en construcción: se arma el kit, pero no se cotiza, cobra ni pide nada.
 // Las fotos quedan guardadas (achicadas) junto con su identidad: si se recarga, no se vuelven a pedir.
 
 export const CLAVE_BRANDERIA = "brandia:branderia";
@@ -356,7 +356,7 @@ export function Branderia() {
                 </dl>
 
                 <Button size="lg" disabled={!elegidos.length} onClick={() => setPedido(true)}>
-                  Pedir <span aria-hidden>→</span>
+                  Cotizar <span aria-hidden>→</span>
                 </Button>
 
                 {pedido && (
@@ -365,12 +365,12 @@ export function Branderia() {
                     className={`${s.entra} flex flex-col gap-2.5 rounded-[12px] bg-primary p-4 text-primary-foreground`}
                   >
                     <div>
-                      <EnConstruccion texto="El pedido está en construcción" />
+                      <EnConstruccion texto="La cotización está en construcción" />
                     </div>
                     <p className="font-semibold">Así va a funcionar.</p>
                     <p className="text-sm opacity-85">
-                      BrandIA produce cada producto con tu marca, controla que salga bien y te lo manda a tu puerta.
-                      Todavía no se hizo ningún pedido ni se cobró nada.
+                      BrandIA te cotiza tu kit. Si te sirve, produce cada producto con tu marca, controla que salga
+                      bien y te lo manda a tu puerta. Todavía no se cotizó, pidió ni cobró nada.
                     </p>
                   </div>
                 )}
