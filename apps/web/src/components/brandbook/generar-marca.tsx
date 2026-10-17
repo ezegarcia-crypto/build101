@@ -213,7 +213,7 @@ export function GenerarMarca() {
               Estamos armando <span className={s.it}>tu</span> marca.
             </h1>
             <p className="lead mt-4 max-w-[34em] text-base">
-              La esencia, la voz, los logos y el brandbook completo. Tarda unos 30 segundos.
+              La esencia (con misión y visión), la voz y el tono, los logos y el brandbook completo. Tarda unos 30 segundos.
             </p>
             <div className="mt-8">
               <Armando que="identidad" />

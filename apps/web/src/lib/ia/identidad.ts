@@ -12,6 +12,12 @@ export const textosSchema = z.object({
   eslogan: z.string().describe("Corto, memorable, en el trato de la marca. Si la persona pidió no tener eslogan, cadena vacía"),
   esencia: z.object({
     idea: z.string().describe("La idea de la marca en una frase, para alguien sin formación en diseño"),
+    mision: z
+      .string()
+      .describe("La misión: qué hace la marca todos los días, para quién y cómo, en una o dos frases"),
+    vision: z
+      .string()
+      .describe("La visión: adónde quiere llegar la marca en unos años, en una frase ambiciosa pero creíble y sin cifras inventadas"),
     proposito: z.string().describe("Por qué existe la marca, en una o dos frases"),
     promesa: z.string().describe("Lo que el cliente siempre puede esperar, en una frase"),
     posicionamiento: z.string().describe("Para quién es, qué ofrece y en qué se diferencia, en una frase"),
@@ -29,6 +35,13 @@ export const textosSchema = z.object({
       .min(1)
       .max(4)
       .describe("Tres rasgos con su límite, por ejemplo «Cercana: es charlar de igual a igual · no es confianzuda»"),
+    tono: z
+      .array(z.object({ momento: z.string(), como: z.string(), ejemplo: z.string() }))
+      .min(1)
+      .max(4)
+      .describe(
+        "La voz es siempre la misma; el tono cambia según el momento. Cuatro momentos típicos del negocio (por ejemplo vender, responder un reclamo, celebrar, explicar algo), cada uno con cómo se ajusta el tono y una frase de ejemplo",
+      ),
     palabras_si: z.array(z.string()).min(1).max(6).describe("Cinco palabras o expresiones propias de la marca"),
     palabras_no: z.array(z.string()).min(1).max(6).describe("Cinco palabras o expresiones que la marca nunca usa"),
     ejemplos: z.object({
@@ -71,6 +84,7 @@ Reglas:
 - Todo sale de la ficha y de la dirección elegida. Cada decisión se tiene que poder defender con algo que dijo la persona.
 - Respetá siempre palabras_no, no_parecerse_a y las restricciones. Si es una renovación, conservá lo que pide a_conservar.
 - No inventes datos del negocio (premios, años, cifras, servicios) que no estén en la ficha. Lo que está en huecos se decide con criterio, sin presentarlo como un dato.
+- La misión dice qué hace la marca hoy; la visión, adónde quiere llegar. No repitas el propósito con otras palabras.
 - Nada genérico: si un texto sirviera igual para otro negocio del mismo rubro, no sirve.
 - Español rioplatense, simple, sin jerga de diseño ni frases hechas de marketing. Los textos de la marca (eslogan, voz, ejemplos, brandbook) van con el trato de la ficha (vos, tú o usted).`;
 
