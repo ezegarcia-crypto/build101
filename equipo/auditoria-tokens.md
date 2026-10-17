@@ -164,3 +164,60 @@ Todavía no hay datos reales por paso: el etiquetado de Eze (`/costos`) entró a
 1. Pedir 2 logos en vez de 3: −0,034.
 2. Hacer el isotipo con Sonnet en vez de Opus: −0,025, si la calidad aguanta.
 3. Bajar el razonamiento de Sonnet en los pasos simples (nombres, ideas de logos): hasta −0,02.
+
+## 7. Precio unitario total de cada marca (marca + contenidos + web)
+
+Mismo criterio que el punto 6: precios reales, razonamiento de Sonnet incluido (+59 % sobre la salida), fotos a USD 0,011 y logos a USD 0,034. El texto de los contenidos usa el costo medido por el Gateway (USD 0,15 a 0,18; se toma 0,165).
+
+### Desglose completo de un cliente (caso base)
+
+| Módulo | Paso | Modelo | USD |
+|---|---|---|---|
+| **A · Marca** | Entrevista por chat (~5 turnos) | Sonnet | 0,061 |
+| | 3 direcciones visuales | Sonnet | 0,045 |
+| | Textos del brandbook | Sonnet | 0,055 |
+| | Isotipo SVG | Opus | 0,052 |
+| | 3 ideas de logo | Sonnet | 0,024 |
+| | 3 dibujos de logo | Recraft | 0,102 |
+| | *Subtotal marca* | | ***0,34*** |
+| **B · Contenidos** | Plan del mes + 6 piezas + correcciones (medido) | Sonnet | 0,165 |
+| | ~10 fotos del feed | GPT Image 2 | 0,110 |
+| | *Subtotal contenidos* | | ***0,28*** |
+| **Web del cliente** | Entrevista de la web (~5 turnos) | Sonnet | 0,061 |
+| | Armar la web | Sonnet | 0,046 |
+| | 3 cambios por chat (0,059 cada uno) | Sonnet | 0,176 |
+| | *Subtotal web* | | ***0,28*** |
+| | **Total por cliente** | | **≈ USD 0,90** |
+
+### Por combinación
+
+| Lo que se lleva el cliente | USD |
+|---|---|
+| Solo la marca | 0,34 |
+| Marca + web, sin cambios | 0,45 |
+| Marca + web con 3 cambios | 0,62 |
+| Marca + contenidos | 0,62 |
+| **Marca + contenidos + web con 3 cambios** | **0,90** |
+| Lo mismo, con entrevista por voz | ≈ 1,30 |
+| Uso intenso: voz, 2 vueltas de nombres, cambia de dirección, 5 cambios en la web y 2 "otra versión" de piezas | ≈ 1,75 |
+
+### Lo que suma cada cosa extra
+
+| Extra | USD |
+|---|---|
+| Una vuelta más de nombres | + 0,017 |
+| Cambiar de dirección (identidad y logos otra vez) | + 0,23 |
+| Un cambio más en la web | + 0,059 |
+| "Otra versión" de una pieza, con su foto | + 0,03 |
+| Entrevista por voz en vez de chat (5 min) | + 0,41 (ElevenLabs a confirmar) |
+
+### Qué no está incluido
+
+- **Dominio de la web:** está "en construcción". Un `.com` cuesta unos USD 10 a 15 por año y un `.com.uy` se confirma con NIC.uy. Es un costo por año, no de IA.
+- **Búsqueda de competencia y chequeo de dominios** de la web: todavía no están hechos; cuando entren, suman.
+- **Publicar la web, Vercel y el plan de ElevenLabs:** son costos fijos del servicio, no por cliente.
+- **Reintentos por fallas:** cuando un paso falla, se paga dos veces (+ 0,02 a 0,10 cada vez).
+
+### Para el pitch
+
+> Cada cliente, con su marca, su mes de contenidos y su web, le cuesta a BrandIA menos de **un dólar** de IA. Solo la marca: **34 centavos**.
