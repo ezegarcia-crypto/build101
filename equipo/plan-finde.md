@@ -7,7 +7,7 @@ Qué construimos y en qué orden. El alcance está en `CLAUDE.md` → "El produc
 ## Hecho (sábado a la mañana)
 
 - Consigna leída, material de BrandIA en `brandia/`, repo público y organizador invitado.
-- Web publicada en Vercel (https://build101-bice.vercel.app); `app.brandiamos.com` en camino (falta el registro en GoDaddy).
+- Web publicada en Vercel en https://app.brandiamos.com (también responde en https://build101-bice.vercel.app).
 - Design system de BrandIA cargado en la app y la web original como portada. **Guía obligatoria: `equipo/design-system.md`.**
 - Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y la voz por ElevenLabs.
 

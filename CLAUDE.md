@@ -180,7 +180,7 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 
 - Invitar a alguien al repo: `gh api -X PUT repos/ezegarcia-crypto/build101/collaborators/USUARIO -f permission=push`
 - Ver las publicaciones: `vercel ls build101 --scope ezegb`
-- **La web publicada:** https://build101-bice.vercel.app (proyecto `build101` del team `ezegb`, conectado a GitHub: cada push a `main` se publica solo). Ojo: `build101.vercel.app` es de otra persona.
+- **La web publicada:** https://app.brandiamos.com, nuestro dominio. Es el proyecto `build101` del team `ezegb` en Vercel, conectado a GitHub: cada push a `main` se publica solo. La misma web responde también en https://build101-bice.vercel.app, la dirección automática de Vercel. Ojo: `build101.vercel.app` es de otra persona.
 - Probar en la compu: `npm install` y después `npm run dev:web` → http://localhost:3001
 - La IA va por **Vercel AI Gateway** (texto, imágenes y video) y la voz por **ElevenLabs**. En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
-- **Lo que gasta la IA:** https://build101-bice.vercel.app/costos (saldo, costo de cada paso y de una marca completa). Toda ruta nueva con IA se anota con `medir()` y `etiquetar()`: ver la sección 7 de `apps/web/src/lib/ia/README.md`.
+- **Lo que gasta la IA:** https://app.brandiamos.com/costos. Pide contraseña: el usuario puede ser cualquiera y la contraseña es `COSTOS_CLAVE` (la tiene Eze). Muestra el saldo, el costo de cada paso y de una marca completa, y los pagos de cada uno. Toda ruta nueva con IA se anota con `medir()` y `etiquetar()`: ver la sección 7 de `apps/web/src/lib/ia/README.md`.

@@ -79,7 +79,7 @@ eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/
 
 ## 7. Lo que gasta la IA · panel `/costos`
 
-**Panel del equipo:** `/costos` (en la web publicada, https://build101-bice.vercel.app/costos). Muestra el saldo del Gateway, lo gastado hoy, cuánto cuesta en promedio cada paso (y una marca completa), el gasto por modelo y por día, y una calculadora de margen para pensar precios. No tiene links desde la app y no lo indexan los buscadores.
+**Panel del equipo:** `/costos` (en la web publicada, https://app.brandiamos.com/costos; pide contraseña, ver `COSTOS_CLAVE`). Muestra el saldo del Gateway, lo gastado hoy, cuánto cuesta en promedio cada paso (y una marca completa), el gasto por modelo y por día, y una calculadora de margen para pensar precios. No tiene links desde la app y no lo indexan los buscadores.
 
 **Toda ruta nueva que use IA tiene que anotarse**, si no su gasto aparece como "sin paso" (`gastos.ts`):
 
