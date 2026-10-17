@@ -54,6 +54,12 @@ Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (un
 
 Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-entrevistas.json]`. Genera 3 marcas fijas (más las de las entrevistas si se las pasás) y arma una página para mirarlas. La última corrida está en `equipo/identidades-de-prueba.html`.
 
+## 4. Logos completos (símbolo + nombre)
+
+**Ruta:** `POST /api/logo` con `{ brief, direccion }` (lo hizo la sesión "Logo de la marca generado con IA"; código en `logo.ts`). Devuelve `{ propuestas }`: 3 logos, el primero del tipo que sugiere la dirección. Cada uno trae `tipo`, `concepto` (para mostrarle al cliente), `colores` e `imagen`, una data URL lista para `<img src>` (1024×1024, fondo blanco). Claude piensa las ideas y Recraft las dibuja; si Recraft falla, GPT Image. **Tarda unos 25 segundos.** Van al brandbook y al feed; el isotipo SVG de la identidad sirve para aplicar en todos lados.
+
+Prueba sin pantalla: `node scripts/probar-logo.mjs`.
+
 ## Lo que viene
 
 - La voz: el agente de ElevenLabs hace la misma entrevista hablando y termina en la misma ficha.
