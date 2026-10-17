@@ -1,14 +1,17 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 import type { generateText } from "ai";
+import { after } from "next/server";
 
 import { clienteValido, HEADER_CLIENTE } from "@/lib/cliente";
+import { grabarPrueba, hayDondeGuardar } from "@/lib/pruebas";
 
 // Cuánto cuesta cada generación. Cada pedido a la IA sale etiquetado con su paso y su módulo,
 // y con un número de corrida (un pedido de la pantalla = una corrida; en la entrevista por chat,
 // la conversación entera). Si el navegador manda su id de cliente (lib/cliente.ts), también sale
 // etiquetado con ese cliente, para ver cuánto costó cada uno de punta a punta. El Gateway de Vercel
 // guarda el costo de cada llamada con esas etiquetas y el panel /costos las suma. No hace falta base de datos.
+// Aparte, medir() guarda cada pedido con su respuesta en Supabase (lib/pruebas.ts), para el panel /pruebas.
 //
 // En una ruta nueva: `export const POST = medir("mi-paso", async (req: Request) => { ... })`
 // y en cada llamada a la IA: `providerOptions: etiquetar()` (o `etiquetar(lasQueYaTenía)`).
@@ -98,10 +101,19 @@ export function medir<A extends unknown[], R>(paso: Paso, ruta: (...args: A) => 
     }
     const pedido = args[0] instanceof Request ? args[0] : undefined;
     const cliente = clienteValido(pedido?.headers.get(HEADER_CLIENTE));
-    return corridaActual.run(
-      { paso, corrida: crypto.randomUUID().slice(0, 8), cliente, senal: pedido?.signal },
-      () => ruta(...args),
-    );
+    const actual = { paso, corrida: crypto.randomUUID().slice(0, 8), cliente, senal: pedido?.signal };
+    const inicio = Date.now();
+    // Una copia del pedido para guardar la prueba entera (lib/pruebas.ts), antes de que la ruta lo lea
+    const entrada = pedido && hayDondeGuardar() ? pedido.clone() : undefined;
+    return corridaActual.run(actual, async () => {
+      const respuesta = await ruta(...args);
+      if (entrada && respuesta instanceof Response) {
+        const salida = respuesta.clone();
+        // Se guarda cuando ya terminó de responder: no demora a la persona
+        after(() => grabarPrueba({ paso, corrida: actual.corrida, cliente, inicio, entrada, salida }));
+      }
+      return respuesta;
+    });
   };
 }
 
