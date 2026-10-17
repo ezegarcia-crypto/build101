@@ -1,0 +1,3 @@
+{
+  "extends": "@build101/config/tsconfig.base.json"
+}

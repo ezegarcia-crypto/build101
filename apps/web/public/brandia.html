@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BrandIA</title>
+<meta name="description" content="BrandIA arma tu marca con IA, la mantiene produciendo y la lleva a productos reales. brandiamos.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:wght@400;500;600&family=Young+Serif&family=Karla:wght@400;600&display=swap">
+<style>
+/* ============================================================
+   BrandIA · web v3 · 2026-09-24 (copia de v2 con las correcciones de Eze)
+   Lenguaje propio (NO el de Brixia): base papel Hueso, moodboard 3D
+   que se ordena en la B hecha de módulos, tipografía variable cinética,
+   recorrido horizontal, retirada visual (la sección se vuelve la marca
+   del cliente), carrusel 3D, capas en vista explotada, cierre naranja.
+   Tokens: 01-corporate/branding/design-system/tokens.css (paleta Taller).
+   Diseño de una sola mirada: pinta sus colores, no depende del tema.
+   ============================================================ */
+:root{
+  color-scheme:light;
+  --g:#1E1E1C; --g2:#2A2927; --h:#EDECE8; --c:#C9C6BE; --w:#FFFFFF;
+  --n:#FF5C1A; --nt:#B23B0A; --p:#5C5A54; --pd:#A8A49B;
+  --g70:rgba(30,30,28,.70); --ll:rgba(30,30,28,.12); --ld:rgba(237,236,232,.14);
+  /* Costa · marca de ejemplo (ficticia, manual § 09) */
+  --k1:#6B3A1E; --k2:#F3E9D6; --k3:#C8662B; --k4:#2F3B2F; --k5:#FBF8F2;
+  --fd:'Fraunces','Iowan Old Style',Georgia,serif;
+  --ft:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --fk:'Young Serif',Georgia,serif; --fkb:'Karla',Helvetica,Arial,sans-serif;
+  --r2:14px; --rp:999px;
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --gut:clamp(16px,5vw,72px);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--h)}
+body{margin:0;background:var(--h);color:var(--g);font-family:var(--ft);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--g);color:var(--h)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--nt);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;line-height:1.04;margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:var(--gut)}
+.eb{font-size:13px;font-weight:500;letter-spacing:.02em;color:var(--p);display:inline-flex;gap:10px;align-items:center}
+.eb::before{content:'';width:22px;height:1.5px;background:currentColor;opacity:.6}
+.big{font-size:clamp(2.9rem,1.2rem + 5.6vw,6.6rem);letter-spacing:-.025em;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 0;font-weight:500}
+.h2{font-size:clamp(2.1rem,1.2rem + 3vw,4.2rem);letter-spacing:-.02em;font-variation-settings:'opsz' 144,'SOFT' 30;font-weight:500}
+.it{font-style:italic;font-weight:400;font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1}
+.lead{font-size:clamp(1.05rem,.98rem + .35vw,1.3rem);color:var(--p);max-width:32em}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 15px/1 var(--ft);padding:16px 24px;border-radius:var(--rp);border:1.5px solid transparent;cursor:pointer;text-decoration:none;transition:transform .25s var(--ease),background .2s,color .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn-n{background:var(--n);color:var(--g)}
+.btn-d{background:var(--g);color:var(--h)}
+.btn-o{border-color:var(--g);color:var(--g);background:transparent}
+.btn-o:hover{background:var(--g);color:var(--h)}
+
+/* header claro; se oscurece sobre secciones oscuras */
+#hd{position:fixed;left:0;right:0;top:0;z-index:50;padding:calc(env(safe-area-inset-top,0px) + 16px) var(--gut) 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:background .35s,color .35s,box-shadow .35s}
+#hd.on{background:rgba(237,236,232,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--ll)}
+#hd.dk{background:rgba(30,30,28,.86);color:var(--h);box-shadow:0 1px 0 var(--ld)}
+#hd .logo{height:24px;width:auto;display:block}
+#hd .lgd{display:none}#hd.dk .lgd{display:block}#hd.dk .lgl{display:none}
+#hd nav{display:flex;align-items:center;gap:28px;font-size:14.5px}
+#hd nav a:not(.btn){text-decoration:none;opacity:.72;transition:opacity .2s}
+#hd nav a:not(.btn):hover{opacity:1}
+#hd nav a.nv-mk{opacity:1;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+#hd nav a.nv-mk::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--n)}
+#hd .btn{padding:11px 18px;font-size:14px}
+#hd.dk .btn-d{background:var(--h);color:var(--g)}
+@media (max-width:860px){#hd nav a:not(.btn){display:none}}
+
+/* ====== A0 · DE TUS REFERENCIAS A TU MARCA ====== */
+#hero{position:relative;height:100vh;min-height:640px;overflow:hidden;background:var(--h)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+#hero .veil{position:absolute;inset:0;background:linear-gradient(90deg,var(--h) 0%,rgba(237,236,232,.92) 30%,rgba(237,236,232,0) 62%);pointer-events:none;will-change:opacity}
+.hrest{position:absolute;left:var(--gut);top:50%;transform:translateY(-44%);max-width:min(720px,58vw);z-index:3;will-change:transform,opacity}
+.hrest h1{margin-top:0}
+.hrest .lead{margin-top:26px}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hint{position:absolute;left:var(--gut);bottom:30px;font-size:13px;color:var(--p);z-index:3;display:flex;gap:10px;align-items:center}
+.hint b{display:inline-block;width:18px;height:28px;border:1.5px solid var(--p);border-radius:10px;position:relative}
+.hint b::after{content:'';position:absolute;left:50%;top:6px;width:2px;height:6px;margin-left:-1px;background:var(--p);border-radius:1px;animation:wh 1.8s var(--ease) infinite}
+@keyframes wh{0%{transform:translateY(0);opacity:1}70%{transform:translateY(8px);opacity:0}100%{opacity:0}}
+.cap{position:absolute;z-index:3;opacity:0;visibility:hidden;will-change:transform,opacity;max-width:420px}
+.cap h2{font-size:clamp(2.2rem,1.3rem + 2.8vw,4rem);letter-spacing:-.02em;font-variation-settings:'opsz' 144,'SOFT' 60;font-weight:500}
+.cap p{margin-top:14px;color:var(--p);font-size:1.08rem}
+#c1{left:var(--gut);bottom:12vh}
+#c2{right:var(--gut);bottom:12vh;text-align:right;max-width:560px}
+#c2 h2 .bl{display:block}
+#c2 p{max-width:none}
+#c3 .ctas{align-items:center}
+.more{font-size:14px;color:var(--p);text-decoration:none;padding:8px 4px}
+.more:hover{color:var(--g)}
+#c3{left:50%;bottom:7vh;transform:translateX(-50%);text-align:center;max-width:780px;width:calc(100% - 2*var(--gut))}
+#c3 h2{font-size:clamp(2.6rem,1.4rem + 4vw,5.4rem)}
+#c3 p{margin:14px auto 0;max-width:30em}
+#c3 .ctas{justify-content:center;margin-top:24px}
+#hero .bfb{display:none;position:absolute;right:14vw;top:50%;width:26vmin;transform:translateY(-50%);color:var(--n)}
+#hero.nogl .bfb{display:block}
+
+/* ====== A1 · lo genérico ====== */
+.sec{position:relative;padding-block:clamp(96px,13vw,180px)}
+#generica .big{max-width:14ch}
+.flip{display:inline-block;white-space:nowrap}
+.flip span{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-weight:400;font-style:normal;color:var(--pd);letter-spacing:-.04em;transition:font-family 0s .18s,color .3s .18s,transform .36s var(--ease);transform-origin:50% 60%;font-variation-settings:normal}
+.flip span.on{font-family:var(--fd);font-style:italic;color:var(--nt);letter-spacing:-.01em;font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1;animation:fl .36s var(--ease)}
+@keyframes fl{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.vs{margin-top:clamp(64px,8vw,110px);display:grid;gap:0}
+.vs .row{display:grid;grid-template-columns:minmax(0,1.1fr) repeat(3,minmax(0,1fr));gap:24px;padding:24px 28px;border-top:1px solid var(--ll);align-items:center}
+.vs .row:last-child{border-bottom:1px solid var(--ll)}
+.vs .row>span{font:400 16px/1.4 var(--ft);color:var(--g70)}
+.vs .row>span b{display:none}
+.vs .row>.who{font-family:var(--fd);font-size:clamp(1.35rem,1.05rem + .9vw,1.9rem);line-height:1.1;font-variation-settings:'opsz' 96;font-weight:500;color:var(--g)}
+.vs .row.lbl{padding-block:0 12px;border-top:0}
+.vs .row.lbl>span{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--p)}
+.vs .row.us{background:var(--g);border-radius:var(--r2);border:0;margin-top:14px}
+.vs .row.us>span{color:rgba(237,236,232,.86)}
+.vs .row.us>.who{color:var(--h)}
+.vs .row.us .who i{color:var(--n);font-style:normal}
+
+/* ====== A2 · ARMAR · recorrido horizontal ====== */
+#armar{background:var(--c);overflow:hidden}
+#armar .intro{padding-block:clamp(96px,11vw,150px) 36px}
+#armar .intro p.lead{color:var(--g70);margin-top:18px}
+#armar .h2s{font-size:clamp(1.9rem,1.1rem + 2.3vw,3.3rem);max-width:22ch}
+.hwrap{height:100vh;display:flex;align-items:center}
+.track{display:flex;gap:4vw;padding-inline:var(--gut);will-change:transform}
+.slide{flex:none;width:min(1120px,84vw);display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.4fr);gap:clamp(24px,3.5vw,56px);align-items:center}
+.slide .num{font-family:var(--fd);font-size:clamp(4rem,2rem + 6vw,8.5rem);line-height:.8;font-weight:300;font-variation-settings:'opsz' 144,'SOFT' 100;color:var(--g);opacity:.9}
+.slide h3{font-size:clamp(1.8rem,1.2rem + 1.6vw,2.8rem);margin-top:18px;font-variation-settings:'opsz' 144;font-weight:500}
+.slide p{margin-top:12px;color:var(--g70);max-width:26em}
+.dots{display:flex;gap:8px;padding-inline:var(--gut);margin-top:-72px;position:relative;z-index:2}
+.dots i{width:28px;height:4px;border-radius:2px;background:rgba(30,30,28,.2);transition:background .3s,width .3s var(--ease)}
+.dots i.on{background:var(--g);width:52px}
+
+/* la app, versión clara: chrome BrandIA, lienzo del cliente */
+.app{background:var(--w);border-radius:18px;overflow:hidden;box-shadow:0 50px 80px -40px rgba(30,30,28,.45),0 0 0 1px var(--ll)}
+.atop{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--ll);font-size:13px;color:var(--p)}
+.atop svg{width:14px;height:auto;color:var(--n);flex:none}
+.atop b{color:var(--g);font-weight:600}
+.atop .st{margin-left:auto;font-size:12px;background:var(--h);color:var(--g);padding:4px 10px;border-radius:var(--rp)}
+.abody{padding:22px;height:clamp(340px,40vw,440px);position:relative;overflow:hidden}
+.chat{display:grid;gap:10px;max-width:540px}
+.bub{padding:12px 16px;border-radius:16px;font-size:14.5px;line-height:1.45;max-width:86%}
+.bub.ia{background:var(--h);border-bottom-left-radius:4px}
+.bub.yo{background:var(--g);color:var(--h);justify-self:end;border-bottom-right-radius:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:6px 12px;border-radius:var(--rp);border:1px solid var(--ll)}
+.chip.ref{background:var(--h);border-color:transparent}
+.inp{position:absolute;left:22px;right:22px;bottom:20px;display:flex;align-items:center;gap:10px;border:1px solid var(--ll);border-radius:var(--rp);padding:9px 9px 9px 18px;font-size:14px;color:var(--p)}
+.inp i{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--n);display:grid;place-items:center;font-style:normal;color:var(--g);font-weight:700}
+.caminos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cam{aspect-ratio:1.3;border-radius:12px;background:var(--k5);display:grid;place-items:center;position:relative;color:var(--k1);border:2px solid var(--h)}
+.cam svg{width:58%;height:58%}
+.cam .t{position:absolute;left:10px;top:7px;font-size:11px;color:#8a7f70;font-weight:600}
+.cam.sel{border-color:var(--g)}
+.cam.sel::after{content:'✓';position:absolute;right:8px;top:8px;font:600 10.5px/1 var(--ft);background:var(--g);color:var(--h);padding:4px 8px;border-radius:var(--rp)}
+.why{margin-top:14px;font-size:14px;color:var(--p)}
+.why b{color:var(--g)}
+.ajus{display:grid;grid-template-columns:1fr 1fr;gap:18px;height:100%}
+.sug{font-size:12.5px;color:var(--p);margin-bottom:10px}.sug b{color:var(--g);font-weight:600}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sw{border-radius:9px;aspect-ratio:.72;display:flex;flex-direction:column;justify-content:flex-end;padding:7px;font-size:10px;line-height:1.25}
+.sw b{font-weight:600;display:block}
+.tp{margin-top:14px;border:1px solid var(--ll);border-radius:12px;padding:12px 14px}
+.tp .a{font-family:var(--fk);font-size:28px;line-height:1.1;color:var(--k1)}
+.tp .b{font-family:var(--fkb);font-size:13px;color:var(--p);margin-top:4px}
+.knob{margin-top:14px;display:grid;gap:8px;font-size:12.5px;color:var(--p)}
+.knob .tr{height:4px;border-radius:2px;background:var(--h);position:relative}
+.knob .tr i{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--g);transform:translate(-50%,-50%)}
+.knob .ends{display:flex;justify-content:space-between}
+.prev{border-radius:14px;background:var(--k2);color:var(--k1);padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+.prev .sg{font-family:var(--fk);font-size:clamp(20px,2vw,28px);line-height:1.08}
+.prev .sb{font-family:var(--fkb);font-size:13px;opacity:.85;margin-top:8px}
+.prev .bar{background:var(--k4);color:var(--k2);font-family:var(--fkb);font-size:12px;padding:8px 12px;border-radius:7px;display:flex;justify-content:space-between}
+.listo{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;height:100%}
+.files{display:grid;gap:8px;align-content:start}
+.file{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--ll);border-radius:12px;font-size:14px}
+.file .ext{margin-left:auto;font-size:11.5px;color:var(--p)}
+.file .ok{width:18px;height:18px;border-radius:50%;background:var(--g);flex:none;display:grid;place-items:center}
+.file .ok::after{content:'';width:7px;height:4px;border-left:2px solid var(--h);border-bottom:2px solid var(--h);transform:rotate(-45deg) translate(1px,-1px)}
+.mini{border-radius:14px;background:var(--k5);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1.3fr 1fr;gap:6px;padding:6px;color:var(--k1)}
+.mini>div{border-radius:9px;display:grid;place-items:center}
+.mini svg{width:52%;height:auto}
+.acts{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.acts .btn{padding:11px 16px;font-size:13.5px}
+
+/* ====== A3 · RETIRADA: la sección se vuelve la marca del cliente ====== */
+#sistema{background:var(--h);color:var(--g);will-change:background-color}
+#sistema .top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:clamp(44px,6vw,72px)}
+#sistema h2{font-family:var(--fk);font-weight:400;font-size:clamp(2.2rem,1.3rem + 3vw,4.4rem);letter-spacing:-.01em;line-height:1.02}
+#sistema .lead{color:inherit;opacity:.8}
+#sistema .eb{color:inherit;opacity:.75}
+.board{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(150px,auto);gap:14px;perspective:1400px}
+.tile{border-radius:var(--r2);padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;overflow:hidden;will-change:transform,opacity}
+.tile .tl{font-family:var(--fkb);font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.72}
+.t-logo{grid-column:span 2;grid-row:span 2;background:var(--k2);color:var(--k1)}
+.lockup{display:flex;align-items:center;gap:18px;margin:auto 0}
+.lockup svg{width:clamp(64px,8vw,104px);height:auto;flex:none}
+.lockup .w{font-family:var(--fk);font-size:clamp(3rem,2rem + 3vw,5.2rem);line-height:.9}
+.lockup .w small{display:block;font-family:var(--fkb);font-size:14px;letter-spacing:.18em;text-transform:uppercase;margin-top:12px}
+.t-iso{background:var(--k1);color:var(--k2)}
+.t-iso svg{width:56%;height:auto;align-self:center}
+.t-pal{grid-column:span 2;background:var(--w);padding:0;flex-direction:row;gap:0}
+.t-pal>div{flex:1;padding:16px 12px;display:flex;flex-direction:column;justify-content:flex-end;font-family:var(--fkb);font-size:12px;line-height:1.35}
+.t-pal b{font-weight:600;font-size:13px}
+.t-type{background:var(--k5);color:var(--k1)}
+.t-type .aa{font-family:var(--fk);font-size:4.2rem;line-height:.9}
+.t-type p{font-family:var(--fkb);font-size:13px}
+.t-voz{background:var(--k3);color:var(--k5)}
+.t-voz p{font-family:var(--fkb);font-size:15px;line-height:1.45}
+.t-voz s{opacity:.7}
+.t-post{background:var(--k2);color:var(--k1)}
+.t-post .pt{font-family:var(--fk);font-size:1.7rem;line-height:1.05}
+.t-post .pb{font-family:var(--fkb);font-size:13px}
+.t-card{grid-column:span 2;background:#3b4a3b;align-items:center;justify-content:center;flex-direction:row;gap:18px}
+.bcard{width:44%;aspect-ratio:1.75;border-radius:6px;box-shadow:0 18px 30px -16px rgba(0,0,0,.5);padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between}
+.bcard.f{background:var(--k2);color:var(--k1);transform:rotate(-4deg)}
+.bcard.b{background:var(--k1);color:var(--k2);transform:rotate(3deg) translateY(8px);align-items:center;justify-content:center}
+.bcard .n{font-family:var(--fkb);font-size:12px;font-weight:600}
+.bcard .d{font-family:var(--fkb);font-size:10px;opacity:.8}
+.bcard svg{width:36px;height:auto}
+.bcard.b svg{width:42%}
+.sello{margin-top:36px;display:flex;align-items:center;gap:14px;font-size:14.5px;opacity:.85}
+.sello svg{width:14px;color:var(--n)}
+
+/* ====== A4 · PRODUCIR · carrusel 3D ====== */
+#producir{background:var(--g);color:var(--h)}
+#producir .grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr);gap:clamp(32px,5vw,72px);align-items:center;min-height:100vh;padding-block:110px 60px}
+#producir .eb,#producir .lead{color:var(--pd)}
+.ringstage{height:min(520px,64vh);perspective:1300px;display:grid;place-items:center;position:relative}
+.ring{position:relative;width:190px;height:190px;transform-style:preserve-3d;will-change:transform}
+.post{position:absolute;inset:0;border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.post .d{font-family:var(--fkb);font-size:11px;opacity:.75}
+.post .x{font-family:var(--fk);font-size:19px;line-height:1.1}
+.post svg{width:26px;height:auto;position:absolute;right:13px;bottom:13px}
+.post.a{background:var(--k2);color:var(--k1)}.post.b{background:var(--k1);color:var(--k2)}
+.post.c{background:var(--k3);color:var(--k5)}.post.e{background:var(--k4);color:var(--k2)}
+.post .rev{position:absolute;left:10px;bottom:10px;font:600 10px/1 var(--ft);letter-spacing:.04em;background:var(--h);color:var(--g);padding:5px 8px;border-radius:var(--rp);opacity:0;transform:translateY(6px);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.plus .post .rev{opacity:1;transform:none}
+.plusbox{margin-top:36px;border-top:1px solid var(--ld);padding-top:22px;display:grid;grid-template-columns:1fr auto;gap:10px 20px;align-items:center}
+.plusbox h3{font-size:1.4rem;font-variation-settings:'opsz' 72;font-weight:500}
+.plusbox p{grid-column:1/-1;color:var(--pd);font-size:15px}
+.sw-t{width:58px;height:32px;border-radius:var(--rp);border:1px solid var(--ld);background:var(--g2);position:relative;cursor:pointer;padding:0;transition:background .25s}
+.sw-t::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--pd);transition:transform .3s var(--ease),background .25s}
+.sw-t[aria-checked="true"]{background:var(--n);border-color:var(--n)}
+.sw-t[aria-checked="true"]::after{transform:translateX(26px);background:var(--g)}
+.plusst{font-size:13px;color:var(--h);grid-column:1/-1}
+
+/* ====== A5 · BRANDERÍA ====== */
+#branderia{background:var(--h)}
+.mk-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:end;margin-bottom:clamp(40px,5vw,64px)}
+.mk-head .lead{margin-top:18px}
+.uy{justify-self:end;text-align:right;font-size:14px;color:var(--p);max-width:22em}
+.uy b{display:block;font-family:var(--fd);font-weight:500;font-size:1.5rem;color:var(--g);font-variation-settings:'opsz' 96}
+.shop{background:var(--c);border-radius:22px;padding:clamp(12px,1.6vw,20px)}
+.shop-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;background:var(--w);border-radius:16px;padding:12px 12px 12px 14px;margin-bottom:14px}
+.lg-now{display:flex;align-items:center;gap:12px;font-size:14px}
+.lg-now small{display:block;font-size:12px;color:var(--p)}
+.lg-now b{font-weight:600}
+.lg-prev{width:44px;height:44px;border-radius:10px;background:var(--k2);color:var(--k1);display:grid;place-items:center;overflow:hidden;flex:none}
+.lg-prev svg,.lg-prev img{width:70%;height:70%;object-fit:contain}
+.up{position:relative;padding:11px 16px;font-size:13.5px}
+.up input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.cart{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:14px;color:var(--p)}
+.cart b{color:var(--g)}
+.cart .btn{padding:11px 18px;font-size:13.5px}
+.cart .btn:disabled{opacity:.35;cursor:default;transform:none}
+.sent{margin-top:14px;background:var(--g);color:var(--h);border-radius:14px;padding:16px 18px;font-size:14.5px}
+.sent b{color:var(--n)}
+.prods{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.prod{background:var(--w);border-radius:var(--r2);padding:14px 14px 14px;display:flex;flex-direction:column;gap:10px;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.prod:hover{transform:translateY(-6px);box-shadow:0 24px 40px -24px rgba(30,30,28,.35)}
+.obj{position:relative;aspect-ratio:1;display:grid;place-items:center;background:var(--h);border-radius:10px}
+.obj>svg.o{width:86%;height:86%}
+.stamp{position:absolute;width:var(--s,24%);left:var(--x,50%);top:var(--y,50%);transform:translate(-50%,-50%);will-change:transform,opacity}
+.stamp svg{width:100%;height:auto;display:block}
+.prod b{font-weight:600;font-size:14.5px;line-height:1.3}
+.prod span{font-size:12.5px;color:var(--p)}
+.stamp img{width:100%;height:auto;display:block}
+.qty{display:flex;align-items:center;justify-content:space-between;margin-top:auto;border:1px solid var(--ll);border-radius:var(--rp);padding:3px}
+.qty button{width:28px;height:28px;border-radius:50%;border:0;background:var(--h);color:var(--g);font:600 16px/1 var(--ft);cursor:pointer}
+.qty button:hover{background:var(--g);color:var(--h)}
+.qty output{font-size:13.5px;font-weight:600;min-width:3ch;text-align:center}
+.prod.sel{box-shadow:0 0 0 2px var(--g)}
+.mk-steps{margin-top:clamp(40px,5vw,60px);display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.mk-steps div{display:grid;gap:6px;font-size:15px}
+.mk-steps .k{font-family:var(--fd);font-size:2.2rem;line-height:1;font-weight:300;font-variation-settings:'opsz' 144,'SOFT' 100}
+.mk-steps b{font-weight:600}
+.mk-steps p{color:var(--p)}
+
+/* ====== A6 · CAPAS en vista explotada ====== */
+#planes{background:var(--w)}
+#planes .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(32px,5vw,80px);align-items:center}
+.stack{height:520px;display:grid;place-items:center;perspective:1800px}
+.iso{position:relative;width:300px;height:210px;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ(-38deg)}
+.plate{position:absolute;inset:0;border-radius:18px;display:flex;align-items:flex-end;padding:18px 22px;font-family:var(--fd);font-size:30px;font-weight:500;font-variation-settings:'opsz' 144;transform:translateZ(calc(var(--i) * var(--gap,14px)));box-shadow:0 1px 0 rgba(0,0,0,.08);transition:transform .2s linear, filter .3s}
+.plate:nth-child(1){background:var(--g);color:var(--h)}
+.plate:nth-child(2){background:var(--c);color:var(--g)}
+.plate:nth-child(3){background:var(--h);color:var(--g);border:1px solid var(--ll)}
+.plate:nth-child(4){background:var(--n);color:var(--g)}
+.capas{display:grid;gap:0}
+.capa{display:grid;grid-template-columns:auto 1fr auto;gap:6px 18px;padding:22px 0;border-top:1px solid var(--ll);align-items:baseline}
+.capa:last-child{border-bottom:1px solid var(--ll)}
+.capa .k{font-family:var(--fd);font-weight:300;font-size:1.8rem;line-height:1;font-variation-settings:'opsz' 144,'SOFT' 100;width:1.4em}
+.capa h3{font-size:1.5rem;font-variation-settings:'opsz' 96;font-weight:500}
+.capa .tag{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:var(--rp);background:var(--h)}
+.capa p{grid-column:2/-1;color:var(--p);font-size:15px}
+.capa.foc .tag{background:var(--g);color:var(--h)}
+.precios{margin-top:22px;color:var(--p);font-size:14.5px}
+
+/* ====== A7 · EMPEZAR sobre naranja ====== */
+#empezar{background:var(--n);color:var(--g)}
+#empezar .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
+#empezar .lead{color:var(--g)}
+#empezar .eb{color:var(--g)}
+form{display:grid;gap:14px;background:var(--h);padding:28px;border-radius:20px}
+.fld{display:grid;gap:6px}
+.fld label{font-size:13.5px;font-weight:500}
+.fld input,.fld select{font:inherit;font-size:16px;color:var(--g);background:var(--w);border:1.5px solid var(--ll);border-radius:12px;padding:13px 14px;width:100%}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--g)}
+.fld .err{font-size:13px;color:var(--nt);font-weight:500}
+form .btn{justify-self:start;margin-top:4px}
+.fine{font-size:12.5px;color:var(--p)}
+.okmsg{background:var(--h);border-radius:20px;padding:32px;display:grid;gap:10px}
+.okmsg h3{font-size:2rem;font-weight:500}
+.okmsg p{color:var(--p)}
+
+footer{background:var(--g);color:var(--h);padding-block:56px calc(40px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+footer .logo{height:30px;width:auto;display:block}
+footer p{font-size:14px;color:var(--pd);margin-top:14px}
+footer .r{text-align:right;font-size:13px;color:var(--pd);line-height:1.8}
+
+.rv{transform:translateY(24px);opacity:.35;transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+/* ===== angosto (celular o panel chico): mismo scrollytelling, otro encuadre ===== */
+@media (max-width:860px){
+  #hero{height:100vh;height:100svh;min-height:560px}
+  #hero .veil{background:linear-gradient(0deg,var(--h) 0%,rgba(237,236,232,.95) 40%,rgba(237,236,232,0) 66%)}
+  .hrest{left:var(--gut);right:var(--gut);top:auto;bottom:26px;transform:none;max-width:none}
+  .hrest .lead{margin-top:16px;font-size:1rem}
+  .hrest .ctas{margin-top:22px}
+  .hint{display:none}
+  .cap,#c1,#c2,#c3{left:var(--gut);right:var(--gut);top:auto;bottom:34px;transform:none;max-width:none;width:auto;text-align:left}
+  #c3{text-align:center}
+  #c3 p{margin-left:auto}
+  .vs .row{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:20px 18px;align-items:start}
+  .vs .row>.who{grid-column:1/-1}
+  .vs .row.lbl{display:none}
+  .vs .row>span b{display:block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--p);margin-bottom:4px}
+  .vs .row.us>span b{color:var(--pd)}
+  .vs .row>span{font-size:14.5px}
+  .hwrap{height:100vh;height:100svh}
+  .slide{width:86vw;grid-template-columns:1fr;gap:16px}
+  .slide .num{font-size:3.4rem}
+  .slide h3{margin-top:8px}
+  .slide p{font-size:15px}
+  .abody{height:auto;min-height:300px;padding:16px}
+  .inp{position:relative;left:auto;right:auto;bottom:auto;margin-top:14px}
+  .ajus,.listo{grid-template-columns:1fr;gap:12px}
+  .prev{min-height:150px}
+  .caminos{gap:8px}
+  .dots{margin-top:-56px}
+  #sistema .top{grid-template-columns:1fr}
+  .board{grid-template-columns:1fr 1fr}
+  .t-logo,.t-pal,.t-card{grid-column:span 2}
+  #producir .grid{grid-template-columns:1fr;min-height:0;padding-block:96px 72px}
+  .ringstage{height:320px}
+  .mk-head{grid-template-columns:1fr}.uy{justify-self:start;text-align:left}
+  .cart{margin-left:0;width:100%;justify-content:space-between}
+  .prods{grid-template-columns:repeat(2,1fr)}
+  .mk-steps{grid-template-columns:1fr}
+  #planes .grid,#empezar .grid{grid-template-columns:1fr}
+  .stack{height:380px}
+  .iso{width:230px;height:160px}
+  .plate{font-size:24px}
+}
+@media (min-width:861px) and (max-width:1100px){.prods{grid-template-columns:repeat(4,1fr)}}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .flip span{transition:none;animation:none}
+  .hint b::after{animation:none}
+  .iso{--gap:46px}
+}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bIso" viewBox="0 0 62 76"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></symbol>
+    <symbol id="kIso" viewBox="0 0 64 64"><path d="M13 35a19 19 0 0 1 38 0z" fill="currentColor"/><path d="M6 43.5q6.5-5 13 0t13 0 13 0 13 0M10 52q5.5-4.2 11 0t11 0 11 0 11 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></symbol>
+    <symbol id="kC" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="3"/><path d="M42 22a14 14 0 1 0 0 20" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+    <symbol id="kW" viewBox="0 0 64 64"><path d="M32 58V14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><g fill="currentColor"><ellipse cx="25" cy="22" rx="5" ry="9" transform="rotate(-28 25 22)"/><ellipse cx="39" cy="22" rx="5" ry="9" transform="rotate(28 39 22)"/><ellipse cx="25" cy="35" rx="5" ry="9" transform="rotate(-28 25 35)"/><ellipse cx="39" cy="35" rx="5" ry="9" transform="rotate(28 39 35)"/><ellipse cx="32" cy="10" rx="4.5" ry="8"/></g></symbol>
+    <symbol id="kL" viewBox="0 0 64 64"><path d="M8 40c0-12 11-20 24-20s24 8 24 20v6H8z" fill="currentColor"/><path d="M20 30l6 8M30 28l6 9M40 29l5 8" stroke="#FBF8F2" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="kS" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="32" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 3"/><text x="32" y="37" text-anchor="middle" font-family="Young Serif,Georgia,serif" font-size="15" fill="currentColor">Costa</text></symbol>
+  </defs>
+</svg>
+
+<header id="hd">
+  <a href="#hero" aria-label="BrandIA, inicio"><span class="lgl"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-91.0 -91.0 8786.2 1699.3" role="img" aria-label="BrandIA" class="logo"><g transform="scale(19.9631) translate(-10,-12)" fill="#1E1E1C"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g><g transform="translate(1605.7,1497.2)"><path fill="#1E1E1C" d="M1309.1956787109375 -334.400146484375Q1309.1956787109375 -186.00006103515625 1182.8957824707031 -93.00003051757812Q1056.5958862304688 0.0 809.5963134765625 0.0H76.0001220703125Q70.60015869140625 0.0 67.90017700195312 -2.29998779296875Q65.2001953125 -4.5999755859375 65.2001953125 -7.199951171875Q65.2001953125 -13.59991455078125 79.2000732421875 -15.9998779296875L147.600830078125 -27.199951171875Q169.80072021484375 -31.59991455078125 179.90066528320312 -41.799835205078125Q190.0006103515625 -51.999755859375 190.0006103515625 -73.599609375V-1344.0001220703125Q190.0006103515625 -1356.0001220703125 181.900634765625 -1362.3001098632812Q173.8006591796875 -1368.60009765625 147.600830078125 -1372.800048828125L79.2000732421875 -1384.0001220703125Q65.2001953125 -1386.4000854492188 65.2001953125 -1392.800048828125Q65.2001953125 -1395.6000366210938 67.90017700195312 -1397.8000183105469Q70.60015869140625 -1400.0 76.0001220703125 -1400.0H596.798095703125Q800.5973510742188 -1400.0 941.6968078613281 -1348.5000610351562Q1082.7962646484375 -1297.0001220703125 1155.9959716796875 -1206.4002075195312Q1229.1956787109375 -1115.80029296875 1229.1956787109375 -998.0003662109375Q1229.1956787109375 -897.0005493164062 1171.9958801269531 -821.1005249023438Q1114.7960815429688 -745.2005004882812 1009.5963745117188 -703.2004089355469Q904.3966674804688 -661.2003173828125 759.9969482421875 -661.2003173828125L815.59619140625 -668.000244140625Q959.99609375 -668.000244140625 1071.4959716796875 -625.3002014160156Q1182.995849609375 -582.6001586914062 1246.0957641601562 -507.20013427734375Q1309.1956787109375 -431.80010986328125 1309.1956787109375 -334.400146484375ZM677.1978759765625 -649.200439453125H508.7962646484375V-670.80029296875H683.5982666015625Q762.798583984375 -670.80029296875 815.2988586425781 -704.2004699707031Q867.7991333007812 -737.6006469726562 893.6993103027344 -805.30078125Q919.5994873046875 -873.0009155273438 919.5994873046875 -975.2008056640625Q919.5994873046875 -1097.2005615234375 875.2994079589844 -1187.8004150390625Q830.9993286132812 -1278.4002685546875 756.3990478515625 -1328.4002075195312Q681.7987670898438 -1378.400146484375 590.398193359375 -1378.400146484375H535.9962158203125V-63.999755859375Q535.9962158203125 -40.39984130859375 551.1961669921875 -30.999847412109375Q566.3961181640625 -21.599853515625 593.5960693359375 -21.599853515625H714.7978515625Q792.1985473632812 -21.599853515625 848.0990295410156 -61.09991455078125Q903.99951171875 -100.5999755859375 933.999755859375 -172.30001831054688Q964.0 -244.00006103515625 964.0 -341.5999755859375Q964.0 -485.4000244140625 890.8994140625 -567.3002319335938Q817.798828125 -649.200439453125 677.1978759765625 -649.200439453125Z M1704.6637369791667 -519.5987548828125Q1704.6637369791667 -647.3989868164062 1743.4636942545574 -733.3991394042969Q1782.263651529948 -819.3992919921875 1843.0635782877605 -863.099365234375Q1903.863505045573 -906.7994384765625 1969.4634195963542 -906.7994384765625Q2047.6631876627605 -906.7994384765625 2089.1630961100263 -856.5996704101562Q2130.663004557292 -806.39990234375 2130.663004557292 -708.400634765625Q2130.663004557292 -617.20166015625 2087.7634989420576 -573.0021362304688Q2044.863993326823 -528.8026123046875 1980.2647501627605 -528.8026123046875Q1920.4654337565105 -528.8026123046875 1892.5656840006511 -561.6022644042969Q1864.6659342447917 -594.4019165039062 1861.4659830729167 -657.601318359375L1859.8660074869792 -692.401123046875Q1859.0660196940105 -718.8013916015625 1849.065897623698 -733.8014526367188Q1839.0657755533855 -748.801513671875 1813.8655192057292 -748.801513671875Q1788.4651285807292 -748.801513671875 1766.7646891276042 -723.4011840820312Q1745.0642496744792 -698.0008544921875 1731.8639322916667 -645.3002624511719Q1718.6636149088542 -592.5996704101562 1718.6636149088542 -511.598876953125ZM1718.6636149088542 -885.5994873046875V-565.5987548828125V-67.599609375Q1718.6636149088542 -55.399658203125 1725.463602701823 -45.499725341796875Q1732.2635904947917 -35.59979248046875 1744.2635904947917 -32.7998046875L1842.6636149088542 -14.7999267578125Q1848.463602701823 -13.7999267578125 1850.3635965983074 -11.99993896484375Q1852.2635904947917 -10.199951171875 1852.2635904947917 -7.199951171875Q1852.2635904947917 -3.79998779296875 1849.5636088053386 -1.899993896484375Q1846.8636271158855 0.0 1841.4636637369792 0.0H1346.8668009440105Q1341.6668497721355 0.0 1338.7668558756511 -2.399993896484375Q1335.8668619791667 -4.79998779296875 1335.8668619791667 -7.39996337890625Q1335.8668619791667 -10.199951171875 1339.5668436686199 -12.899932861328125Q1343.266825358073 -15.59991455078125 1349.266825358073 -16.59991455078125L1394.2673746744792 -24.7999267578125Q1407.8673502604167 -27.59991455078125 1413.067362467448 -35.4998779296875Q1418.2673746744792 -43.39984130859375 1418.2673746744792 -54.3997802734375V-785.2001953125Q1418.2673746744792 -793.0001220703125 1415.1673990885417 -797.9000854492188Q1412.0674235026042 -802.800048828125 1403.8674723307292 -802.800048828125H1347.8667399088542Q1344.466776529948 -802.800048828125 1341.7667948404949 -805.1000366210938Q1339.0668131510417 -807.4000244140625 1339.0668131510417 -810.0Q1339.0668131510417 -813.0 1341.7667948404949 -815.5999755859375Q1344.466776529948 -818.199951171875 1349.8667399088542 -819.199951171875L1683.4639078776042 -896.3994140625Q1691.6638590494792 -898.3994140625 1696.4638163248699 -899.1994018554688Q1701.2637736002605 -899.9993896484375 1706.2637125651042 -899.9993896484375Q1713.263651529948 -899.9993896484375 1715.9636332194011 -895.4994201660156Q1718.6636149088542 -890.9994506835938 1718.6636149088542 -885.5994873046875Z M2640.7337849934897 -92.79998779296875V-104.39984130859375L2626.133992513021 -90.800048828125V-777.9974365234375Q2626.133992513021 -831.7985229492188 2602.033650716146 -861.4990539550781Q2577.933308919271 -891.1995849609375 2536.532430013021 -891.1995849609375Q2488.131551106771 -891.1995849609375 2462.7312215169272 -864.999267578125Q2437.3308919270835 -838.7989501953125 2437.3308919270835 -801.1988525390625V-707.599609375Q2437.3308919270835 -649.2001342773438 2394.231374104818 -606.8006286621094Q2351.1318562825522 -564.401123046875 2282.532674153646 -564.401123046875Q2235.533162434896 -564.401123046875 2205.0334676106772 -591.8009033203125Q2174.5337727864585 -619.20068359375 2174.5337727864585 -675.2001953125Q2174.5337727864585 -728.8001098632812 2219.433583577474 -782.3999328613281Q2264.3333943684897 -835.999755859375 2353.2329915364585 -871.599609375Q2442.1325887044272 -907.199462890625 2573.3319295247397 -907.199462890625Q2751.5310872395835 -907.199462890625 2839.8306477864585 -835.7996215820312Q2928.1302083333335 -764.3997802734375 2928.1302083333335 -631.6002197265625V-125.199462890625Q2928.1302083333335 -95.59912109375 2939.530263264974 -81.79901123046875Q2950.9303181966147 -67.9989013671875 2967.5304158528647 -67.9989013671875Q2983.7304890950522 -67.9989013671875 2998.1304829915366 -79.29888916015625Q3012.530476888021 -90.598876953125 3016.1304524739585 -118.7987060546875Q3016.9304402669272 -123.19866943359375 3018.4304402669272 -124.59866333007812Q3019.9304402669272 -125.9986572265625 3021.730428059896 -125.9986572265625Q3024.5304158528647 -125.9986572265625 3025.8304036458335 -124.59866333007812Q3027.1303914388022 -123.19866943359375 3027.1303914388022 -118.7987060546875Q3027.1303914388022 -97.99884033203125 3006.7305806477866 -65.399169921875Q2986.330769856771 -32.79949951171875 2939.6312459309897 -6.8997802734375Q2892.9317220052085 18.99993896484375 2813.3326009114585 18.99993896484375Q2721.3333333333335 18.99993896484375 2681.0335591634116 -13.29998779296875Q2640.7337849934897 -45.59991455078125 2640.7337849934897 -92.79998779296875ZM2121.333943684896 -197.1998291015625Q2121.333943684896 -311.99945068359375 2216.6336263020835 -379.3993835449219Q2311.933308919271 -446.79931640625 2528.132039388021 -446.79931640625Q2581.5325520833335 -446.79931640625 2613.9329732259116 -435.9992370605469Q2646.3333943684897 -425.19915771484375 2674.133748372396 -407.59912109375L2665.3338216145835 -399.9991455078125Q2636.3335164388022 -415.19921875 2608.233083089193 -422.1993408203125Q2580.1326497395835 -429.199462890625 2544.1321614583335 -429.199462890625Q2484.7312215169272 -429.199462890625 2451.630788167318 -381.1993408203125Q2418.5303548177085 -333.19921875 2418.5303548177085 -239.599365234375Q2418.5303548177085 -150.59942626953125 2451.4307149251304 -107.69924926757812Q2484.3310750325522 -64.799072265625 2536.531697591146 -64.799072265625Q2568.7322591145835 -64.799072265625 2601.0327657063804 -82.99917602539062Q2633.3332722981772 -101.19927978515625 2653.7336629231772 -131.9996337890625L2666.1335652669272 -124.7996826171875Q2624.5334676106772 -54.79986572265625 2547.5334981282554 -17.799957275390625Q2470.5335286458335 19.199951171875 2381.3335774739585 19.199951171875Q2267.533650716146 19.199951171875 2194.433797200521 -41.5999755859375Q2121.333943684896 -102.39990234375 2121.333943684896 -197.1998291015625Z M3403.39697265625 -895.1993408203125V-59.5997314453125Q3403.39697265625 -44.99981689453125 3408.9969787597656 -36.29986572265625Q3414.5969848632812 -27.59991455078125 3427.39697265625 -24.7999267578125L3473.7974853515625 -15.59991455078125Q3484.9974365234375 -13.199951171875 3484.9974365234375 -7.199951171875Q3484.9974365234375 0.0 3475.7974853515625 0.0H3029.400146484375Q3026.0001831054688 0.0 3023.3002014160156 -1.899993896484375Q3020.6002197265625 -3.79998779296875 3020.6002197265625 -7.199951171875Q3020.6002197265625 -9.7999267578125 3022.9002075195312 -11.999908447265625Q3025.2001953125 -14.19989013671875 3031.400146484375 -15.19989013671875L3079.000732421875 -24.7999267578125Q3092.6007080078125 -27.59991455078125 3097.8007202148438 -36.29986572265625Q3103.000732421875 -44.99981689453125 3103.000732421875 -59.19970703125V-780.4002685546875Q3103.000732421875 -787.4002075195312 3099.500762939453 -791.1001892089844Q3096.0007934570312 -794.8001708984375 3087.8008422851562 -794.8001708984375H3035.800048828125Q3030.0001220703125 -794.8001708984375 3027.7001342773438 -797.1001586914062Q3025.400146484375 -799.400146484375 3025.400146484375 -802.8001098632812Q3025.400146484375 -806.60009765625 3028.100128173828 -808.4000854492188Q3030.8001098632812 -810.2000732421875 3034.60009765625 -811.2000732421875L3367.3972778320312 -903.5993041992188Q3377.9971923828125 -906.3992919921875 3381.9971618652344 -907.1992797851562Q3385.9971313476562 -907.999267578125 3390.9970703125 -907.999267578125Q3397.197021484375 -907.999267578125 3400.2969970703125 -904.2992858886719Q3403.39697265625 -900.5993041992188 3403.39697265625 -895.1993408203125ZM3378.5972900390625 -682.8002319335938 3366.597412109375 -695.60009765625 3404.5972900390625 -729.2000122070312Q3506.3970947265625 -819.39990234375 3584.19677734375 -863.0996704101562Q3661.9964599609375 -906.7994384765625 3726.1964111328125 -906.7994384765625Q3816.396484375 -906.7994384765625 3866.5965270996094 -852.8992309570312Q3916.7965698242188 -798.9990234375 3930.5966796875 -681.5987548828125L4001.9968872070312 -62.39990234375Q4003.9968872070312 -46.39990234375 4009.4969482421875 -36.599884033203125Q4014.9970092773438 -26.79986572265625 4029.1970825195312 -23.9998779296875L4072.3973999023438 -15.19989013671875Q4078.5973510742188 -14.39990234375 4080.8973388671875 -12.199920654296875Q4083.1973266601562 -9.99993896484375 4083.1973266601562 -7.199951171875Q4083.1973266601562 -3.79998779296875 4080.8973388671875 -1.899993896484375Q4078.5973510742188 0.0 4073.9973754882812 0.0H3619.60009765625Q3610.0001220703125 0.0 3610.0001220703125 -7.199951171875Q3610.0001220703125 -12.7999267578125 3621.60009765625 -15.59991455078125L3668.8006591796875 -24.7999267578125Q3684.000732421875 -27.59991455078125 3690.2007446289062 -37.399932861328125Q3696.4007568359375 -47.199951171875 3694.4007568359375 -62.39990234375L3635.0003662109375 -650.399169921875Q3627.8001708984375 -715.400146484375 3605.8998107910156 -745.3005981445312Q3583.9994506835938 -775.2010498046875 3538.1988525390625 -775.2010498046875Q3507.198486328125 -775.2010498046875 3477.3981018066406 -759.6008605957031Q3447.5977172851562 -744.0006713867188 3414.9971923828125 -714.8001708984375Z M4684.667460123698 -107.00048828125V-112.40045166015625V-1369.6002197265625Q4684.667460123698 -1376.6001586914062 4681.167490641276 -1380.3001403808594Q4677.6675211588545 -1384.0001220703125 4669.4675699869795 -1384.0001220703125H4617.466776529948Q4611.666849772136 -1384.0001220703125 4609.366861979167 -1386.3001098632812Q4607.066874186198 -1388.60009765625 4607.066874186198 -1392.0000610351562Q4607.066874186198 -1395.800048828125 4609.766855875651 -1397.6000366210938Q4612.4668375651045 -1399.4000244140625 4616.266825358073 -1400.4000244140625L4949.0640055338545 -1492.7992553710938Q4959.663920084636 -1495.5992431640625 4963.663889567058 -1496.3992309570312Q4967.6638590494795 -1497.19921875 4972.663798014323 -1497.19921875Q4978.863749186198 -1497.19921875 4981.963724772136 -1493.4992370605469Q4985.063700358073 -1489.7992553710938 4985.063700358073 -1484.3992919921875V-59.5997314453125Q4985.063700358073 -44.99981689453125 4990.663706461589 -36.29986572265625Q4996.2637125651045 -27.59991455078125 5009.063700358073 -24.7999267578125L5055.464213053386 -15.59991455078125Q5062.064188639323 -14.7999267578125 5064.364176432292 -12.49993896484375Q5066.664164225261 -10.199951171875 5066.664164225261 -7.199951171875Q5066.664164225261 -3.79998779296875 5064.364176432292 -1.899993896484375Q5062.064188639323 0.0 5057.464213053386 0.0H4709.867533365886Q4697.467508951823 0.0 4691.067484537761 -6.60003662109375Q4684.667460123698 -13.2000732421875 4684.667460123698 -25.6002197265625ZM4058.666971842448 -415.19989013671875Q4058.666971842448 -565.3998413085938 4114.3669840494795 -675.6997375488281Q4170.066996256511 -785.9996337890625 4266.2668863932295 -846.3995361328125Q4362.466776529948 -906.7994384765625 4483.866434733073 -906.7994384765625Q4579.066630045573 -906.7994384765625 4636.766977945964 -873.9991149902344Q4694.4673258463545 -841.1987915039062 4729.867533365886 -776.798583984375L4707.467753092448 -766.398681640625Q4685.667399088542 -815.59912109375 4648.46674601237 -841.7994995117188Q4611.266092936198 -867.9998779296875 4558.665262858073 -867.9998779296875Q4502.464762369792 -867.9998779296875 4458.464274088542 -829.6996459960938Q4414.463785807292 -791.3994140625 4389.163462320964 -698.3993225097656Q4363.863138834636 -605.3992309570312 4363.863138834636 -441.19964599609375Q4363.863138834636 -296.99993896484375 4384.963450113933 -208.89987182617188Q4406.0637613932295 -120.7998046875 4443.764292399089 -80.9996337890625Q4481.464823404948 -41.199462890625 4531.865458170573 -41.199462890625Q4577.0657145182295 -41.199462890625 4621.166208902995 -67.69955444335938Q4665.266703287761 -94.19964599609375 4703.467264811198 -152.0L4717.067118326823 -136.8001708984375Q4652.666666666667 -54.39990234375 4585.866587320964 -17.199951171875Q4519.066507975261 20.0 4433.066630045573 20.0Q4321.066874186198 20.0 4236.66694132487 -31.9000244140625Q4152.267008463542 -83.800048828125 4105.466990152995 -181.50003051757812Q4058.666971842448 -279.20001220703125 4058.666971842448 -415.19989013671875Z"/><path fill="#FF5C1A" d="M5564.329427083334 -55.9998779296875Q5564.329427083334 -44.39273507254464 5575.229359944662 -37.59633091517857Q5586.12929280599 -30.7999267578125 5606.729207356771 -27.199951171875L5675.129964192709 -15.9998779296875Q5689.129842122396 -13.59991455078125 5689.129842122396 -7.560606909579917Q5689.129842122396 -4.149155913806354 5686.499627874804 -2.074577956903177Q5683.8694136272115 0.0 5678.329915364584 0.0H5096.333455403646Q5090.793957141019 0.0 5088.163742893426 -2.074577956903177Q5085.533528645834 -4.149155913806354 5085.533528645834 -7.560606909579917Q5085.533528645834 -13.59991455078125 5099.533406575521 -15.9998779296875L5167.934163411459 -27.199951171875Q5189.334065755209 -30.7999267578125 5199.834004720053 -37.59633091517857Q5210.333943684896 -44.39273507254464 5210.333943684896 -55.9998779296875V-1344.0001220703125Q5210.333943684896 -1355.6072649274554 5199.834004720053 -1362.5036751883372Q5189.334065755209 -1369.4000854492188 5167.934163411459 -1372.800048828125L5099.533406575521 -1384.0001220703125Q5085.533528645834 -1386.1027881519215 5085.533528645834 -1392.800048828125Q5085.533528645834 -1395.6000366210938 5088.163742893426 -1397.8000183105469Q5090.793957141019 -1400.0 5096.333455403646 -1400.0H5678.329915364584Q5683.8694136272115 -1400.0 5686.499627874804 -1397.8000183105469Q5689.129842122396 -1395.6000366210938 5689.129842122396 -1392.800048828125Q5689.129842122396 -1386.1027881519215 5675.129964192709 -1384.0001220703125L5606.729207356771 -1372.800048828125Q5586.12929280599 -1369.4000854492188 5575.229359944662 -1362.5036751883372Q5564.329427083334 -1355.6072649274554 5564.329427083334 -1344.0001220703125Z M5968.40008544922 -537.60009765625H6464.000915527345L6467.600891113282 -516.000244140625H5962.800109863282ZM6051.998291015626 -7.199951171875Q6051.998291015626 -4.5999755859375 6049.798309326173 -2.29998779296875Q6047.59832763672 0.0 6043.198364257813 0.0H5691.600341796876Q5687.400390625001 0.0 5685.100402832032 -2.29998779296875Q5682.800415039063 -4.5999755859375 5682.800415039063 -7.199951171875Q5682.800415039063 -11.59991455078125 5686.300384521485 -13.39990234375Q5689.800354003907 -15.19989013671875 5693.200317382813 -15.9998779296875L5722.000854492188 -25.20001220703125Q5759.000549316407 -38.19989013671875 5798.0001525878915 -80.09945678710938Q5836.999755859376 -121.9990234375 5860.799621582032 -203.5985107421875L6163.600891113282 -1251.2017211914062Q6177.400756835938 -1299.201171875 6165.500793457032 -1328.0008544921875Q6153.600830078126 -1356.800537109375 6124.800720214845 -1374.4002685546875Q6111.20086669922 -1384.8001098632812 6104.400939941407 -1387.10009765625Q6097.601013183595 -1389.4000854492188 6097.601013183595 -1392.800048828125Q6097.601013183595 -1397.2000122070312 6100.300994873048 -1398.6000061035156Q6103.000976562501 -1400.0 6108.400939941407 -1400.0H6570.796447753907Q6575.996398925782 -1400.0 6578.59637451172 -1398.6000061035156Q6581.196350097657 -1397.2000122070312 6581.196350097657 -1392.800048828125Q6581.196350097657 -1389.4000854492188 6575.296417236329 -1385.9001159667969Q6569.396484375001 -1382.400146484375 6554.39666748047 -1376.000244140625Q6535.996337890626 -1371.2003173828125 6531.196319580079 -1360.1004028320312Q6526.396301269532 -1349.00048828125 6535.596252441407 -1319.20068359375L6929.99676513672 -69.1998291015625Q6937.396789550782 -46.999755859375 6951.296875000001 -34.69976806640625Q6965.19696044922 -22.3997802734375 6984.797180175782 -18.39984130859375Q6992.397094726563 -15.9998779296875 6995.397064208985 -13.799896240234375Q6998.397033691407 -11.59991455078125 6998.397033691407 -7.199951171875Q6998.397033691407 -4.5999755859375 6995.79705810547 -2.29998779296875Q6993.197082519532 0.0 6987.997131347657 0.0H6480.401184082032Q6475.401245117188 0.0 6472.701263427735 -2.29998779296875Q6470.001281738282 -4.5999755859375 6470.001281738282 -7.199951171875Q6470.001281738282 -11.59991455078125 6473.301269531251 -12.59991455078125Q6476.60125732422 -13.59991455078125 6484.00115966797 -15.9998779296875L6524.801574707032 -24.7998046875Q6551.601440429688 -32.39971923828125 6557.001464843751 -45.799713134765625Q6562.401489257813 -59.19970703125 6554.001525878907 -86.3995361328125L6182.400695800782 -1266.4017333984375L6210.400451660157 -1335.6007080078125L5881.599487304688 -198.798583984375Q5868.599548339845 -153.99884033203125 5883.299346923829 -119.6990966796875Q5897.999145507813 -85.39935302734375 5932.698791503907 -61.599578857421875Q5967.398437500001 -37.7998046875 6015.197998046876 -23.199951171875L6041.198364257813 -15.9998779296875Q6047.398315429688 -14.39990234375 6049.698303222657 -12.59991455078125Q6051.998291015626 -10.7999267578125 6051.998291015626 -7.199951171875Z"/></g></svg></span><span class="lgd"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-91.0 -91.0 8786.2 1699.3" role="img" aria-label="BrandIA" class="logo"><g transform="scale(19.9631) translate(-10,-12)" fill="#FF5C1A"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g><g transform="translate(1605.7,1497.2)"><path fill="#EDECE8" d="M1309.1956787109375 -334.400146484375Q1309.1956787109375 -186.00006103515625 1182.8957824707031 -93.00003051757812Q1056.5958862304688 0.0 809.5963134765625 0.0H76.0001220703125Q70.60015869140625 0.0 67.90017700195312 -2.29998779296875Q65.2001953125 -4.5999755859375 65.2001953125 -7.199951171875Q65.2001953125 -13.59991455078125 79.2000732421875 -15.9998779296875L147.600830078125 -27.199951171875Q169.80072021484375 -31.59991455078125 179.90066528320312 -41.799835205078125Q190.0006103515625 -51.999755859375 190.0006103515625 -73.599609375V-1344.0001220703125Q190.0006103515625 -1356.0001220703125 181.900634765625 -1362.3001098632812Q173.8006591796875 -1368.60009765625 147.600830078125 -1372.800048828125L79.2000732421875 -1384.0001220703125Q65.2001953125 -1386.4000854492188 65.2001953125 -1392.800048828125Q65.2001953125 -1395.6000366210938 67.90017700195312 -1397.8000183105469Q70.60015869140625 -1400.0 76.0001220703125 -1400.0H596.798095703125Q800.5973510742188 -1400.0 941.6968078613281 -1348.5000610351562Q1082.7962646484375 -1297.0001220703125 1155.9959716796875 -1206.4002075195312Q1229.1956787109375 -1115.80029296875 1229.1956787109375 -998.0003662109375Q1229.1956787109375 -897.0005493164062 1171.9958801269531 -821.1005249023438Q1114.7960815429688 -745.2005004882812 1009.5963745117188 -703.2004089355469Q904.3966674804688 -661.2003173828125 759.9969482421875 -661.2003173828125L815.59619140625 -668.000244140625Q959.99609375 -668.000244140625 1071.4959716796875 -625.3002014160156Q1182.995849609375 -582.6001586914062 1246.0957641601562 -507.20013427734375Q1309.1956787109375 -431.80010986328125 1309.1956787109375 -334.400146484375ZM677.1978759765625 -649.200439453125H508.7962646484375V-670.80029296875H683.5982666015625Q762.798583984375 -670.80029296875 815.2988586425781 -704.2004699707031Q867.7991333007812 -737.6006469726562 893.6993103027344 -805.30078125Q919.5994873046875 -873.0009155273438 919.5994873046875 -975.2008056640625Q919.5994873046875 -1097.2005615234375 875.2994079589844 -1187.8004150390625Q830.9993286132812 -1278.4002685546875 756.3990478515625 -1328.4002075195312Q681.7987670898438 -1378.400146484375 590.398193359375 -1378.400146484375H535.9962158203125V-63.999755859375Q535.9962158203125 -40.39984130859375 551.1961669921875 -30.999847412109375Q566.3961181640625 -21.599853515625 593.5960693359375 -21.599853515625H714.7978515625Q792.1985473632812 -21.599853515625 848.0990295410156 -61.09991455078125Q903.99951171875 -100.5999755859375 933.999755859375 -172.30001831054688Q964.0 -244.00006103515625 964.0 -341.5999755859375Q964.0 -485.4000244140625 890.8994140625 -567.3002319335938Q817.798828125 -649.200439453125 677.1978759765625 -649.200439453125Z M1704.6637369791667 -519.5987548828125Q1704.6637369791667 -647.3989868164062 1743.4636942545574 -733.3991394042969Q1782.263651529948 -819.3992919921875 1843.0635782877605 -863.099365234375Q1903.863505045573 -906.7994384765625 1969.4634195963542 -906.7994384765625Q2047.6631876627605 -906.7994384765625 2089.1630961100263 -856.5996704101562Q2130.663004557292 -806.39990234375 2130.663004557292 -708.400634765625Q2130.663004557292 -617.20166015625 2087.7634989420576 -573.0021362304688Q2044.863993326823 -528.8026123046875 1980.2647501627605 -528.8026123046875Q1920.4654337565105 -528.8026123046875 1892.5656840006511 -561.6022644042969Q1864.6659342447917 -594.4019165039062 1861.4659830729167 -657.601318359375L1859.8660074869792 -692.401123046875Q1859.0660196940105 -718.8013916015625 1849.065897623698 -733.8014526367188Q1839.0657755533855 -748.801513671875 1813.8655192057292 -748.801513671875Q1788.4651285807292 -748.801513671875 1766.7646891276042 -723.4011840820312Q1745.0642496744792 -698.0008544921875 1731.8639322916667 -645.3002624511719Q1718.6636149088542 -592.5996704101562 1718.6636149088542 -511.598876953125ZM1718.6636149088542 -885.5994873046875V-565.5987548828125V-67.599609375Q1718.6636149088542 -55.399658203125 1725.463602701823 -45.499725341796875Q1732.2635904947917 -35.59979248046875 1744.2635904947917 -32.7998046875L1842.6636149088542 -14.7999267578125Q1848.463602701823 -13.7999267578125 1850.3635965983074 -11.99993896484375Q1852.2635904947917 -10.199951171875 1852.2635904947917 -7.199951171875Q1852.2635904947917 -3.79998779296875 1849.5636088053386 -1.899993896484375Q1846.8636271158855 0.0 1841.4636637369792 0.0H1346.8668009440105Q1341.6668497721355 0.0 1338.7668558756511 -2.399993896484375Q1335.8668619791667 -4.79998779296875 1335.8668619791667 -7.39996337890625Q1335.8668619791667 -10.199951171875 1339.5668436686199 -12.899932861328125Q1343.266825358073 -15.59991455078125 1349.266825358073 -16.59991455078125L1394.2673746744792 -24.7999267578125Q1407.8673502604167 -27.59991455078125 1413.067362467448 -35.4998779296875Q1418.2673746744792 -43.39984130859375 1418.2673746744792 -54.3997802734375V-785.2001953125Q1418.2673746744792 -793.0001220703125 1415.1673990885417 -797.9000854492188Q1412.0674235026042 -802.800048828125 1403.8674723307292 -802.800048828125H1347.8667399088542Q1344.466776529948 -802.800048828125 1341.7667948404949 -805.1000366210938Q1339.0668131510417 -807.4000244140625 1339.0668131510417 -810.0Q1339.0668131510417 -813.0 1341.7667948404949 -815.5999755859375Q1344.466776529948 -818.199951171875 1349.8667399088542 -819.199951171875L1683.4639078776042 -896.3994140625Q1691.6638590494792 -898.3994140625 1696.4638163248699 -899.1994018554688Q1701.2637736002605 -899.9993896484375 1706.2637125651042 -899.9993896484375Q1713.263651529948 -899.9993896484375 1715.9636332194011 -895.4994201660156Q1718.6636149088542 -890.9994506835938 1718.6636149088542 -885.5994873046875Z M2640.7337849934897 -92.79998779296875V-104.39984130859375L2626.133992513021 -90.800048828125V-777.9974365234375Q2626.133992513021 -831.7985229492188 2602.033650716146 -861.4990539550781Q2577.933308919271 -891.1995849609375 2536.532430013021 -891.1995849609375Q2488.131551106771 -891.1995849609375 2462.7312215169272 -864.999267578125Q2437.3308919270835 -838.7989501953125 2437.3308919270835 -801.1988525390625V-707.599609375Q2437.3308919270835 -649.2001342773438 2394.231374104818 -606.8006286621094Q2351.1318562825522 -564.401123046875 2282.532674153646 -564.401123046875Q2235.533162434896 -564.401123046875 2205.0334676106772 -591.8009033203125Q2174.5337727864585 -619.20068359375 2174.5337727864585 -675.2001953125Q2174.5337727864585 -728.8001098632812 2219.433583577474 -782.3999328613281Q2264.3333943684897 -835.999755859375 2353.2329915364585 -871.599609375Q2442.1325887044272 -907.199462890625 2573.3319295247397 -907.199462890625Q2751.5310872395835 -907.199462890625 2839.8306477864585 -835.7996215820312Q2928.1302083333335 -764.3997802734375 2928.1302083333335 -631.6002197265625V-125.199462890625Q2928.1302083333335 -95.59912109375 2939.530263264974 -81.79901123046875Q2950.9303181966147 -67.9989013671875 2967.5304158528647 -67.9989013671875Q2983.7304890950522 -67.9989013671875 2998.1304829915366 -79.29888916015625Q3012.530476888021 -90.598876953125 3016.1304524739585 -118.7987060546875Q3016.9304402669272 -123.19866943359375 3018.4304402669272 -124.59866333007812Q3019.9304402669272 -125.9986572265625 3021.730428059896 -125.9986572265625Q3024.5304158528647 -125.9986572265625 3025.8304036458335 -124.59866333007812Q3027.1303914388022 -123.19866943359375 3027.1303914388022 -118.7987060546875Q3027.1303914388022 -97.99884033203125 3006.7305806477866 -65.399169921875Q2986.330769856771 -32.79949951171875 2939.6312459309897 -6.8997802734375Q2892.9317220052085 18.99993896484375 2813.3326009114585 18.99993896484375Q2721.3333333333335 18.99993896484375 2681.0335591634116 -13.29998779296875Q2640.7337849934897 -45.59991455078125 2640.7337849934897 -92.79998779296875ZM2121.333943684896 -197.1998291015625Q2121.333943684896 -311.99945068359375 2216.6336263020835 -379.3993835449219Q2311.933308919271 -446.79931640625 2528.132039388021 -446.79931640625Q2581.5325520833335 -446.79931640625 2613.9329732259116 -435.9992370605469Q2646.3333943684897 -425.19915771484375 2674.133748372396 -407.59912109375L2665.3338216145835 -399.9991455078125Q2636.3335164388022 -415.19921875 2608.233083089193 -422.1993408203125Q2580.1326497395835 -429.199462890625 2544.1321614583335 -429.199462890625Q2484.7312215169272 -429.199462890625 2451.630788167318 -381.1993408203125Q2418.5303548177085 -333.19921875 2418.5303548177085 -239.599365234375Q2418.5303548177085 -150.59942626953125 2451.4307149251304 -107.69924926757812Q2484.3310750325522 -64.799072265625 2536.531697591146 -64.799072265625Q2568.7322591145835 -64.799072265625 2601.0327657063804 -82.99917602539062Q2633.3332722981772 -101.19927978515625 2653.7336629231772 -131.9996337890625L2666.1335652669272 -124.7996826171875Q2624.5334676106772 -54.79986572265625 2547.5334981282554 -17.799957275390625Q2470.5335286458335 19.199951171875 2381.3335774739585 19.199951171875Q2267.533650716146 19.199951171875 2194.433797200521 -41.5999755859375Q2121.333943684896 -102.39990234375 2121.333943684896 -197.1998291015625Z M3403.39697265625 -895.1993408203125V-59.5997314453125Q3403.39697265625 -44.99981689453125 3408.9969787597656 -36.29986572265625Q3414.5969848632812 -27.59991455078125 3427.39697265625 -24.7999267578125L3473.7974853515625 -15.59991455078125Q3484.9974365234375 -13.199951171875 3484.9974365234375 -7.199951171875Q3484.9974365234375 0.0 3475.7974853515625 0.0H3029.400146484375Q3026.0001831054688 0.0 3023.3002014160156 -1.899993896484375Q3020.6002197265625 -3.79998779296875 3020.6002197265625 -7.199951171875Q3020.6002197265625 -9.7999267578125 3022.9002075195312 -11.999908447265625Q3025.2001953125 -14.19989013671875 3031.400146484375 -15.19989013671875L3079.000732421875 -24.7999267578125Q3092.6007080078125 -27.59991455078125 3097.8007202148438 -36.29986572265625Q3103.000732421875 -44.99981689453125 3103.000732421875 -59.19970703125V-780.4002685546875Q3103.000732421875 -787.4002075195312 3099.500762939453 -791.1001892089844Q3096.0007934570312 -794.8001708984375 3087.8008422851562 -794.8001708984375H3035.800048828125Q3030.0001220703125 -794.8001708984375 3027.7001342773438 -797.1001586914062Q3025.400146484375 -799.400146484375 3025.400146484375 -802.8001098632812Q3025.400146484375 -806.60009765625 3028.100128173828 -808.4000854492188Q3030.8001098632812 -810.2000732421875 3034.60009765625 -811.2000732421875L3367.3972778320312 -903.5993041992188Q3377.9971923828125 -906.3992919921875 3381.9971618652344 -907.1992797851562Q3385.9971313476562 -907.999267578125 3390.9970703125 -907.999267578125Q3397.197021484375 -907.999267578125 3400.2969970703125 -904.2992858886719Q3403.39697265625 -900.5993041992188 3403.39697265625 -895.1993408203125ZM3378.5972900390625 -682.8002319335938 3366.597412109375 -695.60009765625 3404.5972900390625 -729.2000122070312Q3506.3970947265625 -819.39990234375 3584.19677734375 -863.0996704101562Q3661.9964599609375 -906.7994384765625 3726.1964111328125 -906.7994384765625Q3816.396484375 -906.7994384765625 3866.5965270996094 -852.8992309570312Q3916.7965698242188 -798.9990234375 3930.5966796875 -681.5987548828125L4001.9968872070312 -62.39990234375Q4003.9968872070312 -46.39990234375 4009.4969482421875 -36.599884033203125Q4014.9970092773438 -26.79986572265625 4029.1970825195312 -23.9998779296875L4072.3973999023438 -15.19989013671875Q4078.5973510742188 -14.39990234375 4080.8973388671875 -12.199920654296875Q4083.1973266601562 -9.99993896484375 4083.1973266601562 -7.199951171875Q4083.1973266601562 -3.79998779296875 4080.8973388671875 -1.899993896484375Q4078.5973510742188 0.0 4073.9973754882812 0.0H3619.60009765625Q3610.0001220703125 0.0 3610.0001220703125 -7.199951171875Q3610.0001220703125 -12.7999267578125 3621.60009765625 -15.59991455078125L3668.8006591796875 -24.7999267578125Q3684.000732421875 -27.59991455078125 3690.2007446289062 -37.399932861328125Q3696.4007568359375 -47.199951171875 3694.4007568359375 -62.39990234375L3635.0003662109375 -650.399169921875Q3627.8001708984375 -715.400146484375 3605.8998107910156 -745.3005981445312Q3583.9994506835938 -775.2010498046875 3538.1988525390625 -775.2010498046875Q3507.198486328125 -775.2010498046875 3477.3981018066406 -759.6008605957031Q3447.5977172851562 -744.0006713867188 3414.9971923828125 -714.8001708984375Z M4684.667460123698 -107.00048828125V-112.40045166015625V-1369.6002197265625Q4684.667460123698 -1376.6001586914062 4681.167490641276 -1380.3001403808594Q4677.6675211588545 -1384.0001220703125 4669.4675699869795 -1384.0001220703125H4617.466776529948Q4611.666849772136 -1384.0001220703125 4609.366861979167 -1386.3001098632812Q4607.066874186198 -1388.60009765625 4607.066874186198 -1392.0000610351562Q4607.066874186198 -1395.800048828125 4609.766855875651 -1397.6000366210938Q4612.4668375651045 -1399.4000244140625 4616.266825358073 -1400.4000244140625L4949.0640055338545 -1492.7992553710938Q4959.663920084636 -1495.5992431640625 4963.663889567058 -1496.3992309570312Q4967.6638590494795 -1497.19921875 4972.663798014323 -1497.19921875Q4978.863749186198 -1497.19921875 4981.963724772136 -1493.4992370605469Q4985.063700358073 -1489.7992553710938 4985.063700358073 -1484.3992919921875V-59.5997314453125Q4985.063700358073 -44.99981689453125 4990.663706461589 -36.29986572265625Q4996.2637125651045 -27.59991455078125 5009.063700358073 -24.7999267578125L5055.464213053386 -15.59991455078125Q5062.064188639323 -14.7999267578125 5064.364176432292 -12.49993896484375Q5066.664164225261 -10.199951171875 5066.664164225261 -7.199951171875Q5066.664164225261 -3.79998779296875 5064.364176432292 -1.899993896484375Q5062.064188639323 0.0 5057.464213053386 0.0H4709.867533365886Q4697.467508951823 0.0 4691.067484537761 -6.60003662109375Q4684.667460123698 -13.2000732421875 4684.667460123698 -25.6002197265625ZM4058.666971842448 -415.19989013671875Q4058.666971842448 -565.3998413085938 4114.3669840494795 -675.6997375488281Q4170.066996256511 -785.9996337890625 4266.2668863932295 -846.3995361328125Q4362.466776529948 -906.7994384765625 4483.866434733073 -906.7994384765625Q4579.066630045573 -906.7994384765625 4636.766977945964 -873.9991149902344Q4694.4673258463545 -841.1987915039062 4729.867533365886 -776.798583984375L4707.467753092448 -766.398681640625Q4685.667399088542 -815.59912109375 4648.46674601237 -841.7994995117188Q4611.266092936198 -867.9998779296875 4558.665262858073 -867.9998779296875Q4502.464762369792 -867.9998779296875 4458.464274088542 -829.6996459960938Q4414.463785807292 -791.3994140625 4389.163462320964 -698.3993225097656Q4363.863138834636 -605.3992309570312 4363.863138834636 -441.19964599609375Q4363.863138834636 -296.99993896484375 4384.963450113933 -208.89987182617188Q4406.0637613932295 -120.7998046875 4443.764292399089 -80.9996337890625Q4481.464823404948 -41.199462890625 4531.865458170573 -41.199462890625Q4577.0657145182295 -41.199462890625 4621.166208902995 -67.69955444335938Q4665.266703287761 -94.19964599609375 4703.467264811198 -152.0L4717.067118326823 -136.8001708984375Q4652.666666666667 -54.39990234375 4585.866587320964 -17.199951171875Q4519.066507975261 20.0 4433.066630045573 20.0Q4321.066874186198 20.0 4236.66694132487 -31.9000244140625Q4152.267008463542 -83.800048828125 4105.466990152995 -181.50003051757812Q4058.666971842448 -279.20001220703125 4058.666971842448 -415.19989013671875Z"/><path fill="#FF5C1A" d="M5564.329427083334 -55.9998779296875Q5564.329427083334 -44.39273507254464 5575.229359944662 -37.59633091517857Q5586.12929280599 -30.7999267578125 5606.729207356771 -27.199951171875L5675.129964192709 -15.9998779296875Q5689.129842122396 -13.59991455078125 5689.129842122396 -7.560606909579917Q5689.129842122396 -4.149155913806354 5686.499627874804 -2.074577956903177Q5683.8694136272115 0.0 5678.329915364584 0.0H5096.333455403646Q5090.793957141019 0.0 5088.163742893426 -2.074577956903177Q5085.533528645834 -4.149155913806354 5085.533528645834 -7.560606909579917Q5085.533528645834 -13.59991455078125 5099.533406575521 -15.9998779296875L5167.934163411459 -27.199951171875Q5189.334065755209 -30.7999267578125 5199.834004720053 -37.59633091517857Q5210.333943684896 -44.39273507254464 5210.333943684896 -55.9998779296875V-1344.0001220703125Q5210.333943684896 -1355.6072649274554 5199.834004720053 -1362.5036751883372Q5189.334065755209 -1369.4000854492188 5167.934163411459 -1372.800048828125L5099.533406575521 -1384.0001220703125Q5085.533528645834 -1386.1027881519215 5085.533528645834 -1392.800048828125Q5085.533528645834 -1395.6000366210938 5088.163742893426 -1397.8000183105469Q5090.793957141019 -1400.0 5096.333455403646 -1400.0H5678.329915364584Q5683.8694136272115 -1400.0 5686.499627874804 -1397.8000183105469Q5689.129842122396 -1395.6000366210938 5689.129842122396 -1392.800048828125Q5689.129842122396 -1386.1027881519215 5675.129964192709 -1384.0001220703125L5606.729207356771 -1372.800048828125Q5586.12929280599 -1369.4000854492188 5575.229359944662 -1362.5036751883372Q5564.329427083334 -1355.6072649274554 5564.329427083334 -1344.0001220703125Z M5968.40008544922 -537.60009765625H6464.000915527345L6467.600891113282 -516.000244140625H5962.800109863282ZM6051.998291015626 -7.199951171875Q6051.998291015626 -4.5999755859375 6049.798309326173 -2.29998779296875Q6047.59832763672 0.0 6043.198364257813 0.0H5691.600341796876Q5687.400390625001 0.0 5685.100402832032 -2.29998779296875Q5682.800415039063 -4.5999755859375 5682.800415039063 -7.199951171875Q5682.800415039063 -11.59991455078125 5686.300384521485 -13.39990234375Q5689.800354003907 -15.19989013671875 5693.200317382813 -15.9998779296875L5722.000854492188 -25.20001220703125Q5759.000549316407 -38.19989013671875 5798.0001525878915 -80.09945678710938Q5836.999755859376 -121.9990234375 5860.799621582032 -203.5985107421875L6163.600891113282 -1251.2017211914062Q6177.400756835938 -1299.201171875 6165.500793457032 -1328.0008544921875Q6153.600830078126 -1356.800537109375 6124.800720214845 -1374.4002685546875Q6111.20086669922 -1384.8001098632812 6104.400939941407 -1387.10009765625Q6097.601013183595 -1389.4000854492188 6097.601013183595 -1392.800048828125Q6097.601013183595 -1397.2000122070312 6100.300994873048 -1398.6000061035156Q6103.000976562501 -1400.0 6108.400939941407 -1400.0H6570.796447753907Q6575.996398925782 -1400.0 6578.59637451172 -1398.6000061035156Q6581.196350097657 -1397.2000122070312 6581.196350097657 -1392.800048828125Q6581.196350097657 -1389.4000854492188 6575.296417236329 -1385.9001159667969Q6569.396484375001 -1382.400146484375 6554.39666748047 -1376.000244140625Q6535.996337890626 -1371.2003173828125 6531.196319580079 -1360.1004028320312Q6526.396301269532 -1349.00048828125 6535.596252441407 -1319.20068359375L6929.99676513672 -69.1998291015625Q6937.396789550782 -46.999755859375 6951.296875000001 -34.69976806640625Q6965.19696044922 -22.3997802734375 6984.797180175782 -18.39984130859375Q6992.397094726563 -15.9998779296875 6995.397064208985 -13.799896240234375Q6998.397033691407 -11.59991455078125 6998.397033691407 -7.199951171875Q6998.397033691407 -4.5999755859375 6995.79705810547 -2.29998779296875Q6993.197082519532 0.0 6987.997131347657 0.0H6480.401184082032Q6475.401245117188 0.0 6472.701263427735 -2.29998779296875Q6470.001281738282 -4.5999755859375 6470.001281738282 -7.199951171875Q6470.001281738282 -11.59991455078125 6473.301269531251 -12.59991455078125Q6476.60125732422 -13.59991455078125 6484.00115966797 -15.9998779296875L6524.801574707032 -24.7998046875Q6551.601440429688 -32.39971923828125 6557.001464843751 -45.799713134765625Q6562.401489257813 -59.19970703125 6554.001525878907 -86.3995361328125L6182.400695800782 -1266.4017333984375L6210.400451660157 -1335.6007080078125L5881.599487304688 -198.798583984375Q5868.599548339845 -153.99884033203125 5883.299346923829 -119.6990966796875Q5897.999145507813 -85.39935302734375 5932.698791503907 -61.599578857421875Q5967.398437500001 -37.7998046875 6015.197998046876 -23.199951171875L6041.198364257813 -15.9998779296875Q6047.398315429688 -14.39990234375 6049.698303222657 -12.59991455078125Q6051.998291015626 -10.7999267578125 6051.998291015626 -7.199951171875Z"/></g></svg></span></a>
+  <nav aria-label="Principal">
+    <a href="#armar">Cómo funciona</a>
+    <a href="#planes">Productos</a>
+    <a href="#producir">Suscripción</a>
+    <a href="#branderia" class="nv-mk">Brandería</a>
+    <a class="btn btn-d" href="#empezar">BrandIAmos</a>
+  </nav>
+</header>
+
+<main>
+<!-- ================= A0 · DE TUS REFERENCIAS A TU MARCA ================= -->
+<section id="hero" aria-label="BrandIA">
+  <div class="glbox"><canvas id="gl" aria-hidden="true"></canvas><svg class="bfb" aria-hidden="true"><use href="#bIso"/></svg></div>
+  <div class="veil" aria-hidden="true"></div>
+  <div class="hrest">
+    <h1 class="big" id="hTitle">Que se vea tan bien como <span class="it">lo que hacés.</span></h1>
+    <p class="lead">Vos elegís las referencias. Nosotros las convertimos en tu marca. Y producís lo que necesites —posteos, piezas y productos con tu logo— desde el mismo lugar.</p>
+    <div class="ctas">
+      <a class="btn btn-d" href="#empezar">Quiero BrandIAr mi marca →</a>
+      <a class="btn btn-o" href="#armar">Mirá cómo funciona</a>
+    </div>
+  </div>
+  <div class="hint" aria-hidden="true"><b></b>Bajá despacio</div>
+  <div class="cap" id="c1"><h2>Todo empieza en lo que <span class="it">ya sos.</span></h2><p>Tus fotos, tus colores, tus palabras o las marcas que te gustan. ¿No tenés nada armado? Arrancamos con unas preguntas.</p></div>
+  <div class="cap" id="c2"><h2><span class="bl">BrandIA</span> encuentra <span class="it">el hilo.</span></h2><p>Ordena todo y lo convierte en un sistema,<br>pieza por pieza.</p></div>
+  <div class="cap" id="c3"><h2>Eso es <span class="it">BrandIAr.</span></h2><p>Tu marca, armada con IA, lista para usar, publicar e imprimir.</p><div class="ctas"><a class="btn btn-n" href="#empezar">BrandIAmos →</a><a class="more" href="#generica">o deslizá para ver más ↓</a></div></div>
+</section>
+
+<!-- ================= A1 · LO GENÉRICO ================= -->
+<section class="sec" id="generica">
+  <div class="wrap">
+    <p class="eb rv">El problema</p>
+    <h2 class="big" style="margin-top:22px">Una marca genérica podría ser de <span class="flip" id="flip" aria-label="cualquiera">cualquiera</span>.</h2>
+    <p class="lead rv" style="margin-top:26px">Por eso no es de nadie. Hoy hay tres formas de tener marca, y dos te salen caras.</p>
+    <div class="vs">
+      <div class="row lbl" aria-hidden="true"><span></span><span>Tiempo</span><span>Precio</span><span>Después</span></div>
+      <div class="row rv"><span class="who">Una agencia</span><span><b>Tiempo</b>Meses</span><span><b>Precio</b>Miles de dólares</span><span><b>Después</b>Te pasa los archivos y chau</span></div>
+      <div class="row rv"><span class="who">Una plantilla</span><span><b>Tiempo</b>Minutos</span><span><b>Precio</b>Barata</span><span><b>Después</b>Te quedás igual a todos</span></div>
+      <div class="row us rv"><span class="who">Brand<i>IA</i></span><span><b>Tiempo</b>Una tarde</span><span><b>Precio</b>Un pago, a la vista</span><span><b>Después</b>Tu marca sigue produciendo, hasta impresa</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= A2 · ARMAR · recorrido horizontal ================= -->
+<section id="armar" aria-label="Cómo se arma una marca">
+  <div class="wrap intro">
+    <p class="eb">Armar · así funciona la app</p>
+    <h2 class="h2 h2s" style="margin-top:18px">De tu historia a tu marca, en cuatro pasos.</h2>
+    <p class="lead">Tomemos a Costa, una panadería de barrio. Estos son los mismos pasos que va a seguir tu marca.</p>
+  </div>
+  <div class="hwrap" id="hwrap">
+    <div class="track" id="track">
+      <div class="slide">
+        <div><div class="num">1</div><h3>Contanos</h3><p>Unas preguntas sobre tu negocio: qué hacés, para quién y cómo querés que se sienta. Si tenés referencias, colores o fotos, sumalas; si no, no hace falta.</p></div>
+        <div class="app"><div class="atop"><svg viewBox="0 0 62 76"><use href="#bIso"/></svg>Proyectos / <b>Costa</b><span class="st">Brief</span></div>
+          <div class="abody"><div class="chat">
+            <div class="bub ia">¿Qué hacés y para quién?</div>
+            <div class="bub yo">Una panadería de masa madre, chiquita, de barrio. Le vendemos a los vecinos y a dos cafés.</div>
+            <div class="bub ia">¿Tres palabras para cómo querés que se sienta?</div>
+            <div class="chips"><span class="chip">cálida</span><span class="chip">honesta</span><span class="chip">de mañana temprano</span></div>
+            <div class="chips"><span class="chip ref">Tablero de referencias · 14</span><span class="chip ref">3 fotos del local</span></div>
+          </div><div class="inp">Escribí o mandá un audio<i>↑</i></div></div></div>
+      </div>
+      <div class="slide">
+        <div><div class="num">2</div><h3>Elegí un estilo</h3><p>Con lo que nos contaste, te mostramos estilos de logo —minimalista, con símbolo, tipográfico, emblema— para que elijas hacia dónde ir.</p></div>
+        <div class="app"><div class="atop"><svg viewBox="0 0 62 76"><use href="#bIso"/></svg>Proyectos / <b>Costa</b><span class="st">Estilos de logo</span></div>
+          <div class="abody"><div class="caminos">
+            <div class="cam sel"><span class="t">Con símbolo</span><svg><use href="#kIso"/></svg></div>
+            <div class="cam"><span class="t">Monograma</span><svg><use href="#kC"/></svg></div>
+            <div class="cam"><span class="t">Ilustrado</span><svg><use href="#kW"/></svg></div>
+            <div class="cam"><span class="t">Emblema</span><svg><use href="#kS"/></svg></div>
+            <div class="cam"><span class="t">Minimalista</span><svg><use href="#kL"/></svg></div>
+            <div class="cam" style="font-family:var(--fk);font-size:28px"><span class="t">Tipográfico</span>Costa</div>
+          </div><p class="why"><b>Con símbolo.</b> El sol sobre el agua: costa, horno y mañana temprano en un solo signo.</p></div></div>
+      </div>
+      <div class="slide">
+        <div><div class="num">3</div><h3>Tu paleta, recomendada</h3><p>Te proponemos una paleta y tipografías según lo que nos contaste. Si querés, la ajustás: movés una perilla y se actualiza todo.</p></div>
+        <div class="app"><div class="atop"><svg viewBox="0 0 62 76"><use href="#bIso"/></svg>Proyectos / <b>Costa</b><span class="st">Recomendada para Costa</span></div>
+          <div class="abody"><div class="ajus"><div>
+            <p class="sug">Sugerida a partir de <b>cálida · honesta · de mañana temprano</b></p>
+            <div class="pal">
+              <div class="sw" style="background:var(--k1);color:var(--k2)"><b>Corteza</b>#6B3A1E</div>
+              <div class="sw" style="background:var(--k2);color:var(--k1)"><b>Miga</b>#F3E9D6</div>
+              <div class="sw" style="background:var(--k3);color:var(--k5)"><b>Horno</b>#C8662B</div>
+              <div class="sw" style="background:var(--k4);color:var(--k2)"><b>Centeno</b>#2F3B2F</div>
+              <div class="sw" style="background:var(--k5);color:var(--k1);box-shadow:inset 0 0 0 1px var(--ll)"><b>Sal</b>#FBF8F2</div>
+            </div>
+            <div class="tp"><div class="a">Recién salido.</div><div class="b">Young Serif para titulares · Karla para texto</div></div>
+            <div class="knob"><span>Tono</span><div class="tr"><i style="left:28%"></i></div><div class="ends"><span>cálido</span><span>sobrio</span></div></div>
+          </div>
+          <div class="prev">
+            <div style="display:flex;align-items:center;gap:10px"><svg style="width:40px;height:40px"><use href="#kIso"/></svg><span style="font-family:var(--fk);font-size:22px">Costa</span></div>
+            <div><div class="sg">Focaccia de romero, hoy a las 17.</div><div class="sb">Masa madre, 48 horas de fermentación.</div></div>
+            <div class="bar"><span>@panaderiacosta</span><span>Abrimos 7 h</span></div>
+          </div></div></div></div>
+      </div>
+      <div class="slide">
+        <div><div class="num">4</div><h3>Listo, es tuya</h3><p>Descargás todo: archivos abiertos, manual y plantillas, sin nuestra marca encima. Y si querés, la ponés a producir ahí mismo.</p></div>
+        <div class="app"><div class="atop"><svg viewBox="0 0 62 76"><use href="#bIso"/></svg>Proyectos / <b>Costa</b><span class="st">Sistema de marca</span></div>
+          <div class="abody"><div class="listo"><div class="files">
+            <div class="file"><span class="ok"></span>Logo en 8 versiones<span class="ext">SVG · PNG · PDF</span></div>
+            <div class="file"><span class="ok"></span>Paleta y tipografías<span class="ext">ASE · TTF</span></div>
+            <div class="file"><span class="ok"></span>Manual de marca<span class="ext">PDF</span></div>
+            <div class="file"><span class="ok"></span>12 plantillas para redes<span class="ext">editables</span></div>
+            <div class="acts"><span class="btn btn-d">Descargar todo</span><span class="btn btn-o">Empezar a producir →</span></div>
+          </div>
+          <div class="mini">
+            <div style="background:var(--k2);grid-column:span 2"><svg style="width:30%"><use href="#kIso"/></svg></div>
+            <div style="background:var(--k1);color:var(--k2)"><svg><use href="#kIso"/></svg></div>
+            <div style="background:var(--k3);color:var(--k5);font-family:var(--fk);font-size:20px">Costa</div>
+          </div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+</section>
+
+<!-- ================= A3 · RETIRADA ================= -->
+<section class="sec" id="sistema">
+  <div class="wrap">
+    <div class="top">
+      <div><p class="eb">Acá manda tu marca</p><h2 style="margin-top:20px">Un sistema de marca, no un logo suelto.</h2></div>
+      <p class="lead">A partir de acá, la página deja de ser BrandIA y pasa a ser Costa. Eso es tener un sistema: tu marca se reconoce igual en una historia de Instagram, en una bolsa y en la puerta del local.</p>
+    </div>
+    <div class="board" id="board">
+      <div class="tile t-logo"><span class="tl">Logo principal</span><div class="lockup"><svg><use href="#kIso"/></svg><div class="w">Costa<small>Panadería · masa madre</small></div></div></div>
+      <div class="tile t-iso"><span class="tl">Isotipo</span><svg><use href="#kIso"/></svg></div>
+      <div class="tile t-type"><span class="tl">Tipografía</span><div class="aa">Aa</div><p>Young Serif · titulares<br>Karla · texto</p></div>
+      <div class="tile t-pal">
+        <div style="background:var(--k1);color:var(--k2)"><b>Corteza</b>#6B3A1E</div>
+        <div style="background:var(--k2);color:var(--k1)"><b>Miga</b>#F3E9D6</div>
+        <div style="background:var(--k3);color:var(--k5)"><b>Horno</b>#C8662B</div>
+        <div style="background:var(--k4);color:var(--k2);box-shadow:inset 0 0 0 1px rgba(243,233,214,.2)"><b>Centeno</b>#2F3B2F</div>
+        <div style="background:var(--k5);color:var(--k1)"><b>Sal</b>#FBF8F2</div>
+      </div>
+      <div class="tile t-voz"><span class="tl">Voz</span><p>Decimos «recién salido».<br><s>No decimos «artesanal premium».</s></p></div>
+      <div class="tile t-post"><span class="tl">Plantilla</span><div class="pt">Pan de centeno, desde el martes.</div><div class="pb">@panaderiacosta</div></div>
+      <div class="tile t-card"><div class="bcard f"><svg style="color:var(--k1)"><use href="#kIso"/></svg><div><div class="n">Lucía Costa</div><div class="d">Panadería · Pedidos por WhatsApp</div></div></div><div class="bcard b"><svg><use href="#kIso"/></svg></div></div>
+    </div>
+    <p class="sello"><svg viewBox="0 0 62 76" aria-hidden="true"><use href="#bIso"/></svg>BrandIA es el taller, no la obra. La nuestra se queda en la app.</p>
+  </div>
+</section>
+
+<!-- ================= A4 · PRODUCIR ================= -->
+<section id="producir">
+  <div class="wrap grid">
+    <div>
+      <p class="eb">Producir · suscripción</p>
+      <h2 class="h2" style="margin-top:18px">Tu marca no se termina el día que la armás.</h2>
+      <p class="lead" style="margin-top:20px">Con la suscripción, la app sigue generando con tu identidad: posteos, historias, promos y avisos, y también el merch de cada temporada. Un lote nuevo cada mes, listo para publicar o para pedir.</p>
+      <div class="plusbox">
+        <h3>Plus · con una persona</h3>
+        <button class="sw-t" id="plusT" role="switch" aria-checked="false" aria-label="Activar Plus"></button>
+        <p>Alguien de BrandIA revisa tu identidad al arrancar y el lote de cada mes antes de que salga. Lo prendés y lo apagás cuando quieras.</p>
+        <span class="plusst" id="plusS">Plus apagado · lo genera la IA, lo aprobás vos</span>
+      </div>
+    </div>
+    <div class="ringstage"><div class="ring" id="ring"></div></div>
+  </div>
+</section>
+
+<!-- ================= A5 · BRANDERÍA · marketplace ================= -->
+<section class="sec" id="branderia">
+  <div class="wrap">
+    <div class="mk-head">
+      <div><p class="eb rv">Brandería · el marketplace de tu marca</p><h2 class="big rv" style="margin-top:20px">De la pantalla <span class="it">a la mano.</span></h2>
+        <p class="lead rv">Usás la marca que armaste en BrandIA o subís tu logo si ya lo tenés. Elegís productos y cantidades. Nosotros le pasamos el pedido al proveedor y te llega terminado.</p></div>
+      <p class="uy rv"><b>Primera etapa: Uruguay.</b>Doce productos para arrancar. Cada uno con su precio final en la app.</p>
+    </div>
+    <div class="shop rv">
+      <div class="shop-bar">
+        <div class="lg-now"><span class="lg-prev" id="lgPrev"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#kIso"/></svg></span><span><small>Estás viendo tu marca</small><b id="lgName">Costa · armada en BrandIA</b></span></div>
+        <label class="btn btn-o up">Probá con tu logo<input type="file" id="lgFile" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
+        <div class="cart" id="cart" aria-live="polite"><span id="cartTxt">Elegí productos y cantidades</span><button class="btn btn-d" id="cartBtn" type="button" disabled>Pedir →</button></div>
+      </div>
+      <div class="prods" id="prods"></div>
+      <p class="sent" id="sent" hidden></p>
+    </div>
+    <div class="mk-steps rv">
+      <div><span class="k">1</span><b>Tu marca, o tu logo</b><p>La que armaste en BrandIA, o subís el logo que ya tenés.</p></div>
+      <div><span class="k">2</span><b>Elegís y pedís</b><p>Ves cada producto con tu marca aplicada, elegís cantidades y el precio final.</p></div>
+      <div><span class="k">3</span><b>El proveedor te lo entrega</b><p>Mandamos el arte y el pedido al proveedor, controlamos el resultado y te llega a la puerta.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= A6 · CAPAS ================= -->
+<section class="sec" id="planes">
+  <div class="wrap grid">
+    <div class="stack" aria-hidden="true"><div class="iso" id="iso">
+      <div class="plate" style="--i:0">Identidad</div>
+      <div class="plate" style="--i:1">Suscripción</div>
+      <div class="plate" style="--i:2">Plus</div>
+      <div class="plate" style="--i:3">Productos</div>
+    </div></div>
+    <div>
+      <p class="eb rv">Productos · cómo se paga</p>
+      <h2 class="h2 rv" style="margin-top:18px">Cuatro capas. Usás las que necesitás.</h2>
+      <div class="capas" style="margin-top:34px">
+        <div class="capa foc rv"><span class="k">1</span><h3>Identidad</h3><span class="tag">Pago único</span><p>Armás tu marca en la app, de punta a punta: logo, paleta, tipografía, voz, manual y archivos abiertos.</p></div>
+        <div class="capa rv"><span class="k">2</span><h3>Suscripción</h3><span class="tag">Mensual</span><p>Tu marca sigue produciendo: packs de piezas para redes y merch de temporada, todos los meses.</p></div>
+        <div class="capa rv"><span class="k">3</span><h3>Plus</h3><span class="tag">Opcional</span><p>Una persona de BrandIA supervisa y personaliza. Se prende y se apaga.</p></div>
+        <div class="capa foc rv"><span class="k">4</span><h3>Productos</h3><span class="tag">Por pedido</span><p>Impresos y merch con tu marca desde la Brandería, producidos y entregados. Precio final a la vista.</p></div>
+      </div>
+      <p class="precios rv">Los precios van a estar acá, a la vista: nada de «escribinos para cotizar».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= A7 · EMPEZAR ================= -->
+<section class="sec" id="empezar">
+  <div class="wrap grid">
+    <div class="rv">
+      <p class="eb">Empezá por acá</p>
+      <h2 class="big" style="margin-top:20px">¿Arrancamos con <span class="it">la tuya?</span></h2>
+      <p class="lead" style="margin-top:24px">Contanos quién sos y qué hacés. Te escribimos para empezar a trabajar en tu marca.</p>
+    </div>
+    <div class="rv">
+      <form id="wl" novalidate>
+        <div class="fld"><label for="f-nom">Tu nombre</label><input id="f-nom" name="nombre" autocomplete="name" required><span class="err" id="e-nom"></span></div>
+        <div class="fld"><label for="f-mail">Tu mail</label><input id="f-mail" name="mail" type="email" autocomplete="email" required><span class="err" id="e-mail"></span></div>
+        <div class="fld"><label for="f-neg">¿Qué hacés?</label><input id="f-neg" name="negocio" placeholder="Ej.: una panadería de barrio"></div>
+        <div class="fld"><label for="f-eta">¿En qué momento está tu marca?</label>
+          <select id="f-eta" name="etapa"><option value="nada">No tengo marca todavía</option><option value="rehacer">Tengo una, pero no me representa</option><option value="producir">Tengo marca, necesito producir</option></select></div>
+        <button class="btn btn-d" type="submit">BrandIAmos la tuya →</button>
+        <p class="fine">Usamos tus datos solo para escribirte sobre tu marca.</p>
+      </form>
+      <div class="okmsg" id="okmsg" hidden><p class="eb">Anotado</p><h3 id="okh">Listo.</h3><p>Te escribimos al mail que dejaste para arrancar con tu marca.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><svg xmlns="http://www.w3.org/2000/svg" viewBox="-91.0 -91.0 8786.2 1699.3" role="img" aria-label="BrandIA" class="logo"><g transform="scale(19.9631) translate(-10,-12)" fill="#FF5C1A"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g><g transform="translate(1605.7,1497.2)"><path fill="#EDECE8" d="M1309.1956787109375 -334.400146484375Q1309.1956787109375 -186.00006103515625 1182.8957824707031 -93.00003051757812Q1056.5958862304688 0.0 809.5963134765625 0.0H76.0001220703125Q70.60015869140625 0.0 67.90017700195312 -2.29998779296875Q65.2001953125 -4.5999755859375 65.2001953125 -7.199951171875Q65.2001953125 -13.59991455078125 79.2000732421875 -15.9998779296875L147.600830078125 -27.199951171875Q169.80072021484375 -31.59991455078125 179.90066528320312 -41.799835205078125Q190.0006103515625 -51.999755859375 190.0006103515625 -73.599609375V-1344.0001220703125Q190.0006103515625 -1356.0001220703125 181.900634765625 -1362.3001098632812Q173.8006591796875 -1368.60009765625 147.600830078125 -1372.800048828125L79.2000732421875 -1384.0001220703125Q65.2001953125 -1386.4000854492188 65.2001953125 -1392.800048828125Q65.2001953125 -1395.6000366210938 67.90017700195312 -1397.8000183105469Q70.60015869140625 -1400.0 76.0001220703125 -1400.0H596.798095703125Q800.5973510742188 -1400.0 941.6968078613281 -1348.5000610351562Q1082.7962646484375 -1297.0001220703125 1155.9959716796875 -1206.4002075195312Q1229.1956787109375 -1115.80029296875 1229.1956787109375 -998.0003662109375Q1229.1956787109375 -897.0005493164062 1171.9958801269531 -821.1005249023438Q1114.7960815429688 -745.2005004882812 1009.5963745117188 -703.2004089355469Q904.3966674804688 -661.2003173828125 759.9969482421875 -661.2003173828125L815.59619140625 -668.000244140625Q959.99609375 -668.000244140625 1071.4959716796875 -625.3002014160156Q1182.995849609375 -582.6001586914062 1246.0957641601562 -507.20013427734375Q1309.1956787109375 -431.80010986328125 1309.1956787109375 -334.400146484375ZM677.1978759765625 -649.200439453125H508.7962646484375V-670.80029296875H683.5982666015625Q762.798583984375 -670.80029296875 815.2988586425781 -704.2004699707031Q867.7991333007812 -737.6006469726562 893.6993103027344 -805.30078125Q919.5994873046875 -873.0009155273438 919.5994873046875 -975.2008056640625Q919.5994873046875 -1097.2005615234375 875.2994079589844 -1187.8004150390625Q830.9993286132812 -1278.4002685546875 756.3990478515625 -1328.4002075195312Q681.7987670898438 -1378.400146484375 590.398193359375 -1378.400146484375H535.9962158203125V-63.999755859375Q535.9962158203125 -40.39984130859375 551.1961669921875 -30.999847412109375Q566.3961181640625 -21.599853515625 593.5960693359375 -21.599853515625H714.7978515625Q792.1985473632812 -21.599853515625 848.0990295410156 -61.09991455078125Q903.99951171875 -100.5999755859375 933.999755859375 -172.30001831054688Q964.0 -244.00006103515625 964.0 -341.5999755859375Q964.0 -485.4000244140625 890.8994140625 -567.3002319335938Q817.798828125 -649.200439453125 677.1978759765625 -649.200439453125Z M1704.6637369791667 -519.5987548828125Q1704.6637369791667 -647.3989868164062 1743.4636942545574 -733.3991394042969Q1782.263651529948 -819.3992919921875 1843.0635782877605 -863.099365234375Q1903.863505045573 -906.7994384765625 1969.4634195963542 -906.7994384765625Q2047.6631876627605 -906.7994384765625 2089.1630961100263 -856.5996704101562Q2130.663004557292 -806.39990234375 2130.663004557292 -708.400634765625Q2130.663004557292 -617.20166015625 2087.7634989420576 -573.0021362304688Q2044.863993326823 -528.8026123046875 1980.2647501627605 -528.8026123046875Q1920.4654337565105 -528.8026123046875 1892.5656840006511 -561.6022644042969Q1864.6659342447917 -594.4019165039062 1861.4659830729167 -657.601318359375L1859.8660074869792 -692.401123046875Q1859.0660196940105 -718.8013916015625 1849.065897623698 -733.8014526367188Q1839.0657755533855 -748.801513671875 1813.8655192057292 -748.801513671875Q1788.4651285807292 -748.801513671875 1766.7646891276042 -723.4011840820312Q1745.0642496744792 -698.0008544921875 1731.8639322916667 -645.3002624511719Q1718.6636149088542 -592.5996704101562 1718.6636149088542 -511.598876953125ZM1718.6636149088542 -885.5994873046875V-565.5987548828125V-67.599609375Q1718.6636149088542 -55.399658203125 1725.463602701823 -45.499725341796875Q1732.2635904947917 -35.59979248046875 1744.2635904947917 -32.7998046875L1842.6636149088542 -14.7999267578125Q1848.463602701823 -13.7999267578125 1850.3635965983074 -11.99993896484375Q1852.2635904947917 -10.199951171875 1852.2635904947917 -7.199951171875Q1852.2635904947917 -3.79998779296875 1849.5636088053386 -1.899993896484375Q1846.8636271158855 0.0 1841.4636637369792 0.0H1346.8668009440105Q1341.6668497721355 0.0 1338.7668558756511 -2.399993896484375Q1335.8668619791667 -4.79998779296875 1335.8668619791667 -7.39996337890625Q1335.8668619791667 -10.199951171875 1339.5668436686199 -12.899932861328125Q1343.266825358073 -15.59991455078125 1349.266825358073 -16.59991455078125L1394.2673746744792 -24.7999267578125Q1407.8673502604167 -27.59991455078125 1413.067362467448 -35.4998779296875Q1418.2673746744792 -43.39984130859375 1418.2673746744792 -54.3997802734375V-785.2001953125Q1418.2673746744792 -793.0001220703125 1415.1673990885417 -797.9000854492188Q1412.0674235026042 -802.800048828125 1403.8674723307292 -802.800048828125H1347.8667399088542Q1344.466776529948 -802.800048828125 1341.7667948404949 -805.1000366210938Q1339.0668131510417 -807.4000244140625 1339.0668131510417 -810.0Q1339.0668131510417 -813.0 1341.7667948404949 -815.5999755859375Q1344.466776529948 -818.199951171875 1349.8667399088542 -819.199951171875L1683.4639078776042 -896.3994140625Q1691.6638590494792 -898.3994140625 1696.4638163248699 -899.1994018554688Q1701.2637736002605 -899.9993896484375 1706.2637125651042 -899.9993896484375Q1713.263651529948 -899.9993896484375 1715.9636332194011 -895.4994201660156Q1718.6636149088542 -890.9994506835938 1718.6636149088542 -885.5994873046875Z M2640.7337849934897 -92.79998779296875V-104.39984130859375L2626.133992513021 -90.800048828125V-777.9974365234375Q2626.133992513021 -831.7985229492188 2602.033650716146 -861.4990539550781Q2577.933308919271 -891.1995849609375 2536.532430013021 -891.1995849609375Q2488.131551106771 -891.1995849609375 2462.7312215169272 -864.999267578125Q2437.3308919270835 -838.7989501953125 2437.3308919270835 -801.1988525390625V-707.599609375Q2437.3308919270835 -649.2001342773438 2394.231374104818 -606.8006286621094Q2351.1318562825522 -564.401123046875 2282.532674153646 -564.401123046875Q2235.533162434896 -564.401123046875 2205.0334676106772 -591.8009033203125Q2174.5337727864585 -619.20068359375 2174.5337727864585 -675.2001953125Q2174.5337727864585 -728.8001098632812 2219.433583577474 -782.3999328613281Q2264.3333943684897 -835.999755859375 2353.2329915364585 -871.599609375Q2442.1325887044272 -907.199462890625 2573.3319295247397 -907.199462890625Q2751.5310872395835 -907.199462890625 2839.8306477864585 -835.7996215820312Q2928.1302083333335 -764.3997802734375 2928.1302083333335 -631.6002197265625V-125.199462890625Q2928.1302083333335 -95.59912109375 2939.530263264974 -81.79901123046875Q2950.9303181966147 -67.9989013671875 2967.5304158528647 -67.9989013671875Q2983.7304890950522 -67.9989013671875 2998.1304829915366 -79.29888916015625Q3012.530476888021 -90.598876953125 3016.1304524739585 -118.7987060546875Q3016.9304402669272 -123.19866943359375 3018.4304402669272 -124.59866333007812Q3019.9304402669272 -125.9986572265625 3021.730428059896 -125.9986572265625Q3024.5304158528647 -125.9986572265625 3025.8304036458335 -124.59866333007812Q3027.1303914388022 -123.19866943359375 3027.1303914388022 -118.7987060546875Q3027.1303914388022 -97.99884033203125 3006.7305806477866 -65.399169921875Q2986.330769856771 -32.79949951171875 2939.6312459309897 -6.8997802734375Q2892.9317220052085 18.99993896484375 2813.3326009114585 18.99993896484375Q2721.3333333333335 18.99993896484375 2681.0335591634116 -13.29998779296875Q2640.7337849934897 -45.59991455078125 2640.7337849934897 -92.79998779296875ZM2121.333943684896 -197.1998291015625Q2121.333943684896 -311.99945068359375 2216.6336263020835 -379.3993835449219Q2311.933308919271 -446.79931640625 2528.132039388021 -446.79931640625Q2581.5325520833335 -446.79931640625 2613.9329732259116 -435.9992370605469Q2646.3333943684897 -425.19915771484375 2674.133748372396 -407.59912109375L2665.3338216145835 -399.9991455078125Q2636.3335164388022 -415.19921875 2608.233083089193 -422.1993408203125Q2580.1326497395835 -429.199462890625 2544.1321614583335 -429.199462890625Q2484.7312215169272 -429.199462890625 2451.630788167318 -381.1993408203125Q2418.5303548177085 -333.19921875 2418.5303548177085 -239.599365234375Q2418.5303548177085 -150.59942626953125 2451.4307149251304 -107.69924926757812Q2484.3310750325522 -64.799072265625 2536.531697591146 -64.799072265625Q2568.7322591145835 -64.799072265625 2601.0327657063804 -82.99917602539062Q2633.3332722981772 -101.19927978515625 2653.7336629231772 -131.9996337890625L2666.1335652669272 -124.7996826171875Q2624.5334676106772 -54.79986572265625 2547.5334981282554 -17.799957275390625Q2470.5335286458335 19.199951171875 2381.3335774739585 19.199951171875Q2267.533650716146 19.199951171875 2194.433797200521 -41.5999755859375Q2121.333943684896 -102.39990234375 2121.333943684896 -197.1998291015625Z M3403.39697265625 -895.1993408203125V-59.5997314453125Q3403.39697265625 -44.99981689453125 3408.9969787597656 -36.29986572265625Q3414.5969848632812 -27.59991455078125 3427.39697265625 -24.7999267578125L3473.7974853515625 -15.59991455078125Q3484.9974365234375 -13.199951171875 3484.9974365234375 -7.199951171875Q3484.9974365234375 0.0 3475.7974853515625 0.0H3029.400146484375Q3026.0001831054688 0.0 3023.3002014160156 -1.899993896484375Q3020.6002197265625 -3.79998779296875 3020.6002197265625 -7.199951171875Q3020.6002197265625 -9.7999267578125 3022.9002075195312 -11.999908447265625Q3025.2001953125 -14.19989013671875 3031.400146484375 -15.19989013671875L3079.000732421875 -24.7999267578125Q3092.6007080078125 -27.59991455078125 3097.8007202148438 -36.29986572265625Q3103.000732421875 -44.99981689453125 3103.000732421875 -59.19970703125V-780.4002685546875Q3103.000732421875 -787.4002075195312 3099.500762939453 -791.1001892089844Q3096.0007934570312 -794.8001708984375 3087.8008422851562 -794.8001708984375H3035.800048828125Q3030.0001220703125 -794.8001708984375 3027.7001342773438 -797.1001586914062Q3025.400146484375 -799.400146484375 3025.400146484375 -802.8001098632812Q3025.400146484375 -806.60009765625 3028.100128173828 -808.4000854492188Q3030.8001098632812 -810.2000732421875 3034.60009765625 -811.2000732421875L3367.3972778320312 -903.5993041992188Q3377.9971923828125 -906.3992919921875 3381.9971618652344 -907.1992797851562Q3385.9971313476562 -907.999267578125 3390.9970703125 -907.999267578125Q3397.197021484375 -907.999267578125 3400.2969970703125 -904.2992858886719Q3403.39697265625 -900.5993041992188 3403.39697265625 -895.1993408203125ZM3378.5972900390625 -682.8002319335938 3366.597412109375 -695.60009765625 3404.5972900390625 -729.2000122070312Q3506.3970947265625 -819.39990234375 3584.19677734375 -863.0996704101562Q3661.9964599609375 -906.7994384765625 3726.1964111328125 -906.7994384765625Q3816.396484375 -906.7994384765625 3866.5965270996094 -852.8992309570312Q3916.7965698242188 -798.9990234375 3930.5966796875 -681.5987548828125L4001.9968872070312 -62.39990234375Q4003.9968872070312 -46.39990234375 4009.4969482421875 -36.599884033203125Q4014.9970092773438 -26.79986572265625 4029.1970825195312 -23.9998779296875L4072.3973999023438 -15.19989013671875Q4078.5973510742188 -14.39990234375 4080.8973388671875 -12.199920654296875Q4083.1973266601562 -9.99993896484375 4083.1973266601562 -7.199951171875Q4083.1973266601562 -3.79998779296875 4080.8973388671875 -1.899993896484375Q4078.5973510742188 0.0 4073.9973754882812 0.0H3619.60009765625Q3610.0001220703125 0.0 3610.0001220703125 -7.199951171875Q3610.0001220703125 -12.7999267578125 3621.60009765625 -15.59991455078125L3668.8006591796875 -24.7999267578125Q3684.000732421875 -27.59991455078125 3690.2007446289062 -37.399932861328125Q3696.4007568359375 -47.199951171875 3694.4007568359375 -62.39990234375L3635.0003662109375 -650.399169921875Q3627.8001708984375 -715.400146484375 3605.8998107910156 -745.3005981445312Q3583.9994506835938 -775.2010498046875 3538.1988525390625 -775.2010498046875Q3507.198486328125 -775.2010498046875 3477.3981018066406 -759.6008605957031Q3447.5977172851562 -744.0006713867188 3414.9971923828125 -714.8001708984375Z M4684.667460123698 -107.00048828125V-112.40045166015625V-1369.6002197265625Q4684.667460123698 -1376.6001586914062 4681.167490641276 -1380.3001403808594Q4677.6675211588545 -1384.0001220703125 4669.4675699869795 -1384.0001220703125H4617.466776529948Q4611.666849772136 -1384.0001220703125 4609.366861979167 -1386.3001098632812Q4607.066874186198 -1388.60009765625 4607.066874186198 -1392.0000610351562Q4607.066874186198 -1395.800048828125 4609.766855875651 -1397.6000366210938Q4612.4668375651045 -1399.4000244140625 4616.266825358073 -1400.4000244140625L4949.0640055338545 -1492.7992553710938Q4959.663920084636 -1495.5992431640625 4963.663889567058 -1496.3992309570312Q4967.6638590494795 -1497.19921875 4972.663798014323 -1497.19921875Q4978.863749186198 -1497.19921875 4981.963724772136 -1493.4992370605469Q4985.063700358073 -1489.7992553710938 4985.063700358073 -1484.3992919921875V-59.5997314453125Q4985.063700358073 -44.99981689453125 4990.663706461589 -36.29986572265625Q4996.2637125651045 -27.59991455078125 5009.063700358073 -24.7999267578125L5055.464213053386 -15.59991455078125Q5062.064188639323 -14.7999267578125 5064.364176432292 -12.49993896484375Q5066.664164225261 -10.199951171875 5066.664164225261 -7.199951171875Q5066.664164225261 -3.79998779296875 5064.364176432292 -1.899993896484375Q5062.064188639323 0.0 5057.464213053386 0.0H4709.867533365886Q4697.467508951823 0.0 4691.067484537761 -6.60003662109375Q4684.667460123698 -13.2000732421875 4684.667460123698 -25.6002197265625ZM4058.666971842448 -415.19989013671875Q4058.666971842448 -565.3998413085938 4114.3669840494795 -675.6997375488281Q4170.066996256511 -785.9996337890625 4266.2668863932295 -846.3995361328125Q4362.466776529948 -906.7994384765625 4483.866434733073 -906.7994384765625Q4579.066630045573 -906.7994384765625 4636.766977945964 -873.9991149902344Q4694.4673258463545 -841.1987915039062 4729.867533365886 -776.798583984375L4707.467753092448 -766.398681640625Q4685.667399088542 -815.59912109375 4648.46674601237 -841.7994995117188Q4611.266092936198 -867.9998779296875 4558.665262858073 -867.9998779296875Q4502.464762369792 -867.9998779296875 4458.464274088542 -829.6996459960938Q4414.463785807292 -791.3994140625 4389.163462320964 -698.3993225097656Q4363.863138834636 -605.3992309570312 4363.863138834636 -441.19964599609375Q4363.863138834636 -296.99993896484375 4384.963450113933 -208.89987182617188Q4406.0637613932295 -120.7998046875 4443.764292399089 -80.9996337890625Q4481.464823404948 -41.199462890625 4531.865458170573 -41.199462890625Q4577.0657145182295 -41.199462890625 4621.166208902995 -67.69955444335938Q4665.266703287761 -94.19964599609375 4703.467264811198 -152.0L4717.067118326823 -136.8001708984375Q4652.666666666667 -54.39990234375 4585.866587320964 -17.199951171875Q4519.066507975261 20.0 4433.066630045573 20.0Q4321.066874186198 20.0 4236.66694132487 -31.9000244140625Q4152.267008463542 -83.800048828125 4105.466990152995 -181.50003051757812Q4058.666971842448 -279.20001220703125 4058.666971842448 -415.19989013671875Z"/><path fill="#FF5C1A" d="M5564.329427083334 -55.9998779296875Q5564.329427083334 -44.39273507254464 5575.229359944662 -37.59633091517857Q5586.12929280599 -30.7999267578125 5606.729207356771 -27.199951171875L5675.129964192709 -15.9998779296875Q5689.129842122396 -13.59991455078125 5689.129842122396 -7.560606909579917Q5689.129842122396 -4.149155913806354 5686.499627874804 -2.074577956903177Q5683.8694136272115 0.0 5678.329915364584 0.0H5096.333455403646Q5090.793957141019 0.0 5088.163742893426 -2.074577956903177Q5085.533528645834 -4.149155913806354 5085.533528645834 -7.560606909579917Q5085.533528645834 -13.59991455078125 5099.533406575521 -15.9998779296875L5167.934163411459 -27.199951171875Q5189.334065755209 -30.7999267578125 5199.834004720053 -37.59633091517857Q5210.333943684896 -44.39273507254464 5210.333943684896 -55.9998779296875V-1344.0001220703125Q5210.333943684896 -1355.6072649274554 5199.834004720053 -1362.5036751883372Q5189.334065755209 -1369.4000854492188 5167.934163411459 -1372.800048828125L5099.533406575521 -1384.0001220703125Q5085.533528645834 -1386.1027881519215 5085.533528645834 -1392.800048828125Q5085.533528645834 -1395.6000366210938 5088.163742893426 -1397.8000183105469Q5090.793957141019 -1400.0 5096.333455403646 -1400.0H5678.329915364584Q5683.8694136272115 -1400.0 5686.499627874804 -1397.8000183105469Q5689.129842122396 -1395.6000366210938 5689.129842122396 -1392.800048828125Q5689.129842122396 -1386.1027881519215 5675.129964192709 -1384.0001220703125L5606.729207356771 -1372.800048828125Q5586.12929280599 -1369.4000854492188 5575.229359944662 -1362.5036751883372Q5564.329427083334 -1355.6072649274554 5564.329427083334 -1344.0001220703125Z M5968.40008544922 -537.60009765625H6464.000915527345L6467.600891113282 -516.000244140625H5962.800109863282ZM6051.998291015626 -7.199951171875Q6051.998291015626 -4.5999755859375 6049.798309326173 -2.29998779296875Q6047.59832763672 0.0 6043.198364257813 0.0H5691.600341796876Q5687.400390625001 0.0 5685.100402832032 -2.29998779296875Q5682.800415039063 -4.5999755859375 5682.800415039063 -7.199951171875Q5682.800415039063 -11.59991455078125 5686.300384521485 -13.39990234375Q5689.800354003907 -15.19989013671875 5693.200317382813 -15.9998779296875L5722.000854492188 -25.20001220703125Q5759.000549316407 -38.19989013671875 5798.0001525878915 -80.09945678710938Q5836.999755859376 -121.9990234375 5860.799621582032 -203.5985107421875L6163.600891113282 -1251.2017211914062Q6177.400756835938 -1299.201171875 6165.500793457032 -1328.0008544921875Q6153.600830078126 -1356.800537109375 6124.800720214845 -1374.4002685546875Q6111.20086669922 -1384.8001098632812 6104.400939941407 -1387.10009765625Q6097.601013183595 -1389.4000854492188 6097.601013183595 -1392.800048828125Q6097.601013183595 -1397.2000122070312 6100.300994873048 -1398.6000061035156Q6103.000976562501 -1400.0 6108.400939941407 -1400.0H6570.796447753907Q6575.996398925782 -1400.0 6578.59637451172 -1398.6000061035156Q6581.196350097657 -1397.2000122070312 6581.196350097657 -1392.800048828125Q6581.196350097657 -1389.4000854492188 6575.296417236329 -1385.9001159667969Q6569.396484375001 -1382.400146484375 6554.39666748047 -1376.000244140625Q6535.996337890626 -1371.2003173828125 6531.196319580079 -1360.1004028320312Q6526.396301269532 -1349.00048828125 6535.596252441407 -1319.20068359375L6929.99676513672 -69.1998291015625Q6937.396789550782 -46.999755859375 6951.296875000001 -34.69976806640625Q6965.19696044922 -22.3997802734375 6984.797180175782 -18.39984130859375Q6992.397094726563 -15.9998779296875 6995.397064208985 -13.799896240234375Q6998.397033691407 -11.59991455078125 6998.397033691407 -7.199951171875Q6998.397033691407 -4.5999755859375 6995.79705810547 -2.29998779296875Q6993.197082519532 0.0 6987.997131347657 0.0H6480.401184082032Q6475.401245117188 0.0 6472.701263427735 -2.29998779296875Q6470.001281738282 -4.5999755859375 6470.001281738282 -7.199951171875Q6470.001281738282 -11.59991455078125 6473.301269531251 -12.59991455078125Q6476.60125732422 -13.59991455078125 6484.00115966797 -15.9998779296875L6524.801574707032 -24.7998046875Q6551.601440429688 -32.39971923828125 6557.001464843751 -45.799713134765625Q6562.401489257813 -59.19970703125 6554.001525878907 -86.3995361328125L6182.400695800782 -1266.4017333984375L6210.400451660157 -1335.6007080078125L5881.599487304688 -198.798583984375Q5868.599548339845 -153.99884033203125 5883.299346923829 -119.6990966796875Q5897.999145507813 -85.39935302734375 5932.698791503907 -61.599578857421875Q5967.398437500001 -37.7998046875 6015.197998046876 -23.199951171875L6041.198364257813 -15.9998779296875Q6047.398315429688 -14.39990234375 6049.698303222657 -12.59991455078125Q6051.998291015626 -10.7999267578125 6051.998291015626 -7.199951171875Z"/></g></svg><p>Que se vea tan bien como lo que hacés.</p></div>
+    <div class="r">brandiamos.com<br>Hecho en Uruguay · 2026</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var MOB=matchMedia('(max-width:860px)').matches;
+var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+/* ---------- letras de «cualquiera» ---------- */
+var flip=$('#flip');var word=flip.textContent;flip.textContent='';
+word.split('').forEach(function(ch){var s=document.createElement('span');s.textContent=ch;s.setAttribute('aria-hidden','true');flip.appendChild(s);});
+var fl=$$('span',flip);
+function setFlip(p){var n=Math.round(p*fl.length);fl.forEach(function(s,i){s.classList.toggle('on',i<n);});}
+
+/* ---------- carrusel de piezas (Costa) ---------- */
+var POSTS=[['a','Focaccia de romero, hoy a las 17.'],['b','Masa madre: 48 horas de paciencia.'],['c','Martes: 2×1 en medialunas.'],['e','Cerramos el lunes por feriado.'],
+['c','Nuevo: pan de centeno.'],['a','Así amanece el horno.'],['e','Pedidos por WhatsApp.'],['b','Detrás de cada miga.'],
+['a','Merch · tote de otoño, lista para pedir.'],['e','Gracias, barrio.'],['c','Merch · etiquetas para las cajas de las fiestas.'],['b','Abrimos 7 h, como siempre.']];
+var ring=$('#ring'),PSZ=MOB?140:190,RAD=Math.round(PSZ/(2*Math.tan(Math.PI/12)))+(MOB?20:34);ring.style.width=ring.style.height=PSZ+'px';
+POSTS.forEach(function(p,i){var d=document.createElement('div');d.className='post '+p[0];
+ d.style.transform='rotateY('+(i*30)+'deg) translateZ('+RAD+'px)';
+ d.innerHTML='<span class="d">'+String(i*2+1).padStart(2,'0')+' de octubre</span><span class="x">'+p[1]+'</span><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#kIso"/></svg><span class="rev">Revisado por una persona</span>';ring.appendChild(d);});
+ring.style.transform='translateZ(-'+RAD+'px) rotateX(-8deg) rotateY(0deg)';
+
+var pt=$('#plusT'),ps=$('#plusS');
+pt.addEventListener('click',function(){var on=pt.getAttribute('aria-checked')!=='true';pt.setAttribute('aria-checked',on);ring.classList.toggle('plus',on);
+ ps.textContent=on?'Plus prendido · una persona revisa el lote antes de publicar':'Plus apagado · lo genera la IA, lo aprobás vos';});
+
+/* ---------- 12 productos iniciales ---------- */
+var P=[
+ ['Tarjetas','Papel 350 g','<rect x="12" y="40" width="64" height="38" rx="3" fill="#6B3A1E" transform="rotate(6 44 59)"/><rect x="20" y="28" width="64" height="38" rx="3" fill="#F3E9D6" transform="rotate(-5 52 47)"/>','38%','44%','17%','#6B3A1E'],
+ ['Folletos','Tríptico','<path d="M14 26l24-6v60l-24 6z" fill="#E6D6BD"/><path d="M38 20l24 6v60l-24-6z" fill="#F3E9D6"/><path d="M62 26l24-6v60l-24 6z" fill="#E6D6BD"/>','50%','44%','18%','#C8662B'],
+ ['Carpetas','Con bolsillo','<rect x="18" y="14" width="62" height="74" rx="3" fill="#2F3B2F"/><path d="M18 62h62v23a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3z" fill="#26311f"/>','49%','36%','26%','#F3E9D6'],
+ ['Lapiceras','Grabadas','<g transform="rotate(-35 50 50)"><rect x="44" y="8" width="12" height="70" rx="6" fill="#C8662B"/><path d="M44 78h12l-6 14z" fill="#e7d8c2"/><rect x="47" y="4" width="3" height="30" rx="1.5" fill="#9b4c1f"/></g>','46%','43%','12%','#FBF8F2'],
+ ['Gorros','Bordados','<path d="M18 62c0-22 14-36 32-36s32 14 32 36z" fill="#6B3A1E"/><path d="M14 62h58c8 0 16 3 18 8H14z" fill="#54301a"/><circle cx="50" cy="26" r="3" fill="#54301a"/>','50%','48%','23%','#F3E9D6'],
+ ['Remeras','Algodón','<path d="M34 14l-22 12 8 16 8-4v48h44V38l8 4 8-16-22-12c-2 6-8 10-16 10s-14-4-16-10z" fill="#2F3B2F"/>','60%','42%','16%','#F3E9D6'],
+ ['Tote bags','Algodón crudo','<path d="M36 30c0-10 5-16 14-16s14 6 14 16" fill="none" stroke="#b9ad96" stroke-width="3"/><path d="M20 30h60l-4 60H24z" fill="#E9DFC9"/>','50%','62%','32%','#6B3A1E'],
+ ['Vasos térmicos','Con tapa y sorbito','<rect x="62" y="12" width="3" height="20" rx="1.5" fill="#999"/><path d="M28 24h42l-4 64a4 4 0 0 1-4 4H36a4 4 0 0 1-4-4z" fill="#C8662B"/><rect x="26" y="18" width="46" height="9" rx="3" fill="#8f4a1d"/><path d="M70 36h6a8 8 0 0 1 8 8v16a8 8 0 0 1-8 8h-7" fill="none" stroke="#8f4a1d" stroke-width="5"/>','48%','58%','24%','#FBF8F2'],
+ ['Termos para mate','Acero, pico cebador','<rect x="36" y="6" width="26" height="10" rx="3" fill="#1c241c"/><path d="M40 16h18l2 8H38z" fill="#1c241c"/><rect x="33" y="24" width="32" height="68" rx="7" fill="#2F3B2F"/>','49%','57%','22%','#F3E9D6'],
+ ['Mates','Con bombilla','<path d="M34 34c-12 8-16 26-8 40 6 12 22 16 34 10 12-6 16-22 10-36-3-7-8-12-14-14z" fill="#6B3A1E"/><ellipse cx="50" cy="34" rx="17" ry="6" fill="#3d2111"/><rect x="58" y="6" width="3.5" height="34" rx="1.7" fill="#b5b5b5" transform="rotate(14 60 23)"/>','48%','62%','22%','#F3E9D6'],
+ ['Tazas de café','Cerámica','<path d="M70 44h6a10 10 0 0 1 0 20h-6" fill="none" stroke="#d8d4ca" stroke-width="5"/><path d="M24 32h48v44a8 8 0 0 1-8 8H32a8 8 0 0 1-8-8z" fill="#FBF8F2" stroke="#d8d4ca" stroke-width="1.5"/><ellipse cx="48" cy="90" rx="30" ry="4" fill="#e3ded3"/>','48%','58%','26%','#C8662B'],
+ ['Soportes de celular','Para videollamadas','<rect x="40" y="10" width="26" height="50" rx="5" fill="#1E1E1C" transform="rotate(12 53 35)"/><rect x="43" y="14" width="20" height="40" rx="3" fill="#F3E9D6" transform="rotate(12 53 35)"/><path d="M30 62h40l6 22H24z" fill="#C8662B"/><rect x="20" y="84" width="60" height="6" rx="3" fill="#8f4a1d"/>','50%','76%','16%','#FBF8F2']];
+var prods=$('#prods');
+P.forEach(function(p){var d=document.createElement('div');d.className='prod';
+ d.innerHTML='<div class="obj"><svg class="o" viewBox="0 0 100 100" aria-hidden="true">'+p[2]+'</svg><div class="stamp" style="--x:'+p[3]+';--y:'+p[4]+';--s:'+p[5]+';color:'+p[6]+'"><svg viewBox="0 0 64 64"><use href="#kIso"/></svg></div></div><div><b>'+p[0]+'</b><br><span>'+p[1]+'</span></div><div class="qty"><button type="button" data-d="-1" aria-label="Menos '+p[0]+'">−</button><output>0</output><button type="button" data-d="1" aria-label="Más '+p[0]+'">+</button></div>';
+ prods.appendChild(d);});
+
+/* ---------- Brandería: cantidades, carrito y «probá con tu logo» (demo, sin backend) ---------- */
+var STEPQ=[0,25,50,100,250,500],QTY=P.map(function(){return 0});
+function cartUpd(){var n=0,u=0;QTY.forEach(function(q){if(q){n++;u+=STEPQ[q];}});
+ $('#cartTxt').innerHTML=n?'<b>'+n+' producto'+(n>1?'s':'')+'</b> · '+u+' unidades':'Elegí productos y cantidades';$('#cartBtn').disabled=!n;$('#sent').hidden=true;}
+$$('#prods .prod').forEach(function(d,i){$$('.qty button',d).forEach(function(b){b.addEventListener('click',function(){
+ QTY[i]=Math.max(0,Math.min(STEPQ.length-1,QTY[i]+(+b.dataset.d)));$('output',d).textContent=STEPQ[QTY[i]];d.classList.toggle('sel',QTY[i]>0);cartUpd();});});});
+$('#cartBtn').addEventListener('click',function(){var n=QTY.filter(function(q){return q}).length;var el=$('#sent');
+ el.innerHTML='<b>Así funciona:</b> BrandIA arma el arte de '+n+' producto'+(n>1?'s':'')+' y le manda el pedido a cada proveedor. Ellos producen y te lo entregan. (Esto es una demo: todavía no se hacen pedidos reales.)';el.hidden=false;});
+$('#lgFile').addEventListener('change',function(){var fl=this.files&&this.files[0];if(!fl||!/^image\//.test(fl.type))return;var url=URL.createObjectURL(fl);
+ $('#lgPrev').innerHTML='<img alt="" src="'+url+'">';$('#lgName').textContent='Tu logo · '+fl.name.replace(/\.[^.]+$/,'').slice(0,24);
+ $$('#prods .stamp').forEach(function(st){st.innerHTML='<img alt="" src="'+url+'">';});});
+
+/* ---------- lista de espera (v1 sin backend: en la app va a Supabase · tabla waitlist) ---------- */
+var f=$('#wl');
+f.addEventListener('submit',function(e){e.preventDefault();
+ var n=$('#f-nom'),m=$('#f-mail'),ok=true;$('#e-nom').textContent='';$('#e-mail').textContent='';
+ if(!n.value.trim()){$('#e-nom').textContent='Escribí tu nombre, así sabemos a quién le escribimos.';ok=false;}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.value.trim())){$('#e-mail').textContent='Revisá el mail: le falta algo (por ejemplo, la @).';ok=false;}
+ if(!ok)return;
+ $('#okh').textContent='Listo, '+n.value.trim().split(' ')[0]+'.';f.hidden=true;$('#okmsg').hidden=false;});
+
+/* ---------- header y reveals ---------- */
+var hd=$('#hd');
+function os(){hd.classList.toggle('on',scrollY>30);}
+addEventListener('scroll',os,{passive:true});os();
+if('IntersectionObserver' in window&&!RM){
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+ $$('.rv').forEach(function(el){io.observe(el);});
+}else{$$('.rv').forEach(function(el){el.classList.add('in');});}
+
+/* ============ EL MOODBOARD QUE SE VUELVE LA B ============ */
+var st={fly:0,asm:0,lock:0,solid:0};
+var hero=$('#hero'),canvas=$('#gl');
+function rnd(seed){return function(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};}
+function initGL(){
+ if(!window.THREE)return false;
+ var renderer;try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});}catch(e){return false;}
+ renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputEncoding=THREE.sRGBEncoding;
+ var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,1,1,3000);cam.position.set(0,0,190);
+ var R=rnd(7);
+ /* 1 · las casillas de la B: se leen del mismo SVG del logo v2 */
+ var cv=document.createElement('canvas').getContext('2d');
+ var pTop=new Path2D('M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z'),pBot=new Path2D('M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z');
+ var STEP=MOB?5.6:4.6,TS=STEP*.9,cells=[];
+ for(var y=12+STEP/2;y<88;y+=STEP)for(var x=10+STEP/2;x<72;x+=STEP){
+  if(cv.isPointInPath(pTop,x,y))cells.push({x:x-41,y:50-y,top:1});else if(cv.isPointInPath(pBot,x,y))cells.push({x:x-41,y:50-y,top:0});}
+ for(var i=cells.length-1;i>0;i--){var j=Math.floor(R()*(i+1));var t=cells[i];cells[i]=cells[j];cells[j]=t;}
+ /* 2 · las tarjetas del tablero de referencias (texturas dibujadas) */
+ var SW=['#C8662B','#6B3A1E','#F3E9D6','#2F3B2F','#E3B578','#8FA3A0','#D9A441','#B85C3C','#F1D9C4','#7D8B6A'];
+ var WORDS=['cálida','de barrio','honesta','temprano','horno','costa','a mano','masa madre','vecinos','pan'];
+ function rr(c,w,h,r){c.beginPath();c.moveTo(r,0);c.arcTo(w,0,w,h,r);c.arcTo(w,h,0,h,r);c.arcTo(0,h,0,0,r);c.arcTo(0,0,w,0,r);c.closePath();}
+ function tex(k){var c=document.createElement('canvas');c.width=256;c.height=320;var x=c.getContext('2d');rr(x,256,320,22);x.save();x.clip();
+  var col=SW[k%SW.length],light=['#F3E9D6','#F1D9C4','#E3B578','#8FA3A0','#D9A441'].indexOf(col)>-1;
+  var kind=k%5;
+  if(kind===0){x.fillStyle=col;x.fillRect(0,0,256,320);x.fillStyle='#fff';x.fillRect(0,236,256,84);x.fillStyle='#1E1E1C';x.font='600 26px Instrument Sans, Arial';x.fillText(col,20,288);}
+  else if(kind===1){x.fillStyle='#FBF8F2';x.fillRect(0,0,256,320);x.fillStyle='#6B3A1E';x.font='italic 400 44px Fraunces, Georgia';var w=WORDS[k%WORDS.length];x.fillText(w,22,180);x.font='500 17px Instrument Sans, Arial';x.fillStyle='#8a7f70';x.fillText('palabra',22,60);}
+  else if(kind===2){var g=x.createLinearGradient(0,0,0,320);g.addColorStop(0,'#F1C9A0');g.addColorStop(.55,'#E88A55');g.addColorStop(.56,'#5F7F86');g.addColorStop(1,'#2F4A52');x.fillStyle=g;x.fillRect(0,0,256,320);x.fillStyle='#FBE7C8';x.beginPath();x.arc(128,176,46,Math.PI,0);x.fill();x.strokeStyle='rgba(251,231,200,.8)';x.lineWidth=5;for(var q=0;q<3;q++){x.beginPath();for(var u=0;u<=256;u+=8){x.lineTo(u,206+q*26+Math.sin(u/22+q)*5);}x.stroke();}
+   for(var n=0;n<1400;n++){x.fillStyle='rgba(0,0,0,'+(Math.random()*.06)+')';x.fillRect(Math.random()*256,Math.random()*320,2,2);}}
+  else if(kind===3){x.fillStyle=light?'#2F3B2F':'#F3E9D6';x.fillRect(0,0,256,320);x.fillStyle=light?'#F3E9D6':'#6B3A1E';var fs=['Young Serif, Georgia','Karla, Arial','Fraunces, Georgia','Georgia'][k%4];x.font='400 150px '+fs;x.fillText('Aa',26,210);x.font='500 17px Instrument Sans, Arial';x.fillText(fs.split(',')[0],26,280);}
+  else{x.fillStyle=col;x.fillRect(0,0,256,320);x.fillStyle=light?'#6B3A1E':'#F3E9D6';x.beginPath();x.arc(128,170,70,Math.PI,0);x.fill();x.fillRect(58,190,140,12);x.fillRect(78,214,100,12);}
+  x.restore();var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+ var TEX=[];for(var k=0;k<20;k++)TEX.push(tex(k));
+ var mc=document.createElement('canvas');mc.width=mc.height=64;var mx2=mc.getContext('2d');rr(mx2,64,64,24);mx2.fillStyle='#fff';mx2.fill();
+ var MASK=new THREE.CanvasTexture(mc);
+ var cG=new THREE.Color('#1E1E1C').convertSRGBToLinear(),cN=new THREE.Color('#FF5C1A').convertSRGBToLinear();
+ var geo=new THREE.PlaneGeometry(1,1);
+ var grp=new THREE.Group();scene.add(grp);
+ var cards=cells.map(function(c,i){
+  var m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:TEX[i%TEX.length],transparent:true,depthWrite:false}));
+  var o=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:MASK,color:c.top?cG:cN,transparent:true,opacity:0,depthWrite:false}));
+  o.position.z=.05;o.renderOrder=2;m.renderOrder=1;
+  var h=new THREE.Group();h.add(m);h.add(o);grp.add(h);
+  var w=MOB?11+R()*8:10+R()*9;
+  return {h:h,o:o,c:c,d:R()*.45,
+   sx:MOB?-46+R()*92:-10+R()*170,sy:MOB?-30+R()*120:-62+R()*124,sz:-340+R()*330,
+   rx:(R()-.5)*.9,ry:(R()-.5)*1.1,rz:(R()-.5)*.6,w:w,ph:R()*6.28};});
+ var mxp=0,myp=0,tmx=0,tmy=0,ray=new THREE.Raycaster(),mv=new THREE.Vector2(9,9),pl=new THREE.Plane(new THREE.Vector3(0,0,1),0),hit=new THREE.Vector3(),hot=new THREE.Vector3(999,999,0);
+ if(!MOB)addEventListener('mousemove',function(e){var r=canvas.getBoundingClientRect();tmx=e.clientX/innerWidth-.5;tmy=e.clientY/innerHeight-.5;mv.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);},{passive:true});
+ function size(){var r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
+ size();addEventListener('resize',size);
+ var vis=true,t0=performance.now();
+ function ez(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+ function frame(now){requestAnimationFrame(frame);var hr=hero.getBoundingClientRect();vis=hr.bottom>0&&hr.top<innerHeight;if(!vis)return;
+  var t=(now-t0)/1000;mxp+=(tmx-mxp)*.05;myp+=(tmy-myp)*.05;
+  var A=st.asm,F=st.fly,L=st.lock,S=st.solid;
+  var cz=190-165*F;cz=cz+((MOB?340:285)-cz)*ez(Math.min(1,A*1.1));
+  cam.position.set(mxp*14*(1-S*.5),-myp*10*(1-S*.5)+(MOB?0:6)*A,cz);cam.lookAt(0,(MOB?0:6)*A,cz-200);
+  grp.position.y=(MOB?30:17)*A;
+  /* ondita al pasar el mouse, cuando la B ya está armada */
+  if(S>.5){ray.setFromCamera(mv,cam);if(ray.ray.intersectPlane(pl,hit)){hot.copy(hit);hot.y-=grp.position.y;}}
+  for(var i=0;i<cards.length;i++){var k=cards[i],c=k.c;
+   var lt=Math.max(0,Math.min(1,(A-k.d)/.55)),e=ez(lt);
+   var fz=RM?0:Math.sin(t*.6+k.ph)*3*(1-e);
+   var tx=c.x,ty=c.y+(c.top?9*(1-L):0),tz=0;
+   if(S>.01){var dx=tx-hot.x,dy=ty-hot.y;tz=7*Math.exp(-(dx*dx+dy*dy)/90)*S;}
+   k.h.position.set(k.sx+(tx-k.sx)*e,k.sy+fz+(ty-k.sy-fz)*e,k.sz+(tz-k.sz)*e);
+   k.h.rotation.set(k.rx*(1-e)+Math.sin(t*.4+k.ph)*.08*(1-e),k.ry*(1-e),k.rz*(1-e));
+   var w=k.w+(TS-k.w)*e,hh=k.w*1.25+(TS-k.w*1.25)*e;k.h.scale.set(w,hh,1);
+   k.o.material.opacity=Math.min(1,S*1.2*(.6+.4*e));k.h.children[0].material.opacity=1-Math.min(1,S*1.4);}
+  renderer.render(scene,cam);}
+ requestAnimationFrame(frame);return true;}
+
+function boot(){if(!initGL())hero.classList.add('nogl');}
+var fontsReady=document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(function(r){setTimeout(r,1500)})]):Promise.resolve();
+
+/* tipografía variable: el título se "cocina" al cargar */
+var hT=$('#hTitle');
+if(!RM&&hT){var o={w:300,s:0};hT.style.fontVariationSettings="'opsz' 144,'SOFT' 0";hT.style.fontWeight=300;
+ var go=function(){if(window.gsap)gsap.to(o,{w:500,s:50,duration:1.6,ease:'power2.out',onUpdate:function(){hT.style.fontWeight=Math.round(o.w);hT.style.fontVariationSettings="'opsz' 144,'SOFT' "+Math.round(o.s);}});else{hT.style.fontWeight=500;}};
+ fontsReady.then(go);}
+
+fontsReady.then(function(){
+ boot();
+ if(RM||!window.gsap||!window.ScrollTrigger){st.asm=1;st.lock=1;st.solid=1;setFlip(1);return;}
+ gsap.registerPlugin(ScrollTrigger);
+ runScroll();
+});
+
+function runScroll(){
+ScrollTrigger.config({ignoreMobileResize:true});
+var lenis=null;
+if(window.Lenis&&matchMedia('(pointer:fine)').matches){lenis=new Lenis({lerp:.09});lenis.on('scroll',ScrollTrigger.update);gsap.ticker.add(function(t){lenis.raf(t*1000)});gsap.ticker.lagSmoothing(0);}
+/* todos los botones y links internos llevan a su sección (con o sin Lenis, también dentro de un iframe) */
+function goTo(id){var el=$(id);if(!el)return;
+ var y=id==='#hero'?0:el.getBoundingClientRect().top+scrollY-(id==='#empezar'||id==='#branderia'||id==='#planes'?40:0);
+ if(lenis)lenis.scrollTo(y,{duration:1.6});else window.scrollTo({top:y,behavior:RM?'auto':'smooth'});}
+$$('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var id=a.getAttribute('href');if(!$(id))return;e.preventDefault();goTo(id);});});
+
+/* A0 · referencias → la B */
+var tl=gsap.timeline({scrollTrigger:{trigger:'#hero',start:'top top',end:'+=430%',scrub:1,pin:true,anticipatePin:1}});
+tl.to('.hrest',{x:MOB?0:-60,y:MOB?30:0,autoAlpha:0,duration:.4,ease:'power1.in'},.05)
+  .to('.veil',{opacity:MOB?1:0,duration:.4},.1)
+  .to('.hint',{opacity:0,duration:.2},0)
+  .to(st,{fly:1,duration:1.2,ease:'power1.inOut'},.1)
+  .fromTo('#c1',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.3},.4)
+  .to('#c1',{autoAlpha:0,y:-30,duration:.3},1.15)
+  .to(st,{asm:1,duration:1.5,ease:'none'},1.05)
+  .fromTo('#c2',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.3},1.5)
+  .to('#c2',{autoAlpha:0,y:-30,duration:.3},2.35)
+  .to(st,{lock:1,duration:.45,ease:'back.out(1.6)'},2.6)
+  .to(st,{solid:1,duration:.5},2.75)
+  .fromTo('#c3',{autoAlpha:0,y:50},{autoAlpha:1,y:0,duration:.45},3.1)
+  .to({},{duration:.5},3.55);
+
+/* A1 · «cualquiera» se vuelve una marca, letra por letra */
+ScrollTrigger.create({trigger:'#flip',start:'top 80%',end:'top 35%',scrub:true,onUpdate:function(s){setFlip(s.progress);}});
+
+/* A2 · recorrido horizontal */
+var track=$('#track'),dots=$$('.dots i');
+function dist(){return track.scrollWidth-innerWidth;}
+/* más «pesado»: cada paso pide más recorrido y el scroll se asienta en el paso más cercano (no se saltea uno con un scroll de más) */
+gsap.to(track,{x:function(){return -dist();},ease:'none',scrollTrigger:{trigger:'#hwrap',start:'top top',end:function(){return '+='+Math.round(dist()*1.9);},pin:true,scrub:1.4,invalidateOnRefresh:true,
+ snap:{snapTo:1/3,duration:{min:.35,max:.8},delay:.12,ease:'power2.inOut',inertia:false},
+ onUpdate:function(s){var i=Math.min(3,Math.floor(s.progress*3.999));dots.forEach(function(d,k){d.classList.toggle('on',k===i)});}}});
+
+/* A3 · retirada visual: la sección se vuelve Costa */
+gsap.timeline({scrollTrigger:{trigger:'#sistema',start:'top 75%',end:'top 15%',scrub:1}})
+ .to('#sistema',{backgroundColor:'#2F3B2F',color:'#F3E9D6',ease:'none'},0);
+gsap.fromTo('#board .tile',{opacity:.2,z:-300,rotateX:20,y:70},{opacity:1,z:0,rotateX:0,y:0,stagger:.08,ease:'power2.out',
+ scrollTrigger:{trigger:'#board',start:'top 90%',end:'top 30%',scrub:1}});
+
+/* header oscuro sobre secciones oscuras */
+['#producir','footer'].forEach(function(s){ScrollTrigger.create({trigger:s,start:'top 60px',end:'bottom 60px',toggleClass:{targets:'#hd',className:'dk'}});});
+
+/* A4 · el carrusel gira con el scroll */
+gsap.to({r:0},{r:-300,ease:'none',scrollTrigger:MOB?{trigger:'.ringstage',start:'top bottom',end:'bottom top',scrub:1}:{trigger:'#producir',start:'top top',end:'+=180%',pin:true,scrub:1},
+ onUpdate:function(){ring.style.transform='translateZ(-'+RAD+'px) rotateX(-8deg) rotateY('+this.targets()[0].r+'deg)';}});
+
+/* A5 · tu marca cae sobre cada producto */
+gsap.utils.toArray('#prods .prod').forEach(function(p,i){var s=$('.stamp',p);
+ gsap.fromTo(s,{opacity:0,xPercent:-50,yPercent:-200,scale:2.4,rotate:-14},{opacity:1,xPercent:-50,yPercent:-50,scale:1,rotate:0,ease:'back.out(2)',
+  scrollTrigger:{trigger:p,start:'top 92%',end:'top 62%',scrub:1}});});
+
+/* A6 · las capas se separan */
+gsap.fromTo('#iso',{'--gap':'10px'},{'--gap':'64px',ease:'none',scrollTrigger:{trigger:'#planes',start:'top 80%',end:'center 50%',scrub:1}});
+
+addEventListener('load',function(){ScrollTrigger.refresh();});
+}
+})();
+</script>
+
+</body>
+</html>

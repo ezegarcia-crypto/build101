@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 62 76" role="img" aria-label="BrandIA">
+  <title>BrandIA · isotipo ruta C · la B modular</title>
+  <!-- LOGO OFICIAL de BrandIA. Definido por Juan Pedro, Rodrigo y Ezequiel el 2026-09-22. Proporciones a cerrar antes de producción: ver logo/v2/README.md -->
+  <g transform="translate(-10,-12)" fill="currentColor">
+    <!-- pieza superior, con lengüeta -->
+    <path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/>
+    <!-- pieza inferior, con muesca -->
+    <path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/>
+  </g>
+</svg>

@@ -4,20 +4,24 @@ Qué construimos y en qué orden. El alcance está en `CLAUDE.md` → "El produc
 
 **La regla:** primero que ande la parte 1 de punta a punta, después la 2 y recién después la 3. Un flujo chico que funciona suma más que muchos a medias: la rúbrica no da puntos por cantidad de funciones.
 
-## Ahora · antes de programar (todos juntos, 1 hora)
+## Hecho (sábado a la mañana)
 
-1. Confirmar con un mentor: si el repo tiene que ser público y qué créditos o claves de IA da el evento.
-2. Elegir las piezas de IA (ver "Decisiones pendientes") y conseguir las claves. Van en `.env.local` y en Vercel, nunca en el repo.
-3. Copiar al repo el esqueleto de la web que ya está probado (ver "Sábado: arranque" en `CLAUDE.md`) y publicarlo en Vercel.
-4. Abrir el link en el celular. Cada persona: `git pull` y su propia rama.
+- Consigna leída, material de BrandIA en `brandia/`, repo público y organizador invitado.
+- Web publicada en Vercel (https://build101-bice.vercel.app); `app.brandiamos.com` en camino (falta el registro en GoDaddy).
+- Design system de BrandIA cargado en la app y la web original como portada. **Guía obligatoria: `equipo/design-system.md`.**
+- Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y la voz por ElevenLabs.
 
-## Reparto (a confirmar)
+## Reparto (confirmado)
 
-| Persona | Parte | Qué hace |
-|---|---|---|
-| 1 · Pantallas y diseño | Todo lo que se ve | El recorrido de la app, la pantalla del brandbook, el feed, las pantallas "en construcción" (newsletter, web, BranderIA). Después, la demo y el pitch |
-| 2 · La IA | El motor | La entrevista por chat que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos |
-| 3 · Datos, pruebas e integración | Que todo ande junto | Guardar las marcas generadas, la publicación, probar con marcas distintas de Costa y juntar las ramas en `main` |
+Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archivos. Para instalar algo nuevo, avisarle a Eze.
+
+| Quién | Rama | Parte | Toca solo | Qué hace |
+|---|---|---|---|---|
+| **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat y botón de voz), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
+| **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos. Junta las ramas en `main` |
+| **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" de newsletter, web y BranderIA |
+
+**Datos de ejemplo:** sirven para dibujar pantallas mientras se desarrolla, pero en la demo todo sale de la IA. Antes de presentar se borran.
 
 ## Hitos
 

@@ -60,6 +60,7 @@ Plan de tareas y reparto: `equipo/plan-finde.md`.
 | `equipo/build101-consigna.pdf` | **La consigna oficial**: consigna, rúbrica y cómo se evalúa (3 páginas) |
 | `equipo/kickoff-consigna.md` | La consigna, la evaluación y las reglas, resumidas del kickoff |
 | `equipo/plan-finde.md` | Plan de tareas y reparto para el finde |
+| `equipo/design-system.md` | **Obligatorio:** cómo se ve y se mueve BrandIA y BranderIA en la app |
 | `brandia/negocio/` | Contexto de BrandIA, decisiones, modelo de negocio, mercado y competencia |
 | `brandia/producto/` | Qué hace cada capa (identidad, suscripción, plus, marketplace), arquitectura y costos |
 | `brandia/motor-ia/` | Borrador de los prompts del motor (entrevista, referencias, direcciones) y `brief.schema.json` |
@@ -109,7 +110,9 @@ Las claves de la IA dependen de los créditos que dé el evento. Hoy no hay ning
 8. Publicar en la primera hora.
 9. Sábado 20:30: dejar 2 o 3 agentes en la nube con tareas chicas y claras. Domingo: congelar, ensayar 3 veces y grabar un video de respaldo.
 
-Reparto sugerido, a confirmar el sábado: persona 1 pantallas y diseño (y después demo y pitch); persona 2 la IA del producto; persona 3 datos, publicación, pruebas y merges.
+**Reparto confirmado** (detalle, ramas y carpetas en `equipo/plan-finde.md`): **Juan Pedro** pantallas y diseño (rama `pantallas`; después demo y pitch); **Eze** la IA y los merges (rama `ia`); **Rodrigo** pruebas y pantallas "en construcción" (rama `pruebas`).
+
+**Diseño, obligatorio:** toda pantalla sigue `equipo/design-system.md`. La portada es la web original de BrandIA tal cual (`apps/web/public/brandia.html`, en `/`); la app vive en `/crear` y tiene que parecer parte de esa misma web.
 
 ## Estado al viernes 16/10
 
@@ -166,4 +169,7 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 ## Comandos útiles
 
 - Invitar a alguien al repo: `gh api -X PUT repos/ezegarcia-crypto/build101/collaborators/USUARIO -f permission=push`
-- Ver las publicaciones: `vercel ls build101`
+- Ver las publicaciones: `vercel ls build101 --scope ezegb`
+- **La web publicada:** https://build101-bice.vercel.app (proyecto `build101` del team `ezegb`, conectado a GitHub: cada push a `main` se publica solo). Ojo: `build101.vercel.app` es de otra persona.
+- Probar en la compu: `npm install` y después `npm run dev:web` → http://localhost:3001
+- La IA va por **Vercel AI Gateway** (texto, imágenes y video) y la voz por **ElevenLabs**. En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
