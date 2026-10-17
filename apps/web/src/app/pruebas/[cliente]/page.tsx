@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { inicioArchivos, leerCliente, type Prueba } from "@/lib/pruebas";
 
 import { nombreDelPaso } from "../pasos";
+import { armarResumen } from "./resumen";
+import { Vistas } from "./vistas";
 
-// Una prueba entera: cada pedido a la IA de ese cliente, en orden, con lo que entró y lo que salió.
-// Las imágenes y los audios se ven arriba de cada pedido; el resto, desplegando "Qué se mandó" y "Qué volvió".
+// Una prueba entera. Arriba, lo que se generó dibujado como en la app (la entrevista, los nombres, los
+// caminos, el brandbook, el feed, los productos y la web). Abajo, el historial: cada pedido a la IA en
+// orden, con lo que entró y lo que salió, desplegando "Qué se mandó" y "Qué volvió".
 
 export const metadata: Metadata = {
   title: "Una prueba · BrandIA",
@@ -131,7 +134,7 @@ export default async function UnaPrueba({ params }: { params: Promise<{ cliente:
     .findLast(Boolean);
 
   return (
-    <main className="mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-8 px-4 py-12 sm:py-16">
+    <main className="mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-14 px-4 py-12 sm:py-16">
       <header className="flex flex-col gap-3">
         <p className="label">
           <a href="/pruebas">← Todas las pruebas</a>
@@ -149,11 +152,20 @@ export default async function UnaPrueba({ params }: { params: Promise<{ cliente:
       {!r.pedidos ? (
         <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">No se pudo leer la prueba: {r.error}</p>
       ) : (
-        <ol className="flex flex-col gap-4">
-          {r.pedidos.map((p) => (
-            <Pedido key={p.id} p={p} inicio={inicio} />
-          ))}
-        </ol>
+        <>
+          <Vistas r={armarResumen(r.pedidos)} />
+          <section className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-2xl">El historial</h2>
+              <p className="lead">Cada pedido a la IA, en orden, con lo que se mandó y lo que volvió.</p>
+            </div>
+            <ol className="flex flex-col gap-4">
+              {r.pedidos.map((p) => (
+                <Pedido key={p.id} p={p} inicio={inicio} />
+              ))}
+            </ol>
+          </section>
+        </>
       )}
     </main>
   );
