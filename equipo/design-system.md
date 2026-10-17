@@ -5,6 +5,8 @@ Todo lo que se ve en la app sigue este documento. Si tu Claude va a crear o camb
 ## 0. La referencia es la web que ya teníamos
 
 - **La portada de la app es la web original de BrandIA, tal cual:** `apps/web/public/brandia.html`, que se ve en `/`. No se rehace ni se "mejora": se usa así.
+- **La landing de lista de espera, también tal cual:** `apps/web/public/lista-de-espera.html`, en `/lista-de-espera`. Su formulario todavía no guarda datos: falta conectarlo a Supabase con `brandia/referencias/landing-waitlist/landing/supabase-waitlist.sql`.
+- Las dos conservan todas sus animaciones (GSAP, ScrollTrigger, Lenis y Three.js). Si se cambia un texto o un link, se cambia solo eso.
 - **La app donde se crea la marca vive en `/crear`** (y lo que cuelgue de ahí). Cada pantalla nueva **tiene que parecer parte de esa web**: misma tipografía (Fraunces con itálica en la palabra clave, como "lo que *hacés*"), mismo fondo hueso, botones píldora grafito con flecha, tarjetas tipo moodboard, mismo movimiento.
 - Ante la duda, abrí `/` en el navegador y compará. Si una pantalla nueva no parece de la misma web, no está terminada.
 
