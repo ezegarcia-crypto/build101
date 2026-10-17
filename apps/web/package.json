@@ -10,6 +10,7 @@
     "env:generate": "varlock codegen"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.147",
     "@build101/ui": "*",
     "@elevenlabs/react": "^1.18.0",
     "@swc/helpers": "^0.5.23",
