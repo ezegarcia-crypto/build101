@@ -111,6 +111,56 @@ Para el finde: 10 ensayos + 10 pruebas del jurado ≈ **USD 20** (con la correcc
 
 ## 5. Para el pitch
 
-> Una marca completa (entrevista, tres direcciones, brandbook y logos) le cuesta a BrandIA unos **28 centavos de dólar** de IA. Con el mes de contenidos y la web, menos de **un dólar** por cliente.
+> Una marca completa (entrevista, tres direcciones, brandbook y logos) le cuesta a BrandIA unos **34 centavos de dólar** de IA (ver punto 6). Con el mes de contenidos y la web, menos de **un dólar** por cliente.
 
 (Confirmar con el panel de Vercel después de cargar crédito y correr un cliente completo.)
+
+
+## 6. Costo de crear cada marca, con los precios reales
+
+Hecho el sábado 17/10 a las 16:40, con el código de `main` al día (que ya trae el paso de nombres). Usa los precios del punto 1 y lo que mostró el reporte real del punto 0b:
+
+- **Sonnet "piensa" además de responder:** por cada 100 tokens de salida, suma unos 59 tokens de razonamiento que se cobran igual (dato real del día: 2,06 M de razonamiento sobre 3,52 M de salida).
+- **Opus (isotipo):** USD 0,052 por pedido, promedio real de 29 pedidos.
+- **Recraft (logos):** USD 0,034 por imagen, promedio real de 177 imágenes.
+
+Todavía no hay datos reales por paso: el etiquetado de Eze (`/costos`) entró a las 15:40 y desde entonces no hubo pedidos, porque el Gateway sigue en negativo. Los tokens de cada paso son los estimados del punto 2.
+
+### Paso a paso
+
+| # | Paso | Modelo | Tokens entrada | Salida + razonamiento | USD |
+|---|---|---|---|---|---|
+| 1 | Entrevista por chat (~5 turnos) | Sonnet | 14.500 | 2.000 + 1.200 | 0,061 |
+| 2 | Nombres, 5 propuestas (solo si no tiene nombre; cada vuelta extra, lo mismo) | Sonnet | 2.000 | 800 + 500 | 0,017 |
+| 3 | 3 direcciones visuales | Sonnet | 2.400 | 2.500 + 1.500 | 0,045 |
+| 4 | Identidad: textos del brandbook | Sonnet | 3.500 | 3.000 + 1.800 | 0,055 |
+| 5 | Identidad: isotipo SVG | Opus | 2.800 | 1.100 + 900 | 0,052 |
+| 6 | Logos: 3 ideas | Sonnet | 2.300 | 1.200 + 700 | 0,024 |
+| 7 | Logos: 3 dibujos | Recraft | — | — | 0,102 |
+| | **Marca completa por chat, con nombre propio** | | **≈ 27.500** | **≈ 17.000** | **≈ 0,34** |
+
+### Según cómo la arme cada persona
+
+| Caso | Qué cambia | USD por marca |
+|---|---|---|
+| Ya tiene nombre, entrevista por chat | Lo de la tabla | **0,34** |
+| Sin nombre, pide 2 vueltas de nombres | + 2 × 0,017 | **0,37** |
+| Cambia de dirección después de ver la identidad | + identidad y logos otra vez (pasos 4 a 7) | **0,57** |
+| Entrevista por voz en vez de chat (5 min) | − chat 0,061 + ficha de la voz 0,022 + ElevenLabs ~0,40 a 0,50 (a confirmar en su panel) | **≈ 0,70 a 0,80** |
+| Falla un paso y se reintenta | Ese paso se paga dos veces | + 0,02 a 0,10 |
+
+### Dónde se va la plata de una marca (caso base, USD 0,34)
+
+| Qué | USD | % |
+|---|---|---|
+| Dibujos de los logos (Recraft) | 0,102 | 30 % |
+| Textos con Sonnet: entrevista, direcciones, brandbook e ideas de logos | 0,185 | 55 % |
+| ↳ de eso, solo lo que Sonnet "piensa" | ≈ 0,05 | ≈ 15 % |
+| Isotipo con Opus | 0,052 | 15 % |
+
+**Para comparar:** el loop de recargas del 17/10 (≈ USD 45 a 50) equivale a unas **140 marcas completas**.
+
+**Si hubiera que bajar el costo** (no hace falta para la demo):
+1. Pedir 2 logos en vez de 3: −0,034.
+2. Hacer el isotipo con Sonnet en vez de Opus: −0,025, si la calidad aguanta.
+3. Bajar el razonamiento de Sonnet en los pasos simples (nombres, ideas de logos): hasta −0,02.
