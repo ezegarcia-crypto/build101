@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
 import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
+import { conReintento } from "@/lib/ia/reintentar";
 import { PROMPT_FICHA_VOZ } from "@/lib/ia/voz";
 
 // Cuando termina la llamada, la pantalla manda acá la transcripción y recibe la ficha de la marca,
@@ -34,12 +35,14 @@ export async function POST(req: Request) {
     .join("\n");
 
   try {
-    const { output } = await generateText({
-      model: MODELO_ENTREVISTA,
-      instructions: PROMPT_FICHA_VOZ,
-      prompt: charla,
-      output: Output.object({ schema: briefSchema, name: "ficha_de_la_marca" }),
-    });
+    const { output } = await conReintento(() =>
+      generateText({
+        model: MODELO_ENTREVISTA,
+        instructions: PROMPT_FICHA_VOZ,
+        prompt: charla,
+        output: Output.object({ schema: briefSchema, name: "ficha_de_la_marca" }),
+      }),
+    );
     return Response.json({ ficha: output });
   } catch (error) {
     console.error("No se pudo armar la ficha de la voz", error);
