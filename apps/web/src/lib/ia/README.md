@@ -68,20 +68,7 @@ Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 - **Falta para que hable de verdad:** `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` en `.env.local` y en Vercel (las saca Eze), y correr el script.
 - `/api/voz/prueba`: página de prueba solo para desarrollo. En la web publicada no existe.
 
-## 6. El feed simple (se retira) · `POST /api/contenidos`
-
-> **Se retira (17/10):** el equipo eligió el motor completo de la sección 7. Este queda solo mientras Juan Pedro reconecta la pantalla del feed; después se borran `contenidos.ts`, `api/contenidos/route.ts` y `scripts/probar-contenidos.mjs`. No lo uses para nada nuevo.
-
-
-`POST /api/contenidos` con `{ brief, identidad }`: **la identidad entera, tal como sale de `/api/identidad`**. Devuelve `{ marca, direccion_de_arte, posteos, historias, medicion }`:
-- 3 o 4 posteos: `objetivo`, `titular` (para poner encima de la imagen con la tipografía de la marca), `texto`, `hashtags`, `idea_visual` e `imagen.url` (4:5).
-- 2 o 3 historias: `texto`, `interaccion` (encuesta, pregunta o null), `idea_visual` e `imagen.url` (9:16).
-- Las imágenes vienen **sin texto**: el titular lo pone la pantalla encima.
-- **Tarda unos 35 segundos y cuesta unos USD 0,29 por feed.** Probado con la identidad real de Valeria.
-
-Prueba sin pantalla: `node scripts/probar-contenidos.mjs`.
-
-## 7. Contenidos · el motor elegido · `POST /api/contenidos/lote`
+## 6. Contenidos · el motor elegido · `POST /api/contenidos/lote`
 
 **Ruta principal:** `POST /api/contenidos/lote` con `{ brief, identidad }`: la ficha del paso 1 y la
 identidad del paso 3, tal cual vinieron. Sale el plan del mes y las piezas (posteos, carrusel, historias y
@@ -90,7 +77,7 @@ eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/
 
 **Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
 
-## 8. Lo que gasta la IA · panel `/costos`
+## 7. Lo que gasta la IA · panel `/costos`
 
 **Panel del equipo:** `/costos` (en la web publicada, https://build101-bice.vercel.app/costos). Muestra el saldo del Gateway, lo gastado hoy, cuánto cuesta en promedio cada paso (y una marca completa), el gasto por modelo y por día, y una calculadora de margen para pensar precios. No tiene links desde la app y no lo indexan los buscadores.
 

@@ -1,6 +1,5 @@
 import { MODELO_IMAGEN as MODELO_FOTOS_FEED } from "@/lib/ia/contenidos/imagen";
 import { MODELO_PLAN, MODELO_REDACCION } from "@/lib/ia/contenidos/prompts";
-import { MODELO_CONTENIDOS, MODELO_IMAGENES, MODELO_IMAGENES_RESPALDO } from "@/lib/ia/contenidos";
 import { MODELO_DIRECCIONES } from "@/lib/ia/direcciones";
 import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
 import type { Paso } from "@/lib/ia/gastos";
@@ -40,11 +39,8 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-plan": [{ modelo: MODELO_PLAN, para: "Planifica el mes" }],
   "contenidos-pieza": [{ modelo: MODELO_REDACCION, para: "Escribe y corrige una pieza" }],
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
-  "contenidos-simple": [
-    { modelo: MODELO_CONTENIDOS, para: "Planifica el feed simple" },
-    { modelo: MODELO_IMAGENES, para: "Genera sus imágenes" },
-    { modelo: MODELO_IMAGENES_RESPALDO, para: "Genera sus imágenes si falla el principal", respaldo: true },
-  ],
+  // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
+  "contenidos-simple": [],
 };
 
 /** Los pasos que usan un modelo, con para qué. */

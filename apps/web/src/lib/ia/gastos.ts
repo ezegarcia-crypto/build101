@@ -21,7 +21,7 @@ export const PASOS = {
   "contenidos-plan": { modulo: "B", nombre: "Plan del mes", unidad: "pedido" },
   "contenidos-pieza": { modulo: "B", nombre: "Una pieza del feed", unidad: "pieza" },
   "contenidos-imagen": { modulo: "B", nombre: "Una imagen del feed", unidad: "imagen" },
-  "contenidos-simple": { modulo: "B", nombre: "Feed simple (se retira)", unidad: "feed" },
+  "contenidos-simple": { modulo: "B", nombre: "Feed simple (retirado)", unidad: "feed" },
 } as const;
 
 export type Paso = keyof typeof PASOS;
