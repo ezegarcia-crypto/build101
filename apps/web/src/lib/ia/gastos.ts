@@ -12,7 +12,6 @@ import type { generateText } from "ai";
 
 export const PASOS = {
   entrevista: { modulo: "A", nombre: "Entrevista por chat", unidad: "conversación" },
-  "voz-ficha": { modulo: "A", nombre: "Ficha de la entrevista por voz", unidad: "llamada" },
   direcciones: { modulo: "A", nombre: "Tres direcciones visuales", unidad: "pedido" },
   nombres: { modulo: "A", nombre: "Nombres con trasfondo", unidad: "pedido" },
   identidad: { modulo: "A", nombre: "Identidad y brandbook", unidad: "pedido" },
@@ -44,7 +43,6 @@ const corridaActual = new AsyncLocalStorage<{ paso: Paso; corrida: string; senal
 // Los topes son por servidor, no por persona: tienen que alcanzar para varios jurados probando a la vez.
 const POR_MINUTO: Record<Paso, number> = {
   entrevista: 90,
-  "voz-ficha": 15,
   direcciones: 15,
   nombres: 25,
   identidad: 15,
