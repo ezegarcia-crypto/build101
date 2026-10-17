@@ -56,6 +56,7 @@ Lo que se muestra en la presentación:
 | 2 | **Contenido · feed e historias:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real |
 | 2b | Contenido · pauta en Meta | **Siguiente etapa, no entra en la demo.** Previsto: "qué funciona en tu rubro" con la librería de anuncios de Meta y medir el rendimiento de los contenidos (Higgsfield tiene una sección que lo predice, a evaluar). Detalle en `equipo/plan-finde.md` |
 | 2c | Contenido · newsletter, LinkedIn, X, redes centralizadas y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción". Para centralizar y publicar en todas las redes, la opción evaluada es Zernio |
+| 2d | Contenido · web del cliente, con IA real (entrevista, opciones según la competencia, web generada, cambios por chat y dominio) | **Se trabaja en paralelo a los contenidos, para llegar a la demo**. La hace Rodrigo, en la rama `web-cliente`. Real: entrevista, web generada y cambios por chat; si llega, también la competencia y el chequeo de dominios. El pago y la compra del dominio, "en construcción". Hasta que funcione, se muestra como pantalla "en construcción" (2c). Recorrido en `equipo/flujo-web-cliente.md` |
 | 3 | **BranderIA** (BrandIA produce y te manda tus productos) | "En construcción": la IA genera las fotos de los productos con la marca del cliente y se muestra cómo sería el pedido. Sin precios ni pedidos reales |
 
 Plan de tareas y reparto: `equipo/plan-finde.md`.
@@ -68,6 +69,7 @@ Plan de tareas y reparto: `equipo/plan-finde.md`.
 | `equipo/build101-consigna.pdf` | **La consigna oficial**: consigna, rúbrica y cómo se evalúa (3 páginas) |
 | `equipo/kickoff-consigna.md` | La consigna, la evaluación y las reglas, resumidas del kickoff |
 | `equipo/plan-finde.md` | Plan de tareas y reparto para el finde |
+| `equipo/flujo-web-cliente.md` | La web del cliente de punta a punta, con el ejemplo de Costa (se trabaja en paralelo a los contenidos) |
 | `equipo/design-system.md` | **Obligatorio:** cómo se ve y se mueve BrandIA y BranderIA en la app |
 | `brandia/negocio/` | Contexto de BrandIA, decisiones, modelo de negocio, mercado y competencia |
 | `brandia/producto/` | Qué hace cada capa (identidad, suscripción, plus, marketplace), arquitectura y costos |
@@ -118,7 +120,7 @@ Las claves de la IA dependen de los créditos que dé el evento. Hoy no hay ning
 8. Publicar en la primera hora.
 9. Sábado 20:30: dejar 2 o 3 agentes en la nube con tareas chicas y claras. Domingo: congelar, ensayar 3 veces y grabar un video de respaldo.
 
-**Reparto confirmado** (detalle, ramas y carpetas en `equipo/plan-finde.md`): **Juan Pedro** pantallas y diseño (rama `pantallas`; después demo y pitch); **Eze** la IA y los merges (rama `ia`); **Rodrigo** pruebas y pantallas "en construcción" (rama `pruebas`).
+**Reparto confirmado** (detalle, ramas y carpetas en `equipo/plan-finde.md`): **Juan Pedro** pantallas y diseño (rama `pantallas`; después demo y pitch); **Eze** la IA y los merges (rama `ia`); **Rodrigo** pruebas y pantallas "en construcción" (rama `pruebas`) y la web del cliente (rama `web-cliente`).
 
 **Diseño, obligatorio:** toda pantalla sigue `equipo/design-system.md`. La portada es la web original de BrandIA tal cual (`apps/web/public/brandia.html`, en `/`); la app vive en `/crear` y tiene que parecer parte de esa misma web.
 
