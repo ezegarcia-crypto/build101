@@ -93,12 +93,24 @@ const NEGOCIOS = [
   },
 ];
 
+// Las identidades de prueba están escritas cortas (paleta como lista de hex y voz como texto).
+// /api/contenidos recibe la identidad tal como sale de /api/identidad, así que se convierten a ese formato.
+const ROLES = ["principal", "acento", "fondo", "texto", "apoyo"];
+function comoIdentidadReal(i) {
+  return {
+    nombre: i.nombre,
+    paleta: i.paleta.map((hex, n) => ({ hex, nombre: hex, rol: ROLES[n] ?? "apoyo" })),
+    tipografias: i.tipografias,
+    voz: { resumen: i.voz },
+  };
+}
+
 async function probar(n) {
   const t0 = Date.now();
   const res = await fetch(URL, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ brief: n.brief, identidad: n.identidad }),
+    body: JSON.stringify({ brief: n.brief, identidad: comoIdentidadReal(n.identidad) }),
   });
   const crudo = await res.text();
   const segundos = (Date.now() - t0) / 1000;

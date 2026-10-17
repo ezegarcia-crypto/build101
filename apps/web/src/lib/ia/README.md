@@ -60,6 +60,20 @@ Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-e
 
 Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
-## Lo que viene
+## 5. La entrevista por voz (lo hizo la sesión "Agente de voz de ElevenLabs para la entrevista")
 
-- La voz: el agente de ElevenLabs hace la misma entrevista hablando y termina en la misma ficha.
+- `GET /api/voz` devuelve `{ signedUrl }` para conectar la pantalla con el agente de ElevenLabs (`@elevenlabs/react`, ya instalado). La clave queda en el servidor.
+- Cuando termina la llamada: `POST /api/voz/ficha` con `{ transcripcion: [{ rol: "usuario" | "agente", texto }] }` → `{ ficha }`, **la misma ficha que la entrevista por chat**. Probado: unos 5 segundos.
+- El prompt del agente está en `voz.ts`. Se sube a ElevenLabs con `scripts/crear-agente-voz.ts`.
+- **Falta para que hable de verdad:** `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` en `.env.local` y en Vercel (las saca Eze), y correr el script.
+- `/api/voz/prueba`: página de prueba solo para desarrollo. En la web publicada no existe.
+
+## 6. El feed (módulo B; lo hizo la sesión "Feed de Instagram generado con la marca")
+
+`POST /api/contenidos` con `{ brief, identidad }`: **la identidad entera, tal como sale de `/api/identidad`**. Devuelve `{ marca, direccion_de_arte, posteos, historias, medicion }`:
+- 3 o 4 posteos: `objetivo`, `titular` (para poner encima de la imagen con la tipografía de la marca), `texto`, `hashtags`, `idea_visual` e `imagen.url` (4:5).
+- 2 o 3 historias: `texto`, `interaccion` (encuesta, pregunta o null), `idea_visual` e `imagen.url` (9:16).
+- Las imágenes vienen **sin texto**: el titular lo pone la pantalla encima.
+- **Tarda unos 35 segundos y cuesta unos USD 0,29 por feed.** Probado con la identidad real de Valeria.
+
+Prueba sin pantalla: `node scripts/probar-contenidos.mjs`.

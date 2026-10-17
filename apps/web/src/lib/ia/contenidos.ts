@@ -2,6 +2,7 @@ import { generateImage, generateText, Output } from "ai";
 import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
+import { conReintento } from "@/lib/ia/reintentar";
 
 // Módulo B · el feed: con la ficha de la marca y su identidad, la IA arma posteos e historias.
 // 1) Claude planifica el feed (textos, hashtags, idea visual y el pedido para cada imagen).
@@ -14,14 +15,29 @@ export const MODELO_IMAGENES = "recraft/recraft-v4.1";
 // Si Recraft falla, la misma imagen se pide a GPT Image 2 (más lento, también respeta la paleta).
 export const MODELO_IMAGENES_RESPALDO = "openai/gpt-image-2";
 
-// La identidad mínima que necesita el feed. La identidad completa se hace en otra rama;
-// cuando se conecten, alcanza con pasar estos cinco campos.
+// Lo que el feed usa de la identidad, tal como la devuelve /api/identidad: la pantalla le pasa
+// la identidad entera y acá se toma solo esto (el resto de los campos se ignora).
 export const identidadSchema = z.object({
   nombre: z.string().min(1),
-  paleta: z.array(z.string()).min(1).describe("Colores en hex, el principal primero: #1F4D3A"),
+  eslogan: z.string().optional(),
+  paleta: z
+    .array(z.object({ hex: z.string(), nombre: z.string().optional(), rol: z.string() }))
+    .min(1),
   tipografias: z.object({ titulos: z.string(), texto: z.string() }),
-  voz: z.string().describe("Cómo habla la marca, en una o dos frases"),
+  voz: z.object({
+    resumen: z.string(),
+    palabras_si: z.array(z.string()).optional(),
+    palabras_no: z.array(z.string()).optional(),
+  }),
 });
+
+// Los colores para las imágenes, del más importante al menos: principal, acento, apoyo, fondo y texto.
+const ORDEN_ROLES = ["principal", "acento", "apoyo", "fondo", "texto"];
+function coloresDeMarca(identidad: Identidad) {
+  return [...identidad.paleta]
+    .sort((a, b) => ORDEN_ROLES.indexOf(a.rol) - ORDEN_ROLES.indexOf(b.rol))
+    .map((c) => c.hex);
+}
 
 export type Identidad = z.infer<typeof identidadSchema>;
 
@@ -171,21 +187,24 @@ async function generarImagen(prompt: string, formato: keyof typeof MEDIDAS, pale
 export async function generarFeed({ brief, identidad }: EntradaContenidos): Promise<Feed> {
   const inicio = Date.now();
 
-  const { output: plan, providerMetadata } = await generateText({
-    model: MODELO_CONTENIDOS,
-    instructions: PROMPT_CONTENIDOS,
-    prompt: `## La identidad\n${JSON.stringify(identidad, null, 2)}\n\n## La ficha de la marca\n${JSON.stringify(brief, null, 2)}`,
-    output: Output.object({ schema: planSchema }),
-  });
+  const paleta = coloresDeMarca(identidad);
+  const { output: plan, providerMetadata } = await conReintento(() =>
+    generateText({
+      model: MODELO_CONTENIDOS,
+      instructions: PROMPT_CONTENIDOS,
+      prompt: `## La identidad\n${JSON.stringify(identidad, null, 2)}\n\n## La ficha de la marca\n${JSON.stringify(brief, null, 2)}`,
+      output: Output.object({ schema: planSchema }),
+    }),
+  );
   if (!plan) throw new Error("La IA no devolvió el plan del feed");
 
   // El estilo común y la paleta van en todos los pedidos de imagen: es lo que hace que el feed se vea de una marca.
   const pedido = (escena: string) =>
-    `${escena}\n\nArt direction for the whole brand feed: ${plan.direccion_de_arte}\nBrand color palette, use these colors prominently in the scene: ${identidad.paleta.join(", ")}.\nNo text, no letters, no logos, no readable signage. Authentic, specific and candid, not stock photography.`;
+    `${escena}\n\nArt direction for the whole brand feed: ${plan.direccion_de_arte}\nBrand color palette, use these colors prominently in the scene: ${paleta.join(", ")}.\nNo text, no letters, no logos, no readable signage. Authentic, specific and candid, not stock photography.`;
 
   const [imagenesPosteos, imagenesHistorias] = await Promise.all([
-    Promise.all(plan.posteos.map((p) => generarImagen(pedido(p.prompt_imagen), "posteo", identidad.paleta))),
-    Promise.all(plan.historias.map((h) => generarImagen(pedido(h.prompt_imagen), "historia", identidad.paleta))),
+    Promise.all(plan.posteos.map((p) => generarImagen(pedido(p.prompt_imagen), "posteo", paleta))),
+    Promise.all(plan.historias.map((h) => generarImagen(pedido(h.prompt_imagen), "historia", paleta))),
   ]);
 
   const costoImagenes = [...imagenesPosteos, ...imagenesHistorias].reduce((total, r) => total + r.costo, 0);
