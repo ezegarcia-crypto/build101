@@ -77,3 +77,12 @@ Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 - **Tarda unos 35 segundos y cuesta unos USD 0,29 por feed.** Probado con la identidad real de Valeria.
 
 Prueba sin pantalla: `node scripts/probar-contenidos.mjs`.
+
+## 7. Contenidos, motor completo (rama `contenidos`, en evaluación)
+
+**Ruta principal:** `POST /api/contenidos/lote` con `{ brief, identidad }`: la ficha del paso 1 y la
+identidad del paso 3, tal cual vinieron. Sale el plan del mes y las piezas (posteos, carrusel, historias y
+reel), cada una dibujada en SVG con la marca del cliente por `componerPieza`. Todo el detalle (pasos,
+eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
+
+Convive con el motor simple de la sección 6 (`POST /api/contenidos`). El equipo decide cuál queda.
