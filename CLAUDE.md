@@ -36,13 +36,13 @@ Detalle en `equipo/kickoff-consigna.md`. Lo esencial:
 
 ## El producto: BrandIA
 
-Una persona le cuenta su negocio a BrandIA **hablando (agente de voz) o por chat**. La IA le hace preguntas, arma su identidad de marca, le genera los contenidos con esa marca y le produce sus productos con la marca. Contexto completo en `brandia/`.
+Una persona le cuenta su negocio a BrandIA **por chat, escribiendo o mandando audios** (se pasan a texto con ElevenLabs Scribe; BrandIA contesta por escrito). La IA le hace preguntas, arma su identidad de marca, le genera los contenidos con esa marca y le produce sus productos con la marca. Contexto completo en `brandia/`.
 
 **El modelo tiene tres módulos** (decidido el sábado 17/10). La app los deja previstos a los tres, aunque en la demo no todo funcione:
 
 | Módulo | Qué es |
 |---|---|
-| **A · Generá tu marca** | Entrevista por voz o chat → nombre y voz, paleta, tipografías, logo y brandbook |
+| **A · Generá tu marca** | Entrevista por chat (escrita o con audios) → nombre y voz, paleta, tipografías, logo y brandbook |
 | **B · Generá tus contenidos** | Feed, historias, pauta en Meta, newsletter, LinkedIn y X, todas las redes centralizadas en un solo lugar, y página web opcional |
 | **C · BranderIA** | **BrandIA produce los productos con tu marca y te los manda.** Ya no es un marketplace de proveedores: el pedido lo resuelve BrandIA de punta a punta |
 
@@ -52,7 +52,7 @@ Lo que se muestra en la presentación:
 
 | # | Parte | Estado en la demo |
 |---|---|---|
-| 1 | **Generación de marca:** entrevista por voz o chat → ficha de la marca → nombre y voz, paleta, tipografías, logo y brandbook | **Funciona**, con IA real |
+| 1 | **Generación de marca:** entrevista por chat, escrita o con audios → ficha de la marca → nombre y voz, paleta, tipografías, logo y brandbook | **Funciona**, con IA real |
 | 2 | **Contenido · feed e historias:** un feed completo con un par de posteos, historias y al menos un reel, con la marca aplicada | **Funciona**, con IA real. **Motor elegido (17/10): el completo** (`POST /api/contenidos/lote`: plan del mes, posteos, carrusel, historias y reel en escenas, diseñados con la marca y con control de datos inventados). La pantalla del feed la reconectó Juan Pedro |
 | 2b | Contenido · pauta en Meta | **Siguiente etapa, no entra en la demo.** Previsto: "qué funciona en tu rubro" con la librería de anuncios de Meta y medir el rendimiento de los contenidos (Higgsfield tiene una sección que lo predice, a evaluar). Detalle en `equipo/plan-finde.md` |
 | 2c | Contenido · newsletter, LinkedIn, X, redes centralizadas y web | Pantallas que muestran cómo va a funcionar, marcadas "en construcción". Para centralizar y publicar en todas las redes, la opción evaluada es Zernio |
@@ -185,5 +185,5 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 - Ver las publicaciones: `vercel ls build101 --scope ezegb`
 - **La web publicada:** https://app.brandiamos.com, nuestro dominio. Es el proyecto `build101` del team `ezegb` en Vercel, conectado a GitHub: cada push a `main` se publica solo. La misma web responde también en https://build101-bice.vercel.app, la dirección automática de Vercel. Ojo: `build101.vercel.app` es de otra persona.
 - Probar en la compu: `npm install` y después `npm run dev:web` → http://localhost:3001
-- La IA va por **Vercel AI Gateway** (texto, imágenes y video) y la voz por **ElevenLabs**. En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
+- La IA va por **Vercel AI Gateway** (texto, imágenes y video) y los audios se pasan a texto con **ElevenLabs Scribe** (`POST /api/transcribir`). En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
 - **Lo que gasta la IA:** https://app.brandiamos.com/costos. Pide contraseña: el usuario puede ser cualquiera y la contraseña es `COSTOS_CLAVE` (la tiene Eze). Muestra el saldo, el costo de cada paso y de una marca completa, y los pagos de cada uno. Toda ruta nueva con IA se anota con `medir()` y `etiquetar()`: ver la sección 7 de `apps/web/src/lib/ia/README.md`.
