@@ -40,6 +40,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 - **Voz:** agente de voz de ElevenLabs (natural, con voces en español). Depende de los créditos.
 - **Imágenes** para logo, posteos y merch: modelo de imágenes por API (a elegir según los créditos).
 - **Reel:** la opción más segura es armarlo con imágenes generadas, textos animados y voz en off, en vez de un modelo de video (más caro y lento).
+- **Librería de anuncios de Meta ("qué funciona en tu rubro"):** la API oficial de Meta solo devuelve anuncios comerciales que se mostraron en la **Unión Europea o el Reino Unido**. Los anuncios que solo corrieron en Uruguay o Argentina no aparecen, y no trae métricas de rendimiento. La alternativa legal y rápida es buscar el rubro en español en **España**, por Zernio (su endpoint de librería de anuncios es gratis con un medio de pago cargado, sin cuenta de desarrollador de Meta). Como señal de "funciona" se usan los días que lleva activo el anuncio y el alcance que Meta publica para la UE. La búsqueda por palabra trae mucho anuncio que no es del rubro: la IA los filtra. Los scrapers (por ejemplo, Apify) sí traen anuncios de Uruguay, pero van contra las condiciones de Meta: no los usamos en el producto.
 - **Publicar en redes:** Zernio (una sola conexión para Instagram, Facebook, TikTok; gratis para 2 cuentas). Opcional, para el final.
 
 ## Herramientas que nos recomendaron

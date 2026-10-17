@@ -77,7 +77,7 @@ Esos colores y tipografías salen de lo que generó la IA para esa marca, nunca 
 - **Catálogo inicial (12):** tarjetas, folletos, carpetas, lapiceras, gorros, remeras, tote bags, vasos térmicos, termos para mate, mates, tazas de café y soportes de celular para videollamadas.
 - **Qué es (cambió el 17/10):** ya no es un marketplace de proveedores. **BrandIA produce los productos con la marca del cliente y se los manda.** Nunca se habla de proveedores en pantalla.
 - **En la demo:** está "en construcción", pero muestra cómo funciona. El logo del cliente cae sobre cada producto, la IA genera la foto del producto con su marca, la persona arma su kit y al tocar "Pedir" se explica que BrandIA lo produce y se lo manda. Sin precios ni pedidos reales.
-- **Ojo:** el texto de la sección Brandería de la web original todavía habla de que "el proveedor entrega". Hay que actualizarlo.
+- **Ojo:** la sección de la web original todavía dice "Brandería" (el nombre es **BranderIA**) y habla de que "el proveedor entrega". Hay que actualizar esos textos.
 - **Referencia:** la sección Brandería de `brandia/referencias/plataforma-web/index.html` (en el código, el array `P` y la sección `#branderia`).
 
 ## 7. Costa: el ejemplo
