@@ -215,7 +215,8 @@ export default async function Costos() {
           </h2>
           <p className="lead max-w-2xl">
             Cada persona que usa la app, de punta a punta: todo lo que pidió a la IA desde la misma pestaña del
-            navegador. Los {pc.enDetalle} más nuevos de los últimos 30 días.
+            navegador. Los {pc.enDetalle} más nuevos de los últimos 30 días. No incluye los audios pasados a texto
+            (ElevenLabs), que se reparten por mes en el registro de pagos.
           </p>
         </div>
         {resumenClientes ? (

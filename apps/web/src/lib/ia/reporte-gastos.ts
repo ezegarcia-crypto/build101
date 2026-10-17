@@ -208,11 +208,13 @@ export async function armarReporte() {
     .map((c) => ({ ...c, inicio: inicioDelCliente(c.id) }))
     .sort((a, b) => (b.inicio?.getTime() ?? 0) - (a.inicio?.getTime() ?? 0))
     .slice(0, CLIENTES_EN_DETALLE);
+  let sinDetalle = 0;
   const clientes: FilaCliente[] = await Promise.all(
     recientes.map(async (c) => {
       const desglose = await intentar(`el detalle del cliente ${c.id}`, () =>
         gateway.getSpendReport({ ...rango, groupBy: "tag", tags: [`cliente:${c.id}`] }),
       );
+      if (!desglose) sinDetalle++;
       const pasosCliente = (desglose?.results ?? [])
         .filter((f) => f.tag?.startsWith("paso:") && f.tag.slice(5) in PASOS)
         .map((f) => ({ paso: f.tag!.slice(5) as Paso, total: f.totalCost, llamadas: f.requestCount ?? 0 }))
@@ -270,6 +272,8 @@ export async function armarReporte() {
       !porDia && "el gasto por día",
       !porModelo && "el gasto por modelo",
       (!porEtiqueta || !porCorrida) && "el gasto por paso",
+      // Sin su detalle, un cliente no cuenta como marca completa: el promedio por cliente queda corto
+      sinDetalle > 0 && `el detalle de ${sinDetalle} ${sinDetalle === 1 ? "cliente" : "clientes"} (los promedios por cliente pueden estar incompletos)`,
     ].filter(Boolean) as string[],
   };
 }
