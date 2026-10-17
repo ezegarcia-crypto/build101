@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Brief de marca · BrandIA motor v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "tipo_proyecto", "marca", "negocio", "publico", "personalidad", "gustos", "referencias", "aplicaciones_prioritarias", "restricciones", "huecos"],
+  "properties": {
+    "version": { "type": "string", "description": "Versión del formato, ej. 0.1" },
+    "tipo_proyecto": { "type": "string", "enum": ["nueva", "renovacion", "solo_productos"] },
+    "marca": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nombre", "necesita_nombre", "rubro", "ubicacion", "trato"],
+      "properties": {
+        "nombre": { "type": ["string", "null"] },
+        "necesita_nombre": { "type": "boolean" },
+        "rubro": { "type": "string" },
+        "ubicacion": { "type": "string", "description": "Ciudad / país / alcance" },
+        "trato": { "type": "string", "enum": ["vos", "tu", "usted"] }
+      }
+    },
+    "negocio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["que_hace", "diferencial", "posicion_precio", "canales"],
+      "properties": {
+        "que_hace": { "type": "string", "description": "La frase de ascensor, en palabras de la persona" },
+        "diferencial": { "type": "string", "description": "Por qué la eligen" },
+        "posicion_precio": { "type": "string", "enum": ["accesible", "intermedio", "premium", "sin_dato"] },
+        "canales": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "publico": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["descripcion"],
+      "properties": {
+        "descripcion": { "type": "string", "description": "La persona concreta que describió" },
+        "edad_aprox": { "type": ["string", "null"] },
+        "que_busca": { "type": ["string", "null"] }
+      }
+    },
+    "personalidad": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["palabras_si", "palabras_no"],
+      "properties": {
+        "palabras_si": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "palabras_no": { "type": "array", "items": { "type": "string" }, "maxItems": 5 }
+      }
+    },
+    "gustos": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["marcas_admiradas", "no_parecerse_a", "colores_si", "colores_no"],
+      "properties": {
+        "marcas_admiradas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["nombre", "por_que"],
+            "properties": { "nombre": { "type": "string" }, "por_que": { "type": "string" } }
+          }
+        },
+        "no_parecerse_a": { "type": "array", "items": { "type": "string" } },
+        "colores_si": { "type": "array", "items": { "type": "string" } },
+        "colores_no": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "referencias": {
+      "type": "array",
+      "description": "Lo que mandó la persona. El análisis va aparte, en referencias.json",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tipo", "ubicacion"],
+        "properties": {
+          "tipo": { "type": "string", "enum": ["imagen", "sitio", "pinterest", "marca", "otro"] },
+          "ubicacion": { "type": "string", "description": "Ruta del archivo o URL" },
+          "nota": { "type": ["string", "null"], "description": "Qué dijo la persona sobre esta referencia" }
+        }
+      }
+    },
+    "aplicaciones_prioritarias": { "type": "array", "items": { "type": "string" }, "description": "Dónde se ve primero la marca" },
+    "restricciones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligatorio", "a_conservar"],
+      "properties": {
+        "obligatorio": { "type": "array", "items": { "type": "string" } },
+        "a_conservar": { "type": "array", "items": { "type": "string" }, "description": "En renovación: qué se queda de la marca actual" }
+      }
+    },
+    "marca_actual": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "logo": { "type": ["string", "null"] },
+        "gusta": { "type": "array", "items": { "type": "string" } },
+        "no_gusta": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "huecos": { "type": "array", "items": { "type": "string" }, "description": "Lo que no se respondió. Nunca se completa inventando" },
+    "direccion_elegida": { "type": ["string", "null"], "description": "Se completa en el paso 5" }
+  }
+}

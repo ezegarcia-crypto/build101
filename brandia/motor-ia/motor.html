@@ -1,0 +1,783 @@
+<title>Motor BrandIA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: barra de marca arriba, lista de marcas probadas a la izquierda, el paso actual a la derecha. Tokens de /01-corporate/branding/design-system/tokens.css */
+:root{
+  --grafito:#1E1E1C; --naranja:#FF5C1A; --cemento:#C9C6BE; --hueso:#EDECE8; --piedra:#5C5A54; --naranja-tinta:#B23B0A; --blanco:#FFFFFF;
+  --bg:#EDECE8; --bg-alt:#FFFFFF; --bg-block:#E2E0DA; --text:#1E1E1C; --text-muted:#5C5A54; --accent:#FF5C1A; --on-accent:#1E1E1C; --accent-text:#B23B0A;
+  --line:rgba(30,30,28,.12); --soft:rgba(30,30,28,.06); --ok:#2F6B3A; --warn:#8A5A00; --err:#A3261B;
+  --font-display:'Fraunces','Iowan Old Style',Georgia,serif; --font-text:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --r-sm:4px; --r-md:14px; --r-pill:999px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141413; --bg-alt:#1E1E1C; --bg-block:#262523; --text:#EDECE8; --text-muted:#A8A49B; --accent-text:#FF7A45;
+  --line:rgba(237,236,232,.14); --soft:rgba(237,236,232,.06); --ok:#7BC48A; --warn:#E3B355; --err:#F08A7E; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#141413; --bg-alt:#1E1E1C; --bg-block:#262523; --text:#EDECE8; --text-muted:#A8A49B; --accent-text:#FF7A45;
+  --line:rgba(237,236,232,.14); --soft:rgba(237,236,232,.06); --ok:#7BC48A; --warn:#E3B355; --err:#F08A7E; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);letter-spacing:-.016em}
+h2{font-size:1.35rem;letter-spacing:-.012em}
+h3{font-size:1.05rem}
+p{margin:0}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.muted{color:var(--text-muted)}
+.small{font-size:13px}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;padding:10px 18px;border-radius:var(--r-pill);border:1px solid var(--line);background:var(--bg-alt);cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--text-muted)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+select,input[type=text],input[type=number],textarea{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 11px;width:100%}
+textarea{resize:vertical;min-height:64px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--bg-alt);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:20px;height:auto;color:var(--text)}
+.brand b{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-.01em}
+.brand b span{color:var(--accent)}
+.brand .label{margin-left:6px}
+.shell{display:grid;grid-template-columns:280px minmax(0,1fr);gap:0;min-height:calc(100vh - 60px)}
+aside{border-right:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:16px}
+main{padding:24px clamp(16px,3vw,40px) 120px;min-width:0;display:flex;flex-direction:column;gap:20px}
+@media (max-width:820px){.shell{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}}
+
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--soft);border-radius:var(--r-sm);padding:10px}
+.kpi b{display:block;font-family:var(--font-display);font-size:22px;font-variant-numeric:tabular-nums}
+.list{display:flex;flex-direction:column;gap:4px}
+.item{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:var(--r-sm);border:1px solid transparent;background:transparent;cursor:pointer;width:100%}
+.item:hover{background:var(--soft)}
+.item.on{border-color:var(--line);background:var(--bg-alt)}
+.item .n{font-weight:600}
+.item .m{font-size:12px;color:var(--text-muted);display:flex;gap:8px;flex-wrap:wrap}
+.empty{border:1px dashed var(--line);border-radius:var(--r-md);padding:16px;color:var(--text-muted);font-size:13px}
+
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:var(--r-pill);border:1px solid var(--line);background:transparent;cursor:pointer;font-weight:500;font-size:14px}
+.step i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--soft);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.step.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.step.on i{background:var(--accent);color:var(--on-accent)}
+.step.done i{background:var(--ok);color:var(--bg-alt)}
+.step:disabled{opacity:.4;cursor:not-allowed}
+
+.panel{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r-md);padding:clamp(16px,2.4vw,28px);display:flex;flex-direction:column;gap:16px;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.chip{display:inline-block;padding:3px 10px;border-radius:var(--r-pill);background:var(--soft);font-size:12px;font-weight:500}
+.note{background:var(--soft);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--text-muted)}
+details summary{cursor:pointer;font-size:13px;color:var(--text-muted)}
+pre{background:var(--soft);padding:12px;border-radius:var(--r-sm);overflow-x:auto;font-size:12px;max-height:360px}
+
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+.flow{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--line);margin-left:10px}
+.flow div{padding:0 0 14px 18px;position:relative}
+.flow div::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--bg-alt);border:2px solid var(--text-muted)}
+.flow div:last-child{padding-bottom:0}
+.flow b{display:block}
+
+/* Chat */
+.chat{display:flex;flex-direction:column;gap:12px;max-height:56vh;overflow-y:auto;padding:4px 2px}
+.msg{max-width:min(620px,92%);padding:12px 16px;border-radius:var(--r-md);white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.a{background:var(--soft);align-self:flex-start;border-bottom-left-radius:var(--r-sm)}
+.msg.u{background:var(--text);color:var(--bg);align-self:flex-end;border-bottom-right-radius:var(--r-sm)}
+.composer{display:flex;gap:10px;align-items:flex-end}
+.composer textarea{min-height:52px}
+
+/* Brief */
+.brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 24px}
+.brief .f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.brief .f p{overflow-wrap:anywhere}
+
+/* Referencias */
+.drop{border:1.5px dashed var(--line);border-radius:var(--r-md);padding:22px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.drop.over{border-color:var(--accent);background:var(--soft)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.thumb{position:relative;aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;background:var(--soft)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:6px;right:6px;border:0;border-radius:50%;width:24px;height:24px;background:rgba(0,0,0,.6);color:#fff;cursor:pointer}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dot{width:18px;height:18px;border-radius:50%;border:1px solid var(--line)}
+
+/* Direcciones */
+.dir{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column;background:var(--bg-alt);min-width:0}
+.dir.on{outline:2px solid var(--accent);outline-offset:-1px}
+.dir .hd{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.dir .hd .row{gap:8px}
+.letter{font-family:var(--font-display);font-weight:700;font-size:13px;width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;background:var(--text);color:var(--bg)}
+.pal{display:flex;height:70px}
+.pal div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:6px;font-size:10px;font-weight:600;letter-spacing:.04em;min-width:0;overflow:hidden}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+.board > *{background:var(--bg-alt);min-height:140px;min-width:0;overflow:hidden}
+.spec{padding:14px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.spec .big{font-size:34px;line-height:1.05;overflow-wrap:anywhere}
+.motif{display:grid;place-items:center;padding:10px}
+.motif svg{width:100%;max-width:150px;height:auto}
+.card-mock{display:flex;flex-direction:column;justify-content:space-between;padding:14px}
+.post-mock{display:flex;flex-direction:column;justify-content:flex-end;padding:14px;gap:6px}
+.dir .bd{padding:14px 18px 18px;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.refstrip{display:flex;gap:4px}
+.refstrip img{width:33.33%;aspect-ratio:1;object-fit:cover}
+
+/* Logos */
+.logo{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column;min-width:0;background:var(--bg-alt)}
+.logo.on{outline:2px solid var(--accent);outline-offset:-1px}
+.logo .art{display:grid;grid-template-columns:2fr 1fr;gap:1px;background:var(--line)}
+.logo .art > div{display:grid;place-items:center;padding:14px;min-height:150px}
+.logo .art svg{width:100%;height:auto;max-height:170px}
+.logo .tiny{display:flex;gap:10px;align-items:center;padding:8px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--text-muted)}
+.logo .tiny .t{width:72px;height:36px;display:grid;place-items:center}
+.logo .tiny .t svg{width:100%;height:100%}
+.logo .bd{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.ronda{display:flex;flex-direction:column;gap:12px}
+
+/* Evaluación */
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--text-muted);font-size:12px}
+td.r,th.r{text-align:right}
+.tablewrap{overflow-x:auto}
+.stars{display:flex;gap:4px}
+.stars button{width:34px;height:34px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--bg-alt);cursor:pointer;font-weight:600}
+.stars button.on{background:var(--text);color:var(--bg)}
+.ev{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+
+/* Barra de trabajo */
+.busy{position:fixed;left:0;right:0;bottom:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);display:flex;align-items:center;gap:14px;flex-wrap:wrap;z-index:5}
+.busy .pulse{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:p 1.2s ease-in-out infinite}
+@keyframes p{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.busy .pulse{animation:none}}
+.busy .btn{background:transparent;color:var(--bg);border-color:rgba(237,236,232,.4)}
+.toast{position:fixed;right:20px;bottom:76px;max-width:420px;background:var(--bg-alt);border:1px solid var(--line);border-left:4px solid var(--err);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;z-index:6;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.toast.ok{border-left-color:var(--ok)}
+</style>
+
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+    <b>Brand<span>IA</span></b>
+    <span class="label">Motor v1 · banco de pruebas</span>
+  </div>
+  <div class="row">
+    <button class="btn ghost" id="bEjemplo" type="button">Probar con un ejemplo</button>
+    <button class="btn primary" id="bNueva" type="button">Nueva marca</button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside id="side">
+    <div class="label">Marcas probadas</div>
+    <div class="kpis">
+      <div class="kpi"><b id="kCount">0</b><span class="small muted">marcas reales</span></div>
+      <div class="kpi"><b id="kCost">—</b><span class="small muted">costo API estimado por marca</span></div>
+    </div>
+    <div class="list" id="list"></div>
+    <p class="small muted" id="dbNote"></p>
+  </aside>
+  <main id="main"></main>
+</div>
+<div class="busy" id="busy" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============ Prompts (mismos que motor-v1/*.md) ============ */
+const PROMPT_ENTREVISTA = `Sos el entrevistador de BrandIA, una plataforma que arma identidades de marca con IA. Tu trabajo es entender un negocio lo suficiente para que otros agentes le armen la identidad. Hablás con emprendedores, profesionales independientes y PyMEs que en general no saben de diseño.
+
+Cómo conversás:
+- Español rioplatense, de vos (salvo que la persona use otro trato). Cálido, directo, sin jerga de diseño.
+- Una tanda de 2 o 3 preguntas por mensaje, nunca más. Mensajes cortos. Cerrás en 6 a 8 turnos.
+- Si una respuesta es vaga ("algo moderno"), repreguntá una vez con dos opciones concretas.
+- Si la persona no sabe algo, no insistas y seguí.
+- No propongas logos, colores ni nombres: tu trabajo es escuchar.
+- Texto plano, sin markdown. A lo sumo guiones para listar las preguntas.
+
+Guion (adaptalo a la charla):
+0. ¿Arranca una marca de cero, renueva una que ya tiene, o ya tiene marca y solo quiere productos con ella?
+1. Nombre (o si todavía no tiene), qué hace en una frase de ascensor, dónde está y dónde vende.
+2. Cliente ideal (una persona concreta), por qué lo eligen a él y no a otro, si sus precios son accesibles, intermedios o premium.
+3. Tres palabras para cómo quiere que se sienta la marca, tres cosas que nunca quiere transmitir, y si le habla a sus clientes de vos, tú o usted.
+4. Dos o tres marcas que le gusten de cualquier rubro y por qué, competidores a los que no se quiere parecer, colores que ama y colores que no quiere ni ver.
+5. Referencias: avisale que en el paso siguiente va a poder subir fotos, capturas o tableros; preguntale si ya tiene algo en mente.
+6. Dónde se va a ver la marca primero (Instagram, cartel, packaging, tarjetas, uniforme, web) y si hay algo que sí o sí tenga que estar.
+Si es una renovación, preguntá qué le gusta y qué no de su marca actual.
+
+Cierre: cuando tengas lo suficiente, resumí en 4 o 5 líneas lo que entendiste y preguntá si hay algo para corregir. Cuando la persona confirme, respondé solo "Perfecto, armo el brief." y terminá ese mensaje con la marca [[BRIEF]].`;
+
+const BRIEF_FORMA = `{
+  "version": "0.1",
+  "tipo_proyecto": "nueva | renovacion | solo_productos",
+  "marca": { "nombre": "string o null", "necesita_nombre": false, "rubro": "", "ubicacion": "", "trato": "vos | tu | usted" },
+  "negocio": { "que_hace": "frase de ascensor en palabras de la persona", "diferencial": "", "posicion_precio": "accesible | intermedio | premium | sin_dato", "canales": [""] },
+  "publico": { "descripcion": "la persona concreta que describió", "edad_aprox": "string o null", "que_busca": "string o null" },
+  "personalidad": { "palabras_si": ["", "", ""], "palabras_no": ["", "", ""] },
+  "gustos": { "marcas_admiradas": [{ "nombre": "", "por_que": "" }], "no_parecerse_a": [""], "colores_si": [""], "colores_no": [""] },
+  "referencias": [],
+  "aplicaciones_prioritarias": [""],
+  "restricciones": { "obligatorio": [""], "a_conservar": [""] },
+  "marca_actual": null,
+  "huecos": ["lo que no se respondió"],
+  "direccion_elegida": null
+}`;
+
+const PROMPT_REFERENCIAS = `Sos el analista de referencias de BrandIA. Te paso las imágenes que mandó una persona para su marca, en orden (imagen 1, 2, 3…), lo que dijo sobre ellas y su brief. Tu trabajo es traducir gustos a datos de diseño. No proponés la marca: describís lo que ves y encontrás patrones.
+
+Por cada imagen: que_se_ve (una línea concreta), colores (3 a 5 dominantes en hex con nombre común), estilo (palabras de diseño: minimal, artesanal, retro, editorial, geométrico, orgánico…), tipografia (si hay letras, cómo son; si no, null) y que_tomar (qué parece gustarle, cruzado con lo que dijo).
+Después, la síntesis: patrones (lo que se repite), contradicciones (referencias que tiran para lados opuestos; nombralas, no las resuelvas), choques_con_el_brief (si algo contradice las palabras "no" del brief) y preguntas (como mucho dos, solo si una duda cambia la dirección visual).
+
+Respondé solo con un objeto JSON con esta forma:
+{"referencias":[{"imagen":1,"que_se_ve":"","colores":[{"hex":"#000000","nombre":""}],"estilo":[""],"tipografia":null,"que_tomar":""}],"sintesis":{"patrones":[""],"contradicciones":[""],"choques_con_el_brief":[""],"preguntas":[""]}}`;
+
+const PROMPT_DIRECCIONES = `Sos el director visual de BrandIA. Con el brief y el análisis de referencias, proponé tres direcciones visuales distintas para la marca. Cada una tiene que poder defenderse con el brief; ninguna es relleno.
+
+- A, la esperada: la que sale derecho de lo que pidió la persona y sus referencias.
+- B, la vecina: comparte la esencia pero cambia una variable fuerte (color, tono o forma).
+- C, la que se anima: una lectura menos obvia del mismo brief, que sigue respetando las palabras "no" y las restricciones.
+
+Ninguna dirección usa algo de colores_no, se parece a no_parecerse_a ni rompe restricciones. Las tipografías salen solo de Google Fonts (nombre exacto de la familia) y las dos de cada dirección tienen que ser distintas entre sí. Cada paleta tiene 4 a 6 colores y al menos un par con contraste 4,5:1 para texto. El motivo_svg es un dibujo simple (formas, no texto) que muestra el lenguaje de formas, con viewBox='0 0 160 160', usando solo colores de la paleta y comillas simples en los atributos. La frase es un ejemplo corto en la voz de la marca, como para una pieza de Instagram.
+
+Respondé solo con un objeto JSON con esta forma:
+{"direcciones":[{"id":"A","nombre":"dos o tres palabras evocadoras","idea":"una frase para alguien sin formación en diseño","por_que":"cómo responde al brief, citando palabras y referencias concretas","palabras":["","",""],"paleta":[{"hex":"#000000","nombre":"","rol":"principal | acento | fondo | texto | apoyo"}],"tipografias":{"titulos":{"familia":"","por_que":""},"texto":{"familia":"","por_que":""}},"formas":"una línea","logo_sugerido":{"tipo":"monograma | símbolo + logotipo | sello | logotipo","por_que":""},"frase":"","motivo_svg":"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'>…</svg>","riesgo":"qué podría salir mal, en una línea"}]}`;
+
+const REGLAS_SVG = `Reglas del SVG (obligatorias):
+- Empieza con <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 240'> y usa comillas simples en todos los atributos.
+- Solo path, rect, circle, ellipse, polygon, polyline, line, g y text. Sin imágenes, scripts, filtros, máscaras ni enlaces externos.
+- Colores solo de la paleta de la dirección, sobre fondo transparente (el fondo lo pone la página).
+- El nombre de la marca, si va escrito, usa <text> con font-family='{TIT}' (ya está cargada) y font-weight 400 o 700, o va dibujado con paths.
+- La composición entra holgada en el viewBox, centrada, con aire alrededor.
+- El símbolo tiene que funcionar a 32 px y en una sola tinta: pocas formas, decididas.
+- Nada que se parezca a una marca conocida.`;
+
+const PROMPT_LOGOS = `Sos un diseñador de identidad senior de BrandIA. Dibujá 6 caminos de logo en SVG para la marca, siguiendo la dirección visual elegida y el brief.
+Variá el tipo entre los 6: al menos un monograma, un símbolo + logotipo, un sello o emblema y un logotipo puro. Cada camino es una idea distinta, no una variación de color.
+
+${REGLAS_SVG}
+
+Respondé solo con un array JSON de 6 objetos:
+[{"id":"1","nombre":"nombre corto del camino","tipo":"monograma | símbolo + logotipo | sello | logotipo","razon":"una línea: qué idea del brief expresa","svg":"<svg …>…</svg>"}]`;
+
+const PROMPT_AJUSTE = `Sos un diseñador de identidad senior de BrandIA. La persona eligió el logo de abajo y pidió un cambio. Hacé 3 variantes que resuelvan el pedido de formas distintas, manteniendo lo que hace funcionar al logo elegido.
+
+${REGLAS_SVG}
+
+Respondé solo con un array JSON de 3 objetos:
+[{"id":"v1","nombre":"nombre corto","tipo":"igual que el original o el que corresponda","razon":"una línea: qué cambiaste y por qué","svg":"<svg …>…</svg>"}]`;
+
+/* ============ Ejemplo ficticio (Costa, del manual v1.3 § 09) ============ */
+const EJEMPLO_BRIEF = {
+  version:"0.1", tipo_proyecto:"nueva",
+  marca:{nombre:"Costa", necesita_nombre:false, rubro:"Panadería de masa madre", ubicacion:"Montevideo, Uruguay (Palermo)", trato:"vos"},
+  negocio:{que_hace:"Hacemos pan de masa madre y facturas con fermentación lenta, todos los días, a dos cuadras de la rambla", diferencial:"Fermentación de 48 horas y harinas uruguayas; el pan sale caliente a las 8 y a las 17", posicion_precio:"intermedio", canales:["local a la calle","Instagram","pedidos por WhatsApp","cafeterías del barrio"]},
+  publico:{descripcion:"Lucía, 34, diseñadora, vive en el barrio, compra pan dos veces por semana y quiere saber de dónde viene lo que come", edad_aprox:"28 a 45", que_busca:"Pan de verdad, cerca y sin pretensión"},
+  personalidad:{palabras_si:["cálida","honesta","de barrio"], palabras_no:["gourmet de vidriera","fría","pretenciosa"]},
+  gustos:{marcas_admiradas:[{nombre:"Patagonia",por_que:"dice lo que hace sin adornos"},{nombre:"los almacenes de barrio de los 60",por_que:"carteles pintados a mano y cercanía"}], no_parecerse_a:["cadenas de panaderías industriales","cafeterías de especialidad con estética nórdica fría"], colores_si:["tonos de corteza y harina","azul del mar en invierno"], colores_no:["negro total","dorado"]},
+  referencias:[], aplicaciones_prioritarias:["cartel del local","bolsas de papel kraft","Instagram","stickers para pedidos"],
+  restricciones:{obligatorio:["que se lea bien desde la vereda de enfrente"], a_conservar:[]},
+  marca_actual:null, huecos:["No definió presupuesto de impresión"], direccion_elegida:null
+};
+
+/* ============ Precios para estimar el costo por API (USD por millón de tokens, 06/10/2026) ============ */
+const TIERS = {
+  quick:  {label:"Rápido",      modelo:"Haiku 4.5",  pin:1, pout:5,  think:1},
+  default:{label:"Equilibrado", modelo:"Sonnet 5.5", pin:2, pout:10, think:2},
+  complex:{label:"Máximo",      modelo:"Opus 5.5",   pin:4, pout:20, think:2}
+};
+const PASOS = [
+  {id:"entrevista", n:1, t:"Entrevista"},
+  {id:"referencias", n:2, t:"Referencias"},
+  {id:"direcciones", n:3, t:"Direcciones"},
+  {id:"logos", n:4, t:"Logos"},
+  {id:"evaluacion", n:5, t:"Evaluación"}
+];
+const CHARS_POR_TOKEN = 3.6, TOKENS_POR_IMAGEN = 1600;
+
+/* ============ Estado ============ */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let sample = null, db = null, userCap = null, myId = null, imgLimits = null;
+let sampleState = "cargando"; // cargando | listo | ausente
+let marcas = [], nombres = {};
+let cur = null, step = "entrevista";
+let refFiles = [];        // [{file, url}] solo en esta sesión
+let busy = null, busyTimer = null;
+let tierDir = "default", tierLogo = "complex";
+let saving = Promise.resolve(), writeBlocked = false;
+
+/* ============ Utilidades ============ */
+function toast(msg, ok=false){
+  const t = $("#toast"); t.textContent = msg; t.className = "toast" + (ok ? " ok" : ""); t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ok ? 2600 : 7000);
+}
+function copyFor(code){
+  return ({
+    not_granted:"No se dio permiso para usar Claude en esta página. Se puede habilitar desde el menú de permisos del artifact.",
+    sampling_disabled:"Claude no está disponible para esta cuenta.",
+    rate_limited:"Se llegó al límite de uso por ahora. Probá de nuevo en un rato.",
+    session_expired:"Se cerró la sesión de Claude. Volvé a ingresar y probá de nuevo.",
+    refused:"Claude no respondió a este pedido. Probá reformulando.",
+    invalid_json:"La respuesta no vino en el formato esperado. Probá de nuevo.",
+    image_rejected:"Una de las imágenes no se pudo usar (tipo o tamaño). Probá con otra.",
+    images_unavailable:"En esta vista no se pueden mandar imágenes a Claude.",
+    prompt_too_large:"El pedido quedó demasiado largo. Sacá algunas imágenes o acortá las notas.",
+    empty_completion:"Claude no devolvió texto. Probá de nuevo."
+  })[code] || "Algo falló al hablar con Claude. Probá de nuevo.";
+}
+function uid(){ return "m" + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function hexOk(h){ return /^#[0-9a-f]{6}$/i.test(String(h||"").trim()) ? String(h).trim() : null; }
+function lum(hex){ const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+function contrast(a,b){ const x=lum(a), y=lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
+function bestText(bg, pal){ const opts=[...pal.map(p=>p.hex), "#1E1E1C", "#FFFFFF"].filter(hexOk); return opts.sort((a,b)=>contrast(bg,b)-contrast(bg,a))[0]; }
+function rolHex(dir, rol, fb){ const p=(dir.paleta||[]).find(x=>String(x.rol||"").toLowerCase().includes(rol) && hexOk(x.hex)); return p ? p.hex : fb; }
+const fontsCargadas = new Set();
+function cargarFuente(fam){
+  const f = String(fam||"").replace(/[^A-Za-z0-9 ]/g,"").trim(); if(!f || fontsCargadas.has(f)) return f;
+  fontsCargadas.add(f); const q = encodeURIComponent(f).replace(/%20/g,"+");
+  for (const href of [`https://fonts.googleapis.com/css2?family=${q}&display=swap`, `https://fonts.googleapis.com/css2?family=${q}:wght@700&display=swap`]){
+    const l = document.createElement("link"); l.rel="stylesheet"; l.href=href; document.head.appendChild(l);
+  }
+  return f;
+}
+function ff(fam, fb){ const f = cargarFuente(fam); return f ? `'${f}', ${fb}` : fb; }
+function limpiarSvg(str){
+  try{
+    const d = new DOMParser().parseFromString(String(str||""), "image/svg+xml");
+    const svg = d.documentElement;
+    if (!svg || svg.nodeName.toLowerCase() !== "svg" || d.querySelector("parsererror")) return null;
+    const malos = ["script","foreignobject","iframe","image","use","a","style","animate","set","animatetransform","animatemotion"];
+    svg.querySelectorAll("*").forEach(el => { if (malos.includes(el.nodeName.toLowerCase())) el.remove(); });
+    [svg, ...svg.querySelectorAll("*")].forEach(el => {
+      [...el.attributes].forEach(a => {
+        const n = a.name.toLowerCase(), v = a.value;
+        if (n.startsWith("on") || ((n === "href" || n === "xlink:href") && !v.startsWith("#")) || /url\s*\(\s*['"]?(?!#)/i.test(v)) el.removeAttribute(a.name);
+      });
+    });
+    svg.removeAttribute("width"); svg.removeAttribute("height");
+    svg.setAttribute("preserveAspectRatio","xMidYMid meet"); svg.setAttribute("aria-hidden","true");
+    return new XMLSerializer().serializeToString(svg);
+  }catch{ return null; }
+}
+function inChars(input){ return typeof input === "string" ? input.length : input.reduce((a,t)=>a+t.content.length,0); }
+function costoUso(u){ const t=TIERS[u.tier]||TIERS.default; return (u.tin*t.pin + u.tout*t.think*t.pout)/1e6; }
+function costoMarca(m){ return (m.uso||[]).reduce((a,u)=>a+costoUso(u),0); }
+function usd(n){ return "USD " + n.toFixed(n < .1 ? 3 : 2).replace(".",","); }
+
+/* ============ Llamar a Claude ============ */
+async function preguntar(paso, input, {json=false, tier="default", images=null, label="Pensando"}={}){
+  if (!sample){ toast(sampleState === "cargando" ? "Todavía se está conectando con Claude. Esperá un segundo." : "Esta vista no puede usar Claude. Abrí la página en claude.ai."); return null; }
+  const marca = cur;
+  const ctl = new AbortController();
+  busy = {ctl, label, t0:Date.now(), chars:0}; pintarBusy();
+  busyTimer = setInterval(pintarBusy, 1000);
+  try{
+    const opts = {signal:ctl.signal, modelTier:tier, cache:false, onText:({text}) => { busy && (busy.chars = text.length); pintarBusy(); }};
+    if (images && images.length) opts.images = images;
+    const r = json ? await sample.json(input, opts) : await sample(input, opts);
+    const out = json ? JSON.stringify(r).length : r.text.length;
+    const tierReal = (!json && r.modelTierApplied) || tier;
+    marca.uso.push({paso, tier:tierReal, tin:Math.round(inChars(input)/CHARS_POR_TOKEN) + (images ? images.length*TOKENS_POR_IMAGEN : 0), tout:Math.round(out/CHARS_POR_TOKEN), imgs:images ? images.length : 0, t:Date.now()});
+    return cur === marca ? r : null;
+  }catch(e){
+    if (e && e.code !== "cancelled") toast(copyFor(e && e.code));
+    return null;
+  }finally{
+    clearInterval(busyTimer); busy = null; pintarBusy();
+  }
+}
+function pintarBusy(){
+  const b = $("#busy");
+  if (!busy){ b.hidden = true; b.innerHTML = ""; return; }
+  const s = Math.round((Date.now()-busy.t0)/1000);
+  b.hidden = false;
+  b.innerHTML = `<span class="pulse"></span><b>${esc(busy.label)}</b><span>${busy.chars ? `escribiendo · ${busy.chars.toLocaleString("es-UY")} caracteres` : "pensando…"} · ${s} s</span><button class="btn" type="button" id="bStop">Frenar</button>`;
+  $("#bStop").onclick = () => busy && busy.ctl.abort();
+}
+
+/* ============ Guardar ============ */
+function guardar(){
+  if (!cur) return;
+  cur.actualizado = Date.now();
+  if (!db || writeBlocked) return;
+  const copia = JSON.parse(JSON.stringify(cur));
+  saving = saving.then(() => db.doc("marcas/" + copia.id).set(copia)).catch(e => {
+    if (e && e.code === "invalid_argument"){ writeBlocked = true; $("#dbNote").textContent = "Tu nivel de acceso no permite guardar marcas. Lo que hagas queda solo en esta pestaña."; }
+    else if (e && e.code === "quota_exceeded") toast("Se llenó el espacio del banco de pruebas. Borrá marcas viejas.");
+  });
+}
+
+/* ============ Lista lateral ============ */
+async function pintarLista(){
+  const reales = marcas.filter(m => !m.ejemplo);
+  $("#kCount").textContent = reales.length;
+  const conLogos = reales.filter(m => (m.logos||[]).length);
+  $("#kCost").textContent = conLogos.length ? usd(conLogos.reduce((a,m)=>a+costoMarca(m),0)/conLogos.length) : "—";
+  const L = $("#list");
+  if (!db){ L.innerHTML = `<div class="empty">${sampleState==="cargando" ? "Conectando…" : "Abrí esta página en claude.ai para ver y guardar las marcas del banco de pruebas."}</div>`; return; }
+  if (!marcas.length){ L.innerHTML = `<div class="empty">Todavía no hay marcas probadas. Empezá con <b>Nueva marca</b> o con el ejemplo de Costa.</div>`; return; }
+  const ids = [...new Set(marcas.map(m=>m.autor).filter(Boolean))];
+  if (userCap && ids.length){ try{ const ps = await userCap.profiles(ids); ids.forEach(id => nombres[id] = (ps[id] && ps[id].name) || ""); }catch{} }
+  L.innerHTML = marcas.map(m => {
+    const paso = (PASOS.find(p=>p.id===m.paso)||PASOS[0]).t;
+    return `<button class="item ${cur && cur.id===m.id ? "on" : ""}" data-id="${esc(m.id)}" type="button">
+      <span class="n">${esc(m.nombre)}</span>
+      <span class="m"><span>${esc(paso)}</span><span>${usd(costoMarca(m))}</span>${m.autor && nombres[m.autor] ? `<span>${esc(nombres[m.autor])}</span>` : ""}${m.ejemplo ? `<span>ejemplo</span>` : ""}</span>
+    </button>`;
+  }).join("");
+  L.querySelectorAll(".item").forEach(b => b.onclick = () => abrir(b.dataset.id));
+}
+function abrir(id){
+  if (busy) return;
+  const m = marcas.find(x => x.id === id); if (!m) return;
+  cur = JSON.parse(JSON.stringify(m)); refFiles = [];
+  step = cur.paso || "entrevista"; pintar(); pintarLista();
+}
+
+/* ============ Nueva marca ============ */
+function nuevaMarca(ejemplo){
+  if (busy) return;
+  cur = {id:uid(), nombre: ejemplo ? "Costa" : "Marca nueva", ejemplo:!!ejemplo, autor:myId, creado:Date.now(), actualizado:Date.now(),
+    paso: ejemplo ? "referencias" : "entrevista", turnos:[], brief: ejemplo ? JSON.parse(JSON.stringify(EJEMPLO_BRIEF)) : null,
+    referencias:null, direcciones:null, direccion:null, logos:[], logo:null, uso:[], evaluacion:{}};
+  refFiles = []; step = cur.paso; pintar(); pintarLista();
+  if (ejemplo) guardar(); else empezarEntrevista();
+}
+function irA(p){ step = p; cur.paso = p; pintar(); guardar(); pintarLista(); }
+
+/* ============ Pintar ============ */
+function pintar(){
+  const M = $("#main");
+  if (!cur){ M.innerHTML = vistaInicio(); $("#bInicioNueva").onclick = () => nuevaMarca(false); $("#bInicioEj").onclick = () => nuevaMarca(true); return; }
+  const listo = {entrevista:!!cur.brief, referencias:!!cur.referencias, direcciones:!!cur.direccion, logos:!!cur.logo, evaluacion:!!(cur.evaluacion && cur.evaluacion.guardada)};
+  const habil = {entrevista:true, referencias:!!cur.brief, direcciones:!!cur.brief, logos:!!cur.direccion, evaluacion:!!cur.brief};
+  M.innerHTML = `
+    <div class="row between">
+      <div><div class="label">${cur.ejemplo ? "Marca de ejemplo · ficticia" : "Marca en prueba"}</div><h1>${esc(cur.nombre)}</h1></div>
+      <div class="small muted">Costo estimado por API hasta ahora: <b>${usd(costoMarca(cur))}</b></div>
+    </div>
+    <nav class="steps" aria-label="Pasos">${PASOS.map(p => `<button class="step ${p.id===step?"on":""} ${listo[p.id]?"done":""}" data-p="${p.id}" type="button" ${habil[p.id]?"":"disabled"}><i>${listo[p.id] && p.id!==step ? "✓" : p.n}</i>${p.t}</button>`).join("")}</nav>
+    <section class="panel" id="paso"></section>`;
+  M.querySelectorAll(".step").forEach(b => b.onclick = () => irA(b.dataset.p));
+  ({entrevista:pEntrevista, referencias:pReferencias, direcciones:pDirecciones, logos:pLogos, evaluacion:pEvaluacion})[step]($("#paso"));
+}
+
+function vistaInicio(){
+  return `<section class="panel"><div class="hero">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="label">Banco de pruebas · etapa 1</div>
+      <h1>Armá una marca de punta a punta y medí cuánto costaría por API</h1>
+      <p class="muted">El motor corre los mismos pasos que va a tener la plataforma, con Claude desde tu cuenta. Cada llamada queda anotada y se traduce a lo que costaría con la API, así sabemos el costo real por marca antes de fijar precios.</p>
+      <div class="row"><button class="btn primary" id="bInicioNueva" type="button">Nueva marca</button><button class="btn" id="bInicioEj" type="button">Probar con un ejemplo</button></div>
+      <p class="small muted">Cada uso gasta de la cuenta de Claude de quien lo abre. Las marcas quedan guardadas para el equipo; las imágenes de referencia, solo mientras la pestaña está abierta.</p>
+    </div>
+    <div class="flow">
+      <div><b>1 · Entrevista</b><span class="small muted">Un chat de 6 a 8 turnos que termina en el brief.</span></div>
+      <div><b>2 · Referencias</b><span class="small muted">Fotos, capturas o tableros traducidos a colores y estilos.</span></div>
+      <div><b>3 · Direcciones</b><span class="small muted">Tres moodboards: la esperada, la vecina y la que se anima.</span></div>
+      <div><b>4 · Logos</b><span class="small muted">Seis caminos en SVG sobre la dirección elegida, y ajustes.</span></div>
+      <div><b>5 · Evaluación</b><span class="small muted">Nota por paso, si lo pagaría y el costo estimado.</span></div>
+    </div>
+  </div></section>`;
+}
+
+/* ---------- Paso 1 · Entrevista ---------- */
+async function empezarEntrevista(){
+  const r = await preguntar("entrevista", [{role:"user", content: PROMPT_ENTREVISTA + "\n\nEmpezá ahora con el turno 0."}], {tier:"quick", label:"Entrevistador"});
+  if (r && cur){ cur.turnos.push({role:"assistant", content:r.text}); guardar(); if (step==="entrevista") pintar(); }
+}
+function pEntrevista(el){
+  const visibles = cur.turnos.map(t => ({...t, content: t.content.replace("[[BRIEF]]","").trim()}));
+  const nUser = cur.turnos.filter(t=>t.role==="user").length;
+  el.innerHTML = `
+    <div class="row between"><h2>Entrevista</h2><span class="small muted">Contestá como lo haría el cliente.</span></div>
+    ${cur.brief ? `<div class="note">El brief ya está armado. Podés revisarlo abajo o seguir a referencias.</div>` : ""}
+    <div class="chat" id="chat">${visibles.length ? visibles.map(t => `<div class="msg ${t.role==="user"?"u":"a"}">${esc(t.content)}</div>`).join("") : `<div class="msg a muted">${sample ? "Arrancando la entrevista…" : "Esperando a Claude…"}</div>`}</div>
+    ${!cur.brief ? `
+    <form class="composer" id="fChat">
+      <textarea id="tChat" placeholder="Escribí tu respuesta…" aria-label="Tu respuesta"></textarea>
+      <button class="btn primary" type="submit">Enviar</button>
+    </form>
+    <div class="row between">
+      <span class="small muted">${nUser < 3 ? "Después de unos turnos vas a poder cerrar la entrevista." : "¿Ya alcanza? Podés cerrar la entrevista acá."}</span>
+      <div class="row">${!visibles.length ? `<button class="btn" id="bReintentar" type="button">Empezar entrevista</button>` : ""}<button class="btn" id="bBrief" type="button" ${nUser < 3 ? "disabled" : ""}>Cerrar entrevista y armar brief</button></div>
+    </div>` : ""}
+    ${cur.brief ? vistaBrief(cur.brief) + `<div class="row end"><button class="btn" id="bRehacer" type="button">Rehacer el brief</button><button class="btn primary" id="bSeguir" type="button">Seguir a referencias</button></div>` : ""}`;
+  const chat = $("#chat", el); chat.scrollTop = chat.scrollHeight;
+  const f = $("#fChat", el);
+  if (f){
+    const ta = $("#tChat", el);
+    ta.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); f.requestSubmit(); } });
+    f.onsubmit = async e => {
+      e.preventDefault(); const v = ta.value.trim(); if (!v || busy) return;
+      cur.turnos.push({role:"user", content:v}); pintar();
+      const r = await preguntar("entrevista", [{role:"user", content: PROMPT_ENTREVISTA + "\n\nEmpezá ahora con el turno 0."}, ...cur.turnos], {tier:"quick", label:"Entrevistador"});
+      if (!cur) return;
+      if (r){ cur.turnos.push({role:"assistant", content:r.text}); guardar(); }
+      if (r && r.text.includes("[[BRIEF]]")) return armarBrief();
+      if (step === "entrevista") pintar();
+    };
+    setTimeout(() => ta.focus(), 0);
+  }
+  $("#bReintentar", el) && ($("#bReintentar", el).onclick = empezarEntrevista);
+  $("#bBrief", el) && ($("#bBrief", el).onclick = armarBrief);
+  $("#bRehacer", el) && ($("#bRehacer", el).onclick = armarBrief);
+  $("#bSeguir", el) && ($("#bSeguir", el).onclick = () => irA("referencias"));
+}
+async function armarBrief(){
+  if (busy) return;
+  const transcript = cur.turnos.map(t => (t.role==="user" ? "CLIENTE: " : "BRANDIA: ") + t.content.replace("[[BRIEF]]","")).join("\n\n");
+  const r = await preguntar("entrevista", `Con la entrevista de abajo, armá el brief de marca para BrandIA.\nReglas: usá las palabras de la persona; lo que no se respondió va en "huecos"; nunca inventes datos.\nRespondé solo con un objeto JSON con exactamente esta forma:\n${BRIEF_FORMA}\n\nEntrevista:\n${transcript}`, {json:true, tier:"default", label:"Armando el brief"});
+  if (!r || !cur) return;
+  if (typeof r !== "object" || !r.marca){ toast("El brief no vino completo. Probá de nuevo."); return; }
+  cur.brief = r;
+  if (r.marca && r.marca.nombre) cur.nombre = String(r.marca.nombre);
+  guardar(); pintar(); pintarLista();
+}
+function lista(a){ return (Array.isArray(a) ? a : []).filter(Boolean).map(x => typeof x === "object" ? (x.nombre ? `${x.nombre}${x.por_que ? " — " + x.por_que : ""}` : JSON.stringify(x)) : x); }
+function vistaBrief(b){
+  const f = (t, v) => `<div class="f"><span class="label">${t}</span><p>${v || '<span class="muted">—</span>'}</p></div>`;
+  const chips = a => lista(a).map(x => `<span class="chip">${esc(x)}</span>`).join(" ");
+  const m = b.marca || {}, n = b.negocio || {}, p = b.publico || {}, g = b.gustos || {}, per = b.personalidad || {}, r = b.restricciones || {};
+  return `<div class="label" style="margin-top:6px">Brief</div><div class="brief">
+    ${f("Marca", esc(m.nombre || (m.necesita_nombre ? "Necesita nombre" : "")) + (m.rubro ? `<br><span class="muted">${esc(m.rubro)} · ${esc(m.ubicacion||"")}</span>` : ""))}
+    ${f("Qué hace", esc(n.que_hace))}
+    ${f("Por qué la eligen", esc(n.diferencial))}
+    ${f("Para quién", esc(p.descripcion))}
+    ${f("Se siente", chips(per.palabras_si))}
+    ${f("Nunca", chips(per.palabras_no))}
+    ${f("Le gustan", esc(lista(g.marcas_admiradas).join(" · ")))}
+    ${f("No parecerse a", esc(lista(g.no_parecerse_a).join(" · ")))}
+    ${f("Colores sí / no", esc(lista(g.colores_si).join(", ")) + (lista(g.colores_no).length ? `<br><span class="muted">No: ${esc(lista(g.colores_no).join(", "))}</span>` : ""))}
+    ${f("Dónde se ve primero", esc(lista(b.aplicaciones_prioritarias).join(" · ")))}
+    ${f("Obligatorio", esc(lista(r.obligatorio).join(" · ")))}
+    ${f("Huecos", esc(lista(b.huecos).join(" · ")))}
+  </div><details><summary>Ver brief.json</summary><pre>${esc(JSON.stringify(b, null, 2))}</pre></details>`;
+}
+
+/* ---------- Paso 2 · Referencias ---------- */
+function pReferencias(el){
+  const puede = !!(imgLimits && imgLimits.images);
+  const max = puede ? imgLimits.images.maxCount : 0;
+  el.innerHTML = `
+    <div class="row between"><h2>Referencias</h2><span class="small muted">${puede ? `Hasta ${max} imágenes` : "Esta vista no puede mandar imágenes a Claude"}</span></div>
+    <p class="muted">Fotos del local o del producto, capturas de Instagram o de Pinterest, sitios que le gustan. No hace falta que sea «de diseño».</p>
+    ${puede ? `<label class="drop" id="drop" for="fRef"><b>Arrastrá imágenes acá o tocá para elegir</b><span class="small muted">JPG, PNG, WebP o GIF</span><input id="fRef" type="file" multiple accept="${esc(imgLimits.images.mediaTypes.join(","))}" hidden></label>` : ""}
+    ${refFiles.length ? `<div class="thumbs">${refFiles.map((r,i) => `<div class="thumb"><img src="${r.url}" alt="Referencia ${i+1}"><button type="button" data-i="${i}" aria-label="Quitar referencia ${i+1}">×</button></div>`).join("")}</div>` : ""}
+    <div><label class="label" for="tNotas">Qué dice la persona de estas referencias</label><textarea id="tNotas" placeholder="Ej.: la 1 me gusta por los colores; la 3 es mi local actual; odio la tipografía de la 2">${esc(cur.notasRef || "")}</textarea></div>
+    <div class="row end">
+      <button class="btn" id="bSin" type="button">${cur.referencias ? "Seguir" : "Seguir sin referencias"}</button>
+      ${puede ? `<button class="btn primary" id="bAnalizar" type="button" ${refFiles.length ? "" : "disabled"}>Analizar ${refFiles.length || ""} referencia${refFiles.length===1?"":"s"}</button>` : ""}
+    </div>
+    ${cur.referencias ? vistaReferencias(cur.referencias) : ""}`;
+  const inp = $("#fRef", el), drop = $("#drop", el);
+  const sumar = files => {
+    [...files].filter(f => /^image\//.test(f.type)).slice(0, Math.max(0, max - refFiles.length)).forEach(f => refFiles.push({file:f, url:URL.createObjectURL(f)}));
+    cur.notasRef = $("#tNotas", el).value; pintar();
+  };
+  if (inp){ inp.onchange = () => sumar(inp.files); }
+  if (drop){
+    ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", e => sumar(e.dataTransfer.files));
+  }
+  el.querySelectorAll(".thumb button").forEach(b => b.onclick = e => { e.preventDefault(); refFiles.splice(+b.dataset.i, 1); cur.notasRef = $("#tNotas", el).value; pintar(); });
+  $("#tNotas", el).onchange = e => { cur.notasRef = e.target.value; };
+  $("#bSin", el).onclick = () => { cur.notasRef = $("#tNotas", el).value; if (!cur.referencias) cur.referencias = {referencias:[], sintesis:{patrones:[], contradicciones:[], choques_con_el_brief:[], preguntas:[]}, sin_imagenes:true}; irA("direcciones"); };
+  const bA = $("#bAnalizar", el);
+  if (bA) bA.onclick = async () => {
+    if (busy) return;
+    cur.notasRef = $("#tNotas", el).value;
+    const r = await preguntar("referencias", `${PROMPT_REFERENCIAS}\n\nLo que dijo la persona sobre las imágenes:\n${cur.notasRef || "(nada)"}\n\nBrief:\n${JSON.stringify(cur.brief)}`, {json:true, tier:"default", images:refFiles.map(r=>r.file), label:"Analizando referencias"});
+    if (!r || !cur) return;
+    cur.referencias = r; guardar(); pintar();
+  };
+}
+function vistaReferencias(R){
+  const refs = Array.isArray(R.referencias) ? R.referencias : [];
+  const s = R.sintesis || {};
+  const bloque = (t, a) => lista(a).length ? `<div><span class="label">${t}</span><ul>${lista(a).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+  return `<div class="label" style="margin-top:6px">Análisis</div>
+    ${refs.length ? `<div class="grid2">${refs.map((r,i) => `<div class="row" style="align-items:flex-start;flex-wrap:nowrap">
+      ${refFiles[i] ? `<img src="${refFiles[i].url}" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:4px;flex:none">` : `<span class="chip">${i+1}</span>`}
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><p>${esc(r.que_se_ve)}</p>
+      <div class="dots">${(r.colores||[]).filter(c=>hexOk(c.hex)).map(c=>`<span class="dot" style="background:${c.hex}" title="${esc(c.nombre)} ${esc(c.hex)}"></span>`).join("")}</div>
+      <div>${lista(r.estilo).map(x=>`<span class="chip">${esc(x)}</span>`).join(" ")}</div>
+      <p class="small muted">${esc(r.que_tomar)}</p></div></div>`).join("")}</div>` : `<p class="muted small">Sin imágenes: las direcciones salen solo del brief.</p>`}
+    <div class="grid2">${bloque("Patrones", s.patrones)}${bloque("Contradicciones", s.contradicciones)}${bloque("Choques con el brief", s.choques_con_el_brief)}${bloque("Preguntas", s.preguntas)}</div>`;
+}
+
+/* ---------- Paso 3 · Direcciones ---------- */
+function selTier(id, val){ return `<label class="small muted" for="${id}">Modelo</label><select id="${id}" style="width:auto">${Object.entries(TIERS).map(([k,t]) => `<option value="${k}" ${k===val?"selected":""}>${t.label} (${t.modelo})</option>`).join("")}</select>`; }
+function pDirecciones(el){
+  const D = cur.direcciones && Array.isArray(cur.direcciones.direcciones) ? cur.direcciones.direcciones : null;
+  el.innerHTML = `
+    <div class="row between"><h2>Direcciones visuales</h2>
+      <div class="row">${selTier("sDir", tierDir)}<button class="btn ${D ? "" : "primary"}" id="bGenDir" type="button">${D ? "Generar otras tres" : "Generar tres direcciones"}</button></div></div>
+    ${D ? `<p class="muted">A es la esperada, B la vecina y C la que se anima. Elegí una para dibujar los logos.</p><div class="grid3">${D.map(vistaDireccion).join("")}</div>` :
+      `<div class="empty">Con el brief${cur.referencias && !cur.referencias.sin_imagenes ? " y las referencias" : ""} se arman tres moodboards: paleta, par tipográfico, lenguaje de formas y una muestra aplicada.</div>`}`;
+  $("#sDir", el).onchange = e => tierDir = e.target.value;
+  $("#bGenDir", el).onclick = async () => {
+    if (busy) return;
+    const r = await preguntar("direcciones", `${PROMPT_DIRECCIONES}\n\nBrief:\n${JSON.stringify(cur.brief)}\n\nAnálisis de referencias:\n${JSON.stringify(cur.referencias || {referencias:[]})}`, {json:true, tier:tierDir, label:"Armando las direcciones"});
+    if (!r || !cur) return;
+    if (!Array.isArray(r.direcciones) || !r.direcciones.length){ toast("Las direcciones no vinieron completas. Probá de nuevo."); return; }
+    cur.direcciones = r; cur.direccion = null; cur.logos = []; cur.logo = null; guardar(); pintar(); pintarLista();
+  };
+  el.querySelectorAll("[data-elegir]").forEach(b => b.onclick = () => {
+    cur.direccion = b.dataset.elegir; if (cur.brief) cur.brief.direccion_elegida = cur.direccion;
+    cur.logos = []; cur.logo = null; irA("logos");
+  });
+}
+function vistaDireccion(d){
+  const pal = (d.paleta||[]).filter(p => hexOk(p.hex));
+  const fondo = rolHex(d, "fondo", "#F4F2EE"), principal = rolHex(d, "principal", pal[0] ? pal[0].hex : "#333333"), acento = rolHex(d, "acento", pal[1] ? pal[1].hex : principal);
+  const tit = ff(d.tipografias && d.tipografias.titulos && d.tipografias.titulos.familia, "Georgia, serif");
+  const txt = ff(d.tipografias && d.tipografias.texto && d.tipografias.texto.familia, "Helvetica, Arial, sans-serif");
+  const nombre = (cur.brief && cur.brief.marca && cur.brief.marca.nombre) || cur.nombre;
+  const motivo = limpiarSvg(d.motivo_svg);
+  const on = cur.direccion === d.id;
+  const imgs = refFiles.slice(0,3);
+  return `<article class="dir ${on ? "on" : ""}">
+    <div class="hd"><div class="row"><span class="letter">${esc(d.id)}</span><h3>${esc(d.nombre)}</h3></div><p class="small">${esc(d.idea)}</p></div>
+    <div class="pal">${pal.map(p => `<div style="background:${p.hex};color:${bestText(p.hex, [])}">${esc(p.rol||"")}<br>${esc(p.hex.toUpperCase())}</div>`).join("")}</div>
+    <div class="board">
+      <div class="spec" style="background:${fondo};color:${bestText(fondo, pal)}"><span class="big" style="font-family:${tit};font-weight:700">${esc(nombre)}</span><span style="font-family:${txt};font-size:13px">${esc(d.tipografias?.titulos?.familia || "")} + ${esc(d.tipografias?.texto?.familia || "")}</span></div>
+      <div class="motif" style="background:${fondo}">${motivo || `<span class="small muted">${esc(d.formas||"")}</span>`}</div>
+      <div class="card-mock" style="background:${principal};color:${bestText(principal, pal)}"><span style="font-family:${tit};font-weight:700;font-size:22px">${esc(nombre)}</span><span style="font-family:${txt};font-size:11px;opacity:.85">${esc(cur.brief?.marca?.rubro || "")}<br>${esc(cur.brief?.marca?.ubicacion || "")}</span></div>
+      <div class="post-mock" style="background:${fondo};color:${bestText(fondo, pal)}"><span style="width:12px;height:12px;border-radius:50%;background:${acento}"></span><span style="font-family:${tit};font-size:19px;line-height:1.15">${esc(d.frase || "")}</span><span style="font-family:${txt};font-size:11px;opacity:.75">@${esc(String(nombre).toLowerCase().replace(/[^a-z0-9]+/g,""))}</span></div>
+    </div>
+    ${imgs.length ? `<div class="refstrip">${imgs.map(r=>`<img src="${r.url}" alt="">`).join("")}</div>` : ""}
+    <div class="bd">
+      <div>${lista(d.palabras).map(x=>`<span class="chip">${esc(x)}</span>`).join(" ")}</div>
+      <p><b>Por qué:</b> ${esc(d.por_que)}</p>
+      <p><b>Formas:</b> ${esc(d.formas)}</p>
+      <p><b>Logo sugerido:</b> ${esc(d.logo_sugerido?.tipo || "")} — <span class="muted">${esc(d.logo_sugerido?.por_que || "")}</span></p>
+      <p class="muted"><b>Riesgo:</b> ${esc(d.riesgo)}</p>
+      <button class="btn ${on ? "" : "primary"}" type="button" data-elegir="${esc(d.id)}">${on ? "Elegida · ver logos" : "Elegir esta dirección"}</button>
+    </div>
+  </article>`;
+}
+
+/* ---------- Paso 4 · Logos ---------- */
+function dirElegida(){ return (cur.direcciones?.direcciones || []).find(d => d.id === cur.direccion); }
+function pLogos(el){
+  const d = dirElegida();
+  if (!d){ el.innerHTML = `<div class="empty">Primero elegí una dirección.</div>`; return; }
+  const rondas = []; (cur.logos||[]).forEach(l => { (rondas[l.ronda||0] ||= []).push(l); });
+  const tit = (d.tipografias?.titulos?.familia || "").replace(/[^A-Za-z0-9 ]/g,""); cargarFuente(tit); cargarFuente(d.tipografias?.texto?.familia);
+  const elegido = (cur.logos||[]).find(l => l.uid === cur.logo);
+  el.innerHTML = `
+    <div class="row between"><div><h2>Caminos de logo</h2><p class="small muted">Dirección ${esc(d.id)} · ${esc(d.nombre)} · ${esc(tit)}</p></div>
+      <div class="row">${selTier("sLogo", tierLogo)}<button class="btn ${rondas.length ? "" : "primary"}" id="bGenLogos" type="button">${rondas.length ? "Seis caminos nuevos" : "Dibujar seis caminos"}</button></div></div>
+    ${!rondas.length ? `<div class="empty">Se dibujan seis caminos en SVG con la paleta y la tipografía de la dirección: monograma, símbolo con logotipo, sello y logotipo puro. Con el modelo Máximo puede tardar uno o dos minutos.</div>` : ""}
+    ${rondas.map((r, i) => r ? `<div class="ronda"><div class="label">${i === 0 ? "Primera ronda" : "Ajuste " + i}</div><div class="grid3">${r.map(l => vistaLogo(l, d)).join("")}</div></div>` : "").join("")}
+    ${elegido ? `<div class="panel" style="background:var(--soft);border:0">
+      <h3>Ajustar el logo elegido: ${esc(elegido.nombre)}</h3>
+      <label class="small muted" for="tAjuste">¿Qué le cambiarías? Escribilo como lo diría el cliente.</label>
+      <textarea id="tAjuste" placeholder="Ej.: me gusta la forma pero la letra se ve muy fina; probá el símbolo más redondo"></textarea>
+      <div class="row end"><button class="btn primary" id="bAjustar" type="button">Hacer tres variantes</button><button class="btn" id="bEval" type="button">Pasar a la evaluación</button></div>
+    </div>` : ""}`;
+  $("#sLogo", el).onchange = e => tierLogo = e.target.value;
+  $("#bGenLogos", el).onclick = async () => {
+    if (busy) return;
+    const r = await preguntar("logos", PROMPT_LOGOS.replace("{TIT}", tit) + `\n\nMarca: ${(cur.brief?.marca?.nombre) || cur.nombre}\n\nDirección elegida:\n${JSON.stringify({...d, motivo_svg:undefined})}\n\nBrief:\n${JSON.stringify(cur.brief)}`, {json:true, tier:tierLogo, label:"Dibujando logos"});
+    if (!r || !cur) return;
+    const arr = Array.isArray(r) ? r : (Array.isArray(r.logos) ? r.logos : null);
+    if (!arr){ toast("Los logos no vinieron en el formato esperado. Probá de nuevo."); return; }
+    const ronda = rondas.length;
+    arr.forEach((l, i) => cur.logos.push({uid:`r${ronda}-${i}`, ronda, nombre:String(l.nombre||""), tipo:String(l.tipo||""), razon:String(l.razon||""), svg:limpiarSvg(l.svg)}));
+    guardar(); pintar(); pintarLista();
+  };
+  el.querySelectorAll("[data-logo]").forEach(b => b.onclick = () => { cur.logo = b.dataset.logo; guardar(); pintar(); });
+  const bA = $("#bAjustar", el);
+  if (bA) bA.onclick = async () => {
+    const pedido = $("#tAjuste", el).value.trim(); if (!pedido || busy) return;
+    const r = await preguntar("logos", PROMPT_AJUSTE.replace("{TIT}", tit) + `\n\nPedido de la persona: ${pedido}\n\nLogo elegido (${elegido.nombre}, ${elegido.tipo}):\n${elegido.svg}\n\nDirección:\n${JSON.stringify({...d, motivo_svg:undefined})}\n\nMarca: ${(cur.brief?.marca?.nombre) || cur.nombre}`, {json:true, tier:tierLogo, label:"Haciendo variantes"});
+    if (!r || !cur) return;
+    const arr = Array.isArray(r) ? r : (Array.isArray(r.variantes) ? r.variantes : null);
+    if (!arr){ toast("Las variantes no vinieron en el formato esperado. Probá de nuevo."); return; }
+    const ronda = rondas.length;
+    arr.forEach((l, i) => cur.logos.push({uid:`r${ronda}-${i}`, ronda, nombre:String(l.nombre||""), tipo:String(l.tipo||""), razon:String(l.razon||""), svg:limpiarSvg(l.svg), pedido}));
+    guardar(); pintar();
+  };
+  $("#bEval", el) && ($("#bEval", el).onclick = () => irA("evaluacion"));
+}
+function vistaLogo(l, d){
+  const fondo = rolHex(d, "fondo", "#F4F2EE");
+  const on = cur.logo === l.uid;
+  const art = l.svg || `<span class="small muted">No se pudo dibujar este camino</span>`;
+  return `<article class="logo ${on ? "on" : ""}">
+    <div class="art"><div style="background:#FFFFFF">${art}</div><div style="background:${fondo}">${art}</div></div>
+    <div class="tiny"><span class="t" style="background:#FFFFFF">${l.svg || ""}</span><span>Así se ve chico (redes, favicon)</span></div>
+    <div class="bd"><div class="row between"><b>${esc(l.nombre)}</b><span class="chip">${esc(l.tipo)}</span></div>
+      <p class="muted">${esc(l.razon)}</p>
+      <button class="btn ${on ? "" : "primary"}" type="button" data-logo="${esc(l.uid)}" ${l.svg ? "" : "disabled"}>${on ? "Elegido" : "Elegir este"}</button></div>
+  </article>`;
+}
+
+/* ---------- Paso 5 · Evaluación ---------- */
+function pEvaluacion(el){
+  const ev = cur.evaluacion || (cur.evaluacion = {});
+  const filas = PASOS.slice(0,4).map(p => {
+    const us = cur.uso.filter(u => u.paso === p.id);
+    return {p, n:us.length, tin:us.reduce((a,u)=>a+u.tin,0), tout:us.reduce((a,u)=>a+u.tout,0), imgs:us.reduce((a,u)=>a+u.imgs,0), usd:us.reduce((a,u)=>a+costoUso(u),0)};
+  });
+  const tot = filas.reduce((a,f)=>({n:a.n+f.n, tin:a.tin+f.tin, tout:a.tout+f.tout, imgs:a.imgs+f.imgs, usd:a.usd+f.usd}), {n:0,tin:0,tout:0,imgs:0,usd:0});
+  const nf = x => x.toLocaleString("es-UY");
+  const estrellas = k => `<div class="stars" role="group" aria-label="Nota de ${k}">${[1,2,3,4,5].map(n => `<button type="button" data-k="${k}" data-n="${n}" class="${ev[k]===n?"on":""}">${n}</button>`).join("")}</div>`;
+  el.innerHTML = `
+    <h2>Evaluación</h2>
+    <div><div class="label">Costo estimado si esto corriera por API</div>
+    <div class="tablewrap"><table><thead><tr><th>Paso</th><th class="r">Llamadas</th><th class="r">Tokens de entrada</th><th class="r">Tokens de salida</th><th class="r">Imágenes</th><th class="r">USD</th></tr></thead>
+    <tbody>${filas.map(f => `<tr><td>${f.p.t}</td><td class="r">${f.n}</td><td class="r">${nf(f.tin)}</td><td class="r">${nf(f.tout)}</td><td class="r">${f.imgs}</td><td class="r">${usd(f.usd)}</td></tr>`).join("")}
+    <tr><th>Total</th><th class="r">${tot.n}</th><th class="r">${nf(tot.tin)}</th><th class="r">${nf(tot.tout)}</th><th class="r">${tot.imgs}</th><th class="r">${usd(tot.usd)}</th></tr></tbody></table></div>
+    <p class="small muted" style="margin-top:8px">Estimación: tokens calculados por cantidad de caracteres, imágenes a ${TOKENS_POR_IMAGEN} tokens, y el doble de salida en los modelos que piensan antes de responder. Precios: Rápido = Haiku 4.5, Equilibrado = Sonnet 5.5, Máximo = Opus 5.5. El número exacto sale corriendo la misma marca por API.</p></div>
+    <div class="ev">
+      <div><div class="label">Entrevista</div>${estrellas("entrevista")}</div>
+      <div><div class="label">Referencias</div>${estrellas("referencias")}</div>
+      <div><div class="label">Direcciones</div>${estrellas("direcciones")}</div>
+      <div><div class="label">Logos</div>${estrellas("logos")}</div>
+    </div>
+    <div class="ev">
+      <div><label class="label" for="sPaga">¿La persona pagaría por esto?</label><select id="sPaga"><option value="">Elegí</option>${["sí","tal vez","no"].map(o=>`<option ${ev.pagaria===o?"selected":""}>${o}</option>`).join("")}</select></div>
+      <div><label class="label" for="nMonto">¿Cuánto? (USD)</label><input id="nMonto" type="number" min="0" step="1" value="${ev.monto ?? ""}"></div>
+    </div>
+    <div><label class="label" for="tEvNotas">Qué funcionó y qué faltó</label><textarea id="tEvNotas">${esc(ev.notas || "")}</textarea></div>
+    <div class="row end"><span class="small muted">${ev.guardada ? "Evaluación guardada." : ""}</span><button class="btn primary" id="bGuardarEv" type="button">Guardar evaluación</button></div>`;
+  el.querySelectorAll(".stars button").forEach(b => b.onclick = () => { ev[b.dataset.k] = +b.dataset.n; b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("on", +x.dataset.n === ev[b.dataset.k])); });
+  $("#bGuardarEv", el).onclick = () => {
+    ev.pagaria = $("#sPaga", el).value; const m = $("#nMonto", el).value; ev.monto = m === "" ? null : +m;
+    ev.notas = $("#tEvNotas", el).value; ev.guardada = true; guardar(); toast("Evaluación guardada.", true); pintar(); pintarLista();
+  };
+}
+
+/* ============ Arranque ============ */
+$("#bNueva").onclick = () => nuevaMarca(false);
+$("#bEjemplo").onclick = () => nuevaMarca(true);
+pintar(); pintarLista();
+
+(async () => {
+  const c = window.claude;
+  if (!c || !c.use){ sampleState = "ausente"; pintar(); pintarLista(); return; }
+  const [s, d, u] = await Promise.all([c.use("sample"), c.use("db"), c.use("user")]);
+  sample = s; db = d; userCap = u;
+  sampleState = sample ? "listo" : "ausente";
+  if (sample){ try{ imgLimits = await sample.limits(); }catch{ imgLimits = null; } }
+  else { $("#dbNote").textContent = "Esta vista no puede usar Claude: abrí la página en claude.ai."; }
+  if (userCap){ try{ myId = await userCap.id(); }catch{} if (userCap.can){ try{ if (await userCap.can("data.write") === false){ writeBlocked = true; $("#dbNote").textContent = "Podés ver las marcas pero no guardar nuevas."; } }catch{} } }
+  if (db){
+    db.collection("marcas").orderBy("actualizado","desc").limit(100).onSnapshot(snap => {
+      marcas = snap.docs.map(x => x.data()).filter(Boolean);
+      pintarLista();
+    }, () => { $("#dbNote").textContent = "No se pudo leer el banco de pruebas en esta vista."; });
+  }
+  pintar(); pintarLista();
+  if (cur && step === "entrevista" && !cur.turnos.length && sample) empezarEntrevista();
+})();
+</script>

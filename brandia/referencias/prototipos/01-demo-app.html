@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cómo se BrandIA una marca</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap">
+<style>
+:root{
+  --grafito:#1E1E1C; --naranja:#FF5C1A; --cemento:#C9C6BE; --hueso:#EDECE8;
+  --piedra:#5C5A54; --tinta:#B23B0A;
+  --bg:var(--hueso); --surface:#FFFFFF; --block:var(--cemento);
+  --text:var(--grafito); --muted:var(--piedra); --accent-text:var(--tinta);
+  --line:rgba(30,30,28,.14); --line-soft:rgba(30,30,28,.07);
+  --font-d:'Fraunces','Iowan Old Style',Georgia,serif;
+  --font-t:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --s1:8px;--s2:16px;--s3:24px;--s4:40px;--s5:64px;
+  --r-sm:4px;--r-md:14px;--r-pill:999px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141413; --surface:#1E1E1C; --block:#2A2926;
+  --text:var(--hueso); --muted:#A8A49B; --accent-text:#FF7A45;
+  --line:rgba(237,236,232,.16); --line-soft:rgba(237,236,232,.08);
+}}
+:root[data-theme="dark"]{
+  --bg:#141413; --surface:#1E1E1C; --block:#2A2926;
+  --text:var(--hueso); --muted:#A8A49B; --accent-text:#FF7A45;
+  --line:rgba(237,236,232,.16); --line-soft:rgba(237,236,232,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-t);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-d);font-weight:600;line-height:1.12;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.9rem,1.3rem+2vw,2.6rem);letter-spacing:-.016em;font-variation-settings:'opsz' 96}
+h2{font-size:clamp(1.3rem,1.1rem+.8vw,1.7rem);letter-spacing:-.014em;font-variation-settings:'opsz' 96}
+h3{font-size:1.0625rem;letter-spacing:-.008em;font-variation-settings:'opsz' 40}
+p{margin:0}
+.lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0}
+.mut{color:var(--muted);font-size:15px}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:20px}
+
+/* ---------- marco de demo ---------- */
+.demoframe{border-top:2px solid var(--grafito);background:var(--bg)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:var(--bg);border-bottom:1px solid var(--line);
+  backdrop-filter:saturate(1.4) blur(6px)}
+.topbar .wrap{display:flex;align-items:center;gap:var(--s2);
+  padding-block:12px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:9px;font-family:var(--font-d);
+  font-weight:700;font-size:19px;letter-spacing:-.02em;font-variation-settings:'opsz' 40}
+.mark .ia{color:var(--naranja)}
+.mark svg{width:17px;height:auto;color:var(--naranja);flex:none}
+.plan{margin-left:auto;display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:5px 12px 5px 9px}
+.plan i{width:7px;height:7px;background:var(--naranja);border-radius:50%;display:block}
+
+/* ---------- barra de pasos ---------- */
+.steps{display:flex;gap:2px;overflow-x:auto;padding-block:0 0;scrollbar-width:thin}
+.steps button{flex:none;appearance:none;background:none;border:0;cursor:pointer;
+  font:inherit;font-size:12.5px;font-weight:500;color:var(--muted);
+  padding:11px 13px;border-bottom:2px solid transparent;white-space:nowrap;
+  display:flex;align-items:center;gap:7px}
+.steps button b{font-variant-numeric:tabular-nums;font-weight:600;
+  font-size:10.5px;letter-spacing:.06em;opacity:.65}
+.steps button:hover{color:var(--text)}
+.steps button[aria-current="true"]{color:var(--text);border-bottom-color:var(--naranja)}
+.steps button:focus-visible{outline:2px solid var(--naranja);outline-offset:-2px;border-radius:var(--r-sm)}
+
+/* ---------- pantallas ---------- */
+.screen{padding-block:var(--s4) var(--s5);animation:in .34s ease both}
+@keyframes in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}}
+.head{max-width:60ch;margin-bottom:var(--s4)}
+.head .lbl{margin-bottom:10px}
+.head p{margin-top:12px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--s3)}
+.grid{display:grid;gap:var(--s2)}
+@media(min-width:720px){.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}}
+
+/* nota de método: por qué la pantalla es así */
+.why{display:flex;gap:12px;border-left:2px solid var(--naranja);
+  padding:2px 0 2px 14px;margin-top:var(--s4);max-width:64ch}
+.why p{font-size:14.5px;color:var(--muted)}
+.why strong{color:var(--text);font-weight:600}
+
+/* formulario del brief */
+.field{border-bottom:1px solid var(--line-soft);padding-block:14px}
+.field:last-child{border-bottom:0}
+.field .lbl{margin-bottom:5px}
+.field .val{font-size:16px}
+.field .val[contenteditable]{outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{font-size:13px;border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:4px 11px;color:var(--muted)}
+.swatches{display:flex;gap:6px;margin-top:9px}
+.swatches span{width:26px;height:26px;border-radius:var(--r-sm);border:1px solid var(--line-soft)}
+
+/* consola de armado */
+.console{background:var(--grafito);color:var(--hueso);border-radius:var(--r-md);
+  padding:var(--s3);font-size:14.5px}
+.console .lbl{color:rgba(237,236,232,.55)}
+.logline{display:flex;gap:11px;align-items:flex-start;padding-block:7px;
+  border-bottom:1px solid rgba(237,236,232,.09)}
+.logline:last-child{border-bottom:0}
+.logline .n{font-variant-numeric:tabular-nums;font-size:11px;color:rgba(237,236,232,.45);
+  padding-top:3px;flex:none;width:2.4em}
+.logline em{font-style:normal;color:var(--naranja)}
+.logline s{color:rgba(237,236,232,.4)}
+
+/* caminos */
+.path{display:flex;flex-direction:column;gap:14px;padding:var(--s3);
+  border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+.path.sel{border-color:var(--naranja);box-shadow:inset 0 0 0 1px var(--naranja)}
+.mini{height:104px;border-radius:var(--r-sm);display:grid;place-items:center;
+  font-size:26px;letter-spacing:-.02em}
+.path .lbl{margin:0}
+.path .logic{font-size:14.5px;color:var(--muted)}
+.pick{margin-top:auto;font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent-text)}
+
+/* curaduría */
+.curator{display:flex;gap:14px;align-items:center;margin-bottom:var(--s3)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--block);flex:none;
+  display:grid;place-items:center;font-family:var(--font-d);font-weight:700;font-size:17px}
+.verdict{display:grid;gap:10px;margin-top:var(--s2)}
+.verdict li{list-style:none;display:flex;gap:11px;font-size:15px;align-items:flex-start}
+.verdict .x{color:var(--muted);flex:none;width:1.3em;font-weight:600}
+.verdict .ok{color:var(--accent-text);flex:none;width:1.3em;font-weight:600}
+
+/* ---------- lienzo del cliente: RETIRADA VISUAL ---------- */
+.canvaswrap{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.canvastag{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:9px 14px;background:var(--block);font-size:11px;font-weight:600;
+  letter-spacing:.11em;text-transform:uppercase;color:rgba(30,30,28,.72)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .canvastag{color:rgba(237,236,232,.72)}}
+:root[data-theme="dark"] .canvastag{color:rgba(237,236,232,.72)}
+.costa{--c-fondo:#F6EFE1;--c-tinta:#24402F;--c-mostaza:#C8892F;
+  background:var(--c-fondo);color:var(--c-tinta);padding:var(--s4) var(--s3);
+  font-family:'Bricolage Grotesque',system-ui,sans-serif}
+.costa h3,.costa .big{font-family:'Bricolage Grotesque',system-ui,sans-serif;
+  font-weight:700;letter-spacing:-.03em;line-height:1.05;margin:0}
+.costa .big{font-size:clamp(2rem,1.2rem+3vw,3rem)}
+.costa .lbl{color:#4A5C50}
+.kitgrid{display:grid;gap:14px;margin-top:var(--s3)}
+@media(min-width:640px){.kitgrid{grid-template-columns:repeat(3,1fr)}}
+.kititem{background:rgba(36,64,47,.05);border:1px solid rgba(36,64,47,.14);
+  border-radius:10px;padding:16px;font-size:14px}
+.kititem b{display:block;font-weight:700;margin-bottom:4px}
+.costapal{display:flex;gap:0;border-radius:8px;overflow:hidden;margin-top:12px}
+.costapal span{height:34px;flex:1}
+
+/* post generado */
+.post{max-width:340px;background:var(--c-fondo,#F6EFE1);border-radius:10px;overflow:hidden;
+  border:1px solid rgba(36,64,47,.16)}
+.postimg{aspect-ratio:4/5;background:#24402F;color:#F6EFE1;display:grid;
+  place-content:center;text-align:center;padding:22px;gap:10px}
+.postimg .big{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:700;
+  font-size:30px;line-height:1.02;letter-spacing:-.03em;color:#F6EFE1}
+.postimg small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#E8B466;font-weight:700}
+.postcap{padding:14px;font-size:14px;color:#24402F;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+
+.chatline{display:flex;gap:11px;align-items:flex-start;font-size:15.5px;
+  padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.chatline .who{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);flex:none;width:5.6em;padding-top:4px}
+
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:var(--s4);
+  padding-top:var(--s3);border-top:1px solid var(--line)}
+.btn{appearance:none;font:inherit;font-weight:600;font-size:15px;cursor:pointer;
+  border-radius:var(--r-pill);padding:11px 22px;border:1px solid transparent;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .12s}
+.btn:active{transform:translateY(1px)}
+.btn--p{background:var(--naranja);color:#1E1E1C}
+.btn--g{background:transparent;color:var(--text);border-color:var(--line)}
+.btn:focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+
+footer{border-top:1px solid var(--line);margin-top:var(--s5);padding-block:var(--s3) var(--s5)}
+footer p{font-size:13.5px;color:var(--muted);max-width:66ch}
+.banner{background:var(--grafito);color:var(--hueso);padding-block:14px}
+.banner .wrap{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.banner b{font-family:var(--font-d);font-weight:600;font-size:15px}
+.banner span{font-size:13.5px;color:rgba(237,236,232,.72)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+</style>
+</head>
+<body>
+
+
+<div class="banner"><div class="wrap">
+  <b>Prototipo · no aprobado</b>
+  <span>Demo del flujo de producto para conversar con los socios. Marca ficticia de ejemplo: «Costa».</span>
+</div></div>
+
+<div class="demoframe">
+<div class="topbar"><div class="wrap">
+  <div class="mark">
+    <svg viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor">
+      <path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/>
+      <path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+    <span>Brand<span class="ia">IA</span></span>
+  </div>
+  <div class="plan"><i></i>Con Plus</div>
+</div>
+<div class="wrap"><nav class="steps" id="steps" aria-label="Pasos del flujo"></nav></div>
+</div>
+
+<main class="wrap" id="stage"></main>
+</div>
+
+<footer class="wrap">
+  <p><strong>Qué mira este prototipo.</strong> No es cómo se ve la app: es qué promete. Tres decisiones de
+  producto están puestas a propósito y conviene discutirlas — el paso 4 (la curaduría es visible o no
+  existe), el paso 5 (BrandIA se retira del lienzo del cliente) y el paso 6 (el logo es la puerta, los
+  contenidos son el negocio).</p>
+</footer>
+
+<script>
+const S = [
+ {n:'01',t:'El brief'},
+ {n:'02',t:'Armado'},
+ {n:'03',t:'Tres caminos'},
+ {n:'04',t:'La curaduría'},
+ {n:'05',t:'Tu sistema'},
+ {n:'06',t:'Semana 3'}
+];
+let cur = 0;
+
+const nav = (i,label,kind) =>
+  '<button class="btn '+kind+'" data-go="'+i+'">'+label+'</button>';
+
+const screens = [
+// ---------------------------------------------------------------- 01
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 01 · antes de generar nada</p>
+    <h1>Contanos qué hacés.</h1>
+    <p>No pedimos un brief de agencia. Pedimos lo que cualquiera sabe contestar de su propio
+    negocio en tres minutos. De ahí sale todo lo demás.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="field"><p class="lbl">Cómo se llama</p><p class="val">Costa</p></div>
+      <div class="field"><p class="lbl">Qué hacés</p><p class="val">Panadería de masa madre. Horneo de noche, vendo de mañana hasta que se acaba.</p></div>
+      <div class="field"><p class="lbl">A quién le vendés</p><p class="val">Gente del barrio que ya no compra pan de supermercado.</p></div>
+      <div class="field"><p class="lbl">Tres marcas que te gustan</p>
+        <div class="chips"><span class="chip">Aesop</span><span class="chip">Tartine</span><span class="chip">La Farmacia</span></div>
+      </div>
+      <div class="field"><p class="lbl">Colores que ya usás</p>
+        <div class="swatches"><span style="background:#24402F"></span><span style="background:#F6EFE1"></span><span style="background:#C8892F"></span></div>
+        <p class="mut" style="margin-top:8px">Sacados del delantal y del cartel que ya tenés en la puerta.</p>
+      </div>
+      <div class="field"><p class="lbl">Referencias</p><p class="val">4 imágenes · 1 tablero de Pinterest</p></div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Lo que NO preguntamos</h3>
+        <ul class="verdict" style="margin-top:14px">
+          <li><span class="x">✗</span><span>«¿Cuáles son los valores de tu marca?» — nadie los sabe de entrada, y contestarlo mal arruina todo lo que viene después.</span></li>
+          <li><span class="x">✗</span><span>«¿Qué adjetivos te representan?» — devuelve siempre las mismas cinco palabras.</span></li>
+          <li><span class="x">✗</span><span>«¿Cuál es tu público objetivo?» — se deduce de lo que vende y dónde.</span></li>
+        </ul>
+      </div>
+      <div class="why">
+        <p><strong>Valor 03 del manual: «tu narrativa, no nuestra plantilla».</strong>
+        Si el producto no empieza en lo que el cliente ya es, es un generador de plantillas
+        con otro nombre. Este paso es el que separa BrandIA de una app de logos.</p>
+      </div>
+    </div>
+  </div>
+  <div class="nav">${nav(1,'Armar mi marca →','btn--p')}</div>
+</section>`,
+// ---------------------------------------------------------------- 02
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 02 · 40 segundos</p>
+    <h1>La máquina no piensa en silencio.</h1>
+    <p>Mientras genera, muestra qué está descartando y por qué. El razonamiento a la vista es el
+    producto; el output solo es la consecuencia.</p>
+  </div>
+  <div class="grid g2">
+    <div class="console">
+      <p class="lbl" style="margin-bottom:12px">Armando · Costa</p>
+      <div class="logline"><span class="n">00:04</span><span>Leí tus tres referencias. Las tres son <em>cálidas, sobrias y con mucho aire</em>. Ninguna grita.</span></div>
+      <div class="logline"><span class="n">00:09</span><span>Tomo tu verde y tu crema. El mostaza queda de acento, no de base.</span></div>
+      <div class="logline"><span class="n">00:16</span><span><s>Descarto: trigo, espiga, rodillo, molino.</s> Los usa toda panadería del mundo.</span></div>
+      <div class="logline"><span class="n">00:22</span><span><s>Descarto: script manuscrita.</s> Dijiste masa madre, no pastelería de casamiento.</span></div>
+      <div class="logline"><span class="n">00:31</span><span>Me quedo con <em>«hasta que se acaba»</em>. Es tu frase y es tu modelo de negocio: escasez real, sin marketing.</span></div>
+      <div class="logline"><span class="n">00:40</span><span>Armé <em>20 caminos</em>. Te voy a mostrar 3.</span></div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Por qué 20 y no 3</h3>
+        <p class="mut" style="margin-top:10px">Un estudio itera tres caminos porque cada uno le cuesta
+        un día de trabajo. Acá cuestan segundos. La ventaja no es el precio: es que el cliente
+        elige entre opciones reales y no entre «la propuesta» y nada.</p>
+        <h3 style="margin-top:22px">Por qué te mostramos 3</h3>
+        <p class="mut" style="margin-top:10px">Porque veinte no es una elección, es un problema.
+        Los otros diecisiete no se tiran: quedan guardados y se pueden pedir.</p>
+      </div>
+      <div class="why"><p><strong>Valor 02: «la IA acelera, el criterio decide».</strong>
+      Si esta pantalla fuera una barra de progreso, el cliente creería que el valor está en la
+      máquina. Mostrar el descarte es lo que hace visible el criterio.</p></div>
+    </div>
+  </div>
+  <div class="nav">${nav(2,'Ver los tres caminos →','btn--p')}${nav(0,'Volver','btn--g')}</div>
+</section>`,
+// ---------------------------------------------------------------- 03
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 03 · elegís vos</p>
+    <h1>Tres caminos, cada uno con su lógica en una línea.</h1>
+    <p>Escrito para que puedas elegir sin ser diseñadora. Si ninguno te mueve nada, lo hablamos
+    y lo volvemos a hacer.</p>
+  </div>
+  <div class="grid g3">
+    <article class="path">
+      <div class="mini" style="background:#24402F;color:#F6EFE1;font-family:'Bricolage Grotesque',sans-serif;font-weight:700">costa</div>
+      <p class="lbl">A · El horno de noche</p>
+      <p class="logic">Verde oscuro y crema, todo en minúscula. Dice oficio y calma. El que más
+      se parece a lo que ya tenés en la puerta.</p>
+      <p class="pick">Elegido</p>
+    </article>
+    <article class="path" style="opacity:.62">
+      <div class="mini" style="background:#F6EFE1;color:#24402F;font-family:Fraunces,serif;font-weight:700">Costa</div>
+      <p class="lbl">B · La panadería vieja</p>
+      <p class="logic">Serif con historia sobre papel. Dice tradición. Riesgo: te confunde con
+      una panadería de hace cuarenta años, y vos abriste el año pasado.</p>
+    </article>
+    <article class="path" style="opacity:.62">
+      <div class="mini" style="background:#C8892F;color:#24402F;font-family:'Bricolage Grotesque',sans-serif;font-weight:700">COSTA</div>
+      <p class="lbl">C · El cartel</p>
+      <p class="logic">Mostaza plano y mayúsculas. Se ve desde la vereda de enfrente. Riesgo:
+      compite con el pan en la foto, y el pan es lo que vendés.</p>
+    </article>
+  </div>
+  <div class="why"><p><strong>Cada camino trae su riesgo escrito.</strong> Un estudio nunca te
+  cuenta el riesgo de la opción que quiere venderte. Decirlo es lo que convierte tres imágenes
+  en una decisión.</p></div>
+  <div class="nav">${nav(3,'Elegí A · pasa a curaduría →','btn--p')}${nav(1,'Volver','btn--g')}</div>
+</section>`,
+// ---------------------------------------------------------------- 04
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 04 · solo con Plus</p>
+    <h1>Acá hay alguien del otro lado.</h1>
+    <p>Este paso es el negocio. Generar marcas con IA lo va a hacer cualquiera en dos años.
+    Que haya alguien que descarte y te explique por qué, no.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="curator">
+        <div class="avatar">L</div>
+        <div><h3>Lucía · dirección de arte</h3><p class="mut">Revisó tu marca el martes a las 16:40</p></div>
+      </div>
+      <p style="font-size:15.5px">«Me quedé con el A, pero le cambié dos cosas antes de
+      entregártelo. Te las dejo explicadas para que sepas defenderlas cuando alguien te diga
+      que le pongas una espiga.»</p>
+      <ul class="verdict">
+        <li><span class="ok">✓</span><span><strong>Bajé el mostaza a acento.</strong> En la versión generada ocupaba un tercio de la pieza y le sacaba protagonismo al pan en la foto.</span></li>
+        <li><span class="ok">✓</span><span><strong>Subí el interletrado del nombre.</strong> A 14 px en el sello de la bolsa las letras se tocaban.</span></li>
+        <li><span class="x">✗</span><span><strong>Descarté la versión con ilustración de pan.</strong> Se veía linda en pantalla y desaparecía en el sello de tinta de la bolsa de papel, que es donde más se va a ver tu marca.</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Qué cambia con Plus</h3>
+        <div style="overflow-x:auto;margin-top:14px">
+        <table>
+          <tr style="border-bottom:1px solid var(--line)"><th style="text-align:left;padding:8px 10px 8px 0" class="lbl">Plan</th><th style="text-align:left;padding:8px 0" class="lbl">Quién decide</th></tr>
+          <tr style="border-bottom:1px solid var(--line-soft)"><td style="padding:10px 10px 10px 0"><strong>BrandIA</strong></td><td style="padding:10px 0" class="mut">La suscripción. Decidís vos, entre lo que genera la IA. Minutos.</td></tr>
+          <tr><td style="padding:10px 10px 10px 0"><strong>BrandIA Plus</strong></td><td style="padding:10px 0" class="mut">El add-on. Una dirección de arte cura, descarta y explica. Días.</td></tr>
+        </table></div>
+      </div>
+      <div class="why"><p><strong>Por qué Plus es un interruptor y no un plan.</strong> Se prende y se
+      apaga mes a mes, sin migrar ni volver a empezar. La suscripción sola compite contra
+      herramientas gratis; con Plus no compite contra nada.</p></div>
+    </div>
+  </div>
+  <div class="nav">${nav(4,'Ver mi sistema →','btn--p')}${nav(2,'Volver','btn--g')}</div>
+</section>`,
+// ---------------------------------------------------------------- 05
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 05 · la entrega</p>
+    <h1>De acá para adentro, BrandIA desaparece.</h1>
+    <p>La app se ve BrandIA. Lo que hay dentro del lienzo es del cliente y no lleva nada nuestro.
+    Un producto de branding que no sabe hacerse a un lado no puede vender branding.</p>
+  </div>
+  <div class="canvaswrap">
+    <div class="canvastag"><span>Lienzo · marca del cliente</span><span>Sin marca BrandIA</span></div>
+    <div class="costa">
+      <p class="lbl">Tu sistema de marca</p>
+      <p class="big" style="margin-top:6px">costa</p>
+      <p style="margin-top:10px;max-width:46ch;font-size:15px">Masa madre. Hasta que se acaba.</p>
+      <div class="costapal">
+        <span style="background:#24402F"></span><span style="background:#F6EFE1"></span>
+        <span style="background:#C8892F"></span><span style="background:#8A9A7B"></span>
+      </div>
+      <div class="kitgrid">
+        <div class="kititem"><b>Logotipo</b>SVG, PNG ×3, PDF vectorial, favicon y un EPS de una tinta para el sello de la bolsa.</div>
+        <div class="kititem"><b>Tipografías</b>Licencia abierta. Instaladas, no adjuntas: las editás vos sin pedirle nada a nadie.</div>
+        <div class="kititem"><b>Color</b>Con los contrastes ya verificados. Cuál va sobre cuál y cuál nunca.</div>
+        <div class="kititem"><b>Plantillas</b>Post, story, cartel de vidriera, etiqueta y la bolsa de papel.</div>
+        <div class="kititem"><b>Cómo se usa</b>Cuatro páginas. No cuarenta. Escritas para vos, no para un diseñador.</div>
+        <div class="kititem"><b>El archivo editable</b>Todo abierto. Si mañana te vas, te llevás tu marca entera.</div>
+      </div>
+    </div>
+  </div>
+  <div class="why"><p><strong>La regla se llama «retirada visual» y no está en el manual v1.3.</strong>
+  Es el hueco más grave que encontré: el producto genera marcas ajenas y el manual no dice nunca
+  cuándo la nuestra se corre. Chrome de la app: BrandIA. Lienzo, preview y exportación: el cliente.
+  Firma nuestra solo en el plan gratuito, y nunca dentro del archivo vectorial.</p></div>
+  <div class="nav">${nav(5,'Adelantar tres semanas →','btn--p')}${nav(3,'Volver','btn--g')}</div>
+</section>`,
+// ---------------------------------------------------------------- 06
+() => `
+<section class="screen">
+  <div class="head">
+    <p class="lbl">Paso 06 · tres semanas después</p>
+    <h1>El logo es la puerta. Los contenidos son el negocio.</h1>
+    <p>Una identidad se compra una vez. Lo que hace volver todas las semanas es que la marca
+    produzca sola, siempre igual a sí misma. Esta pantalla es la que sostiene la suscripción.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <p class="lbl" style="margin-bottom:6px">Miércoles, 9:12</p>
+      <div class="chatline"><span class="who">Costa</span><span>El sábado hago focaccia de romero. Necesito un post.</span></div>
+      <div class="chatline"><span class="who">BrandIA</span><span>Listo. Salió con tu verde, tu tipografía y el tono que definimos: corto, sin adjetivos, con el dato adelante. ¿Lo publico el viernes a las 18?</span></div>
+      <div class="chatline" style="border-bottom:0"><span class="who">Costa</span><span>Dale.</span></div>
+      <p class="mut" style="margin-top:18px">Cero decisiones de diseño. La marca ya está decidida:
+      eso es lo que se compró en el paso 5.</p>
+    </div>
+    <div>
+      <div class="canvaswrap">
+        <div class="canvastag"><span>Lienzo · marca del cliente</span><span>Sin marca BrandIA</span></div>
+        <div class="costa" style="display:grid;place-items:center;padding:var(--s3)">
+          <div class="post">
+            <div class="postimg">
+              <small>Sábado · 8 de la mañana</small>
+              <span class="big">Focaccia<br>de romero</span>
+              <small style="color:#F6EFE1;opacity:.6;letter-spacing:.1em">hasta que se acaba</small>
+            </div>
+            <div class="postcap">Doce piezas. Romero del cantero de atrás. No hay reservas.</div>
+          </div>
+        </div>
+      </div>
+      <div class="why"><p><strong>Consecuencia para los socios.</strong> Si esto es cierto, el
+      producto no es un generador de logos: es un sistema de marca que después produce. Y entonces
+      el descriptor «estudio creativo con IA» que está hoy bajo el logo está vendiendo otra cosa.</p></div>
+    </div>
+  </div>
+  <div class="nav">${nav(0,'Volver al principio','btn--g')}</div>
+</section>`
+];
+
+function render(){
+  document.getElementById('steps').innerHTML = S.map((s,i)=>
+    '<button data-go="'+i+'" aria-current="'+(i===cur)+'"><b>'+s.n+'</b>'+s.t+'</button>').join('');
+  document.getElementById('stage').innerHTML = screens[cur]();
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-go]');
+  if(!b) return;
+  cur = +b.dataset.go; render();
+  window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+});
+render();
+</script>
+
+</body>
+</html>

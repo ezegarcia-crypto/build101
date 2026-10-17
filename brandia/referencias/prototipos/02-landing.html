@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrandIA · Que se vea tan bien</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --grafito:#1E1E1C; --naranja:#FF5C1A; --cemento:#C9C6BE; --hueso:#EDECE8;
+  --piedra:#5C5A54; --tinta:#B23B0A;
+  --bg:var(--hueso); --surface:#FFFFFF; --block:var(--cemento); --invert:var(--grafito);
+  --text:var(--grafito); --muted:var(--piedra); --on-invert:var(--hueso);
+  --accent-text:var(--tinta);
+  --line:rgba(30,30,28,.15); --line-soft:rgba(30,30,28,.08);
+  --font-d:'Fraunces','Iowan Old Style',Georgia,serif;
+  --font-t:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --s1:8px;--s2:16px;--s3:24px;--s4:40px;--s5:64px;--s6:104px;
+  --r-sm:4px;--r-md:14px;--r-pill:999px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141413;--surface:#1E1E1C;--block:#2A2926;--invert:#EDECE8;
+  --text:var(--hueso);--muted:#A8A49B;--on-invert:#1E1E1C;--accent-text:#FF7A45;
+  --line:rgba(237,236,232,.17);--line-soft:rgba(237,236,232,.09);
+}}
+:root[data-theme="dark"]{
+  --bg:#141413;--surface:#1E1E1C;--block:#2A2926;--invert:#EDECE8;
+  --text:var(--hueso);--muted:#A8A49B;--on-invert:#1E1E1C;--accent-text:#FF7A45;
+  --line:rgba(237,236,232,.17);--line-soft:rgba(237,236,232,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-t);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-d);font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+.display{font-family:var(--font-d);font-weight:700;font-variation-settings:'opsz' 144;
+  font-size:clamp(2.3rem,1.3rem+4.2vw,4.4rem);letter-spacing:-.018em;line-height:1.02;
+  margin:0;text-wrap:balance}
+h2{font-size:clamp(1.55rem,1.15rem+1.5vw,2.25rem);letter-spacing:-.016em;font-variation-settings:'opsz' 96}
+h3{font-size:1.125rem;letter-spacing:-.008em;font-variation-settings:'opsz' 40}
+p{margin:0}
+a{color:var(--accent-text);text-underline-offset:.18em}
+.lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:20px}
+section{padding-block:var(--s6)}
+@media(max-width:640px){section{padding-block:var(--s5)}}
+
+/* ---- nav ---- */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);
+  border-bottom:1px solid var(--line-soft)}
+header .wrap{display:flex;align-items:center;gap:var(--s3);padding-block:14px}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--font-d);font-weight:700;
+  font-size:21px;letter-spacing:-.022em;font-variation-settings:'opsz' 40;text-decoration:none;color:var(--text)}
+.mark .ia{color:var(--naranja)}
+.mark svg{width:18px;color:var(--naranja);flex:none}
+.navlinks{margin-left:auto;display:flex;gap:var(--s3);align-items:center}
+.navlinks a{font-size:14.5px;color:var(--muted);text-decoration:none}
+.navlinks a:hover{color:var(--text)}
+@media(max-width:700px){.navlinks a:not(.btn){display:none}}
+
+.btn{appearance:none;font:inherit;font-weight:600;font-size:15px;cursor:pointer;
+  border-radius:var(--r-pill);padding:11px 22px;border:1px solid transparent;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:transform .12s}
+.btn:active{transform:translateY(1px)}
+.btn--p{background:var(--naranja);color:#1E1E1C}
+.btn--d{background:var(--invert);color:var(--on-invert)}
+.btn--g{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn:focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+.btn--sm{padding:8px 16px;font-size:14px}
+
+/* ---- hero ---- */
+.hero{padding-block:var(--s6) var(--s5);position:relative;overflow:hidden}
+.hero .display{max-width:15ch}
+.hero .sub{margin-top:var(--s3);max-width:52ch;font-size:19px;color:var(--muted)}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:var(--s4)}
+.hero .meta{display:flex;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4);
+  padding-top:var(--s3);border-top:1px solid var(--line-soft)}
+.hero .meta div{font-size:14px;color:var(--muted)}
+.hero .meta b{display:block;font-family:var(--font-d);font-weight:600;font-size:22px;
+  color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.texture{position:absolute;inset:auto -120px -190px auto;width:430px;height:430px;
+  color:var(--grafito);opacity:.05;pointer-events:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .texture{color:var(--hueso);opacity:.07}}
+:root[data-theme="dark"] .texture{color:var(--hueso);opacity:.07}
+@media(max-width:800px){.texture{display:none}}
+
+/* ---- costura: separador ---- */
+.costura{height:2px;border:0;background:var(--line-soft);position:relative;margin:0}
+.costura::after{content:'';position:absolute;left:50%;top:50%;width:24px;height:24px;
+  transform:translate(-50%,-50%);background:var(--naranja);
+  clip-path:polygon(0 0,100% 0,100% 40%,60% 40%,60% 100%,0 100%)}
+
+/* ---- bloque invertido ---- */
+.invert{background:var(--invert);color:var(--on-invert)}
+.invert .lbl,.invert .muted{color:color-mix(in srgb,var(--on-invert) 62%,transparent)}
+.invert h2{color:var(--on-invert)}
+
+/* ---- pasos ---- */
+.steps{display:grid;gap:var(--s3);margin-top:var(--s4)}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr);gap:var(--s4)}}
+.step{padding-top:var(--s2);border-top:2px solid var(--grafito)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .step{border-top-color:var(--hueso)}}
+:root[data-theme="dark"] .step{border-top-color:var(--hueso)}
+.step:first-child{border-top-color:var(--naranja)}
+.step .n{font-variant-numeric:tabular-nums;font-size:11px;font-weight:600;
+  letter-spacing:.14em;color:var(--muted)}
+.step h3{margin-top:6px}
+.step p{margin-top:10px;font-size:15.5px;color:var(--muted)}
+
+/* ---- planes ---- */
+.plans{display:grid;gap:var(--s2);margin-top:var(--s4);align-items:start}
+@media(min-width:860px){.plans{grid-template-columns:repeat(3,1fr)}}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:var(--s3);display:flex;flex-direction:column;gap:var(--s2);height:100%}
+.plan--hi{border-color:var(--naranja);box-shadow:inset 0 0 0 1px var(--naranja)}
+.plan .tag{align-self:flex-start;font-size:10.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;background:var(--naranja);color:#1E1E1C;
+  border-radius:var(--r-pill);padding:4px 11px}
+.plan .price{font-family:var(--font-d);font-weight:600;font-size:1.7rem;letter-spacing:-.014em;
+  font-variation-settings:'opsz' 96}
+.plan .price small{display:block;font-family:var(--font-t);font-size:13px;font-weight:400;
+  letter-spacing:0;color:var(--muted);margin-top:4px}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:15px}
+.plan li{display:flex;gap:9px}
+.plan li::before{content:'';flex:none;width:9px;height:9px;margin-top:8px;
+  background:var(--naranja);clip-path:polygon(0 0,100% 0,100% 40%,55% 40%,55% 100%,0 100%)}
+.plan .who{font-size:14px;color:var(--muted);border-top:1px solid var(--line-soft);padding-top:var(--s2)}
+.plan .btn{margin-top:auto;justify-content:center}
+
+/* ---- quote / curaduría ---- */
+.quote{display:grid;gap:var(--s3);align-items:start;margin-top:var(--s4)}
+@media(min-width:760px){.quote{grid-template-columns:1fr 1.15fr;gap:var(--s5)}}
+.quote blockquote{margin:0;font-family:var(--font-d);font-weight:600;font-size:clamp(1.25rem,1rem+1vw,1.6rem);
+  line-height:1.24;letter-spacing:-.012em;font-variation-settings:'opsz' 96}
+.quote .by{margin-top:var(--s2);font-size:14px}
+.qlist{display:grid;gap:var(--s2);list-style:none;margin:0;padding:0}
+.qlist li{display:flex;gap:12px;font-size:15.5px}
+.qlist .k{flex:none;width:1.4em;font-weight:600;font-size:14px;padding-top:2px}
+
+/* ---- kit ---- */
+.kit{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);
+  border-radius:var(--r-md);overflow:hidden;margin-top:var(--s4)}
+@media(min-width:640px){.kit{grid-template-columns:repeat(3,1fr)}}
+.kit div{background:var(--bg);padding:var(--s3)}
+.kit b{display:block;font-family:var(--font-d);font-weight:600;font-size:16px;margin-bottom:6px}
+.kit p{font-size:14.5px;color:var(--muted)}
+
+/* ---- roadmap ---- */
+.road{display:grid;gap:0;margin-top:var(--s4)}
+.road div{display:flex;gap:var(--s2);align-items:baseline;flex-wrap:wrap;
+  padding-block:14px;border-bottom:1px solid var(--line-soft)}
+.road b{font-family:var(--font-d);font-weight:600;font-size:17px;min-width:11em}
+.road span{font-size:15px;color:var(--muted);flex:1;min-width:14em}
+.road em{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:3px 10px;color:var(--muted)}
+
+/* ---- faq ---- */
+details{border-bottom:1px solid var(--line-soft);padding-block:var(--s2)}
+summary{cursor:pointer;font-family:var(--font-d);font-weight:600;font-size:17px;
+  letter-spacing:-.008em;list-style:none;display:flex;justify-content:space-between;gap:var(--s2)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';color:var(--naranja);font-family:var(--font-t);font-weight:600}
+details[open] summary::after{content:'–'}
+details p{margin-top:12px;font-size:15.5px;color:var(--muted);max-width:66ch}
+summary:focus-visible{outline:2px solid var(--naranja);outline-offset:3px;border-radius:var(--r-sm)}
+
+footer{border-top:1px solid var(--line);padding-block:var(--s4) var(--s5)}
+.foot{display:flex;gap:var(--s3);justify-content:space-between;flex-wrap:wrap;align-items:flex-end}
+.foot p{font-size:13.5px;color:var(--muted)}
+.banner{background:var(--grafito);color:var(--hueso);padding-block:13px}
+.banner .wrap{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.banner b{font-family:var(--font-d);font-weight:600;font-size:15px}
+.banner span{font-size:13.5px;color:rgba(237,236,232,.72)}
+.pend{color:var(--accent-text);font-weight:600}
+</style>
+</head>
+<body>
+
+
+<div class="banner"><div class="wrap">
+  <b>Prototipo · no aprobado</b>
+  <span>Landing armada sobre el modelo propuesto en <code>02-producto/modelo-negocio.md</code>. Los precios están sin definir a propósito.</span>
+</div></div>
+
+<header><div class="wrap">
+  <a class="mark" href="#top">
+    <svg viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor">
+      <path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/>
+      <path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+    <span>Brand<span class="ia">IA</span></span>
+  </a>
+  <nav class="navlinks">
+    <a href="#como">Cómo funciona</a>
+    <a href="#planes">Planes</a>
+    <a href="#preguntas">Preguntas</a>
+    <a href="#planes" class="btn btn--d btn--sm">Empezar</a>
+  </nav>
+</div></header>
+
+<main id="top">
+
+<section class="hero"><div class="wrap">
+  <svg class="texture" viewBox="0 0 256 256" aria-hidden="true">
+    <defs><pattern id="mod" width="64" height="64" patternUnits="userSpaceOnUse">
+      <g transform="translate(0,12)" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <path d="M0,0 H36 V-12 H52 V0 H64 V12 H76 V28 H64 V64 H52 V52 H36 V64 H0 V28 H12 V12 H0 Z"/>
+      </g></pattern></defs>
+    <rect width="256" height="256" fill="url(#mod)"/>
+  </svg>
+  <p class="lbl">Tu marca, andando · Montevideo</p>
+  <h1 class="display" style="margin-top:var(--s3)">Que se vea tan bien como lo que hacés.</h1>
+  <p class="sub">Identidad, web y contenidos con criterio de estudio, en días. Con los archivos
+  abiertos el mismo día de la entrega. Desde el primer peso bien gastado.</p>
+  <div class="cta">
+    <a href="#planes" class="btn btn--p">Empezar mi marca</a>
+    <a href="#como" class="btn btn--g">Ver cómo funciona</a>
+  </div>
+  <div class="meta">
+    <div><b>3 días</b>de brief a marca entregada</div>
+    <div><b>20 caminos</b>generados, 3 que te mostramos</div>
+    <div><b>1 persona</b>que descarta y te explica por qué</div>
+  </div>
+</div></section>
+
+<hr class="costura">
+
+<section class="invert"><div class="wrap">
+  <p class="lbl">El problema</p>
+  <h2 style="margin-top:var(--s2);max-width:20ch">Lo que hacés ya es bueno. El tema es que no se nota.</h2>
+  <p class="muted" style="margin-top:var(--s3);max-width:58ch;font-size:18px">
+    Una agencia te cotiza en miles y te entrega en meses. Una app de plantillas te da algo barato,
+    genérico y sin nadie del otro lado. En el medio no hay nada — y en el medio está casi todo el
+    mundo que produce algo bueno.</p>
+  <p class="muted" style="margin-top:var(--s3);max-width:58ch;font-size:18px">
+    Nuestro enemigo declarado es la marca genérica: la que podría ser de cualquiera y por eso no
+    es de nadie.</p>
+</div></section>
+
+<section id="como"><div class="wrap">
+  <p class="lbl">Cómo funciona</p>
+  <h2 style="margin-top:var(--s2);max-width:22ch">Empieza en tu historia, no en nuestra plantilla.</h2>
+  <div class="steps">
+    <div class="step">
+      <p class="n">01 · TRES MINUTOS</p>
+      <h3>Contanos qué hacés</h3>
+      <p>Qué vendés, a quién, tres marcas que te gustan y los colores que ya usás. Nada de
+      «¿cuáles son los valores de tu marca?». Eso no lo sabe nadie de entrada.</p>
+    </div>
+    <div class="step">
+      <p class="n">02 · CUARENTA SEGUNDOS</p>
+      <h3>Armamos veinte caminos</h3>
+      <p>Y te mostramos tres, cada uno con su lógica y su riesgo explicados en una línea. Para
+      que puedas elegir sin ser diseñadora.</p>
+    </div>
+    <div class="step">
+      <p class="n">03 · DÍAS, NO MESES</p>
+      <h3>Te lo dejamos andando</h3>
+      <p>Logo, colores, tipografías, plantillas y cómo se usa. Archivos abiertos: si mañana te
+      vas, te llevás tu marca entera.</p>
+    </div>
+  </div>
+</div></section>
+
+<section style="background:var(--surface);border-block:1px solid var(--line-soft)"><div class="wrap">
+  <p class="lbl">El diferencial</p>
+  <h2 style="margin-top:var(--s2);max-width:24ch">Generar marcas con IA lo va a hacer cualquiera. Descartarlas, no.</h2>
+  <div class="quote">
+    <div>
+      <blockquote>«Descarté la versión con la ilustración de pan. Se veía linda en pantalla y
+      desaparecía en el sello de tinta de la bolsa de papel, que es donde más se va a ver tu marca.»</blockquote>
+      <p class="by"><strong>Lucía</strong> · dirección de arte — sobre la identidad de una panadería</p>
+    </div>
+    <ul class="qlist">
+      <li><span class="k">01</span><span>La máquina genera. Una persona elige, descarta y escribe por qué.</span></li>
+      <li><span class="k">02</span><span>Ese porqué te queda a vos: es lo que te deja defender tu marca cuando alguien te sugiere ponerle una espiga.</span></li>
+      <li><span class="k">03</span><span>Nunca te entregamos el primer resultado sin curar. Eso es el producto, no el atajo.</span></li>
+      <li><span class="k">04</span><span>Si ninguno de los tres caminos te mueve algo, lo hablamos y lo volvemos a hacer.</span></li>
+    </ul>
+  </div>
+</div></section>
+
+<section id="planes"><div class="wrap">
+  <p class="lbl">Planes</p>
+  <h2 style="margin-top:var(--s2);max-width:26ch">Lo que cambia es cuánto criterio humano hay detrás.</h2>
+  <p style="margin-top:var(--s2);max-width:56ch;color:var(--muted)">
+    Lo que te llevás es lo mismo en los tres. Lo que cambia es quién decide, y cuánto tarda.</p>
+  <div class="plans">
+    <article class="plan">
+      <p class="lbl">BrandIA · la suscripción</p>
+      <p class="price"><span class="pend">a definir</span><small>por mes</small></p>
+      <ul>
+        <li>Tu sistema de marca completo</li>
+        <li>Veinte caminos, elegís vos</li>
+        <li>Archivos abiertos, todo editable</li>
+        <li>Plantillas para publicar</li>
+        <li>Listo en minutos</li>
+      </ul>
+      <p class="who">Para quien recién arranca y no quiere improvisar la primera impresión.</p>
+      <a href="#preguntas" class="btn btn--g">Empezar</a>
+    </article>
+    <article class="plan plan--hi">
+      <span class="tag">El que recomendamos</span>
+      <p class="lbl">BrandIA Plus · add-on mensual</p>
+      <p class="price"><span class="pend">a definir</span><small>por mes, encima de la suscripción</small></p>
+      <ul>
+        <li>Todo lo de la suscripción</li>
+        <li><strong>Una dirección de arte cura y te explica</strong></li>
+        <li>Contenidos todas las semanas, con tu marca puesta</li>
+        <li>Correcciones sin límite de rondas</li>
+        <li>Listo en días</li>
+      </ul>
+      <p class="who">Para la PyME que ya creció y necesita que se note en todos lados igual.</p>
+      <a href="#preguntas" class="btn btn--p">Sumar Plus</a>
+    </article>
+    <article class="plan">
+      <p class="lbl">BrandIA Estudio · por proyecto</p>
+      <p class="price"><span class="pend">a definir</span><small>por proyecto</small></p>
+      <ul>
+        <li>Todo lo de Plus</li>
+        <li>Sitio web propio</li>
+        <li>Producción física e impresión</li>
+        <li>Pauta y campañas</li>
+        <li>Acompañamiento anual</li>
+      </ul>
+      <p class="who">Para la empresa establecida que pierde consistencia entre canales y equipos.</p>
+      <a href="#preguntas" class="btn btn--g">Hablémoslo</a>
+    </article>
+  </div>
+  <p style="margin-top:var(--s3);font-size:14px;color:var(--muted)">
+    Los precios van publicados, siempre. Nada de «escribinos para una cotización personalizada».
+    <strong class="pend">Los números todavía no están definidos</strong> — es una de las decisiones
+    pendientes, no una omisión de esta página.</p>
+</div></section>
+
+<hr class="costura">
+
+<section><div class="wrap">
+  <p class="lbl">Qué te llevás</p>
+  <h2 style="margin-top:var(--s2);max-width:24ch">Un sistema, no cien piezas sueltas.</h2>
+  <div class="kit">
+    <div><b>Logotipo</b><p>SVG, PNG en tres tamaños, PDF vectorial, favicon y un EPS de una tinta para sello y bordado.</p></div>
+    <div><b>Color</b><p>Con los contrastes verificados. Cuál va sobre cuál, y cuál nunca.</p></div>
+    <div><b>Tipografías</b><p>De licencia abierta, sin excepción. Las editás vos sin pedirle permiso a nadie.</p></div>
+    <div><b>Plantillas</b><p>Post, story, cartel, etiqueta, presentación y factura. Con tu marca ya cargada.</p></div>
+    <div><b>Cómo se usa</b><p>Cuatro páginas, no cuarenta. Escritas para vos, no para un diseñador.</p></div>
+    <div><b>Todo abierto</b><p>Si mañana te vas, te llevás tu marca entera. No queda nada de rehén.</p></div>
+  </div>
+</div></section>
+
+<section class="invert"><div class="wrap">
+  <p class="lbl">Lo que viene</p>
+  <h2 style="margin-top:var(--s2);max-width:22ch">De la pantalla al cartel impreso.</h2>
+  <p class="muted" style="margin-top:var(--s3);max-width:56ch">
+    El círculo se cierra cuando el archivo llega a la imprenta sin que tengas que explicar nada.
+    Eso todavía no está en el aire — y preferimos decirlo antes que prometerlo.</p>
+  <div class="road">
+    <div><b>BrandIA Gráfica</b><span>Producción física e impresión 3D, con el arte ya listo para producir.</span><em>Fase 2</em></div>
+    <div><b>Red BrandIA</b><span>Los proveedores que imprimen lo que diseñamos, dentro de la plataforma.</span><em>Fase 2</em></div>
+    <div><b>BrandIA Pauta</b><span>Que te encuentre quien te tiene que encontrar.</span><em>Fase 3</em></div>
+    <div><b>BrandIA Creadores</b><span>La voz correcta para tu marca.</span><em>Fase 3</em></div>
+  </div>
+</div></section>
+
+<section id="preguntas"><div class="wrap">
+  <p class="lbl">Preguntas</p>
+  <h2 style="margin-top:var(--s2)">Lo que nos preguntan siempre.</h2>
+  <div style="margin-top:var(--s4)">
+    <details open><summary>¿Es un logo hecho por una máquina?</summary>
+      <p>La máquina genera. Una persona elige, descarta y te explica por qué. Ese juicio es el
+      producto — el resto es la consecuencia. Sin Plus, la persona que elige sos vos, con
+      las opciones y el razonamiento a la vista.</p></details>
+    <details><summary>¿La marca queda mía?</summary>
+      <p>Entera. Archivos abiertos y tipografías de licencia abierta, que es una condición que no
+      negociamos justamente por esto. Si mañana te vas, no queda nada acá que necesites pedirnos.</p></details>
+    <details><summary>¿Y si no me gusta ninguno de los tres?</summary>
+      <p>Lo hablamos y lo volvemos a hacer. Generar de nuevo nos cuesta segundos: no hay ninguna
+      razón para que te quedes con algo que no te mueve nada.</p></details>
+    <details><summary>¿Cuánto tarda de verdad?</summary>
+      <p>Solo: minutos. Curado: días, con fecha comprometida. Estudio: semanas. Velocidad no es
+      entregar a medias — se entrega con fecha, con archivos abiertos y con instrucciones de uso.</p></details>
+    <details><summary>¿Aparece BrandIA en mi marca?</summary>
+      <p>No. La app se ve BrandIA; lo que hay adentro es tuyo y no lleva nada nuestro. Ni en el
+      preview, ni en la exportación, ni en el archivo vectorial.</p></details>
+  </div>
+</div></section>
+
+<section style="background:var(--surface);border-top:1px solid var(--line-soft)"><div class="wrap" style="text-align:center">
+  <h2 class="display" style="margin-inline:auto;max-width:16ch">¿BrandIAmos la tuya?</h2>
+  <p style="margin:var(--s3) auto 0;max-width:46ch;color:var(--muted)">
+    Tres minutos de brief. El resto lo armamos nosotros.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:var(--s4)">
+    <a href="#planes" class="btn btn--p">Empezar mi marca</a>
+    <a href="#como" class="btn btn--g">Ver cómo funciona</a>
+  </div>
+</div></section>
+
+</main>
+
+<footer><div class="wrap foot">
+  <div>
+    <div class="mark" style="font-size:18px">
+      <svg viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor">
+        <path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/>
+        <path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+      <span>Brand<span class="ia">IA</span></span>
+    </div>
+    <p style="margin-top:10px">Montevideo, Uruguay · brandiamos.com</p>
+  </div>
+  <p style="max-width:44ch">Prototipo interno. El descriptor bajo el logo, la arquitectura de
+  planes y los precios son propuestas a discutir, no decisiones tomadas.</p>
+</div></footer>
+
+</body>
+</html>

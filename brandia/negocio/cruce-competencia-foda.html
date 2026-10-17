@@ -1,0 +1,304 @@
+<title>Competencia × FODA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --violeta:#7359C2;
+    --violeta-deep:#54409a;
+    --violeta-soft:#f1edfa;
+    --violeta-line:#e0d8f5;
+    --ink:#191823;
+    --ink-2:#3a3a48;
+    --muted:#6a6a7e;
+    --faint:#9a9ab0;
+    --line:#ececf2;
+    --bg:#ffffff;
+    --bg-soft:#faf9fd;
+    --card:#ffffff;
+    --refuerza:#0f8a7e;
+    --refuerza-bg:#e5f5f2;
+    --cambia:#b3701c;
+    --cambia-bg:#fbf0e2;
+    --nuevo:#c0344d;
+    --nuevo-bg:#fdeef0;
+    --shadow:0 1px 2px rgba(25,24,35,.04), 0 8px 24px rgba(25,24,35,.05);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --violeta:#a892e8;
+      --violeta-deep:#c3b2f2;
+      --violeta-soft:#241f36;
+      --violeta-line:#3a3357;
+      --ink:#f0eef8;
+      --ink-2:#cfcbe0;
+      --muted:#9d9ab5;
+      --faint:#6f6c86;
+      --line:#2a2838;
+      --bg:#121019;
+      --bg-soft:#191725;
+      --card:#1b1927;
+      --refuerza:#4fd0bf;
+      --refuerza-bg:#123330;
+      --cambia:#e0a862;
+      --cambia-bg:#33260f;
+      --nuevo:#ef8098;
+      --nuevo-bg:#3a1620;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --violeta:#a892e8;
+    --violeta-deep:#c3b2f2;
+    --violeta-soft:#241f36;
+    --violeta-line:#3a3357;
+    --ink:#f0eef8;
+    --ink-2:#cfcbe0;
+    --muted:#9d9ab5;
+    --faint:#6f6c86;
+    --line:#2a2838;
+    --bg:#121019;
+    --bg-soft:#191725;
+    --card:#1b1927;
+    --refuerza:#4fd0bf;
+    --refuerza-bg:#123330;
+    --cambia:#e0a862;
+    --cambia-bg:#33260f;
+    --nuevo:#ef8098;
+    --nuevo-bg:#3a1620;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+  .ref{font-family:'IBM Plex Mono',monospace;font-size:.82em;font-weight:600;color:var(--violeta);background:var(--violeta-soft);padding:1px 6px;border-radius:5px;white-space:nowrap}
+
+  header.hero{padding:60px 0 38px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--violeta);font-weight:600}
+  h1{font-size:clamp(29px,5vw,44px);font-weight:700;letter-spacing:-.025em;line-height:1.09;margin:15px 0 16px;text-wrap:balance;max-width:18ch}
+  h1 span{color:var(--violeta)}
+  .lede{font-size:17.5px;color:var(--muted);max-width:62ch;line-height:1.55}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:24px;font-size:12.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+  .meta b{color:var(--ink);font-weight:600}
+
+  .verdict{margin-top:32px;background:var(--violeta-soft);border:1px solid var(--violeta-line);border-radius:16px;padding:24px 26px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;box-shadow:var(--shadow)}
+  .verdict .badge{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--violeta);padding:6px 11px;border-radius:20px;white-space:nowrap}
+  .verdict p{font-size:15.5px;color:var(--ink-2);line-height:1.55}
+  .verdict p + p{margin-top:9px}
+  .verdict b{color:var(--ink);font-weight:600}
+  :root[data-theme="dark"] .verdict .badge, :root:not([data-theme="light"]) .verdict .badge{color:#17132a}
+
+  /* balance meter */
+  .balance{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:34px}
+  .bstat{border:1px solid var(--line);border-radius:13px;padding:18px 18px 16px;background:var(--card);box-shadow:var(--shadow)}
+  .bstat .num{font-size:30px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+  .bstat.r .num{color:var(--refuerza)}
+  .bstat.c .num{color:var(--cambia)}
+  .bstat.n .num{color:var(--nuevo)}
+  .bstat .lbl{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.4}
+  .bstat .lbl b{color:var(--ink);font-weight:600}
+
+  section{padding:50px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;margin-bottom:15px;display:flex;align-items:center;gap:11px}
+  .kicker::before{content:"";width:24px;height:2px;display:inline-block;flex:none}
+  .kicker.r{color:var(--refuerza)} .kicker.r::before{background:var(--refuerza)}
+  .kicker.c{color:var(--cambia)} .kicker.c::before{background:var(--cambia)}
+  .kicker.v{color:var(--violeta)} .kicker.v::before{background:var(--violeta)}
+  h2{font-size:25px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;text-wrap:balance}
+  .sec-lede{color:var(--muted);max-width:66ch;font-size:15.5px;margin-bottom:30px}
+
+  .items{display:grid;gap:14px}
+  .item{border:1px solid var(--line);border-radius:14px;padding:19px 21px;background:var(--card);box-shadow:var(--shadow)}
+  .item.r{border-left:3px solid var(--refuerza)}
+  .item.c{border-left:3px solid var(--cambia)}
+  .item.n{border-left:3px solid var(--nuevo)}
+  .item .head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .item h3{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:20px;white-space:nowrap}
+  .chip.r{color:var(--refuerza);background:var(--refuerza-bg)}
+  .chip.c{color:var(--cambia);background:var(--cambia-bg)}
+  .chip.n{color:var(--nuevo);background:var(--nuevo-bg)}
+  .item p{font-size:14px;color:var(--ink-2);line-height:1.55}
+  .item p + p{margin-top:8px}
+  .item .maps{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+  .item .maps .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
+
+  /* Pergenia spotlight */
+  .spot{background:var(--nuevo-bg);border:1px solid var(--nuevo);border-radius:16px;padding:24px 26px;margin-bottom:26px}
+  .spot .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--nuevo);margin-bottom:10px}
+  .spot h3{font-size:19px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+  .spot p{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+  .spot p + p{margin-top:9px}
+  .spot b{color:var(--ink);font-weight:600}
+
+  /* proposed edits */
+  .edit{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
+  .edit .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;background:var(--bg-soft);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .edit .loc{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .edit .act{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px;color:var(--violeta);background:var(--violeta-soft)}
+  .edit .body{padding:17px 19px}
+  .edit .body > .why{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+  .edit .prop{font-size:13.5px;color:var(--ink-2);line-height:1.55;background:var(--bg-soft);border-left:3px solid var(--violeta-line);border-radius:0 8px 8px 0;padding:12px 15px}
+  .edit .prop .plabel{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);display:block;margin-bottom:6px}
+  .edit .prop b{color:var(--ink);font-weight:600}
+
+  .close{margin-top:8px;background:var(--violeta);border-radius:16px;padding:26px 30px;color:#fff}
+  .close h3{font-size:19px;font-weight:700;margin-bottom:10px;color:#fff;letter-spacing:-.01em}
+  .close p{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.9);max-width:72ch}
+  .close p + p{margin-top:9px}
+  .close b{color:#fff;font-weight:600}
+  :root[data-theme="dark"] .close, :root:not([data-theme="light"]) .close{background:var(--violeta-deep)}
+  :root[data-theme="dark"] .close p, :root:not([data-theme="light"]) .close p{color:rgba(23,19,42,.82)}
+  :root[data-theme="dark"] .close h3, :root[data-theme="dark"] .close b, :root:not([data-theme="light"]) .close h3, :root:not([data-theme="light"]) .close b{color:#17132a}
+
+  footer{padding:32px 0 60px;font-size:12.5px;color:var(--faint);line-height:1.7}
+  footer b{color:var(--muted);font-weight:600}
+
+  @media (max-width:680px){
+    .balance{grid-template-columns:1fr}
+    .verdict{grid-template-columns:1fr;gap:13px}
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">BrandIA · Estrategia · Cruce de análisis</div>
+    <h1>La competencia real, cruzada con tu <span>FODA</span></h1>
+    <p class="lede">Qué le hacen los hallazgos de la investigación de competidores (07/09) al análisis de mercado y FODA (31/08): qué refuerzan, qué matizan y qué habría que editar en el documento.</p>
+    <div class="meta">
+      <div><b>Base</b> · FODA v1.0 (31/08/2026)</div>
+      <div><b>Cruce con</b> · Análisis de competencia (07/09/2026)</div>
+      <div><b>Para</b> · Juan Pedro Portas</div>
+    </div>
+
+    <div class="verdict">
+      <span class="badge">Veredicto</span>
+      <div>
+        <p><b>El cruce refuerza el FODA mucho más de lo que lo cambia.</b> La tesis central —que la ventaja defendible de BrandIA <b>no es la IA</b>, sino la red de producción local y la relación con el cliente en su idioma— sale más fuerte: ninguno de los competidores nuevos que aparecieron cierra el círculo digital → físico.</p>
+        <p>Pero hay <b>un hallazgo que sí obliga a matizar</b> un punto del FODA: apareció un competidor <b>AI-first en Montevideo</b> (Pergenia). No hace exactamente lo mismo, pero desmiente la idea de que "no hay equivalente local".</p>
+      </div>
+    </div>
+
+    <div class="balance">
+      <div class="bstat r"><div class="num">4</div><div class="lbl"><b>puntos reforzados</b> — el cruce confirma lo que el FODA ya sostenía</div></div>
+      <div class="bstat c"><div class="num">3</div><div class="lbl"><b>puntos a matizar</b> — siguen válidos, pero necesitan un ajuste de precisión</div></div>
+      <div class="bstat n"><div class="num">1</div><div class="lbl"><b>dato nuevo</b> — competidor AI-first local no contemplado antes</div></div>
+    </div>
+  </header>
+
+  <!-- REFUERZA -->
+  <section id="refuerza">
+    <div class="kicker r">Lo que el cruce confirma</div>
+    <h2>Cuatro puntos que salen reforzados</h2>
+    <p class="sec-lede">La investigación agregó nombres y detalle, pero no contradijo ninguna conclusión de fondo del FODA. Al contrario: le dio evidencia concreta a cuatro de sus apuestas más importantes.</p>
+    <div class="items">
+      <div class="item r">
+        <div class="head"><span class="chip r">Refuerza</span><h3>El foso es la producción física local, no la generación</h3></div>
+        <p>El FODA apuesta a que el único diferencial defendible es cerrar el círculo del archivo digital al cartel impreso (F4, O4, O5). El barrido competitivo lo confirma sin excepción: <b>ninguno</b> de los estudios AI-nativos encontrados —ni los locales, ni los regionales, ni los referentes globales (dp.vision, Colabz)— resuelve papelería y cartelería local con arte listo. El hueco de la §4.2 sigue completamente abierto.</p>
+        <div class="maps"><span class="k">Refuerza</span> <span class="ref">F4</span> <span class="ref">O4</span> <span class="ref">O5</span> <span class="ref">§4.2</span></div>
+      </div>
+      <div class="item r">
+        <div class="head"><span class="chip r">Refuerza</span><h3>La barrera de entrada es casi nula — y ya hay espejos operando</h3></div>
+        <p>El FODA lo advierte en A3 y A6, con Brandfy (España) como ejemplo. El cruce suma un espejo aún más parecido: <b>IA Estudio Creativo</b>, un estudio de branding con IA que usa casi la misma tesis de BrandIA —"la IA nos asiste, no nos sustituye"— y apunta al mismo público PyME. No es una amenaza teórica: es la prueba de que el concepto es replicable y de que la ventana de "primero" se mide en meses.</p>
+        <div class="maps"><span class="k">Refuerza</span> <span class="ref">A3</span> <span class="ref">A6</span> <span class="ref">§4.1 G3</span></div>
+      </div>
+      <div class="item r">
+        <div class="head"><span class="chip r">Refuerza</span><h3>El piso de precio "una marca por USD 60" es real</h3></div>
+        <p>La §3.3 y la amenaza A2 se apoyan en que los generadores fijan la expectativa de precio. El relevamiento de plataformas (Looka, Brandmark, Logo.ai, SologoAI, Kittl) lo confirma con números frescos: paquetes de identidad entre USD 59 y USD 175, en minutos. Confirma que BrandIA <b>nunca puede vender por precio</b>: contra estas herramientas gana por criterio, alcance y acompañamiento, no por ser más barata.</p>
+        <div class="maps"><span class="k">Refuerza</span> <span class="ref">§3.3</span> <span class="ref">A2</span> <span class="ref">§4.1 G2</span></div>
+      </div>
+      <div class="item r">
+        <div class="head"><span class="chip r">Refuerza</span><h3>Nadie ocupa la casilla exacta de BrandIA</h3></div>
+        <p>La conclusión §8.1.1 (el vacío entre "caro y lento" y "barato y genérico" existe y nadie lo cubre entero) queda intacta. El cruce lo dice con otras palabras: no existe una sola empresa que combine estudio AI-nativo + método desde referencias + foco PyME + Uruguay + puente físico. La posición sigue vacía y hay espacio para ser el primero en nombrarla.</p>
+        <div class="maps"><span class="k">Refuerza</span> <span class="ref">§8.1</span> <span class="ref">§4.2</span> <span class="ref">O9</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMBIA -->
+  <section id="cambia">
+    <div class="kicker c">Lo que hay que ajustar</div>
+    <h2>El dato nuevo y lo que obliga a matizar</h2>
+    <p class="sec-lede">Un solo hallazgo genuinamente nuevo, y tres afirmaciones del FODA que siguen siendo verdad pero necesitan más precisión para no sobrevender la ventaja.</p>
+
+    <div class="spot">
+      <div class="tag">◆ Dato nuevo · no estaba en el FODA</div>
+      <h3>Pergenia: un competidor AI-first en Montevideo</h3>
+      <p>El FODA (§4.1, Grupo 4) da por hecho que las agencias locales compiten con relación y confianza, pero pierden por precio y tiempo, y que <b>no hay un equivalente AI-nativo rioplatense</b> (esa es la base de la oportunidad O9). El cruce encontró una excepción: <b>Pergenia</b>, una agencia de IA en Montevideo nacida de la fusión de dos agencias con 15+ años, que integra "estrategia, tecnología y creatividad con IA aplicada" y usa <b>casi el mismo discurso</b> de BrandIA ("la IA potencia lo humano, no lo reemplaza").</p>
+      <p>No hace exactamente lo mismo —pega mucho más fuerte a automatización, funnels y performance que a construcción de identidad de marca desde cero, y no cierra el círculo físico— así que <b>no invalida la oportunidad, pero sí la matiza</b>: ya no se puede afirmar que "no existe equivalente local". Conviene seguirlo de cerca y afinar el discurso para marcar la diferencia (identidad de verdad + producción local, no automatización).</p>
+    </div>
+
+    <div class="items">
+      <div class="item c">
+        <div class="head"><span class="chip c">Matiza</span><h3>O9 — "sin equivalente directo" necesita una nota al pie</h3></div>
+        <p>La oportunidad del hueco de idioma y cultura sigue en pie: nadie combina lo rioplatense con el círculo completo. Pero la frase "un estudio rioplatense con criterio no tiene equivalente directo" ya no es literal con Pergenia operando en Montevideo. El matiz correcto: no hay equivalente en <b>la combinación completa</b>, aunque sí empiezan a aparecer jugadores AI-first locales en las piezas sueltas.</p>
+        <div class="maps"><span class="k">Ajustar</span> <span class="ref">O9</span></div>
+      </div>
+      <div class="item c">
+        <div class="head"><span class="chip c">Matiza</span><h3>A6 — la amenaza hispanohablante ya tiene más nombres</h3></div>
+        <p>A6 nombra a Brandfy y "estudios IA-nativos regionales" en abstracto. El cruce los vuelve concretos: <b>IA Estudio Creativo</b> (el espejo más cercano en tesis y público), NoMa Studio AI y Bold en Argentina. Vale actualizar la amenaza con nombres para poder monitorearlos de verdad, y probablemente subir su ponderación local por Pergenia.</p>
+        <div class="maps"><span class="k">Ajustar</span> <span class="ref">A6</span></div>
+      </div>
+      <div class="item c">
+        <div class="head"><span class="chip c">Matiza</span><h3>§4.1 — el mapa competitivo puede pasar de categorías a nombres</h3></div>
+        <p>Los grupos 2, 3 y 4 están bien planteados, pero descritos con pocos ejemplos. Ahora se pueden poblar con competidores verificados y ubicados: eso convierte el mapa de un marco conceptual en una lista accionable de a quién mirar. No cambia la lectura; la hace operativa.</p>
+        <div class="maps"><span class="k">Ampliar</span> <span class="ref">§4.1</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDICIONES PROPUESTAS -->
+  <section id="ediciones">
+    <div class="kicker v">Para aplicar al documento</div>
+    <h2>Ediciones concretas propuestas al FODA</h2>
+    <p class="sec-lede">Cambios chicos y quirúrgicos. El FODA no necesita reescribirse: necesita cuatro retoques de precisión. Texto listo para pegar, si te sirve.</p>
+
+    <div class="edit">
+      <div class="top"><span class="loc">§4.1 · Grupo 3 y Grupo 4</span><span class="act">Ampliar</span></div>
+      <div class="body">
+        <div class="why">Poblar el mapa con los competidores verificados en la investigación, separando el hallazgo local del regional.</div>
+        <div class="prop"><span class="plabel">Texto sugerido para agregar</span>Al Grupo 3 (estudios IA-nativos), sumar a <b>IA Estudio Creativo</b> —el más parecido a BrandIA en tesis y público PyME—, <b>NoMa Studio AI</b> y <b>Bold</b> (Argentina), y como referentes globales <b>dp.vision</b> (Polonia) y <b>Colabz</b>. Al Grupo 4 (locales), abrir una nota: ya existe al menos un jugador <b>AI-first uruguayo, Pergenia</b> (Montevideo), enfocado en automatización y performance más que en construcción de identidad.</div>
+      </div>
+    </div>
+
+    <div class="edit">
+      <div class="top"><span class="loc">O9 · Oportunidades</span><span class="act">Matizar</span></div>
+      <div class="body">
+        <div class="why">La frase actual afirma que no hay equivalente local; Pergenia lo desmiente en parte.</div>
+        <div class="prop"><span class="plabel">Reemplazar el cierre de O9 por</span>"Casi todo el ecosistema está en inglés y con estética de herramienta. No hay equivalente directo en <b>la combinación completa</b> (identidad con criterio + continuidad + producción física local + rioplatense), aunque ya empiezan a aparecer jugadores AI-first locales en piezas sueltas (Pergenia). La ventana sigue abierta, pero se está poblando."</div>
+      </div>
+    </div>
+
+    <div class="edit">
+      <div class="top"><span class="loc">A6 · Amenazas</span><span class="act">Concretar</span></div>
+      <div class="body">
+        <div class="why">Cambiar la mención abstracta por nombres monitoreables y reflejar la aparición local.</div>
+        <div class="prop"><span class="plabel">Texto sugerido</span>"Competidores hispanohablantes ya operando: <b>Brandfy</b> (España), <b>IA Estudio Creativo</b> (el espejo más cercano), NoMa y Bold (Argentina), y <b>Pergenia</b> ya en Montevideo. La ventana de 'primero en rioplatense' es de meses, no de años." Considerar subir el impacto local de <b>Alta × Medio</b> a <b>Alta × Alto</b>.</div>
+      </div>
+    </div>
+
+    <div class="edit">
+      <div class="top"><span class="loc">§10 · Qué falta cerrar</span><span class="act">Agregar ítem</span></div>
+      <div class="body">
+        <div class="why">Dejar registrado el seguimiento del competidor local nuevo.</div>
+        <div class="prop"><span class="plabel">Nuevo checklist</span>"☐ Monitorear a <b>Pergenia</b> (Montevideo) y a <b>IA Estudio Creativo</b>: qué ofrecen, cómo cobran y cómo comunican, para afinar la diferencia de BrandIA (identidad de verdad + producción local vs. automatización/performance)."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIERRE -->
+  <section id="cierre" style="border-bottom:none">
+    <div class="kicker v">En una frase</div>
+    <h2>Qué hacer con esto</h2>
+    <div class="close">
+      <h3>El FODA se sostiene; el foco se confirma</h3>
+      <p>La investigación de competencia <b>no cambia la estrategia</b>: la refuerza. El diferencial defendible sigue siendo Red BrandIA (producción física local) y el idioma/cercanía, exactamente lo que el FODA ya priorizaba, y el barrido confirma que nadie más lo cubre. La recomendación de foco —<b>MVP = Identidad + Red BrandIA</b>— queda intacta.</p>
+      <p>Lo único que cambia es el termómetro de urgencia: con un competidor AI-first ya en Montevideo y un espejo casi idéntico en la región, la <b>ventana de tiempo del FODA (§8.1.5) es más corta de lo que parecía</b>. Eso empuja a favor de los pasos 1, 2 y 5 del plan (proteger la marca, escribir el "esto no lo hacemos en 2026" y firmar imprentas), no en contra.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div><b>Cruce de análisis · BrandIA · 07/09/2026.</b> Documento de trabajo interno.</div>
+    <div>Fuentes internas: <b>2026-08-31_analisis-de-mercado-y-foda.md</b>, descripcion-brandia.md, verticales-de-servicio.md. Fuente externa: análisis de competencia del 07/09/2026 (sitios oficiales de los competidores y comparativas de sector). Las referencias tipo <span class="ref">F4</span> / <span class="ref">O9</span> / <span class="ref">§4.1</span> remiten a las secciones del FODA v1.0.</div>
+  </footer>
+</div>

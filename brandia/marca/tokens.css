@@ -1,0 +1,151 @@
+/* ============================================================
+   BrandIA · tokens
+   Derivado del Manual de marca v1.3 (§ 12, 13, 14).
+   ⚠️ La identidad VISUAL está declarada provisoria en el manual.
+      Estos tokens son la hipótesis vigente, no una aprobación.
+   Contrastes verificados con WCAG 2.1 (2026-09-22):
+      · Naranja/Grafito es 5.41 en ambos sentidos, no 6.5.
+      · Piedra sobre Cemento (4.04) no llega a AA → prohibido.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+:root {
+  /* ---- Color · paleta Taller ---------------------------- */
+  --grafito:       #1E1E1C;  /* base · 70% de la superficie */
+  --naranja:       #FF5C1A;  /* marca · un punto por pieza, sin contar el logo */
+  --cemento:       #C9C6BE;  /* neutro medio cálido · bloques */
+  --hueso:         #EDECE8;  /* fondo claro · papel, no pantalla */
+  --piedra:        #5C5A54;  /* texto secundario SOBRE HUESO O BLANCO */
+  --naranja-tinta: #B23B0A;  /* naranja para texto/links sobre fondo claro */
+  --blanco:        #FFFFFF;
+
+  /* Derivados permitidos (no son colores nuevos: opacidades del grafito) */
+  --grafito-70: rgba(30,30,28,.70);  /* texto secundario sobre Cemento */
+  --grafito-12: rgba(30,30,28,.12);  /* bordes y separadores */
+  --grafito-06: rgba(30,30,28,.06);  /* fondos sutiles */
+
+  /* ---- Roles semánticos --------------------------------- */
+  --bg:          var(--hueso);
+  --bg-alt:      var(--blanco);
+  --bg-block:    var(--cemento);
+  --bg-invert:   var(--grafito);
+  --text:        var(--grafito);
+  --text-muted:  var(--piedra);
+  --text-invert: var(--hueso);
+  --accent:      var(--naranja);
+  --accent-text: var(--naranja-tinta);   /* el acento cuando es texto sobre claro */
+  --line:        var(--grafito-12);
+
+  /* ---- Tipografía --------------------------------------- */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-text:    'Instrument Sans', Helvetica, Arial, sans-serif;
+
+  --fs-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);  /* 40 → 72 */
+  --fs-h1:      clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem); /* 28 → 36 */
+  --fs-h2:      clamp(1.375rem, 1.2rem + .7vw, 1.625rem);/* 22 → 26 */
+  --fs-h3:      1.125rem;   /* 18 */
+  --fs-body:    1.0625rem;  /* 17 */
+  --fs-lead:    .9375rem;   /* 15 */
+  --fs-label:   .6875rem;   /* 11 */
+
+  /* ---- Espacio · base 8 --------------------------------- */
+  --s1: 8px;  --s2: 16px;  --s3: 24px;  --s4: 40px;  --s5: 64px;  --s6: 104px;
+
+  /* ---- Radios · nunca intermedios ----------------------- */
+  --r-sm: 4px;      /* elementos chicos */
+  --r-md: 14px;     /* tarjetas y contenedores */
+  --r-pill: 999px;  /* botones y etiquetas */
+
+  --stroke-icon: 1.75px;  /* iconografía: puntas redondeadas, sin relleno */
+  --maxw: 1080px;
+}
+
+/* ---- Modo oscuro: el grafito ya es la base de la marca ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:         #141413;
+    --bg-alt:     var(--grafito);
+    --bg-block:   #262523;
+    --bg-invert:  var(--hueso);
+    --text:       var(--hueso);
+    --text-muted: #A8A49B;   /* 7.4:1 sobre #141413 · Piedra no alcanza en oscuro */
+    --text-invert:var(--grafito);
+    --accent-text: #FF7A45;  /* 7.1:1 sobre #141413 · el Tinta no llega en oscuro */
+    --line:       rgba(237,236,232,.14);
+  }
+}
+
+/* ---- Tipografía base ---------------------------------- */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  margin: 0;
+  /* Regla dura del manual: el tracking negativo de una grotesca no va en una serif.
+     Estos valores son los del § 13, no más. */
+}
+.display { font-weight: 700; font-size: var(--fs-display); letter-spacing: -.018em; font-variation-settings: 'opsz' 144; }
+h1        { font-size: var(--fs-h1); letter-spacing: -.016em; font-variation-settings: 'opsz' 96; }
+h2        { font-size: var(--fs-h2); letter-spacing: -.014em; font-variation-settings: 'opsz' 96; }
+h3        { font-size: var(--fs-h3); letter-spacing: -.008em; font-variation-settings: 'opsz' 40; }
+
+.lead  { font-size: var(--fs-lead); color: var(--text-muted); }
+.label {
+  font-size: var(--fs-label); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .14em;
+  color: var(--text-muted);
+}
+
+a { color: var(--accent-text); text-underline-offset: .18em; }
+
+/* ---- Componentes mínimos ------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--s1);
+  font-family: var(--font-text); font-weight: 600; font-size: .9375rem;
+  padding: 12px 22px; border-radius: var(--r-pill);
+  border: 1px solid transparent; cursor: pointer; text-decoration: none;
+  transition: transform .12s ease, background .16s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn--primary { background: var(--naranja); color: var(--grafito); } /* 5.41:1 AA — blanco sobre naranja da 3.09 y no pasa */
+.btn--dark    { background: var(--grafito); color: var(--hueso); }
+.btn--ghost   { background: transparent; color: var(--text); border-color: var(--line); }
+
+.card {
+  background: var(--bg-alt); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: var(--s3);
+}
+
+/* La costura · recurso gráfico auxiliar. Uno por pieza, nunca decorativa:
+   siempre marca una unión real entre dos cosas. */
+.costura {
+  height: 2px; border: 0; background: var(--line);
+  position: relative; margin: var(--s5) 0;
+}
+.costura::after {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 22px; height: 22px; transform: translate(-50%, -50%);
+  background: var(--naranja);
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 60% 40%, 60% 100%, 0 100%);
+}
+
+/* ============================================================
+   PROHIBIDO (no hay token para esto a propósito)
+   · Naranja Señal como texto sobre Hueso o Cemento (2.61 / 1.81)
+   · Piedra sobre Cemento (4.04 · no llega a AA)
+   · Cualquier degradé entre colores de la paleta.
+     El degradé solo existe como halo difuso de fondo, nunca sobre
+     tipografía ni sobre el logo.
+   · Dos puntos de naranja en una misma pieza, sin contar el logo.
+   ============================================================ */

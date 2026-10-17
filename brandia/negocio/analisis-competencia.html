@@ -1,0 +1,470 @@
+<title>Competencia de BrandIA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --violeta:#7359C2;
+    --violeta-deep:#54409a;
+    --violeta-soft:#f1edfa;
+    --violeta-line:#e0d8f5;
+    --ink:#191823;
+    --ink-2:#3a3a48;
+    --muted:#6a6a7e;
+    --faint:#9a9ab0;
+    --line:#ececf2;
+    --bg:#ffffff;
+    --bg-soft:#faf9fd;
+    --card:#ffffff;
+    /* semánticos por tipo de competidor */
+    --directo:#7359C2;
+    --directo-bg:#f1edfa;
+    --similar:#0f8a7e;
+    --similar-bg:#e5f5f2;
+    --herramienta:#b3701c;
+    --herramienta-bg:#fbf0e2;
+    --shadow:0 1px 2px rgba(25,24,35,.04), 0 8px 24px rgba(25,24,35,.05);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --violeta:#a892e8;
+      --violeta-deep:#c3b2f2;
+      --violeta-soft:#241f36;
+      --violeta-line:#3a3357;
+      --ink:#f0eef8;
+      --ink-2:#cfcbe0;
+      --muted:#9d9ab5;
+      --faint:#6f6c86;
+      --line:#2a2838;
+      --bg:#121019;
+      --bg-soft:#191725;
+      --card:#1b1927;
+      --directo:#b6a3f0;
+      --directo-bg:#251f3a;
+      --similar:#4fd0bf;
+      --similar-bg:#123330;
+      --herramienta:#e0a862;
+      --herramienta-bg:#33260f;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --violeta:#a892e8;
+    --violeta-deep:#c3b2f2;
+    --violeta-soft:#241f36;
+    --violeta-line:#3a3357;
+    --ink:#f0eef8;
+    --ink-2:#cfcbe0;
+    --muted:#9d9ab5;
+    --faint:#6f6c86;
+    --line:#2a2838;
+    --bg:#121019;
+    --bg-soft:#191725;
+    --card:#1b1927;
+    --directo:#b6a3f0;
+    --directo-bg:#251f3a;
+    --similar:#4fd0bf;
+    --similar-bg:#123330;
+    --herramienta:#e0a862;
+    --herramienta-bg:#33260f;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  code,.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+  /* ---------- HERO ---------- */
+  header.hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--violeta);font-weight:600}
+  h1{font-size:clamp(30px,5.2vw,46px);font-weight:700;letter-spacing:-.025em;line-height:1.08;margin:16px 0 18px;text-wrap:balance;max-width:16ch}
+  h1 span{color:var(--violeta)}
+  .lede{font-size:18px;color:var(--muted);max-width:60ch;line-height:1.55}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;font-size:12.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+  .meta b{color:var(--ink);font-weight:600}
+
+  /* ---------- verdict banner ---------- */
+  .verdict{margin-top:34px;background:var(--violeta-soft);border:1px solid var(--violeta-line);border-radius:16px;padding:24px 26px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;box-shadow:var(--shadow)}
+  .verdict .badge{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--violeta);padding:6px 11px;border-radius:20px;white-space:nowrap}
+  .verdict p{font-size:15.5px;color:var(--ink-2);line-height:1.55}
+  .verdict b{color:var(--ink);font-weight:600}
+  :root[data-theme="dark"] .verdict .badge, :root:not([data-theme="light"]) .verdict .badge{color:#17132a}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--violeta);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:11px}
+  .kicker::before{content:"";width:24px;height:2px;background:var(--violeta);display:inline-block;flex:none}
+  h2{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;text-wrap:balance}
+  .sec-lede{color:var(--muted);max-width:66ch;font-size:15.5px;margin-bottom:32px}
+  h3.blk{font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:34px 0 16px}
+
+  /* ---------- what-is grid ---------- */
+  .facets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .facet{background:var(--card);padding:18px 20px}
+  .facet .t{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violeta);font-weight:600;margin-bottom:7px}
+  .facet p{font-size:14px;color:var(--ink-2);line-height:1.5}
+
+  /* ---------- rings model ---------- */
+  .rings{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+  .ring{border-radius:14px;padding:20px 20px 18px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+  .ring .lvl{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;display:inline-block;margin-bottom:12px}
+  .ring.d .lvl{color:var(--directo);background:var(--directo-bg)}
+  .ring.s .lvl{color:var(--similar);background:var(--similar-bg)}
+  .ring.h .lvl{color:var(--herramienta);background:var(--herramienta-bg)}
+  .ring h4{font-size:16.5px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+  .ring p{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .ring .who{margin-top:12px;font-size:12px;color:var(--faint);font-family:'IBM Plex Mono',monospace;line-height:1.7}
+
+  /* ---------- competitor cards ---------- */
+  .region-tag{display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--bg-soft);border:1px solid var(--line);padding:7px 14px;border-radius:8px;margin:0 0 20px}
+  .region-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--violeta)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .co{border:1px solid var(--line);border-radius:15px;padding:20px 21px 18px;background:var(--card);box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .co-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px}
+  .co h4{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .co .loc{font-size:12px;color:var(--faint);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+  .type-pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:20px;white-space:nowrap;flex:none}
+  .type-pill.d{color:var(--directo);background:var(--directo-bg)}
+  .type-pill.s{color:var(--similar);background:var(--similar-bg)}
+  .type-pill.h{color:var(--herramienta);background:var(--herramienta-bg)}
+  .co .desc{font-size:13.5px;color:var(--ink-2);line-height:1.52;margin:10px 0 14px}
+  .co .rows{margin-top:auto;border-top:1px solid var(--line);padding-top:12px;display:grid;gap:7px}
+  .co .row{display:grid;grid-template-columns:78px 1fr;gap:10px;font-size:12.5px;line-height:1.4}
+  .co .row .k{color:var(--faint);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:1px}
+  .co .row .v{color:var(--ink-2)}
+  .co.flag{border-color:var(--violeta-line);background:linear-gradient(180deg,var(--violeta-soft),var(--card) 60%)}
+  .co .mirror{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--violeta);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+
+  /* ---------- comparison table ---------- */
+  .tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+  thead th{text-align:left;padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg-soft);border-bottom:1px solid var(--line)}
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody td:first-child{font-weight:600;color:var(--ink)}
+  .chk{color:var(--similar);font-weight:600}
+  .no{color:var(--faint)}
+  .part{color:var(--herramienta);font-weight:500}
+
+  /* ---------- conclusions ---------- */
+  .concl{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .cc{border:1px solid var(--line);border-left:3px solid var(--violeta);border-radius:0 12px 12px 0;padding:18px 20px;background:var(--card)}
+  .cc .n{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--violeta);margin-bottom:7px}
+  .cc h4{font-size:15.5px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em}
+  .cc p{font-size:13.5px;color:var(--muted);line-height:1.5}
+
+  .gap-box{margin-top:26px;background:var(--violeta);border-radius:16px;padding:28px 30px;color:#fff}
+  .gap-box h3{font-size:19px;font-weight:700;margin-bottom:10px;color:#fff;letter-spacing:-.01em}
+  .gap-box p{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.9);max-width:70ch}
+  .gap-box p + p{margin-top:10px}
+  .gap-box b{color:#fff;font-weight:600}
+  :root[data-theme="dark"] .gap-box, :root:not([data-theme="light"]) .gap-box{background:var(--violeta-deep)}
+  :root[data-theme="dark"] .gap-box p, :root:not([data-theme="light"]) .gap-box p{color:rgba(23,19,42,.82)}
+  :root[data-theme="dark"] .gap-box h3, :root[data-theme="dark"] .gap-box b, :root:not([data-theme="light"]) .gap-box h3, :root:not([data-theme="light"]) .gap-box b{color:#17132a}
+
+  /* ---------- footer ---------- */
+  footer{padding:34px 0 64px;font-size:12.5px;color:var(--faint);line-height:1.7}
+  footer .src{margin-top:14px}
+  footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+  footer a:hover{color:var(--violeta);border-color:var(--violeta-line)}
+  .note{font-size:12.5px;color:var(--muted);background:var(--bg-soft);border-left:3px solid var(--violeta-line);border-radius:0 8px 8px 0;padding:12px 16px;margin-top:22px}
+
+  @media (max-width:680px){
+    .rings{grid-template-columns:1fr}
+    .verdict{grid-template-columns:1fr;gap:14px}
+    .co .row{grid-template-columns:70px 1fr}
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">BrandIA · Inteligencia competitiva</div>
+    <h1>¿Quién más hace lo que hace <span>BrandIA</span>?</h1>
+    <p class="lede">Investigación de mercado sobre estudios y agencias que compiten —de forma directa o similar— con un estudio creativo con inteligencia artificial que construye y reconstruye marcas. Ordenado de lo local a lo global.</p>
+    <div class="meta">
+      <div><b>Preparado para</b> · Juan Pedro Portas</div>
+      <div><b>Fecha</b> · 20/08/2026</div>
+      <div><b>Alcance</b> · Uruguay → LATAM → global</div>
+    </div>
+
+    <div class="verdict">
+      <span class="badge">Hallazgo</span>
+      <p><b>No existe hoy una empresa que haga exactamente lo mismo que BrandIA</b> en su combinación completa: estudio nativo de IA + método propio de construcción de marca desde referencias ("BrandIAr") + foco en emprendedores y PyMEs + tres modelos (compra única, retainer y marketplace). Sí hay varios que se le acercan mucho. El <b>espejo más parecido</b> es <b>IA Estudio Creativo</b> (LATAM); el competidor <b>local más cercano</b> en Uruguay es <b>Pergenia</b>.</p>
+    </div>
+  </header>
+
+  <!-- QUÉ ES BRANDIA -->
+  <section id="perfil">
+    <div class="kicker">Punto de partida</div>
+    <h2>Con qué estamos comparando</h2>
+    <p class="sec-lede">Antes de buscar competidores, este es el perfil de BrandIA que se usó como patrón. Un competidor "directo" tiene que parecerse en todos estos ejes; un "similar" coincide solo en algunos.</p>
+    <div class="facets">
+      <div class="facet"><div class="t">Qué es</div><p>Estudio creativo con IA. La IA es el corazón del proceso, no un add-on.</p></div>
+      <div class="facet"><div class="t">Qué hace</div><p>Construcción y reconstrucción de marca, marketing y contenido de punta a punta.</p></div>
+      <div class="facet"><div class="t">Método propio</div><p>"BrandIAr": ejecutar la visión del cliente desde su narrativa, marcas previas, Pinterest, paletas y sitios de referencia.</p></div>
+      <div class="facet"><div class="t">A quién</div><p>Emprendedores, profesionales independientes, PyMEs y empresas en creación o crecimiento.</p></div>
+      <div class="facet"><div class="t">Dónde</div><p>Uruguay · español rioplatense · tono profesional pero fresco.</p></div>
+      <div class="facet"><div class="t">Cómo cobra</div><p>Tres modelos: compra única, servicios recurrentes (retainer) y una plataforma / marketplace.</p></div>
+    </div>
+  </section>
+
+  <!-- MODELO DE CAPAS -->
+  <section id="capas">
+    <div class="kicker">Cómo leer el mapa</div>
+    <h2>Tres capas de competencia</h2>
+    <p class="sec-lede">La competencia de BrandIA no es una sola cosa. Se ordena en tres anillos, del más parecido al más lejano. Cada competidor de este informe está etiquetado con una de estas tres capas.</p>
+    <div class="rings">
+      <div class="ring d">
+        <span class="lvl">Capa 1 · Directos</span>
+        <h4>Estudios AI-nativos</h4>
+        <p>Estudios creativos construidos alrededor de la IA que ofrecen branding + marketing + contenido como servicio, con un humano dirigiendo. Compiten por el mismo cliente.</p>
+        <div class="who">IA Estudio Creativo · Pergenia · NoMa · Bold · dp.vision</div>
+      </div>
+      <div class="ring s">
+        <span class="lvl">Capa 2 · Similares</span>
+        <h4>Agencias con IA</h4>
+        <p>Agencias de marketing, diseño o web que usan la IA como herramienta añadida, no como base. Solapan en algunos servicios, no en el método.</p>
+        <div class="who">Tribu Digital · Predictiva · Neuratia · Evox · Pentagram</div>
+      </div>
+      <div class="ring h">
+        <span class="lvl">Capa 3 · Sustitutos</span>
+        <h4>Plataformas SaaS</h4>
+        <p>Herramientas de autoservicio que generan logo, paleta y kit de marca por una tarifa. Son el sustituto barato de "BrandIAr" para quien no quiere un estudio.</p>
+        <div class="who">Looka · Brandmark · Logo.ai · Kittl · Colabz</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIRECTOS -->
+  <section id="directos">
+    <div class="kicker">Capa 1 — lo más parecido</div>
+    <h2>Competidores directos: estudios AI-nativos</h2>
+    <p class="sec-lede">Estudios creativos que ponen la IA en el centro y ofrecen marca y contenido como servicio con dirección humana. Ordenados de Uruguay hacia afuera.</p>
+
+    <div class="region-tag"><span class="dot"></span> Uruguay</div>
+    <div class="cards">
+      <div class="co flag">
+        <div class="mirror">◆ Competidor local más cercano</div>
+        <div class="co-top">
+          <div><h4>Pergenia</h4><div class="loc">Montevideo, UY</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Agencia de IA nacida de la fusión de dos agencias con 15+ años (Luzmala y ROI Marketing). Integra "estrategia, tecnología y creatividad con IA aplicada". Filosofía casi idéntica a la de BrandIA: la IA potencia lo humano, no lo reemplaza.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Contenido, agentes/bots, análisis predictivo, ads, automatización de funnels, auditoría estratégica.</span></div>
+          <div class="row"><span class="k">Diferencia</span><span class="v">Más fuerte en automatización y performance; menos en construcción de identidad visual desde cero.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="region-tag" style="margin-top:26px"><span class="dot"></span> LATAM · Argentina</div>
+    <div class="cards">
+      <div class="co flag">
+        <div class="mirror">★ El espejo más parecido a BrandIA</div>
+        <div class="co-top">
+          <div><h4>IA Estudio Creativo</h4><div class="loc">LATAM · clientes EE.UU./España</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Estudio creativo especializado en branding potenciado por IA. Su lema —"La IA nos asiste, no nos sustituye. El arte sigue siendo humano"— es casi la misma tesis que la de BrandIA. Es el que más se le parece en posicionamiento y público.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Creación de marcas, avatares e influencers digitales, virtual try-on, audiovisual, identidades sonoras, formación en IA.</span></div>
+          <div class="row"><span class="k">A quién</span><span class="v">PyMEs que buscan diferenciarse. Igual que BrandIA.</span></div>
+        </div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>NoMa Studio AI</h4><div class="loc">Buenos Aires, AR</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Estudio creativo de diseño e IA generativa. Incluye paquetes para startups con identidad de marca, además de audiovisual, 3D y consultoría. Perfil más "high-end" y técnico.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Identidad de marca, audiovisual con IA, 3D/visualización, research de mercado, academia.</span></div>
+          <div class="row"><span class="k">A quién</span><span class="v">Empresas, startups y marcas de media, salud, gobierno y entretenimiento.</span></div>
+        </div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Bold Estudio</h4><div class="loc">Buenos Aires, AR</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Agencia creativa full-service (desde 2005) que ya incorpora IA para producir imágenes y video, bajando costos y tiempos. Mismo público objetivo que BrandIA: emprendedores y PyMEs.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Identidad visual, packaging, comunicación, marketing digital, web/UX-UI, e-commerce.</span></div>
+          <div class="row"><span class="k">Diferencia</span><span class="v">Es una agencia tradicional que adoptó IA, no un estudio nacido AI-nativo.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="region-tag" style="margin-top:26px"><span class="dot"></span> Referentes globales</div>
+    <div class="cards">
+      <div class="co">
+        <div class="co-top">
+          <div><h4>dp.vision</h4><div class="loc">Poznań, Polonia</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Estudio "AI-native desde el primer día": sus flujos se diseñaron alrededor de la IA, no asistidos por ella. El benchmark de hacia dónde va un estudio como BrandIA.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Identidad de marca, sitios web, video, operaciones de IA y desarrollo de MVP.</span></div>
+          <div class="row"><span class="k">Escala</span><span class="v">Equipo pequeño (5–15), modelo replicable — el arquetipo del estudio AI-first.</span></div>
+        </div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>dopamine.studio</h4><div class="loc">Chennai, India</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Estudio creativo AI-powered enfocado en sistemas de marca, motion design y experiencias digitales. Mezcla estrategia, diseño y movimiento con IA.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Brand systems, motion design, experiencias digitales.</span></div>
+          <div class="row"><span class="k">Diferencia</span><span class="v">Más motion/digital que identidad estática; referencia estética, no competidor de cercanía.</span></div>
+        </div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Colabz AI Studio</h4><div class="loc">Global</div></div>
+          <span class="type-pill d">Directo</span>
+        </div>
+        <p class="desc">Plataforma generativa que "codifica" la identidad de marca en software, reemplazando producciones fotográficas tradicionales. A mitad de camino entre estudio y producto.</p>
+        <div class="rows">
+          <div class="row"><span class="k">Ofrece</span><span class="v">Generación de assets de marca a escala desde una identidad codificada.</span></div>
+          <div class="row"><span class="k">Señal</span><span class="v">Marca la tendencia de "producto" que la capa 3 empuja hacia arriba.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIMILARES -->
+  <section id="similares">
+    <div class="kicker">Capa 2 — solapan en parte</div>
+    <h2>Servicios similares: agencias que usan IA</h2>
+    <p class="sec-lede">No son estudios AI-nativos, pero compiten por el mismo presupuesto del cliente en branding, marketing o web. Acá la IA es una herramienta más, no el método.</p>
+
+    <div class="region-tag"><span class="dot"></span> Uruguay</div>
+    <div class="cards">
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Predictiva</h4><div class="loc">Uruguay</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Agencia de Google Ads + IA para equipos de marketing. Fuerte en performance y medición; no compite en construcción de identidad de marca.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Marketing digital y ads. No en branding.</span></div></div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Neuratia</h4><div class="loc">Montevideo, UY</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Diseño web con IA, chatbots de WhatsApp, contenido y ads. Planes cerrados desde USD 799. No ofrece identidad de marca.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Web, contenido y automatización. No en branding.</span></div></div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Evox</h4><div class="loc">Montevideo, UY</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Agencia de marketing digital especializada en branding, referente en rankings locales. Competidor tradicional por el mismo cliente que quiere marca + marketing.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Branding y marketing digital, sin IA como eje.</span></div></div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Blue Design Worldwide</h4><div class="loc">Uruguay</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Agencia de publicidad y marketing digital con operación en Uruguay. Perfil tradicional full-service; compite en el terreno clásico de la marca.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Publicidad y marca de forma tradicional.</span></div></div>
+      </div>
+    </div>
+
+    <div class="region-tag" style="margin-top:26px"><span class="dot"></span> LATAM y global</div>
+    <div class="cards">
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Tribu Digital</h4><div class="loc">Argentina</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Marketing, web, branding e IA con agentes. Propuesta amplia que toca los mismos servicios que BrandIA, con la IA como componente y no como núcleo.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Branding + web + redes + agentes IA.</span></div></div>
+      </div>
+      <div class="co">
+        <div class="co-top">
+          <div><h4>Pentagram · Lazarev · Composite</h4><div class="loc">Global</div></div>
+          <span class="type-pill s">Similar</span>
+        </div>
+        <p class="desc">Estudios de diseño de primer nivel que integraron IA en branding y experiencia (paletas, movimiento, identidades adaptativas). Referentes de calidad, no competidores de cercanía.</p>
+        <div class="rows"><div class="row"><span class="k">Solapa en</span><span class="v">Identidad de marca premium con IA asistida.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HERRAMIENTAS -->
+  <section id="herramientas">
+    <div class="kicker">Capa 3 — el sustituto barato</div>
+    <h2>Plataformas de branding con IA (autoservicio)</h2>
+    <p class="sec-lede">No son estudios: son herramientas que el propio cliente usa para generar logo, paleta, tipografía y kit de marca en minutos. Son el sustituto de "BrandIAr" para quien no quiere contratar a nadie — y el precio contra el que BrandIA tiene que justificar su valor.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>Plataforma</th><th>Qué genera</th><th>Precio orientativo</th><th>Limitación</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Looka</td><td>Logo + brand kit con plantillas desde un cuestionario</td><td>Desde ~USD 65 (vectores ~USD 96)</td><td>Resultado tipo plantilla, poca dirección estratégica</td></tr>
+          <tr><td>Brandmark</td><td>Identidad "design-forward" con guías de uso detalladas</td><td>~USD 175 (paquete completo)</td><td>Sin acompañamiento humano ni narrativa</td></tr>
+          <tr><td>Logo.ai</td><td>Logo + kit empresarial en ~10 segundos</td><td>~USD 99</td><td>Velocidad sobre criterio</td></tr>
+          <tr><td>SologoAI</td><td>Logo, paleta, tipografía y mockups desde un brief</td><td>~USD 59 (solo PNG)</td><td>Sin archivos vectoriales</td></tr>
+          <tr><td>Kittl</td><td>Diseño vectorial con IA + edición integrada</td><td>~USD 24/mes</td><td>Requiere trabajo manual para cohesión</td></tr>
+          <tr><td>Canva (Brand Kit)</td><td>Ensamble de identidad desde plantillas con IA</td><td>Freemium / Pro</td><td>No crea identidad, la aplica</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">Estas herramientas no compiten en <b>estrategia</b> ni en <b>reconstrucción de marca</b>: compiten en <b>precio y velocidad</b>. El argumento de BrandIA frente a ellas es el criterio humano, la narrativa y el "BrandIAr" hecho a medida — algo que una plantilla no da.</div>
+  </section>
+
+  <!-- COMPARATIVA -->
+  <section id="comparativa">
+    <div class="kicker">Cara a cara</div>
+    <h2>BrandIA frente a sus competidores más cercanos</h2>
+    <p class="sec-lede">Los cinco ejes que definen a BrandIA, cruzados con los competidores directos más relevantes. Muestra dónde está el terreno libre.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>Eje</th><th>BrandIA</th><th>IA Estudio Creativo</th><th>Pergenia</th><th>NoMa / Bold</th><th>Looka y afines</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>IA como núcleo (AI-native)</td><td class="chk">Sí</td><td class="chk">Sí</td><td class="part">Parcial</td><td class="part">Parcial</td><td class="chk">Sí (producto)</td></tr>
+          <tr><td>Construcción/reconstrucción de marca</td><td class="chk">Sí</td><td class="chk">Sí</td><td class="no">Limitado</td><td class="chk">Sí</td><td class="part">Solo logo/kit</td></tr>
+          <tr><td>Método desde referencias ("BrandIAr")</td><td class="chk">Sí</td><td class="part">Similar</td><td class="no">No</td><td class="no">No explícito</td><td class="part">Brief simple</td></tr>
+          <tr><td>Foco emprendedores / PyMEs</td><td class="chk">Sí</td><td class="chk">Sí</td><td class="chk">Sí</td><td class="part">Más empresa/startup</td><td class="chk">Sí</td></tr>
+          <tr><td>Presencia en Uruguay</td><td class="chk">Sí</td><td class="no">No</td><td class="chk">Sí</td><td class="no">No</td><td class="part">Online</td></tr>
+          <tr><td>Modelo marketplace / plataforma</td><td class="chk">Sí (previsto)</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="chk">Es su modelo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CONCLUSIONES -->
+  <section id="conclusiones">
+    <div class="kicker">Qué hacer con esto</div>
+    <h2>Lecturas y oportunidades</h2>
+    <div class="concl">
+      <div class="cc"><div class="n">01</div><h4>Nadie ocupa tu casilla exacta</h4><p>La combinación AI-nativo + BrandIAr + PyMEs + Uruguay + marketplace no la cubre ningún competidor entero. Hay espacio para ser el primero en nombrarla.</p></div>
+      <div class="cc"><div class="n">02</div><h4>Tu rival de mirada es IA Estudio Creativo</h4><p>Es el que más se te parece en tesis y público. Conviene seguirlo de cerca: qué muestra, cómo cobra y cómo comunica el "arte sigue siendo humano".</p></div>
+      <div class="cc"><div class="n">03</div><h4>En Uruguay competís sobre todo con Pergenia</h4><p>Es el jugador local AI-first más armado. Tu ventaja frente a ellos es la identidad de marca desde cero; la de ellos, la automatización y el performance.</p></div>
+      <div class="cc"><div class="n">04</div><h4>El verdadero piso de precio son las plataformas</h4><p>Looka, Brandmark y afines fijan la expectativa de "una marca por USD 60". Tu discurso tiene que explicar por qué el criterio humano vale más que una plantilla.</p></div>
+    </div>
+
+    <div class="gap-box">
+      <h3>El hueco de mercado, en una frase</h3>
+      <p>Los <b>estudios AI-nativos</b> que hacen branding completo están casi todos <b>fuera de Uruguay</b> (Argentina, Europa). Los jugadores <b>uruguayos</b> con IA están más en <b>performance y web</b> que en construcción de marca. Y las <b>plataformas de autoservicio</b> son baratas pero <b>sin criterio ni narrativa</b>.</p>
+      <p>BrandIA puede posicionarse justo en ese cruce vacío: <b>el estudio AI-nativo uruguayo que construye marca de verdad para emprendedores y PyMEs</b>, con método propio y acompañamiento humano — algo que hoy nadie está diciendo con esas palabras.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div>Investigación de inteligencia competitiva · BrandIA · v1.0 · 20/08/2026</div>
+    <div>Basado en fuentes públicas a la fecha. Precios y posicionamientos pueden cambiar; conviene revalidar antes de decisiones comerciales.</div>
+    <div class="src">Fuentes principales: sitios oficiales de <a href="https://www.iaestudiocreativo.com/">IA Estudio Creativo</a>, <a href="https://pergenia.com/">Pergenia</a>, <a href="https://nomastudio.ai/en/">NoMa Studio AI</a>, <a href="https://bold.ar/">Bold Estudio</a>, <a href="https://neuratia.uy/">Neuratia</a>, <a href="https://predictiva.uy/">Predictiva</a>, <a href="https://tribudigital.com.ar/">Tribu Digital</a>; rankings y comparativas de <a href="https://dpvision.agency/blog/top-ai-design-agencies-2026/">dp.vision</a>, <a href="https://www.parallelhq.com/blog/ai-native-design-agency">Parallel</a> y comparativas de herramientas de branding con IA 2026.</div>
+  </footer>
+</div>

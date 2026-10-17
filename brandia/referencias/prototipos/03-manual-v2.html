@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manual de marca BrandIA v2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --grafito:#1E1E1C;--naranja:#FF5C1A;--cemento:#C9C6BE;--hueso:#EDECE8;
+  --piedra:#5C5A54;--tinta:#B23B0A;
+  --bg:var(--hueso);--surface:#FFFFFF;--block:var(--cemento);--invert:var(--grafito);
+  --text:var(--grafito);--muted:var(--piedra);--on-invert:var(--hueso);--accent-text:var(--tinta);
+  --line:rgba(30,30,28,.15);--line-soft:rgba(30,30,28,.08);
+  --font-d:'Fraunces','Iowan Old Style',Georgia,serif;
+  --font-t:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --s1:8px;--s2:16px;--s3:24px;--s4:40px;--s5:64px;
+  --r-sm:4px;--r-md:14px;--r-pill:999px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141413;--surface:#1E1E1C;--block:#2A2926;--invert:#EDECE8;
+  --text:var(--hueso);--muted:#A8A49B;--on-invert:#1E1E1C;--accent-text:#FF7A45;
+  --line:rgba(237,236,232,.17);--line-soft:rgba(237,236,232,.09);
+}}
+:root[data-theme="dark"]{
+  --bg:#141413;--surface:#1E1E1C;--block:#2A2926;--invert:#EDECE8;
+  --text:var(--hueso);--muted:#A8A49B;--on-invert:#1E1E1C;--accent-text:#FF7A45;
+  --line:rgba(237,236,232,.17);--line-soft:rgba(237,236,232,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-t);
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-d);font-weight:600;line-height:1.14;margin:0;text-wrap:balance}
+h1{font-size:clamp(2rem,1.3rem+2.6vw,3rem);letter-spacing:-.018em;font-variation-settings:'opsz' 144;font-weight:700}
+h2{font-size:clamp(1.45rem,1.15rem+1.2vw,1.9rem);letter-spacing:-.016em;font-variation-settings:'opsz' 96}
+h3{font-size:1.15rem;letter-spacing:-.01em;font-variation-settings:'opsz' 40}
+h4{font-size:1rem;letter-spacing:-.006em;font-variation-settings:'opsz' 40}
+p{margin:0}
+a{color:var(--accent-text);text-underline-offset:.18em}
+.lbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0}
+.mut{color:var(--muted)}
+.sm{font-size:14.5px}
+
+.shell{max-width:1200px;margin:0 auto;padding-inline:20px;
+  display:grid;gap:var(--s5);align-items:start}
+@media(min-width:960px){.shell{grid-template-columns:210px 1fr;gap:var(--s5)}}
+
+/* índice */
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);padding-block:var(--s3);
+  max-height:calc(100vh - 40px);overflow-y:auto}
+@media(max-width:959px){.toc{position:static;max-height:none;border-bottom:1px solid var(--line);padding-bottom:var(--s3)}}
+.toc ol{list-style:none;margin:var(--s2) 0 0;padding:0;display:grid;gap:2px}
+.toc a{display:flex;gap:9px;font-size:13.5px;color:var(--muted);text-decoration:none;
+  padding:5px 8px;border-radius:var(--r-sm);border-left:2px solid transparent;margin-left:-10px}
+.toc a:hover{color:var(--text);background:var(--line-soft)}
+.toc a.on{color:var(--text);border-left-color:var(--naranja);background:var(--line-soft)}
+.toc a b{font-variant-numeric:tabular-nums;font-weight:600;opacity:.55;font-size:11px;padding-top:2px}
+
+/* secciones */
+main{padding-block:var(--s3) var(--s5);min-width:0}
+section{padding-block:var(--s5);border-top:1px solid var(--line-soft);scroll-margin-top:24px}
+section:first-of-type{border-top:0;padding-top:var(--s4)}
+.shead{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:var(--s3)}
+.shead .num{font-family:var(--font-d);font-weight:600;font-size:13px;color:var(--naranja);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.intro{max-width:64ch;color:var(--muted);margin-bottom:var(--s4)}
+
+.badge{font-size:9.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  border-radius:var(--r-pill);padding:3px 10px;border:1px solid var(--line);color:var(--muted)}
+.badge--new{background:var(--naranja);color:#1E1E1C;border-color:transparent}
+.badge--fix{border-color:var(--naranja);color:var(--accent-text)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--s3)}
+.grid{display:grid;gap:var(--s2)}
+@media(min-width:680px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.stack{display:grid;gap:var(--s3)}
+
+.rule{display:flex;gap:14px;padding-block:13px;border-bottom:1px solid var(--line-soft);align-items:baseline;flex-wrap:wrap}
+.rule:last-child{border-bottom:0}
+.rule b{font-family:var(--font-d);font-weight:600;font-size:16px;min-width:9em}
+.rule span{flex:1;min-width:15em;font-size:15px;color:var(--muted)}
+
+.yesno{display:grid;gap:6px;margin-top:12px;font-size:14.5px}
+.yesno div{display:flex;gap:9px}
+.yesno .k{flex:none;width:1.6em;font-weight:600;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;padding-top:4px}
+.yesno .si .k{color:var(--accent-text)}
+.yesno .no .k{color:var(--muted)}
+
+/* color */
+.pal{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:var(--s3)}
+.sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.sw .chip{height:74px}
+.sw .txt{padding:13px}
+.sw b{display:block;font-family:var(--font-d);font-weight:600;font-size:15px}
+.sw code{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sw p{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.45}
+table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);padding:8px 12px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:10px 12px 10px 0;border-bottom:1px solid var(--line-soft)}
+.tw{overflow-x:auto}
+.ok{color:var(--accent-text);font-weight:600}
+.bad{color:var(--muted);text-decoration:line-through}
+
+/* tipografía muestra */
+.typespec{display:flex;gap:var(--s3);align-items:baseline;flex-wrap:wrap}
+.aa{font-family:var(--font-d);font-weight:700;font-size:72px;line-height:1;font-variation-settings:'opsz' 144}
+.aa2{font-family:var(--font-t);font-weight:600;font-size:72px;line-height:1;letter-spacing:-.03em}
+
+/* logos */
+.logobox{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:var(--s3)}
+.lb{border:1px solid var(--line);border-radius:var(--r-md);padding:var(--s3) var(--s2);
+  display:grid;place-items:center;gap:14px;background:var(--surface);min-height:140px}
+.lb .cap{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center}
+.wordmark{font-family:var(--font-d);font-weight:700;font-size:26px;letter-spacing:-.022em;font-variation-settings:'opsz' 40}
+.wordmark .ia{color:var(--naranja)}
+.iso{width:34px;color:var(--naranja)}
+.sizes{display:flex;gap:var(--s3);align-items:flex-end;margin-top:var(--s3);flex-wrap:wrap}
+.sizes figure{margin:0;display:grid;justify-items:center;gap:8px}
+.sizes figcaption{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sizes svg{color:var(--naranja)}
+
+.warn{border-left:2px solid var(--naranja);padding:4px 0 4px 16px;max-width:66ch}
+.warn p{font-size:15px;color:var(--muted)}
+.warn strong{color:var(--text)}
+
+.banner{background:var(--grafito);color:var(--hueso);padding-block:13px}
+.banner .wrap{max-width:1200px;margin:0 auto;padding-inline:20px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.banner b{font-family:var(--font-d);font-weight:600;font-size:15px}
+.banner span{font-size:13.5px;color:rgba(237,236,232,.72)}
+.hero{border-bottom:1px solid var(--line)}
+.hero .wrap{max-width:1200px;margin:0 auto;padding:var(--s5) 20px var(--s4)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:var(--s3)}
+.pill{font-size:12px;border:1px solid var(--line);border-radius:var(--r-pill);padding:5px 13px;color:var(--muted)}
+ul.plain{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+ul.plain li{display:flex;gap:10px;font-size:15px}
+ul.plain li::before{content:'';flex:none;width:9px;height:9px;margin-top:8px;background:var(--naranja);
+  clip-path:polygon(0 0,100% 0,100% 40%,55% 40%,55% 100%,0 100%)}
+.lex{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.lex span{font-size:13.5px;border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 12px}
+.lex.no span{color:var(--muted);text-decoration:line-through;border-style:dashed}
+</style>
+</head>
+<body>
+
+
+<div class="banner"><div class="wrap">
+  <b>Propuesta v2 · no aprobada</b>
+  <span>Propuesta de Ezequiel sobre el v1.3. Las secciones marcadas NUEVO y ACTUALIZADO son lo que se suma; el resto queda tal cual.</span>
+</div></div>
+
+<div class="hero"><div class="wrap">
+  <p class="lbl">Manual de marca · v2 · propuesta · septiembre 2026</p>
+  <h1 style="margin-top:var(--s3);max-width:16ch">Que se vea tan bien como lo que hacés.</h1>
+  <p style="margin-top:var(--s3);max-width:58ch;color:var(--muted)">
+    La identidad propia de BrandIA: quiénes somos, cómo hablamos y cómo nos vemos.
+    Esta versión mantiene intacta la plataforma estratégica y verbal del v1.3, corrige dos errores
+    de color, cierra la definición del negocio como plataforma, ordena la arquitectura en clave de
+    producto y suma las secciones que hacen falta para que una app pueda usarla.</p>
+  <div class="pills">
+    <span class="pill">Montevideo, Uruguay</span>
+    <span class="pill">Español rioplatense</span>
+    <span class="pill">Identidad visual sin aprobar</span>
+    <span class="pill">Plataforma de marca · suscripción + Plus</span>
+  </div>
+</div></div>
+
+<div class="shell">
+<nav class="toc" aria-label="Índice">
+  <p class="lbl">Índice</p>
+  <ol id="toc"></ol>
+</nav>
+
+<main>
+
+<section id="s01"><div class="shead"><span class="num">01</span><h2>La esencia</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">Si tuviéramos treinta segundos y una sola frase, esta es la frase.</p>
+  <div class="card" style="margin-bottom:var(--s3)">
+    <p class="lbl">Idea madre</p>
+    <p style="font-family:var(--font-d);font-weight:600;font-size:clamp(1.2rem,1rem+1vw,1.6rem);line-height:1.25;letter-spacing:-.012em;margin-top:10px;max-width:34ch">
+      BrandIA le da a cualquiera que emprende la marca que hasta ahora solo podían pagar los grandes.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card"><p class="lbl">Propósito · por qué existimos</p>
+      <p style="margin-top:10px">Que nadie con algo bueno para ofrecer se pierda por verse chico.
+      La calidad de una marca no debería depender del presupuesto.</p></div>
+    <div class="card"><p class="lbl">Promesa · qué garantizamos</p>
+      <p style="margin-top:10px">Marca con criterio de estudio, en días y no en meses, con los
+      archivos listos para usar el día de la entrega.</p></div>
+  </div>
+</section>
+
+<section id="s02"><div class="shead"><span class="num">02</span><h2>Posicionamiento</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">La categoría que elegimos, contra quién nos definimos y qué prometemos que nadie más promete.</p>
+  <div class="card"><p class="lbl">Declaración</p>
+    <p style="margin-top:12px;max-width:74ch">Para emprendedores, profesionales independientes y
+    PyMEs que necesitan una marca a la altura de lo que hacen, BrandIA es un estudio creativo con IA
+    que entrega identidad, web, contenidos y producción gráfica con criterio profesional, en una
+    fracción del tiempo y del precio. A diferencia de una agencia —cara, lenta y con mínimos de
+    facturación— o de una plantilla —barata pero genérica y sin nadie del otro lado—, partimos de
+    tu narrativa y te acompañamos hasta que la marca está funcionando, incluso impresa.</p></div>
+  <div class="grid g3" style="margin-top:var(--s2)">
+    <div class="card"><p class="lbl">Somos</p><p class="sm" style="margin-top:9px">Un estudio creativo que trabaja con IA. Hay gente decidiendo.</p></div>
+    <div class="card"><p class="lbl">No somos</p><p class="sm" style="margin-top:9px">Ni una agencia tradicional ni una app de plantillas que te deja solo.</p></div>
+    <div class="card"><p class="lbl">Enemigo declarado</p><p class="sm" style="margin-top:9px">La marca genérica: la que podría ser de cualquiera y por eso no es de nadie.</p></div>
+  </div>
+  <div class="warn" style="margin-top:var(--s3)"><p><strong>Un ajuste pendiente.</strong>
+    La declaración abre con «estudio creativo». Con el modelo de plataforma confirmado (§ 07), conviene
+    reescribir esa primera oración; el resto del párrafo sigue sirviendo palabra por palabra.</p></div>
+</section>
+
+<section id="s03"><div class="shead"><span class="num">03</span><h2>A quién le hablamos</h2><span class="badge badge--fix">Mapeado al producto</span></div>
+  <p class="intro">Tres públicos, un mismo tono, distinta puerta de entrada. Nunca les hablamos igual de lo mismo.</p>
+  <div class="tw"><table>
+    <tr><th>Público</th><th>Lo que teme</th><th>Lo que le decimos</th><th>Puerta</th></tr>
+    <tr><td><strong>Emprendedor · marca personal</strong></td><td class="mut">Gastar mal la primera plata y quedar amateur.</td><td>Arrancá con la marca ya hecha, no la improvises.</td><td class="ok">Solo</td></tr>
+    <tr><td><strong>PyME en crecimiento</strong></td><td class="mut">Que la marca no acompañe el salto que está dando el negocio.</td><td>Ya crecieron. Que se note.</td><td class="ok">Curado</td></tr>
+    <tr><td><strong>Empresa establecida</strong></td><td class="mut">Perder consistencia entre canales, equipos y proveedores.</td><td>Un sistema, no cien piezas sueltas.</td><td class="ok">Estudio</td></tr>
+    <tr><td><strong>Proveedor gráfico</strong></td><td class="mut">Conseguir trabajo sin salir a vender.</td><td>Te llegan pedidos con el arte ya listo para producir.</td><td class="mut">Red · fase 2</td></tr>
+  </table></div>
+  <p class="sm mut" style="margin-top:var(--s2)">Único cambio respecto del v1.3: la columna «puerta de entrada»
+  ahora nombra planes en vez de servicios. La segmentación ya estaba bien pensada; le faltaba el producto encima.</p>
+</section>
+
+<section id="s04"><div class="shead"><span class="num">04</span><h2>Valores</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">Cinco valores. Cada uno se prueba con una decisión concreta: lo que sí hacemos y lo que no, aunque convenga.</p>
+  <div class="grid g2">
+    <div class="card"><h3>01 · Nadie queda afuera</h3>
+      <p class="sm mut" style="margin-top:9px">El precio y el proceso están pensados para quien recién arranca, no para quien ya tiene departamento de marketing.</p>
+      <div class="yesno"><div class="si"><span class="k">Sí</span><span>Precios publicados y una puerta de entrada accesible.</span></div>
+      <div class="no"><span class="k">No</span><span>«Escribinos para una cotización personalizada».</span></div></div></div>
+    <div class="card"><h3>02 · La IA acelera, el criterio decide</h3>
+      <p class="sm mut" style="margin-top:9px">La máquina genera. Nosotros elegimos, descartamos y explicamos por qué. Ese juicio es el producto.</p>
+      <div class="yesno"><div class="si"><span class="k">Sí</span><span>Presentamos opciones con el razonamiento detrás.</span></div>
+      <div class="no"><span class="k">No</span><span>Entregar el primer output sin curar.</span></div></div></div>
+    <div class="card"><h3>03 · Tu narrativa, no nuestra plantilla</h3>
+      <p class="sm mut" style="margin-top:9px">Todo arranca en lo que el cliente ya es: su historia, sus referencias, sus colores, su Pinterest. Eso es BrandIAr.</p>
+      <div class="yesno"><div class="si"><span class="k">Sí</span><span>Briefeamos antes de generar, siempre.</span></div>
+      <div class="no"><span class="k">No</span><span>Reciclar un sistema que ya usamos con otro cliente.</span></div></div></div>
+    <div class="card"><h3>04 · Claro antes que ingenioso</h3>
+      <p class="sm mut" style="margin-top:9px">Hablamos como se habla. Si una frase necesita traducción, está mal escrita.</p>
+      <div class="yesno"><div class="si"><span class="k">Sí</span><span>«Te hacemos el logo y todo lo que va con él».</span></div>
+      <div class="no"><span class="k">No</span><span>«Soluciones integrales de branding 360º».</span></div></div></div>
+    <div class="card"><h3>05 · Rápido, pero terminado</h3>
+      <p class="sm mut" style="margin-top:9px">Velocidad no es entregar a medias. Se entrega con fecha, con archivos abiertos y con instrucciones de uso.</p>
+      <div class="yesno"><div class="si"><span class="k">Sí</span><span>Fecha comprometida y paquete completo de archivos.</span></div>
+      <div class="no"><span class="k">No</span><span>«Te mando algo para que veas» sin cerrar nada.</span></div></div></div>
+  </div>
+</section>
+
+<section id="s05"><div class="shead"><span class="num">05</span><h2>Personalidad</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">Si BrandIA fuera una persona en una reunión: la que entiende rápido, dice las cosas de frente y te deja con ganas de empezar.</p>
+  <div class="grid g2">
+    <div class="card"><p class="lbl">Arquetipo</p>
+      <h3 style="margin-top:9px">Creador con voz de Aliado</h3>
+      <p class="sm mut" style="margin-top:10px">El Creador aporta el impulso de hacer y de hacer bien:
+      el orgullo por el oficio, la obsesión por el detalle. El Aliado lo baja a tierra: sin pedestal,
+      sin misterio, del mismo lado del mostrador que el cliente.</p>
+      <p class="sm" style="margin-top:12px"><strong>Lo que evitamos:</strong> el arquetipo del Mago.
+      Nada de «magia de la IA». Nuestro valor está en el criterio, no en el truco.</p></div>
+    <div class="card"><p class="lbl">Dónde nos paramos</p>
+      <div style="margin-top:12px">
+        <div class="rule"><b>Cálido</b><span>antes que distante</span></div>
+        <div class="rule"><b>Directo</b><span>antes que diplomático</span></div>
+        <div class="rule"><b>Simple</b><span>antes que técnico</span></div>
+        <div class="rule"><b>Entusiasta</b><span>antes que sobrio</span></div>
+        <div class="rule"><b>Exigente</b><span>antes que relajado</span></div>
+        <div class="rule"><b>Cercano</b><span>antes que institucional</span></div>
+      </div>
+      <p class="sm" style="margin-top:14px">Cálido no es blando: podemos decir que una idea no funciona.</p></div>
+  </div>
+</section>
+
+<section id="s06"><div class="shead"><span class="num">06</span><h2>El nombre y el verbo</h2><span class="badge badge--fix">+ el sustantivo</span></div>
+  <p class="intro">BrandIA no es solo un nombre: es un verbo que ya usamos internamente y que conviene enseñarle al mercado.</p>
+  <div class="grid g3">
+    <div class="card"><p class="lbl">Escritura del nombre</p>
+      <p class="sm" style="margin-top:10px">Una sola palabra, B mayúscula, IA en mayúsculas. La «IA» no es un adorno: es la mitad del nombre y la mitad del negocio.</p>
+      <p class="sm" style="margin-top:12px"><strong>BrandIA</strong> <span class="bad">Brandia</span> <span class="bad">BRANDIA</span> <span class="bad">Brand IA</span> <span class="bad">Brand-IA</span></p></div>
+    <div class="card"><p class="lbl">El verbo</p>
+      <p style="font-family:var(--font-d);font-weight:600;font-size:1.3rem;margin-top:9px">BrandIAr <span class="mut" style="font-size:.7em;font-weight:400">v. tr.</span></p>
+      <p class="sm mut" style="margin-top:9px">Traducir la narrativa de alguien —su historia, sus marcas de referencia, su Pinterest, sus colores— en una marca que funciona.</p>
+      <p class="sm" style="margin-top:11px">BrandIAmos tu proyecto · ¿BrandIAmos? · Ya está BrandIAdo</p>
+      <p class="sm mut" style="margin-top:11px">El «IA» siempre en mayúscula, incluso conjugado. Con soltura en redes y con clientes; nunca en documentos legales ni en contratos.</p></div>
+    <div class="card" style="border-color:var(--naranja)"><p class="lbl">El sustantivo <span class="badge badge--new" style="margin-left:6px">Nuevo</span></p>
+      <p style="font-family:var(--font-d);font-weight:600;font-size:1.3rem;margin-top:9px">tu sistema de marca</p>
+      <p class="sm mut" style="margin-top:9px">Existía el verbo pero no cómo se llama lo que te llevás. Sin sustantivo no hay qué tarifar ni qué mostrar.</p>
+      <p class="sm" style="margin-top:11px">Ya estaba latente en § 03: <em>«un sistema, no cien piezas sueltas»</em>. Dice lo que el producto es —algo que sigue funcionando después de la entrega— y se opone al entregable muerto.</p></div>
+  </div>
+</section>
+
+<section id="s07"><div class="shead"><span class="num">07</span><h2>Arquitectura de marca</h2><span class="badge badge--new">Reescrito</span></div>
+  <p class="intro">Marca única con descriptores: todo se llama BrandIA + qué es. BrandIA es una
+  <strong>plataforma de marca</strong>: arma tu marca y después produce todo lo que tu marca necesita decir.
+  De ahí que las ocho verticales dejen de ser ocho productos y pasen a ser <strong>capacidades de la
+  plataforma</strong>. Ocho líneas con cuatro modelos de cobro no entran en una tabla de precios que
+  alguien entienda — y el valor 01 obliga a publicar precios.</p>
+
+  <h3>Un producto, un add-on, un servicio</h3>
+  <p class="sm mut" style="margin-top:8px;max-width:64ch">Lo que te llevás es lo mismo. Lo que cambia es
+  cuánto criterio humano hay detrás — y así el valor 02 deja de ser una frase y pasa a ser la columna del
+  modelo de precios. <strong>Plus es un interruptor, no un plan:</strong> se contrata y se deja de contratar
+  mes a mes, sin migrar ni volver a empezar.</p>
+  <div class="tw" style="margin-top:var(--s3)"><table>
+    <tr><th></th><th>BrandIA</th><th>BrandIA Plus</th><th>BrandIA Estudio</th></tr>
+    <tr><td class="lbl">Qué es</td><td>La suscripción</td><td>Add-on mensual, encima de la suscripción</td><td>Servicio por proyecto, fuera de la suscripción</td></tr>
+    <tr><td class="lbl">Quién decide</td><td>El usuario, entre lo que genera la IA</td><td>Una dirección de arte cura, descarta y explica</td><td>El estudio conduce el proyecto</td></tr>
+    <tr><td class="lbl">Ritmo</td><td>Minutos</td><td>Días</td><td>Semanas</td></tr>
+    <tr><td class="lbl">Para quién</td><td class="mut">Emprendedor, marca personal</td><td class="mut">PyME en crecimiento</td><td class="mut">Empresa establecida</td></tr>
+    <tr><td class="lbl">Precio</td><td class="ok">a definir</td><td class="ok">a definir</td><td class="ok">a definir</td></tr>
+  </table></div>
+  <div class="warn" style="margin-top:var(--s3)"><p><strong>Lo que hay que resolver antes de ponerle precio a Plus.</strong>
+  Gente es costo lineal: si Plus significa «un humano mira todo», el margen se lo come el sueldo. El curador
+  no mira todo — cura dos momentos: la identidad al arrancar y un lote mensual de contenidos. Falta el
+  número: cuántos clientes por curador.</p></div>
+
+  <h3 style="margin-top:var(--s4)">La plataforma, en cuatro verbos</h3>
+  <div style="margin-top:var(--s2)">
+    <div class="rule"><b>Armar</b><span>Del brief a la identidad completa, con los archivos abiertos. Es el onboarding, no el producto.</span><span class="badge">Lanzamiento</span></div>
+    <div class="rule"><b>Producir</b><span>Todo lo que la marca necesita decir, siempre igual a sí misma. El motor de la suscripción.</span><span class="badge">Lanzamiento</span></div>
+    <div class="rule"><b>Publicar</b><span>Calendario, redes y pauta desde el mismo lugar donde se produjo la pieza.</span><span class="badge">Fase 2</span></div>
+    <div class="rule"><b>Imprimir</b><span>De la pantalla al cartel, con los proveedores adentro.</span><span class="badge">Fase 3</span></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">Las verticales, como hoja de ruta</h3>
+  <div style="margin-top:var(--s2)">
+    <div class="rule"><b>BrandIA Identidad</b><span>El núcleo. Está en los tres planes.</span><span class="badge">Lanzamiento</span></div>
+    <div class="rule"><b>BrandIA Contenidos</b><span>Capacidad principal de la suscripción. El motor del negocio.</span><span class="badge">Lanzamiento</span></div>
+    <div class="rule"><b>BrandIA Panel</b><span>Transversal. Es la app, no un producto aparte.</span><span class="badge">Lanzamiento</span></div>
+    <div class="rule"><b>BrandIA Web</b><span>Capacidad, disponible con Plus.</span><span class="badge">Fase 2</span></div>
+    <div class="rule"><b>BrandIA Gráfica</b><span>Producción física e impresión 3D. Operación pesada: proveedores, logística, calidad.</span><span class="badge">Fase 2</span></div>
+    <div class="rule"><b>Red BrandIA</b><span>Marketplace de proveedores. Se escribe siempre completo, nunca «la Red».</span><span class="badge">Fase 2</span></div>
+    <div class="rule"><b>BrandIA Pauta</b><span>Media buying. Negocio de servicio: va dentro de Estudio.</span><span class="badge">Fase 3</span></div>
+    <div class="rule"><b>BrandIA Creadores</b><span>Gestión de influencers. Negocio de servicio: va dentro de Estudio.</span><span class="badge">Fase 3</span></div>
+  </div>
+  <div class="warn" style="margin-top:var(--s3)"><p><strong>Por qué importa escribirlo así.</strong>
+  Escrita como catálogo, la arquitectura del v1.3 invita a que alguien intente venderla entera desde
+  el día uno. Escrita como escalera, el cliente sube de nivel dentro de la misma marca.</p></div>
+</section>
+
+<section id="s08"><div class="shead"><span class="num">08</span><h2>Claim y descriptor</h2><span class="badge badge--new">Descriptor nuevo</span></div>
+  <div class="card" style="margin-bottom:var(--s3)">
+    <p class="lbl">Claim principal · no se toca</p>
+    <p style="font-family:var(--font-d);font-weight:700;font-size:clamp(1.5rem,1.1rem+1.8vw,2.2rem);letter-spacing:-.016em;margin-top:12px;font-variation-settings:'opsz' 144">Que se vea tan bien como lo que hacés.</p>
+    <p class="sm mut" style="margin-top:14px;max-width:62ch">Habla del cliente, no de nosotros. Reconoce que
+    lo que hace ya es bueno —y que el problema es que no se nota. Ese es exactamente el dolor de un
+    emprendedor con un buen producto y una marca improvisada.</p>
+  </div>
+  <div class="grid g3">
+    <div class="card"><p class="lbl">Rotación · velocidad</p><p style="margin-top:9px;font-family:var(--font-d);font-weight:600">Tu marca, sin la espera.</p></div>
+    <div class="card"><p class="lbl">Rotación · acceso</p><p style="margin-top:9px;font-family:var(--font-d);font-weight:600">Grandes marcas, a tu escala.</p></div>
+    <div class="card"><p class="lbl">Rotación · arranque</p><p style="margin-top:9px;font-family:var(--font-d);font-weight:600">Empezá con la marca ya hecha.</p></div>
+  </div>
+  <div class="card" style="border-color:var(--naranja);margin-top:var(--s3)">
+    <p class="lbl">Descriptor fijo · debajo del logo cuando la marca no se conoce <span class="badge badge--new" style="margin-left:6px">Nuevo</span></p>
+    <p style="font-family:var(--font-d);font-weight:600;font-size:clamp(1.4rem,1.1rem+1.4vw,2rem);letter-spacing:-.014em;margin-top:12px">Tu marca, andando.</p>
+    <p class="sm mut" style="margin-top:14px;max-width:64ch">Tres razones: es palabra propia —<em>«te lo dejamos
+    andando»</em> ya está en el léxico de § 10—; nombra lo que dura y no el momento en que la IA genera; y son
+    tres palabras rioplatenses que entran debajo del logo sin achicarse.</p>
+    <p class="sm" style="margin-top:12px"><strong>Para prensa, contratos y cuando hay que decir literalmente
+    qué somos:</strong> plataforma de marca con IA.</p>
+    <p class="sm mut" style="margin-top:12px">Reemplaza a <em>«Estudio creativo con IA»</em>, que describe una
+    agencia y va debajo del logo justo durante el primer año, que es cuando nadie nos conoce. El descriptor no
+    es un claim y no rota.</p>
+  </div>
+</section>
+
+<section id="s09"><div class="shead"><span class="num">09</span><h2>Tono de voz</h2><span class="badge badge--fix">+ voz del error</span></div>
+  <p class="intro">Español rioplatense, voseo siempre. Seis reglas.</p>
+  <div class="grid g2">
+    <div class="card"><h4>1 · Voseo, sin excepción</h4><p class="sm mut" style="margin-top:7px">Tenés, contanos, mirá, escribinos. Nunca «tú» ni «usted», tampoco con empresas grandes.</p></div>
+    <div class="card"><h4>2 · Una idea por frase</h4><p class="sm mut" style="margin-top:7px">Frases cortas. Si hay una coma que se puede convertir en punto, se convierte.</p></div>
+    <div class="card"><h4>3 · Verbos, no sustantivos</h4><p class="sm mut" style="margin-top:7px">«Te hacemos el logo», no «provisión de servicios de identidad visual».</p></div>
+    <div class="card"><h4>4 · El protagonista es el cliente</h4><p class="sm mut" style="margin-top:7px">Hablamos de «tu marca», no de «nuestro proceso». Nuestro método se cuenta solo si lo preguntan.</p></div>
+    <div class="card"><h4>5 · No prometemos lo que no controlamos</h4><p class="sm mut" style="margin-top:7px">Nada de «te garantizamos ventas». Sí «te garantizamos la entrega el viernes».</p></div>
+    <div class="card"><h4>6 · Entusiasmo con datos</h4><p class="sm mut" style="margin-top:7px">La energía viene de lo concreto: «seis piezas en cinco días», no «resultados increíbles».</p></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">Aplicado</h3>
+  <div class="stack" style="margin-top:var(--s2)">
+    <div class="card"><p class="lbl">Instagram · caption</p>
+      <p style="margin-top:10px">Tres días. Un logo, la paleta, la tipografía y las plantillas para publicar sin pensarlo. Así arrancó @panaderiacosta. ¿BrandIAmos la tuya?</p>
+      <p class="sm bad" style="margin-top:10px">Nos enorgullece presentar el nuevo rebranding integral de un cliente que confió en nuestra metodología disruptiva.</p></div>
+    <div class="card"><p class="lbl">Email · envío de propuesta</p>
+      <p style="margin-top:10px">Hola Marina, te dejo la propuesta. Son tres caminos distintos para la identidad de Costa: cada uno con su lógica explicada en una línea, para que puedas elegir sin ser diseñadora. Miralos con calma y marcame cuál te mueve algo. Si ninguno, lo hablamos y lo volvemos a hacer.</p>
+      <p class="sm bad" style="margin-top:10px">Adjunto encontrará la propuesta solicitada, quedando a disposición para cualquier consulta que pudiera surgir.</p></div>
+    <div class="card"><p class="lbl">Soporte · nos atrasamos</p>
+      <p style="margin-top:10px">Marina, no llegamos con el manual para hoy. La imprenta cambió el formato y hay que rehacer los pliegos. Lo tenés el jueves a las 12, y ya te mando los logos sueltos así no te frena nada.</p>
+      <p class="sm bad" style="margin-top:10px">Lamentamos informarle que debido a inconvenientes ajenos a nuestra voluntad se ha producido una demora en la entrega.</p></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">La voz del error y del límite <span class="badge badge--new">Nuevo</span></h3>
+  <p class="sm mut" style="margin-top:8px;max-width:64ch">El v1.3 tiene un ejemplo excelente de «nos atrasamos»…
+  de agencia. Un producto de IA falla de otras maneras, y es ahí donde una marca cálida se cae o se
+  confirma. Tres reglas: <strong>decir qué pasó</strong>, <strong>decir qué hacemos</strong>,
+  <strong>no pedir perdón dos veces</strong>.</p>
+  <div class="stack" style="margin-top:var(--s2)">
+    <div class="card"><p class="lbl">No salió bien</p>
+      <p style="margin-top:10px">Esto no quedó. Lo volvimos a armar con el brief entero y ya lo tenés abajo. Si sigue sin moverte nada, escribime y lo miramos juntos.</p>
+      <p class="sm bad" style="margin-top:10px">¡Ups! Algo salió mal. Intentá de nuevo más tarde.</p></div>
+    <div class="card"><p class="lbl">No lo podemos hacer</p>
+      <p style="margin-top:10px">Esto todavía no lo hacemos. Lo que sí puedo darte hoy es el arte listo para que tu imprenta lo produzca.</p>
+      <p class="sm bad" style="margin-top:10px">Esa funcionalidad no está disponible en tu plan actual.</p></div>
+    <div class="card"><p class="lbl">Está tardando</p>
+      <p style="margin-top:10px">Va más lento que lo normal: son veinte caminos y hoy hay cola. Dos minutos más. Si preferís, te aviso cuando esté.</p>
+      <p class="sm bad" style="margin-top:10px">Procesando… por favor espere.</p></div>
+  </div>
+</section>
+
+<section id="s10"><div class="shead"><span class="num">10</span><h2>Léxico</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">Palabras que son nuestras y palabras que nos hacen sonar como todos los demás.</p>
+  <p class="lbl">Decimos</p>
+  <div class="lex"><span>BrandIAr</span><span>tu marca</span><span>listo para usar</span><span>en X días</span><span>criterio</span><span>narrativa</span><span>archivos abiertos</span><span>de cero</span><span>armamos</span><span>te lo dejamos andando</span><span>hablémoslo</span></div>
+  <p class="lbl" style="margin-top:var(--s3)">No decimos</p>
+  <div class="lex no"><span>soluciones integrales</span><span>sinergia</span><span>disruptivo</span><span>revolucionario</span><span>somos líderes</span><span>360º</span><span>empoderar</span><span>partner estratégico</span><span>IA de última generación</span><span>ecosistema</span><span>a medida de sus necesidades</span></div>
+</section>
+
+<section id="s11"><div class="shead"><span class="num">11</span><h2>Logo</h2><span class="badge badge--fix">En curso</span></div>
+  <p class="intro">Un logotipo con la «IA» en color, y como isotipo la B armada con dos piezas que se traban
+  en la cintura. La costura es deliberadamente visible: la marca no esconde que está hecha de partes.</p>
+
+  <div class="warn" style="margin-bottom:var(--s3)"><p><strong>El logotipo todavía está en camino, y el propio
+  v1.3 lo anota:</strong> «vectorizar el logotipo» figura como pendiente 5 de su § 16. Hoy es Fraunces 700
+  escrita, o sea texto. Propuesta: ya que hay que abrirlo para vectorizarlo, aprovechar ese paso para darle
+  un ajuste propio — interletrado, una ligadura entre la «d» y la «I», y una «A» que rime con la muesca del
+  isotipo. Dos razones prácticas: da más con qué registrar como marca figurativa en las clases 35 y 42, y lo
+  separa de los titulares, que usan la misma familia.</p></div>
+
+  <div class="logobox">
+    <div class="lb"><span class="wordmark">Brand<span class="ia">IA</span></span><span class="cap">Logotipo · principal</span></div>
+    <div class="lb"><div style="display:flex;align-items:center;gap:10px"><svg class="iso" style="width:22px" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg><span class="wordmark">Brand<span class="ia">IA</span></span></div><span class="cap">Horizontal con isotipo</span></div>
+    <div class="lb" style="background:var(--grafito)"><span class="wordmark" style="color:var(--hueso)">Brand<span class="ia">IA</span></span><span class="cap" style="color:rgba(237,236,232,.6)">Sobre grafito</span></div>
+    <div class="lb" style="background:var(--naranja)"><span class="wordmark" style="color:#fff">BrandIA</span><span class="cap" style="color:rgba(255,255,255,.75)">Sobre naranja · monocromo</span></div>
+    <div class="lb"><svg class="iso" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg><span class="cap">Isotipo solo · ruta C</span></div>
+    <div class="lb" style="border-color:var(--naranja)"><svg class="iso" style="width:32px" viewBox="0 0 76 76" aria-hidden="true"><g transform="translate(0,12)" fill="currentColor"><path d="M0,0 H36 V-12 H52 V0 H64 V12 H76 V28 H64 V64 H52 V52 H36 V64 H0 V28 H12 V12 H0 Z"/></g></svg><span class="cap">Alternativa · ruta D</span></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">El examen de tamaño chico</h3>
+  <p class="sm mut" style="margin-top:8px;max-width:64ch">El laboratorio proponía exactamente esta prueba —34,
+  22 y 14 px— y lo anticipaba para la ruta C: <em>«a 14 px la costura se cierra y se lee como una B común»</em>.
+  Acá están las dos finalistas al mismo tamaño, para poder decidir mirándolas. La C tiene a favor que es
+  nuestra propia inicial construida; la D, que un solo dibujo da marca, patrón y textura.</p>
+  <div class="sizes">
+    <figure><svg style="width:34px;color:var(--naranja)" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg><figcaption>C · 34 px</figcaption></figure>
+    <figure><svg style="width:22px;color:var(--naranja)" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg><figcaption>C · 22 px</figcaption></figure>
+    <figure><svg style="width:14px;color:var(--naranja)" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)" fill="currentColor"><path d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg><figcaption>C · 14 px</figcaption></figure>
+    <figure style="padding-left:var(--s3);border-left:1px solid var(--line)"><svg style="width:34px;color:var(--naranja)" viewBox="0 0 76 76" aria-hidden="true"><g transform="translate(0,12)" fill="currentColor"><path d="M0,0 H36 V-12 H52 V0 H64 V12 H76 V28 H64 V64 H52 V52 H36 V64 H0 V28 H12 V12 H0 Z"/></g></svg><figcaption>D · 34 px</figcaption></figure>
+    <figure><svg style="width:22px;color:var(--naranja)" viewBox="0 0 76 76" aria-hidden="true"><g transform="translate(0,12)" fill="currentColor"><path d="M0,0 H36 V-12 H52 V0 H64 V12 H76 V28 H64 V64 H52 V52 H36 V64 H0 V28 H12 V12 H0 Z"/></g></svg><figcaption>D · 22 px</figcaption></figure>
+    <figure><svg style="width:14px;color:var(--naranja)" viewBox="0 0 76 76" aria-hidden="true"><g transform="translate(0,12)" fill="currentColor"><path d="M0,0 H36 V-12 H52 V0 H64 V12 H76 V28 H64 V64 H52 V52 H36 V64 H0 V28 H12 V12 H0 Z"/></g></svg><figcaption>D · 14 px</figcaption></figure>
+  </div>
+  <p class="sm mut" style="margin-top:var(--s2)">Reconstrucciones para comparar, no archivos de producción.
+  La ruta D, además, encastra consigo misma: el mismo dibujo da marca, patrón y textura de fondo.</p>
+
+  <h3 style="margin-top:var(--s4)">Reglas de uso</h3>
+  <div style="margin-top:var(--s2)">
+    <div class="rule"><b>Resguardo</b><span>El alto de la «B» en todos los lados. Nada entra ahí.</span></div>
+    <div class="rule"><b>Tamaño mínimo</b><span>90 px de ancho en pantalla, 22 mm en impresión. Isotipo solo: 24 px / 8 mm.</span></div>
+    <div class="rule"><b>Sobre foto</b><span>Solo en monocromo blanco. La capa oscura no es un número fijo: se oscurece hasta que la zona donde apoya el logo llega a 4.5:1 contra blanco — típicamente 40% en foto media, hasta 60% en foto clara. Si entrecerrando los ojos el logo desaparece, falta capa. <span class="badge badge--fix">Precisado</span></span></div>
+    <div class="rule"><b>Isotipo solo</b><span>Cuando la marca ya se reconoce: avatar, favicon, sello, aplicación pequeña.</span></div>
+    <div class="rule"><b>Dos versiones</b><span>Estándar por encima de 32 px y 22 mm; compacta por debajo, y siempre en bordado, serigrafía chica y grabado. Nunca las dos en una misma pieza.</span></div>
+    <div class="rule"><b>Nunca</b><span>Deformar · recolorear · cambiar la tipografía o la grafía · sombras o contornos.</span></div>
+  </div>
+</section>
+
+<section id="s12"><div class="shead"><span class="num">12</span><h2>Color</h2><span class="badge badge--fix">Verificado</span></div>
+  <p class="intro">Grafito, naranja de señalización y gris cemento: la paleta de un taller. Habla de oficio y de
+  cosas que se fabrican. Y evita el violeta-azul con el que se ve toda marca de IA — no queremos parecer
+  una herramienta, queremos parecer un estudio que produce.</p>
+  <div class="pal">
+    <div class="sw"><div class="chip" style="background:#1E1E1C"></div><div class="txt"><b>Grafito</b><code>#1E1E1C</code><p>Color base. Textos, fondos oscuros, el isotipo. El 70% de la superficie de cualquier pieza.</p></div></div>
+    <div class="sw"><div class="chip" style="background:#FF5C1A"></div><div class="txt"><b>Naranja Señal</b><code>#FF5C1A</code><p>Color de marca. La «IA», botones, énfasis, la pieza que encastra.</p></div></div>
+    <div class="sw"><div class="chip" style="background:#C9C6BE"></div><div class="txt"><b>Cemento</b><code>#C9C6BE</code><p>Neutro medio cálido. Fondos de bloque, separadores.</p></div></div>
+    <div class="sw"><div class="chip" style="background:#EDECE8"></div><div class="txt"><b>Hueso</b><code>#EDECE8</code><p>Fondo claro. Papel, no pantalla: liga con el grafito sin el frío del blanco puro.</p></div></div>
+    <div class="sw"><div class="chip" style="background:#5C5A54"></div><div class="txt"><b>Piedra</b><code>#5C5A54</code><p>Texto secundario, bajadas, metadatos. Nunca gris azulado.</p></div></div>
+    <div class="sw"><div class="chip" style="background:#B23B0A"></div><div class="txt"><b>Naranja Tinta</b><code>#B23B0A</code><p>El naranja para texto y links sobre fondo claro, donde el Señal no llega a contraste.</p></div></div>
+  </div>
+
+  <h3 style="margin-top:var(--s4)">Contraste · verificado</h3>
+  <div class="tw" style="margin-top:var(--s2)"><table>
+    <tr><th>Combinación</th><th>Figuraba como</th><th>Real (WCAG 2.1)</th><th>Uso</th></tr>
+    <tr><td>Grafito + blanco</td><td class="mut">16.7</td><td class="ok">16.70 · AAA</td><td class="mut">Libre</td></tr>
+    <tr><td>Hueso + Grafito</td><td class="mut">14.1</td><td class="ok">14.12 · AAA</td><td class="mut">Libre</td></tr>
+    <tr><td>Cemento + Grafito</td><td class="mut">9.8</td><td class="ok">9.78 · AAA</td><td class="mut">Libre</td></tr>
+    <tr><td>Naranja + Grafito</td><td class="mut">5.4</td><td class="ok">5.41 · AA</td><td class="mut">No para texto bajo 16 px ni cuerpo largo</td></tr>
+    <tr><td><strong>Grafito + Naranja</strong></td><td class="bad">6.5</td><td class="ok">5.41 · AA</td><td class="mut">Es el mismo par: el contraste es simétrico</td></tr>
+    <tr><td>Naranja Tinta + Hueso</td><td class="mut">—</td><td class="ok">5.04 · AA</td><td class="mut">Links y énfasis sobre claro</td></tr>
+    <tr><td>Piedra + Hueso</td><td class="mut">—</td><td class="ok">5.83 · AA</td><td class="mut">Texto secundario sobre fondo claro</td></tr>
+    <tr><td><strong>Piedra + Cemento</strong></td><td class="mut">—</td><td class="bad">4.04 · no llega</td><td>Prohibido. Sobre bloques Cemento el texto secundario va en Grafito al 70%</td></tr>
+  </table></div>
+  <div class="warn" style="margin-top:var(--s3)"><p><strong>Dos notas de la verificación.</strong> (1) El
+  contraste es simétrico, así que Grafito y Naranja dan 5.41 en los dos sentidos — conviene unificarlo para
+  no suponer un margen que no hay. (2) Cemento quedó como fondo de bloque y Piedra como texto secundario;
+  ese cruce puntual da 4.04, así que sobre bloques Cemento el texto secundario va en Grafito al 70%.
+  Todo lo demás de la paleta pasó la verificación.</p></div>
+  <p class="sm mut" style="margin-top:var(--s3)"><strong>Prohibido:</strong> Naranja Señal como texto sobre
+  Hueso (2.61) o sobre Cemento (1.81) — para eso está Naranja Tinta. Piedra sobre Cemento. Cualquier
+  degradé entre colores: el degradé solo existe como halo difuso de fondo, nunca sobre tipografía ni
+  sobre el logo. Y dos puntos de naranja en una misma pieza — sin contar el logo, que no gasta presupuesto
+  de color. <span class="badge badge--fix">Precisado</span></p>
+</section>
+
+<section id="s13"><div class="shead"><span class="num">13</span><h2>Tipografía</h2><span class="badge">Sin cambios</span></div>
+  <p class="intro">Una serif con carácter para lo que se ve, un sans neutro para lo que se lee. Las dos de
+  licencia abierta, condición no negociable: entregamos archivos que el cliente después edita solo.</p>
+  <div class="grid g2">
+    <div class="card"><p class="lbl">Titulares · Fraunces</p>
+      <p class="aa" style="margin-top:8px">Aa</p>
+      <p class="sm mut" style="margin-top:12px">Serif variable, contemporánea pero apoyada en una tradición
+      vieja. Es la que le da a BrandIA cara de estudio con oficio en vez de herramienta. Pesos 600 y 700.
+      Tiene eje óptico: <code>opsz</code> alto en tamaños grandes y bajo en chicos, o los titulares se ven blandos.</p></div>
+    <div class="card"><p class="lbl">Texto · Instrument Sans</p>
+      <p class="aa2" style="margin-top:8px">Aa</p>
+      <p class="sm mut" style="margin-top:12px">Se corre del medio a propósito. Frente a una serif con
+      personalidad, el texto tiene que ser legible y callado: dos tipografías con carácter se pelean en
+      cualquier documento largo. Pesos 400 y 600.</p></div>
+  </div>
+  <div class="tw" style="margin-top:var(--s3)"><table>
+    <tr><th>Uso</th><th>Familia / peso</th><th>Tamaño</th><th>Tracking</th><th>opsz</th></tr>
+    <tr><td>Display</td><td>Fraunces 700</td><td>56–72 px</td><td>-1.8%</td><td>144</td></tr>
+    <tr><td>Título 1</td><td>Fraunces 600</td><td>36 px</td><td>-1.6%</td><td>96</td></tr>
+    <tr><td>Título 2</td><td>Fraunces 600</td><td>26 px</td><td>-1.4%</td><td>96</td></tr>
+    <tr><td>Título 3</td><td>Fraunces 600</td><td>18 px</td><td>-0.8%</td><td>40</td></tr>
+    <tr><td>Cuerpo</td><td>Instrument 400</td><td>16–17 px</td><td>0</td><td>—</td></tr>
+    <tr><td>Bajada</td><td>Instrument 400 · color Piedra</td><td>15 px</td><td>0</td><td>—</td></tr>
+    <tr><td>Etiqueta</td><td>Instrument 600 · versalitas</td><td>10–11 px</td><td>+14%</td><td>—</td></tr>
+  </table></div>
+  <p class="sm mut" style="margin-top:var(--s2)"><strong>Sustitutos de sistema:</strong> Iowan Old Style o
+  Georgia para titulares, Helvetica o Arial para texto. Ambas familias están en Google Fonts, así que
+  funcionan en Google Workspace y en Canva sin instalar nada. <strong>Regla dura:</strong> el tracking
+  negativo de una grotesca no se le aplica a una serif. Fraunces ya trae el espaciado resuelto; apretarla
+  más le come las serifas.</p>
+</section>
+
+<section id="s14"><div class="shead"><span class="num">14</span><h2>Sistema</h2><span class="badge badge--fix">+ movimiento</span></div>
+  <p class="intro">Las reglas chicas que hacen que dos piezas hechas por personas distintas parezcan de la misma marca.</p>
+  <div class="grid g2">
+    <div class="card"><h4>Grilla y espacio</h4><p class="sm mut" style="margin-top:7px">Base de 8 px. Todo el espaciado es múltiplo: 8 / 16 / 24 / 40 / 64. Márgenes generosos: el aire es parte del valor percibido.</p></div>
+    <div class="card"><h4>Radios</h4><p class="sm mut" style="margin-top:7px">4 px en elementos chicos, 14 px en tarjetas y contenedores, píldora completa en botones y etiquetas. Nunca esquinas vivas, nunca radios intermedios.</p></div>
+    <div class="card"><h4>Iconografía</h4><p class="sm mut" style="margin-top:7px">Trazo de 1.75 px, puntas redondeadas, sin relleno. El isotipo es el único elemento sólido del sistema, y por eso destaca.</p></div>
+    <div class="card"><h4>Fotografía</h4><p class="sm mut" style="margin-top:7px">Gente real haciendo cosas reales: manos, talleres, mostradores, luz natural. Nada de stock con apretones de manos ni oficinas vacías. Si no hay foto buena, va color plano.</p></div>
+    <div class="card"><h4>La costura</h4><p class="sm mut" style="margin-top:7px">Recurso gráfico auxiliar: la lengüeta y la muesca del isotipo, ampliadas, como separador entre bloques o como corte de una imagen. Uno por pieza. Nunca decorativa: siempre marca una unión real entre dos cosas.</p></div>
+    <div class="card" style="border-color:var(--naranja)"><h4>Movimiento <span class="badge badge--new">Nuevo</span></h4>
+      <p class="sm mut" style="margin-top:7px">El diferencial conceptual es que la marca <em>se arma</em>: si
+      nada se mueve, eso no se ve nunca. Una regla, no diez: <strong>las piezas entran, nunca aparecen</strong>.
+      Entrada desde el borde con un leve rebote al trabar (180–260 ms, <code>cubic-bezier(.2,.8,.2,1)</code>),
+      una sola secuencia por pieza, y todo respeta <code>prefers-reduced-motion</code>. Nada de fundidos,
+      nada de brillos.</p></div>
+  </div>
+  <div class="card" style="margin-top:var(--s2)"><h4>Imágenes generadas por IA <span class="badge badge--new">Nuevo</span></h4>
+    <p class="sm mut" style="margin-top:7px">La regla de fotografía del v1.3 aplica igual; le falta el criterio
+    para lo generado, que va a ser la mitad de lo que esta marca muestra. Criterio: valen cuando reemplazan una foto que no existe,
+    nunca cuando reemplazan una que sí. Misma vara que la foto real —manos, materiales, luz natural— y
+    fuera todo lo que delate el género (simetría perfecta, piel de plástico, luz sin fuente). En piezas
+    comerciales donde podría entenderse que es una foto de un cliente real, se declara.</p></div>
+  <div class="card" style="margin-top:var(--s2)"><h4>Antes de publicar</h4>
+    <p class="sm mut" style="margin-top:7px">Tres chequeos: ¿el cliente es el protagonista? ¿hay una sola idea?
+    ¿se lee a 30 cm de un celular? Si alguno falla, no sale.</p></div>
+</section>
+
+<section id="s15"><div class="shead"><span class="num">15</span><h2>Retirada visual</h2><span class="badge badge--new">Nuevo</span></div>
+  <p class="intro">La sección que le faltaba al v1.3 y sin la cual el producto no se puede diseñar.
+  BrandIA genera <strong>marcas ajenas</strong>: grafito y naranja al lado de la paleta de un cliente se pelean.</p>
+  <div class="card" style="border-color:var(--naranja);margin-bottom:var(--s3)">
+    <p style="font-family:var(--font-d);font-weight:600;font-size:clamp(1.2rem,1rem+1vw,1.6rem);line-height:1.25;letter-spacing:-.012em;max-width:34ch">
+      BrandIA es el taller, no la obra. Cuanto más avanza el trabajo, menos se nos ve.</p>
+  </div>
+  <div style="margin-top:var(--s2)">
+    <div class="rule"><b>Chrome de la app</b><span>Menús, botones, navegación, estados: marca BrandIA, siempre. Acá se nos ve entero.</span></div>
+    <div class="rule"><b>Lienzo y preview</b><span>Marca del cliente, sin excepción. Ni un naranja, ni un borde, ni una tipografía nuestra.</span></div>
+    <div class="rule"><b>Exportación</b><span>Sin firma. La única excepción es el plan gratuito o de prueba, y la firma se va al pagar.</span></div>
+    <div class="rule"><b>Archivo vectorial</b><span>Nunca lleva nada nuestro, en ningún plan. Es el archivo que el cliente edita solo.</span></div>
+    <div class="rule"><b>El manual del cliente</b><span>Con la tipografía y el color del cliente. Nuestro formato, no nuestra marca.</span></div>
+    <div class="rule"><b>Piezas de caso</b><span>Cuando mostramos trabajo de un cliente en nuestras redes, el crédito va en el copy, no encima de la pieza.</span></div>
+  </div>
+  <p class="sm mut" style="margin-top:var(--s3);max-width:66ch">Esto es el valor 03 —«tu narrativa, no nuestra
+  plantilla»— llevado a la interfaz. Un producto de branding que no sabe hacerse a un lado no puede vender branding.</p>
+</section>
+
+<section id="s16"><div class="shead"><span class="num">16</span><h2>Contenidos</h2><span class="badge badge--new">Nuevo</span></div>
+  <p class="intro">Si el logo es la puerta y los contenidos son el negocio, entonces los contenidos son
+  parte de la identidad y no una tarea de marketing aparte. Dos caras: lo que la plataforma produce para
+  el cliente, y cómo habla BrandIA de sí misma.</p>
+
+  <h3>Lo que produce la plataforma</h3>
+  <p class="sm mut" style="margin-top:8px;max-width:64ch"><strong>El cliente no elige diseño: elige qué decir.</strong>
+  Esa es la promesa entera de la suscripción. La marca ya está decidida, así que producir deja de tener fricción.</p>
+  <div class="tw" style="margin-top:var(--s3)"><table>
+    <tr><th>Formato</th><th>Qué escribe el cliente</th><th>Ritmo</th><th>Quién revisa</th></tr>
+    <tr><td>Post y story</td><td class="mut">Una frase: qué hay, cuándo y cuánto</td><td>Diario</td><td class="mut">Solo la IA</td></tr>
+    <tr><td>Guion de reel</td><td class="mut">De qué querés hablar</td><td>Semanal</td><td class="mut">Solo la IA</td></tr>
+    <tr><td>Cartel de vidriera</td><td class="mut">El anuncio, en una línea</td><td>Cuando hace falta</td><td class="mut">Solo la IA</td></tr>
+    <tr><td>Etiqueta y packaging</td><td class="mut">Producto, peso, ingredientes</td><td>Por producto</td><td class="ok">Plus</td></tr>
+    <tr><td>Newsletter</td><td class="mut">Tres cosas que pasaron</td><td>Mensual</td><td class="ok">Plus</td></tr>
+    <tr><td>El lote del mes</td><td class="mut">Nada: se arma del calendario</td><td>Mensual</td><td class="ok">Plus</td></tr>
+  </table></div>
+  <p class="sm mut" style="margin-top:var(--s2)">Las tres últimas filas son la razón por la que alguien paga
+  Plus: el curador toca el lote, no cada pieza.</p>
+
+  <h3 style="margin-top:var(--s4)">Cómo hablamos nosotros</h3>
+  <p class="sm mut" style="margin-top:8px;max-width:64ch">Tres líneas, y ninguna habla de nosotros.</p>
+  <div class="grid g3" style="margin-top:var(--s2)">
+    <div class="card"><p class="lbl">Línea 1</p><h4 style="margin-top:9px">El antes y después</h4>
+      <p class="sm mut" style="margin-top:9px">Una marca real, cómo llegó y cómo salió, sin explicar el método.
+      Es la prueba, no el argumento. Instagram y TikTok.</p></div>
+    <div class="card" style="border-color:var(--naranja)"><p class="lbl">Línea 2 · la que nadie puede copiar</p>
+      <h4 style="margin-top:9px">El descarte</h4>
+      <p class="sm mut" style="margin-top:9px">Por qué NO elegimos algo. Solo lo puede publicar quien tiene el
+      razonamiento escrito: es el valor 02 hecho contenido. LinkedIn y newsletter.</p></div>
+    <div class="card"><p class="lbl">Línea 3</p><h4 style="margin-top:9px">BrandIAmos en vivo</h4>
+      <p class="sm mut" style="margin-top:9px">Una marca por semana, de principio a fin, en tiempo real. El verbo
+      enseñándose solo, y el mejor formulario de captación que tenemos.</p></div>
+  </div>
+  <div class="warn" style="margin-top:var(--s3)"><p><strong>La regla que las tres respetan:</strong> el
+  protagonista es el cliente (§ 09, regla 4). Nunca «nos enorgullece presentar el nuevo rebranding integral».
+  Siempre «así arrancó Costa». Y el contenido de BrandIA se produce en BrandIA: si no nos sirve a nosotros,
+  no le sirve a nadie.</p></div>
+</section>
+
+<section id="s17"><div class="shead"><span class="num">17</span><h2>Qué falta cerrar</h2><span class="badge badge--fix">Actualizado</span></div>
+  <p class="intro">El v1.3 listaba nueve pendientes y están todos bien — pero son todos trámites. Estas son
+  las decisiones que hay que tomar antes, en orden.</p>
+
+  <h3>Decisiones · destraban todo lo demás</h3>
+  <ul class="plain" style="margin-top:var(--s2)">
+    <li><strong>Confirmar el modelo:</strong> plataforma de marca, suscripción con Plus como add-on mensual, Estudio afuera como servicio.</li>
+    <li><strong>Cuántos clientes por curador</strong>, y qué toca exactamente. Sin ese número, el precio de Plus es un invento.</li>
+    <li><strong>El logotipo.</strong> Como mínimo intervenir Fraunces —kerning propio, una ligadura entre «d» e «I», la «A» que rime con la muesca—; idealmente rediseñar logotipo e isotipo como una sola pieza.</li>
+    <li><strong>Ruta C o ruta D.</strong> Comparar las dos aplicadas —avatar, favicon, header, cartel, bordado— y decidir con las piezas a la vista, no con los conceptos.</li>
+    <li><strong>Precios públicos.</strong> El valor 01 obliga a publicarlos.</li>
+    <li><strong>Quién aprueba.</strong> El manual habla de un owner. Conviene que tenga nombre.</li>
+  </ul>
+
+  <h3 style="margin-top:var(--s4)">Bloqueante operativo</h3>
+  <ul class="plain" style="margin-top:var(--s2)">
+    <li><strong>Los SVG del logo no existen en la carpeta.</strong> El v1.3 los remite a <code>01-corporate/branding/assets/</code>, que no vino en la entrega. Hoy el logo solo existe como píxeles dentro de un PDF: sin esto no hay una sola pieza real posible.</li>
+  </ul>
+
+  <h3 style="margin-top:var(--s4)">Trámites · antes de imprimir y registrar</h3>
+  <div style="margin-top:var(--s2)">
+    <div class="rule"><b>Disponibilidad</b><span>Buscar «BrandIA» en la base de marcas de la DNPI antes de imprimir nada. Hay riesgo real de coincidencia: es un nombre construible por cualquiera.</span></div>
+    <div class="rule"><b>Registro</b><span>Clases 35 (publicidad) y 42 (diseño y software). Es el mismo trámite que le vendemos al cliente.</span></div>
+    <div class="rule"><b>Dominios</b><span>brandiamos.com principal (web y mails); brandia.uy y brandia.com.uy defensivos.</span></div>
+    <div class="rule"><b>Handles</b><span>Instagram, TikTok y LinkedIn, aunque todavía no se publique.</span></div>
+    <div class="rule"><b>Paquete de assets</b><span>SVG, PNG ×3, PDF vectorial, favicon 16 y 32, apple-touch-icon, avatar 1024 y el EPS de una tinta para imprenta y bordado.</span></div>
+    <div class="rule"><b>Prueba impresa</b><span>La costura es lo primero que se pierde en serigrafía y bordado. Imprimir a 15 mm y mirarlo en papel.</span></div>
+    <div class="rule"><b>Plantillas</b><span>Post y story, presentación comercial, propuesta y factura, con estos tokens ya cargados.</span></div>
+    <div class="rule"><b>Registro de decisiones</b><span>Una línea por decisión, con fecha y autor. Barato ahora, carísimo dentro de seis meses.</span></div>
+  </div>
+</section>
+
+<section style="border-top:1px solid var(--line)">
+  <p class="sm mut" style="max-width:66ch">Esta v2 es una propuesta para discutir, no una aprobación.
+  La identidad visual sigue abierta según el propio v1.3: <em>«nada de esto se imprime ni se registra
+  hasta que el owner lo apruebe»</em>. Los cálculos de contraste y las notas de trabajo que hay detrás de
+  cada sección están en la carpeta del proyecto.</p>
+</section>
+
+</main>
+</div>
+
+<script>
+const secs=[...document.querySelectorAll('main section[id]')];
+document.getElementById('toc').innerHTML = secs.map(s=>{
+  const h=s.querySelector('h2'), n=s.querySelector('.num');
+  return '<li><a href="#'+s.id+'"><b>'+n.textContent+'</b>'+h.textContent+'</a></li>';
+}).join('');
+const links=[...document.querySelectorAll('#toc a')];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      const i=secs.indexOf(e.target);
+      links.forEach((a,j)=>a.classList.toggle('on', j===i));
+    }
+  });
+},{rootMargin:'-10% 0px -75% 0px'});
+secs.forEach(s=>io.observe(s));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BrandIA · Lista de espera</title>
+<meta name="description" content="Contás qué hacés, BrandIA te propone logos, colores y tipografías, elegís vos, y después producís tu marca en tarjetas, bolsas y remeras. Anotate y entrás primero.">
+<meta name="theme-color" content="#EDECE8">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BrandIA · Que se vea tan bien como lo que hacés">
+<meta property="og:description" content="Contás qué hacés, elegís entre las ideas que te proponemos y tenés tu marca. Estamos por abrir: anotate y entrás primero.">
+<meta property="og:url" content="https://brandiamos.com/">
+<!-- og:image pendiente: 1200×630 con el logo v2 (ver README) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231E1E1C'/%3E%3Cg transform='translate(22 16) scale(.74)'%3E%3Cg transform='translate(-10,-12)'%3E%3Cpath fill='%23EDECE8' d='M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z'/%3E%3Cpath fill='%23FF5C1A' d='M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=Young+Serif&family=Karla:wght@400;600&display=swap">
+<style>
+/* ============================================================
+   BrandIA · Landing de lista de espera (campaña Meta, oct 2026)
+   Tokens: 01-corporate/branding/design-system/tokens.css
+   Reglas: naranja nunca como texto sobre claro (usar --nt);
+   botón naranja siempre con texto grafito; sin degradés.
+   ============================================================ */
+:root{
+  color-scheme:light;
+  --g:#1E1E1C; --h:#EDECE8; --c:#C9C6BE; --w:#FFFFFF; --p:#5C5A54;
+  --n:#FF5C1A; --nt:#B23B0A;
+  --g70:rgba(30,30,28,.70); --ll:rgba(30,30,28,.12); --l6:rgba(30,30,28,.06);
+  /* Costa · marca de ejemplo (ficticia, manual § 09) */
+  --k1:#6B3A1E; --k2:#F3E9D6; --k3:#C8662B; --k4:#2F3B2F; --k5:#FBF8F2;
+  --fd:'Fraunces','Iowan Old Style',Georgia,serif;
+  --ft:'Instrument Sans',Helvetica,Arial,sans-serif;
+  --fk:'Young Serif',Georgia,serif; --fkb:'Karla',Helvetica,Arial,sans-serif;
+  --r1:4px; --r2:14px; --rp:999px;
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --gut:16px; --maxw:1120px;
+}
+@media (min-width:720px){:root{--gut:40px}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--h);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--h);color:var(--g);font-family:var(--ft);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--g);color:var(--h)}
+a{color:var(--nt);text-underline-offset:.18em}
+img,svg{display:block}
+button{font:inherit;color:inherit}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--p);margin:0 0 12px}
+h1,h2,h3{font-family:var(--fd);font-weight:600;line-height:1.08;margin:0;text-wrap:balance}
+h1{font-weight:700;font-size:clamp(2.4rem,1.5rem + 4vw,4.4rem);letter-spacing:-.018em;font-variation-settings:'opsz' 144}
+h2{font-size:clamp(1.8rem,1.3rem + 2vw,2.8rem);letter-spacing:-.016em;font-variation-settings:'opsz' 96}
+h3{font-size:1.2rem;letter-spacing:-.008em;font-variation-settings:'opsz' 40}
+.lead{font-size:1.06rem;color:var(--p);max-width:34em;margin:16px 0 0;text-wrap:pretty}
+section{padding:72px 0}
+@media (min-width:900px){section{padding:112px 0}}
+
+/* ---- Logo ---- */
+.logo{display:inline-flex;align-items:center;gap:10px;color:var(--g);text-decoration:none}
+.logo .iso{height:30px;width:auto}
+.logo .lt{height:22px;width:auto}
+
+/* ---- Botones ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;text-decoration:none;
+  font-family:var(--ft);font-weight:600;font-size:16px;line-height:1;padding:16px 24px;border-radius:var(--rp);
+  transition:transform .12s ease,background .16s ease,box-shadow .16s ease;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,.chip input:focus-visible+span,summary:focus-visible{outline:2px solid var(--g);outline-offset:3px}
+.btn-n{background:var(--n);color:var(--g)}
+.btn-n:hover{background:#ff6d31}
+.btn-g{background:var(--g);color:var(--h)}
+.btn-g:hover{background:#33322f}
+.btn-ghost{background:transparent;color:var(--g);box-shadow:inset 0 0 0 1px var(--ll)}
+.btn-sm{padding:11px 18px;font-size:14px}
+.btn[disabled]{opacity:.6;cursor:progress}
+
+/* ---- Header ---- */
+.top{position:sticky;top:0;z-index:30;background:rgba(237,236,232,.88);backdrop-filter:saturate(1.2) blur(10px);-webkit-backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid transparent;transition:border-color .2s}
+.top.sc{border-bottom-color:var(--ll)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.top nav{display:flex;align-items:center;gap:24px}
+.top nav a.nl{color:var(--g);text-decoration:none;font-size:15px;font-weight:500;display:none}
+@media (min-width:860px){.top nav a.nl{display:inline}}
+
+/* ---- Hero ---- */
+.hero{padding:32px 0 64px}
+/* Héroe: al terminar la intro se ve primero el video; título, bajada y formulario van abajo. */
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"video" "pill" "h1" "lead" "form" "trust"}
+.hero .htxt{display:contents}
+.hero .pill{grid-area:pill;justify-self:start}
+.hero h1{grid-area:h1}
+.hero #bajada{grid-area:lead}
+.hero form.wl{grid-area:form}
+.hero .trust{grid-area:trust}
+.hero .player{grid-area:video;margin:0 0 36px}
+@media (min-width:960px){
+  .hero{padding:40px 0 96px}
+  .hero .wrap{justify-items:center;text-align:center}
+  .hero .player{max-width:440px;margin-bottom:48px;text-align:left}
+  .hero .pill{justify-self:center}
+  .hero #bajada{margin-left:auto;margin-right:auto}
+  .hero form.wl{margin-left:auto;margin-right:auto;width:100%;text-align:left}
+  .hero .trust{justify-content:center}
+}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:7px 12px 7px 10px;border-radius:var(--rp);background:var(--w);box-shadow:inset 0 0 0 1px var(--ll);margin-bottom:20px}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--n);animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35}}
+.hero h1 em{font-style:italic;font-weight:600}
+.trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin:20px 0 0;padding:0;list-style:none;font-size:14px;color:var(--p)}
+.trust li{display:flex;align-items:center;gap:8px}
+.trust svg{width:16px;height:16px;stroke:var(--g);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- Formulario de mail ---- */
+.wl{margin-top:28px;max-width:520px}
+.wl .row{display:flex;flex-direction:column;gap:8px}
+@media (min-width:520px){.wl .row{flex-direction:row;background:var(--w);border-radius:var(--rp);padding:6px;box-shadow:inset 0 0 0 1px var(--ll),0 1px 2px rgba(30,30,28,.04)}}
+.wl input[type=email]{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--g);background:var(--w);border:0;border-radius:var(--rp);padding:16px 20px;box-shadow:inset 0 0 0 1px var(--ll)}
+@media (min-width:520px){.wl input[type=email]{box-shadow:none;padding:12px 16px}}
+.wl input::placeholder{color:#8a877f}
+.wl .fine{font-size:13px;color:var(--p);margin:12px 4px 0}
+.wl .fine a{color:var(--g)}
+.wl .err{font-size:14px;color:var(--nt);margin:10px 4px 0;font-weight:600}
+.wl .ok{display:flex;gap:14px;align-items:flex-start;background:var(--w);border-radius:var(--r2);padding:18px 20px;box-shadow:inset 0 0 0 1px var(--ll)}
+.wl .ok b{font-family:var(--fd);font-size:1.25rem;font-weight:600;display:block;line-height:1.2}
+.wl .ok p{margin:4px 0 0;font-size:15px;color:var(--p)}
+.wl .ok .tick{flex:none;width:32px;height:32px;border-radius:50%;background:var(--g);display:grid;place-items:center}
+.wl .ok .tick svg{width:16px;height:16px;stroke:var(--h);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ---- Película (demo animada): los mismos 4 pasos que «Cómo va a funcionar» ---- */
+.player{position:relative;max-width:460px;width:100%;justify-self:center}
+.player .cap-top{display:flex;gap:12px;justify-content:space-between;align-items:center;font-size:13px;color:var(--p);margin:0 4px 10px}
+.player .cap-top b{color:var(--g);font-weight:600}
+.ctrl{flex:none;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px 0 10px;border-radius:var(--rp);border:0;background:var(--w);box-shadow:inset 0 0 0 1px var(--ll);color:var(--g);font:600 12.5px/1 var(--ft);cursor:pointer}
+.ctrl svg{width:11px;height:11px;fill:currentColor}
+.film{position:relative;aspect-ratio:4/5;background:var(--w);border-radius:20px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--ll),0 30px 60px -30px rgba(30,30,28,.35);cursor:pointer;isolation:isolate;user-select:none;-webkit-user-select:none}
+.film video{width:100%;height:100%;object-fit:cover}
+/* pestañas: dicen en qué paso estás */
+.tabs{position:absolute;z-index:5;left:14px;right:14px;top:14px;display:flex;gap:6px}
+.tabs button{flex:1;min-width:0;transition:flex .35s var(--ease),color .3s;border:0;background:none;padding:0 0 9px;text-align:left;cursor:pointer;font:600 12px/1.2 var(--ft);color:#8f8c84;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
+.tabs button.on{color:var(--g);flex:3.4}
+.tabs button:not(.on) .lb{display:none}
+.tabs button i{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;background:var(--l6);overflow:hidden}
+.tabs button i b{display:block;height:100%;width:0;background:var(--g)}
+.film.dark .tabs button{color:rgba(237,236,232,.6)}
+.film.dark .tabs button i{background:rgba(237,236,232,.18)}
+.film.dark .tabs button i b{background:var(--h)}
+
+.scene{position:absolute;inset:0;padding:52px 16px 16px;display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+.scene.on{opacity:1;visibility:visible;transition:opacity .45s ease}
+.scene .x{opacity:0}
+.scene.on .x{animation:up .6s var(--ease) both;animation-delay:var(--d,0s)}
+.film.paused *{animation-play-state:paused!important}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.7)}70%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes fly{0%{opacity:0;transform:translate(var(--fx),var(--fy)) rotate(var(--fr)) scale(.9)}35%{opacity:1;transform:translate(var(--fx),var(--fy)) rotate(var(--fr))}100%{opacity:1;transform:none}}
+
+/* encabezado de cada paso: número grande + qué pasa */
+.hd{display:flex;gap:12px;align-items:flex-start;margin:6px 0 14px}
+.hd .num{flex:none;width:38px;height:38px;border-radius:50%;background:var(--g);color:var(--h);display:grid;place-items:center;font:600 18px/1 var(--fd);font-variation-settings:'opsz' 40}
+.hd h4{margin:0;font-family:var(--fd);font-weight:600;font-size:clamp(21px,5.6vw,25px);line-height:1.08;letter-spacing:-.01em;font-variation-settings:'opsz' 40}
+.hd p{margin:4px 0 0;font-size:14px;line-height:1.35;color:var(--p)}
+/* el escenario: lo que vas a ver en la plataforma */
+.stg{flex:1;min-height:0;border-radius:14px;background:var(--h);padding:14px 12px;display:flex;flex-direction:column;justify-content:center;gap:9px;overflow:hidden}
+
+/* paso 1 · contanos */
+.bub{max-width:86%;font-size:14px;line-height:1.38;padding:9px 12px;border-radius:15px}
+.bub.q{background:var(--w);border-bottom-left-radius:4px;box-shadow:inset 0 0 0 1px var(--ll);align-self:flex-start}
+.bub.a{align-self:flex-end;background:var(--g);color:var(--h);border-bottom-right-radius:4px}
+.refs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:2px}
+.refs .t{aspect-ratio:1;border-radius:9px;display:flex;align-items:flex-end;padding:5px 6px;font-size:10px;font-weight:600;overflow:hidden;position:relative;opacity:0}
+.scene.on .refs .t{animation:fly 1.1s var(--ease) both;animation-delay:var(--d,0s)}
+.refs .t svg{position:absolute;inset:16% 18% 30%;width:64%;height:54%}
+.refs .w{background:var(--w);font-family:var(--fk);font-size:13px;font-weight:400;align-items:center;justify-content:center;text-align:center;color:var(--k1)}
+
+/* paso 2 · elegí */
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{position:relative;border-radius:12px;background:var(--k5);box-shadow:inset 0 0 0 1px var(--ll);aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--k1)}
+.opt svg{width:56%;height:auto}
+.opt .nm{font-family:var(--fk);font-size:15px;line-height:1}
+.opt .tg{position:absolute;left:4px;right:4px;bottom:7px;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--p);text-align:center}
+.opt .ck{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--g);display:grid;place-items:center;opacity:0}
+.opt .ck svg{width:10px;stroke:var(--h);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.scene.on .opt.dim{animation:up .6s var(--ease) both,dim .4s ease forwards;animation-delay:var(--d),2.3s}
+.scene.on .opt.pick{animation:up .6s var(--ease) both,pick .45s var(--ease) forwards;animation-delay:var(--d),2.2s}
+.scene.on .opt.pick .ck{animation:pop .4s var(--ease) 2.35s both}
+@keyframes dim{to{opacity:.4}}
+@keyframes pick{to{opacity:1;transform:scale(1.05);box-shadow:inset 0 0 0 2px var(--g),0 10px 24px -12px rgba(30,30,28,.5)}}
+.why{margin:4px 0 0;font-size:13.5px;line-height:1.42;color:var(--g)}
+.why b{font-weight:600}
+
+/* paso 3 · paleta y tipografía */
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sw{border-radius:10px;aspect-ratio:3/4;display:flex;align-items:flex-end;padding:6px;font-size:10.5px;font-weight:600;line-height:1.1;box-shadow:inset 0 0 0 1px rgba(30,30,28,.08);opacity:0}
+.scene.on .sw{animation:pop .55s var(--ease) both;animation-delay:var(--d)}
+.type{display:grid;gap:6px;margin-top:2px}
+.type div{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--w);border-radius:12px;color:var(--k1)}
+.type .aa{font-size:30px;line-height:1}
+.type .yn{font-family:var(--fk)}
+.type .kr{font-family:var(--fkb);font-weight:600}
+.type span{font-size:12px;color:var(--p);font-family:var(--ft)}
+.type span b{display:block;color:var(--g);font-size:13.5px}
+
+/* paso 4 · listo */
+.board{border-radius:12px;background:var(--k2);color:var(--k1);display:flex;align-items:center;justify-content:center;gap:10px;padding:12px}
+.board svg{width:38px;height:38px;color:var(--k3)}
+.board .wm{font-family:var(--fk);font-size:30px;line-height:1}
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.file{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:6px 10px 6px 7px;border-radius:var(--rp);background:var(--w)}
+.file .ok{width:16px;height:16px;border-radius:50%;background:var(--g);display:grid;place-items:center}
+.file .ok svg{width:8px;stroke:var(--h);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.then{font-size:13px;font-weight:600;margin:2px 0 0}
+.dl{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:9px 14px;border-radius:var(--rp);background:var(--g);color:var(--h)}
+.dl svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* elegir o sugerir otra cosa */
+.choose{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.choose span{font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:var(--rp);background:var(--w)}
+.choose .yes{background:var(--g);color:var(--h)}
+.choose .alt{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(30,30,28,.35)}
+/* paso 5 · BranderIA */
+.vprods{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.vp{border-radius:10px;background:var(--w);display:flex;align-items:center;gap:6px;padding:4px 8px 4px 2px;opacity:0}
+.vp svg{width:54px;height:54px;flex:none}
+.vp b{display:block;font-size:12.5px;line-height:1.2}
+.vp small{font-size:11.5px;color:var(--p)}
+.scene.on .vp{animation:pop .6s var(--ease) both;animation-delay:var(--d)}
+.order{display:flex;align-items:center;gap:10px;margin-top:2px;font-size:13px;font-weight:600}
+.order .go{padding:9px 16px;border-radius:var(--rp);background:var(--g);color:var(--h)}
+
+/* cierre */
+.scene.end{background:var(--g);color:var(--h);align-items:center;justify-content:center;text-align:center;gap:18px;padding-top:40px}
+.scene.end .iso{width:52px;height:64px}
+.scene.end p{margin:0;font-family:var(--fd);font-size:28px;line-height:1.12;font-weight:600;letter-spacing:-.01em}
+.scene.end small{font-size:14px;color:rgba(237,236,232,.7)}
+.scene.on .iso .t1{animation:isoT .9s var(--ease) both}
+.scene.on .iso .t2{animation:isoB .9s var(--ease) both}
+@keyframes isoT{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes isoB{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---- Pasos ---- */
+.steps{display:grid;gap:12px;margin-top:40px;counter-reset:s}
+@media (min-width:720px){.steps{grid-template-columns:1fr 1fr}}
+@media (min-width:720px) and (max-width:1039px){.step:last-child{grid-column:1/-1}}
+@media (min-width:1040px){.steps{grid-template-columns:repeat(5,1fr)}}
+.step.hi{background:var(--g);color:var(--h);box-shadow:none}
+.step.hi p{color:#A8A49B}
+.step.hi p em{color:var(--h)}
+.step.hi .n{background:var(--n);color:var(--g)}
+.step{background:var(--w);border-radius:var(--r2);padding:24px;box-shadow:inset 0 0 0 1px var(--ll);display:flex;flex-direction:column;gap:10px}
+.step .n{font-family:var(--fd);font-weight:600;font-size:15px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--h);font-variation-settings:'opsz' 40}
+.step p{margin:0;color:var(--p);font-size:15.5px;line-height:1.55}
+.step p em{font-style:normal;color:var(--g);font-weight:500}
+.coda{margin-top:28px;font-family:var(--fd);font-size:1.35rem;font-weight:600;font-variation-settings:'opsz' 40}
+
+/* ---- BranderIA ---- */
+.bra{background:var(--w)}
+.bra .wrap{display:grid;gap:40px;align-items:center}
+@media (min-width:960px){.bra .wrap{grid-template-columns:1fr 1fr;gap:72px}}
+.shelf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shelf .prod{aspect-ratio:1.1;border-radius:var(--r2);background:var(--h);display:grid;place-items:center;position:relative}
+.shelf .prod svg{width:74%;height:74%}
+.shelf .prod span{position:absolute;font-size:12px;font-weight:600;color:var(--p);left:12px;bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
+.tags li{font-size:14px;padding:7px 13px;border-radius:var(--rp);box-shadow:inset 0 0 0 1px var(--ll)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:24px;font-size:15px;font-weight:500}
+.flow i{font-style:normal;color:var(--p)}
+
+/* ---- Comparación ---- */
+.cmp{margin-top:40px;display:grid;gap:12px}
+@media (min-width:860px){.cmp{grid-template-columns:repeat(3,1fr)}}
+.col{border-radius:var(--r2);padding:24px;box-shadow:inset 0 0 0 1px var(--ll);background:transparent}
+.col.us{background:var(--g);color:var(--h);box-shadow:none}
+.col h3{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.col h3 svg{width:18px;height:22px}
+.col dl{margin:0;display:grid;gap:14px}
+.col dt{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--p)}
+.col.us dt{color:#A8A49B}
+.col dd{margin:2px 0 0;font-size:16px;line-height:1.45}
+
+/* ---- Para quién ---- */
+.who{display:grid;gap:12px;margin-top:40px}
+@media (min-width:720px){.who{grid-template-columns:1fr 1fr}}
+.wcard{background:var(--w);border-radius:var(--r2);padding:24px;box-shadow:inset 0 0 0 1px var(--ll)}
+.wcard p{margin:8px 0 0;color:var(--p);font-size:15.5px}
+
+/* ---- FAQ ---- */
+.faq{margin-top:32px;border-top:1px solid var(--ll);max-width:820px}
+.faq details{border-bottom:1px solid var(--ll)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;padding:20px 0;font-family:var(--fd);font-size:1.18rem;font-weight:600;font-variation-settings:'opsz' 40;line-height:1.3}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';font-family:var(--ft);font-weight:400;font-size:24px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:0 0 20px;color:var(--p);max-width:44em}
+
+/* ---- Cierre ---- */
+.close{background:var(--n);color:var(--g)}
+.close h2{font-size:clamp(2.2rem,1.4rem + 3.4vw,4rem);font-weight:700;font-variation-settings:'opsz' 144}
+.close .lead{color:var(--g)}
+.close .wl .row{box-shadow:none}
+.close .wl .fine,.close .wl .fine a{color:var(--g)}
+.close .wl .err{color:var(--g)}
+
+/* ---- Footer ---- */
+footer{padding:40px 0 calc(40px + env(safe-area-inset-bottom));font-size:14px;color:var(--p)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between}
+footer a{color:var(--g)}
+footer .lnk{display:flex;gap:20px;flex-wrap:wrap}
+footer button.lk{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:.18em;color:var(--g);font-size:14px}
+
+/* ---- Barra fija en celular ---- */
+.sticky{position:fixed;z-index:40;left:0;right:0;bottom:0;padding:10px var(--gut) calc(10px + env(safe-area-inset-bottom));background:rgba(237,236,232,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--ll);display:flex;align-items:center;gap:12px;transform:translateY(110%);transition:transform .35s var(--ease)}
+.sticky.on{transform:none}
+.sticky p{margin:0;font-size:14px;line-height:1.3;flex:1}
+.sticky p b{display:block;font-family:var(--fd);font-size:16px}
+@media (min-width:960px){.sticky{display:none}}
+
+/* ---- Diálogos ---- */
+dialog{border:0;padding:0;background:var(--h);color:var(--g);border-radius:20px;width:min(560px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-shadow:0 30px 80px -20px rgba(30,30,28,.5)}
+dialog::backdrop{background:rgba(30,30,28,.55)}
+@media (max-width:600px){dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:20px 20px 0 0;max-height:92dvh}}
+.dlg{padding:28px 22px calc(24px + env(safe-area-inset-bottom));overflow:auto;max-height:inherit}
+@media (min-width:600px){.dlg{padding:36px}}
+.dlg h2{font-size:1.9rem}
+.dlg .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:var(--l6);cursor:pointer;font-size:22px;line-height:1}
+.q{margin:22px 0 0;border:0;padding:0;min-width:0}
+.q legend,.q>label.lb{display:block;font-weight:600;font-size:15px;margin-bottom:10px;padding:0}
+.q legend small,.q label.lb small{font-weight:400;color:var(--p)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-block;font-size:14.5px;padding:10px 15px;border-radius:var(--rp);background:var(--w);box-shadow:inset 0 0 0 1px var(--ll);cursor:pointer;transition:background .15s,color .15s;line-height:1.25}
+.chip input:checked+span{background:var(--g);color:var(--h);box-shadow:none}
+.inp{width:100%;font:inherit;font-size:16px;color:var(--g);background:var(--w);border:0;border-radius:12px;padding:14px 16px;box-shadow:inset 0 0 0 1px var(--ll)}
+.two{display:grid;gap:12px}
+@media (min-width:520px){.two{grid-template-columns:1fr 1fr}}
+.beta{display:flex;gap:12px;align-items:flex-start;margin-top:22px;padding:16px;border-radius:var(--r2);background:var(--w);box-shadow:inset 0 0 0 1px var(--ll);cursor:pointer}
+.beta input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--g);flex:none}
+.beta span{font-size:15px;line-height:1.45}
+.beta span small{display:block;color:var(--p);font-size:13.5px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:26px}
+.skip{background:none;border:0;cursor:pointer;color:var(--p);font-size:14px;text-decoration:underline;text-underline-offset:.18em;padding:8px 0}
+.done{text-align:left}
+.done .share{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.prv h3{margin:22px 0 6px;font-size:1.05rem}
+.prv p,.prv li{font-size:15px;color:var(--p)}
+/* ---- Intro: las referencias se arman en la B ---- */
+#intro{display:none}
+html.intro-on{overflow:hidden}
+html.intro-on #intro{display:block;position:fixed;inset:0;z-index:200;background:var(--h);transition:opacity .6s var(--ease)}
+#intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#intro .it{position:absolute;left:0;right:0;top:71%;text-align:center;margin:0;padding:0 16px;font-family:var(--fd);font-weight:700;font-size:clamp(2.4rem,1.5rem + 4vw,4.2rem);line-height:1;letter-spacing:-.018em;font-variation-settings:'opsz' 144;opacity:0;transform:translateY(18px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+#intro .it span{color:var(--nt)}
+#intro.say .it{opacity:1;transform:none}
+@media (min-width:720px){#intro .it{top:72.5%}}
+#intro .skip-i{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));font:600 13px/1 var(--ft);color:var(--g);background:transparent;border:0;box-shadow:inset 0 0 0 1px var(--ll);border-radius:var(--rp);padding:10px 16px;cursor:pointer}
+#intro .fb{display:none;position:absolute;left:50%;top:44%;width:clamp(72px,16vw,120px);height:auto;transform:translate(-50%,-50%)}
+#intro.nogl .fb{display:block}
+#intro.nogl .fb .t1{animation:isoT .8s var(--ease) both}
+#intro.nogl .fb .t2{animation:isoB .8s var(--ease) both}
+#intro.out{opacity:0;pointer-events:none}
+#intro.out.fast{transition-duration:.25s}
+.hero.in .wrap>div:first-child>*{animation:up .7s var(--ease) both}
+.hero.in .wrap>div:first-child>:nth-child(2){animation-delay:.06s}
+.hero.in .wrap>div:first-child>:nth-child(3){animation-delay:.12s}
+.hero.in .wrap>div:first-child>:nth-child(4){animation-delay:.18s}
+.hero.in .wrap>div:first-child>:nth-child(5){animation-delay:.24s}
+.hero.in .player{animation:up .8s var(--ease) .2s both}
+.demo-flag{position:fixed;z-index:50;left:12px;bottom:84px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--g);color:var(--h);padding:6px 10px;border-radius:var(--rp);opacity:.85}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+}
+</style>
+<script>
+/* Intro «¿BrandIAmos?»: se ve una vez por visita.
+   Para apagarla: INTRO_ON=false acá, o ?intro=0 en la URL del anuncio.
+   Para volver a verla al revisar: ?intro=1 */
+window.INTRO_ON=true;
+(function(){var on=window.INTRO_ON;try{if(sessionStorage.getItem('bia_intro')==='1')on=false}catch(e){}
+ if(/[?&]intro=1/.test(location.search))on=true;   /* para revisarla: fuerza verla de nuevo */
+ if(/[?&]intro=0/.test(location.search)||matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;
+ window.BIA_INTRO=on;
+ if(on){document.documentElement.classList.add('intro-on');var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.async=true;document.head.appendChild(s);}
+})();
+</script>
+</head>
+<body>
+
+<!-- Intro: tablero de referencias que se arma en la B (misma escena que el héroe de la web v3) -->
+<div id="intro" aria-hidden="true">
+  <canvas id="gl"></canvas>
+  <svg class="fb" viewBox="0 0 62 76"><g transform="translate(-10,-12)"><path class="t1" fill="#1E1E1C" d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path class="t2" fill="#FF5C1A" d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+  <p class="it">¿Brand<span>IA</span>mos?</p>
+  <button type="button" class="skip-i">Saltar</button>
+</div>
+
+<!-- Símbolos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Isotipo v2 (01-corporate/branding/logo/v2/isotipo-C-b-modular.svg), sin redibujar -->
+    <symbol id="iso" viewBox="0 0 62 76"><g transform="translate(-10,-12)" fill="currentColor"><path class="t1" d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path class="t2" d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></symbol>
+    <!-- Costa · marca de ejemplo (ficticia), mismos signos que la web v3 -->
+    <!-- Logotipo v2 (01-corporate/branding/logo/v2/logotipo.svg, separación d–I +80), en curvas, sin redibujar -->
+    <symbol id="logotipo" viewBox="-25.8 -1588.2 7195.3 1699.3"><path fill="currentColor" d="M1309 -334Q1309 -186 1183 -93Q1057 0 810 0H76Q71 0 68 -2Q65 -5 65 -7Q65 -14 79 -16L148 -27Q170 -32 180 -42Q190 -52 190 -74V-1344Q190 -1356 182 -1362Q174 -1369 148 -1373L79 -1384Q65 -1386 65 -1393Q65 -1396 68 -1398Q71 -1400 76 -1400H597Q801 -1400 942 -1349Q1083 -1297 1156 -1206Q1229 -1116 1229 -998Q1229 -897 1172 -821Q1115 -745 1010 -703Q904 -661 760 -661L816 -668Q960 -668 1071 -625Q1183 -583 1246 -507Q1309 -432 1309 -334ZM677 -649H509V-671H684Q763 -671 815 -704Q868 -738 894 -805Q920 -873 920 -975Q920 -1097 875 -1188Q831 -1278 756 -1328Q682 -1378 590 -1378H536V-64Q536 -40 551 -31Q566 -22 594 -22H715Q792 -22 848 -61Q904 -101 934 -172Q964 -244 964 -342Q964 -485 891 -567Q818 -649 677 -649Z M1705 -520Q1705 -647 1743 -733Q1782 -819 1843 -863Q1904 -907 1969 -907Q2048 -907 2089 -857Q2131 -806 2131 -708Q2131 -617 2088 -573Q2045 -529 1980 -529Q1920 -529 1893 -562Q1865 -594 1861 -658L1860 -692Q1859 -719 1849 -734Q1839 -749 1814 -749Q1788 -749 1767 -723Q1745 -698 1732 -645Q1719 -593 1719 -512ZM1719 -886V-566V-68Q1719 -55 1725 -45Q1732 -36 1744 -33L1843 -15Q1848 -14 1850 -12Q1852 -10 1852 -7Q1852 -4 1850 -2Q1847 0 1841 0H1347Q1342 0 1339 -2Q1336 -5 1336 -7Q1336 -10 1340 -13Q1343 -16 1349 -17L1394 -25Q1408 -28 1413 -35Q1418 -43 1418 -54V-785Q1418 -793 1415 -798Q1412 -803 1404 -803H1348Q1344 -803 1342 -805Q1339 -807 1339 -810Q1339 -813 1342 -816Q1344 -818 1350 -819L1683 -896Q1692 -898 1696 -899Q1701 -900 1706 -900Q1713 -900 1716 -895Q1719 -891 1719 -886Z M2641 -93V-104L2626 -91V-778Q2626 -832 2602 -861Q2578 -891 2537 -891Q2488 -891 2463 -865Q2437 -839 2437 -801V-708Q2437 -649 2394 -607Q2351 -564 2283 -564Q2236 -564 2205 -592Q2175 -619 2175 -675Q2175 -729 2219 -782Q2264 -836 2353 -872Q2442 -907 2573 -907Q2752 -907 2840 -836Q2928 -764 2928 -632V-125Q2928 -96 2940 -82Q2951 -68 2968 -68Q2984 -68 2998 -79Q3013 -91 3016 -119Q3017 -123 3018 -125Q3020 -126 3022 -126Q3025 -126 3026 -125Q3027 -123 3027 -119Q3027 -98 3007 -65Q2986 -33 2940 -7Q2893 19 2813 19Q2721 19 2681 -13Q2641 -46 2641 -93ZM2121 -197Q2121 -312 2217 -379Q2312 -447 2528 -447Q2582 -447 2614 -436Q2646 -425 2674 -408L2665 -400Q2636 -415 2608 -422Q2580 -429 2544 -429Q2485 -429 2452 -381Q2419 -333 2419 -240Q2419 -151 2451 -108Q2484 -65 2537 -65Q2569 -65 2601 -83Q2633 -101 2654 -132L2666 -125Q2625 -55 2548 -18Q2471 19 2381 19Q2268 19 2194 -42Q2121 -102 2121 -197Z M3403 -895V-60Q3403 -45 3409 -36Q3415 -28 3427 -25L3474 -16Q3485 -13 3485 -7Q3485 0 3476 0H3029Q3026 0 3023 -2Q3021 -4 3021 -7Q3021 -10 3023 -12Q3025 -14 3031 -15L3079 -25Q3093 -28 3098 -36Q3103 -45 3103 -59V-780Q3103 -787 3100 -791Q3096 -795 3088 -795H3036Q3030 -795 3028 -797Q3025 -799 3025 -803Q3025 -807 3028 -808Q3031 -810 3035 -811L3367 -904Q3378 -906 3382 -907Q3386 -908 3391 -908Q3397 -908 3400 -904Q3403 -901 3403 -895ZM3379 -683 3367 -696 3405 -729Q3506 -819 3584 -863Q3662 -907 3726 -907Q3816 -907 3867 -853Q3917 -799 3931 -682L4002 -62Q4004 -46 4009 -37Q4015 -27 4029 -24L4072 -15Q4079 -14 4081 -12Q4083 -10 4083 -7Q4083 -4 4081 -2Q4079 0 4074 0H3620Q3610 0 3610 -7Q3610 -13 3622 -16L3669 -25Q3684 -28 3690 -37Q3696 -47 3694 -62L3635 -650Q3628 -715 3606 -745Q3584 -775 3538 -775Q3507 -775 3477 -760Q3448 -744 3415 -715Z M4685 -107V-112V-1370Q4685 -1377 4681 -1380Q4678 -1384 4669 -1384H4617Q4612 -1384 4609 -1386Q4607 -1389 4607 -1392Q4607 -1396 4610 -1398Q4612 -1399 4616 -1400L4949 -1493Q4960 -1496 4964 -1496Q4968 -1497 4973 -1497Q4979 -1497 4982 -1493Q4985 -1490 4985 -1484V-60Q4985 -45 4991 -36Q4996 -28 5009 -25L5055 -16Q5062 -15 5064 -12Q5067 -10 5067 -7Q5067 -4 5064 -2Q5062 0 5057 0H4710Q4697 0 4691 -7Q4685 -13 4685 -26ZM4059 -415Q4059 -565 4114 -676Q4170 -786 4266 -846Q4362 -907 4484 -907Q4579 -907 4637 -874Q4694 -841 4730 -777L4707 -766Q4686 -816 4648 -842Q4611 -868 4559 -868Q4502 -868 4458 -830Q4414 -791 4389 -698Q4364 -605 4364 -441Q4364 -297 4385 -209Q4406 -121 4444 -81Q4481 -41 4532 -41Q4577 -41 4621 -68Q4665 -94 4703 -152L4717 -137Q4653 -54 4586 -17Q4519 20 4433 20Q4321 20 4237 -32Q4152 -84 4105 -182Q4059 -279 4059 -415Z"/><path fill="#FF5C1A" transform="translate(80,0)" d="M5564 -56Q5564 -44 5575 -38Q5586 -31 5607 -27L5675 -16Q5689 -14 5689 -8Q5689 -4 5686 -2Q5684 0 5678 0H5096Q5091 0 5088 -2Q5086 -4 5086 -8Q5086 -14 5100 -16L5168 -27Q5189 -31 5200 -38Q5210 -44 5210 -56V-1344Q5210 -1356 5200 -1363Q5189 -1369 5168 -1373L5100 -1384Q5086 -1386 5086 -1393Q5086 -1396 5088 -1398Q5091 -1400 5096 -1400H5678Q5684 -1400 5686 -1398Q5689 -1396 5689 -1393Q5689 -1386 5675 -1384L5607 -1373Q5586 -1369 5575 -1363Q5564 -1356 5564 -1344Z M5968 -538H6464L6468 -516H5963ZM6052 -7Q6052 -5 6050 -2Q6048 0 6043 0H5692Q5687 0 5685 -2Q5683 -5 5683 -7Q5683 -12 5686 -13Q5690 -15 5693 -16L5722 -25Q5759 -38 5798 -80Q5837 -122 5861 -204L6164 -1251Q6177 -1299 6166 -1328Q6154 -1357 6125 -1374Q6111 -1385 6104 -1387Q6098 -1389 6098 -1393Q6098 -1397 6100 -1399Q6103 -1400 6108 -1400H6571Q6576 -1400 6579 -1399Q6581 -1397 6581 -1393Q6581 -1389 6575 -1386Q6569 -1382 6554 -1376Q6536 -1371 6531 -1360Q6526 -1349 6536 -1319L6930 -69Q6937 -47 6951 -35Q6965 -22 6985 -18Q6992 -16 6995 -14Q6998 -12 6998 -7Q6998 -5 6996 -2Q6993 0 6988 0H6480Q6475 0 6473 -2Q6470 -5 6470 -7Q6470 -12 6473 -13Q6477 -14 6484 -16L6525 -25Q6552 -32 6557 -46Q6562 -59 6554 -86L6182 -1266L6210 -1336L5882 -199Q5869 -154 5883 -120Q5898 -85 5933 -62Q5967 -38 6015 -23L6041 -16Q6047 -14 6050 -13Q6052 -11 6052 -7Z"/></symbol>
+    <symbol id="kIso" viewBox="0 0 64 64"><path d="M13 35a19 19 0 0 1 38 0z" fill="currentColor"/><path d="M6 43.5q6.5-5 13 0t13 0 13 0 13 0M10 52q5.5-4.2 11 0t11 0 11 0 11 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></symbol>
+    <symbol id="kW" viewBox="0 0 64 64"><path d="M32 58V14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><g fill="currentColor"><ellipse cx="25" cy="22" rx="5" ry="9" transform="rotate(-28 25 22)"/><ellipse cx="39" cy="22" rx="5" ry="9" transform="rotate(28 39 22)"/><ellipse cx="25" cy="35" rx="5" ry="9" transform="rotate(-28 25 35)"/><ellipse cx="39" cy="35" rx="5" ry="9" transform="rotate(28 39 35)"/><ellipse cx="32" cy="10" rx="4.5" ry="8"/></g></symbol>
+    <symbol id="kS" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="32" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 3"/><text x="32" y="37" text-anchor="middle" font-family="Young Serif,Georgia,serif" font-size="15" fill="currentColor">Costa</text></symbol>
+    <!-- Productos con la marca Costa aplicada -->
+    <symbol id="pTarjeta" viewBox="0 0 120 120"><rect x="22" y="40" width="84" height="50" rx="4" fill="#E2DED4" transform="rotate(-8 64 65)"/><rect x="14" y="34" width="84" height="50" rx="4" fill="#FBF8F2" stroke="rgba(30,30,28,.12)"/><use href="#kIso" x="22" y="44" width="22" height="22" color="#C8662B"/><text x="48" y="61" font-family="Young Serif,Georgia,serif" font-size="15" fill="#6B3A1E">Costa</text><path d="M24 74h40" stroke="#6B3A1E" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="pBolsa" viewBox="0 0 120 120"><path d="M44 42q0-20 16-20t16 20" fill="none" stroke="#6B3A1E" stroke-width="4" stroke-linecap="round"/><path d="M28 42h64l-5 62H33z" fill="#F3E9D6" stroke="rgba(30,30,28,.1)"/><use href="#kW" x="46" y="56" width="28" height="28" color="#6B3A1E"/><text x="60" y="96" text-anchor="middle" font-family="Young Serif,Georgia,serif" font-size="9" fill="#6B3A1E">Costa</text></symbol>
+    <symbol id="pTaza" viewBox="0 0 120 120"><path d="M84 52h6a12 12 0 0 1 0 24h-6" fill="none" stroke="#2F3B2F" stroke-width="6"/><rect x="28" y="36" width="58" height="62" rx="8" fill="#2F3B2F"/><use href="#kIso" x="43" y="50" width="28" height="28" color="#F3E9D6"/><ellipse cx="57" cy="102" rx="34" ry="3" fill="rgba(30,30,28,.08)"/></symbol>
+    <symbol id="pRemera" viewBox="0 0 120 120"><path d="M42 22l-26 14 10 20 10-5v49h48V51l10 5 10-20-26-14q-4 9-18 9t-18-9z" fill="#C8662B"/><use href="#kS" x="47" y="44" width="26" height="26" color="#FBF8F2"/></symbol>
+    <symbol id="ico-check" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3L13 4.5"/></symbol>
+  </defs>
+</svg>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="BrandIA, inicio">
+      <svg class="iso" viewBox="0 0 62 76" aria-hidden="true"><use href="#iso"/></svg>
+      <svg class="lt" viewBox="0 0 7195.3 1699.3" aria-hidden="true"><use href="#logotipo"/></svg>
+    </a>
+    <nav>
+      <a class="nl" href="#como">Cómo funciona</a>
+      <a class="nl" href="#branderia">BranderIA</a>
+      <a class="nl" href="#preguntas">Preguntas</a>
+      <a class="btn btn-g btn-sm" href="#unite" data-go="hero">Anotarme</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HÉROE ============ -->
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div class="htxt">
+        <span class="pill"><i></i>Muy pronto · lista de espera abierta</span>
+        <h1 id="h1">Que se vea tan bien como lo que hacés.</h1>
+        <p class="lead" id="bajada">Contás qué hacés y BrandIA te propone logos, colores y tipografías. Elegís vos, descargás tu marca y la producís en tarjetas, bolsas y remeras. Estamos por abrir. Anotate y entrás primero.</p>
+
+        <form class="wl" data-src="hero" novalidate>
+          <div class="row">
+            <label class="hp" aria-hidden="true">Web<input name="web" tabindex="-1" autocomplete="off"></label>
+            <input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="tu@mail.com" aria-label="Tu mail">
+            <button class="btn btn-n" type="submit">Quiero entrar primero</button>
+          </div>
+          <p class="err" role="alert" hidden></p>
+          <p class="fine">Gratis. Te escribimos cuando abramos, nada de spam. <button type="button" class="lk" data-open="privacidad" style="background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;text-underline-offset:.18em;cursor:pointer">Privacidad</button></p>
+        </form>
+
+        <ul class="trust">
+          <li><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg>Sin saber de diseño</li>
+          <li><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg>Elegís vos en cada paso</li>
+          <li><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg>Hecho en Uruguay</li>
+        </ul>
+      </div>
+
+      <!-- Película: demo animada con los mismos 5 pasos de «Cómo va a funcionar». Si CONFIG.videoUrl tiene un video, se reemplaza por él. -->
+      <div class="player" id="player">
+        <div class="cap-top"><span><b>Así va a funcionar</b> · <span id="dur">28 s</span></span><button class="ctrl" id="ctrl" type="button" aria-label="Pausar"><svg viewBox="0 0 14 14" id="ctrlIco"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg><span id="ctrlTx">Pausa</span></button></div>
+        <div class="film" id="film" role="region" aria-label="Demostración en 5 pasos de cómo va a funcionar BrandIA, con una panadería de ejemplo. Tocá para pausar.">
+          <div class="tabs" id="tabs"></div>
+
+          <!-- 1 · Contanos: la persona cuenta qué hace (no sube referencias) -->
+          <div class="scene" data-dur="5600" data-tab="Contanos">
+            <div class="hd x" style="--d:0s"><span class="num">1</span><div><h4>Contanos qué hacés</h4><p>Unas preguntas simples sobre tu proyecto.</p></div></div>
+            <div class="stg">
+              <div class="bub q x" style="--d:.5s">¿Qué hacés y para quién?</div>
+              <div class="bub a x" style="--d:1.3s">Una panadería de masa madre, para el barrio.</div>
+              <div class="bub q x" style="--d:2.3s">¿Cómo querés que se sienta tu marca?</div>
+              <div class="bub a x" style="--d:3.1s">Cálida, de oficio. Nada de lujo.</div>
+            </div>
+          </div>
+
+          <!-- 2 · Logo: BrandIA muestra ideas, la persona elige -->
+          <div class="scene" data-dur="5800" data-tab="Logo">
+            <div class="hd x" style="--d:0s"><span class="num">2</span><div><h4>Elegí tu logo</h4><p>Te mostramos ideas con el porqué de cada una.</p></div></div>
+            <div class="stg">
+              <div class="opts">
+                <div class="opt x dim" style="--d:.5s"><svg viewBox="0 0 64 64"><use href="#kS"/></svg><span class="tg">Sello</span></div>
+                <div class="opt x pick" style="--d:.7s"><span class="ck"><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg></span><svg viewBox="0 0 64 64" style="color:#C8662B;width:46%"><use href="#kIso"/></svg><span class="nm">Costa</span><span class="tg">Con símbolo</span></div>
+                <div class="opt x dim" style="--d:.9s"><span class="nm" style="font-size:24px">costa</span><span class="tg">Tipográfico</span></div>
+              </div>
+              <p class="why x" style="--d:2.8s"><b>¿Por qué este?</b> El sol sobre el agua: costa, horno y mañana temprano en un solo signo.</p>
+            </div>
+          </div>
+
+          <!-- 3 · Paleta y tipografía: sugeridas; elige o propone otra cosa -->
+          <div class="scene" data-dur="5800" data-tab="Paleta">
+            <div class="hd x" style="--d:0s"><span class="num">3</span><div><h4>Paleta y tipografía</h4><p>Te las sugerimos. Elegís, o proponés otra cosa.</p></div></div>
+            <div class="stg">
+              <div class="pal">
+                <div class="sw" style="background:#6B3A1E;color:#F3E9D6;--d:.5s">Corteza</div>
+                <div class="sw" style="background:#C8662B;color:#FBF8F2;--d:.62s">Horno</div>
+                <div class="sw" style="background:#F3E9D6;color:#6B3A1E;--d:.74s">Harina</div>
+                <div class="sw" style="background:#2F3B2F;color:#F3E9D6;--d:.86s">Pino</div>
+                <div class="sw" style="background:#FBF8F2;color:#6B3A1E;--d:.98s">Miga</div>
+              </div>
+              <div class="type">
+                <div class="x" style="--d:1.5s"><span class="aa yn">Aa</span><span><b>Young Serif</b>Para los títulos</span></div>
+                <div class="x" style="--d:1.75s"><span class="aa kr">Aa</span><span><b>Karla</b>Para los textos</span></div>
+              </div>
+              <div class="choose x" style="--d:2.6s"><span class="yes">✓ Me gusta</span><span class="alt">Sugerir otra</span></div>
+            </div>
+          </div>
+
+          <!-- 4 · Descargá -->
+          <div class="scene" data-dur="4800" data-tab="Descargá">
+            <div class="hd x" style="--d:0s"><span class="num">4</span><div><h4>Descargá tu marca</h4><p>Todo listo para usar desde el primer día.</p></div></div>
+            <div class="stg">
+              <div class="board x" style="--d:.5s"><svg viewBox="0 0 64 64"><use href="#kIso"/></svg><div class="wm">Costa</div></div>
+              <div class="files">
+                <span class="file x" style="--d:1s"><span class="ok"><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg></span>Logo y versiones</span>
+                <span class="file x" style="--d:1.2s"><span class="ok"><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg></span>Manual de marca</span>
+                <span class="file x" style="--d:1.4s"><span class="ok"><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg></span>Plantillas para redes</span>
+              </div>
+              <span class="dl x" style="--d:2.1s"><svg viewBox="0 0 16 16"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>Descargar todo</span>
+            </div>
+          </div>
+
+          <!-- 5 · BranderIA: producir desde la plataforma (una de las patas fuertes) -->
+          <div class="scene" data-dur="6400" data-tab="BranderIA">
+            <div class="hd x" style="--d:0s"><span class="num">5</span><div><h4>Producí en BranderIA</h4><p>Tus productos con tu marca. Te llegan a vos.</p></div></div>
+            <div class="stg">
+              <div class="vprods">
+                <div class="vp" style="--d:.5s"><svg viewBox="0 0 120 120"><use href="#pTarjeta"/></svg><span><b>Tarjetas</b><small>× 250</small></span></div>
+                <div class="vp" style="--d:.7s"><svg viewBox="0 0 120 120"><use href="#pBolsa"/></svg><span><b>Bolsas</b><small>× 100</small></span></div>
+                <div class="vp" style="--d:.9s"><svg viewBox="0 0 120 120"><use href="#pTaza"/></svg><span><b>Tazas</b><small>× 24</small></span></div>
+                <div class="vp" style="--d:1.1s"><svg viewBox="0 0 120 120"><use href="#pRemera"/></svg><span><b>Remeras</b><small>× 30</small></span></div>
+              </div>
+              <div class="order x" style="--d:2s"><span class="go">Pedir</span>Te llega a vos, listo para usar.</div>
+            </div>
+          </div>
+
+          <!-- Cierre -->
+          <div class="scene end" data-dur="3500" data-dark="1">
+            <svg class="iso" viewBox="0 0 62 76" aria-hidden="true"><g transform="translate(-10,-12)"><path class="t1" fill="#EDECE8" d="M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z"/><path class="t2" fill="#FF5C1A" d="M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z"/></g></svg>
+            <p class="x" style="--d:.4s">¿BrandIAmos<br>la tuya?</p>
+            <small class="x" style="--d:.7s">Estamos por abrir.</small>
+            <a class="btn btn-n btn-sm x" style="--d:.9s" href="#unite" data-go="hero">Anotarme a la lista</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CÓMO FUNCIONA ============ -->
+  <section id="como" style="padding-top:24px">
+    <div class="wrap">
+      <p class="label">Cómo va a funcionar</p>
+      <h2>Vos contás qué hacés.<br>BrandIA te propone, vos elegís.</h2>
+      <div class="steps">
+        <article class="step"><span class="n">1</span><h3>Contanos qué hacés</h3><p>Unas preguntas simples: qué hacés, para quién y <em>cómo querés que se sienta tu marca.</em></p></article>
+        <article class="step"><span class="n">2</span><h3>Elegí tu logo</h3><p>Te mostramos ideas de logo con <em>el porqué de cada una.</em> Elegís la que va con vos.</p></article>
+        <article class="step"><span class="n">3</span><h3>Paleta y tipografía</h3><p>Te sugerimos colores y letras para tu marca. Elegís, o <em>proponés algo distinto.</em></p></article>
+        <article class="step"><span class="n">4</span><h3>Descargá tu marca</h3><p>Logo, manual y plantillas, <em>listos para usar</em> desde el primer día.</p></article>
+        <article class="step hi"><span class="n">5</span><h3>Producí en BranderIA</h3><p>Pedís tarjetas, bolsas, remeras y más <em>con tu marca ya aplicada.</em> Te llegan a vos, listos.</p></article>
+      </div>
+      <p class="coda">Eso es BrandIAr.</p>
+    </div>
+  </section>
+
+  <!-- ============ BRANDERIA ============ -->
+  <section class="bra" id="branderia">
+    <div class="wrap">
+      <div>
+        <p class="label">BranderIA · productos con tu marca</p>
+        <h2>De la pantalla a tus manos.</h2>
+        <p class="lead">Tu marca ya aplicada en tarjetas, folletos, remeras, tazas y más. Los pedís desde la plataforma, coordinamos con quien los produce y te llegan a vos, listos para usar. Sin explicarle el archivo a nadie.</p>
+        <div class="flow"><span>Elegís el producto</span><i>→</i><span>La marca ya está puesta</span><i>→</i><span>Te llega a vos</span></div>
+        <ul class="tags">
+          <li>Tarjetas</li><li>Folletos</li><li>Carpetas</li><li>Lapiceras</li><li>Gorros</li><li>Remeras</li><li>Bolsas de tela</li><li>Vasos térmicos</li><li>Termos</li><li>Mates</li><li>Tazas</li><li>Soportes de celular</li>
+        </ul>
+      </div>
+      <div class="shelf" aria-hidden="true">
+        <div class="prod"><svg viewBox="0 0 120 120"><use href="#pTarjeta"/></svg><span>Tarjetas</span></div>
+        <div class="prod"><svg viewBox="0 0 120 120"><use href="#pBolsa"/></svg><span>Bolsas</span></div>
+        <div class="prod"><svg viewBox="0 0 120 120"><use href="#pTaza"/></svg><span>Tazas</span></div>
+        <div class="prod"><svg viewBox="0 0 120 120"><use href="#pRemera"/></svg><span>Remeras</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPARACIÓN ============ -->
+  <section id="por-que">
+    <div class="wrap">
+      <p class="label">Por qué BrandIA</p>
+      <h2>Ni agencia, ni plantilla.</h2>
+      <p class="lead">Hasta ahora había dos caminos: caro y lento, o barato y igual a todos. Hacía falta un tercero.</p>
+      <div class="cmp">
+        <div class="col">
+          <h3>Una agencia</h3>
+          <dl><div><dt>Tiempo</dt><dd>Semanas o meses.</dd></div><div><dt>Parte de</dt><dd>Reuniones y propuestas.</dd></div><div><dt>Después</dt><dd>Para imprimir, otro presupuesto y otro proveedor.</dd></div></dl>
+        </div>
+        <div class="col">
+          <h3>Una plantilla</h3>
+          <dl><div><dt>Tiempo</dt><dd>Minutos.</dd></div><div><dt>Parte de</dt><dd>Un molde que usan miles.</dd></div><div><dt>Después</dt><dd>Quedás solo con un archivo.</dd></div></dl>
+        </div>
+        <div class="col us">
+          <h3><svg viewBox="0 0 62 76" aria-hidden="true" style="color:#FF5C1A"><use href="#iso"/></svg>BrandIA</h3>
+          <dl><div><dt>Tiempo</dt><dd>Lo que tardás en contarnos qué hacés.</dd></div><div><dt>Parte de</dt><dd>Lo que hacés y cómo querés que se sienta.</dd></div><div><dt>Después</dt><dd>La llevás a productos sin salir de la plataforma.</dd></div></dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARA QUIÉN ============ -->
+  <section id="para-quien" style="padding-top:0">
+    <div class="wrap">
+      <p class="label">Para quién es</p>
+      <h2>Para quien tiene algo bueno<br>y quiere que se note.</h2>
+      <div class="who">
+        <div class="wcard"><h3>Estás por abrir</h3><p>Arrancá con la marca ya hecha. No la improvises.</p></div>
+        <div class="wcard"><h3>Ya arrancaste</h3><p>Lo que hacés creció. Que la marca lo acompañe.</p></div>
+        <div class="wcard"><h3>Trabajás por tu cuenta</h3><p>Tu nombre es tu marca. Que se vea profesional.</p></div>
+        <div class="wcard"><h3>Ya tenés marca</h3><p>Ordenala en un sistema y llevala a productos sin perseguir a nadie.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PREGUNTAS ============ -->
+  <section id="preguntas" style="padding-top:0">
+    <div class="wrap">
+      <p class="label">Preguntas</p>
+      <h2>Lo que nos preguntan.</h2>
+      <div class="faq">
+        <details><summary>¿Cuándo abre?</summary><p>Estamos terminando la plataforma. Los de la lista se enteran primero y entran antes que nadie.</p></details>
+        <details><summary>¿Cuánto va a costar?</summary><p>Lo estamos definiendo, y lo que nos cuentes al anotarte nos ayuda. Lo que sí está decidido: precio publicado y una puerta de entrada accesible. Nada de «escribinos para cotizar».</p></details>
+        <details><summary>¿Tengo que saber de diseño?</summary><p>No. Vos contás, la plataforma pregunta y propone. Elegís entre opciones que vienen con el porqué de cada una.</p></details>
+        <details><summary>Ya tengo logo. ¿Me sirve?</summary><p>Sí. Podés partir de tu logo para ordenarlo en un sistema, renovarlo o ir directo a pedir productos con él.</p></details>
+        <details><summary>¿Es todo IA o hay alguien del otro lado?</summary><p>La IA genera. El criterio está en cómo se arma cada opción y en que vos elegís. Y si querés a una persona mirando tu marca, va a haber un plan con acompañamiento.</p></details>
+        <details><summary>¿Qué hacen con mis datos?</summary><p>Los usamos para avisarte del lanzamiento y entender qué necesitás. No los vendemos ni los compartimos. Podés pedir la baja cuando quieras. <button type="button" class="lk" data-open="privacidad" style="background:none;border:0;padding:0;font:inherit;color:var(--g);text-decoration:underline;text-underline-offset:.18em;cursor:pointer">Leé la política de privacidad</button>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CIERRE ============ -->
+  <section class="close" id="unite">
+    <div class="wrap">
+      <h2>¿BrandIAmos la tuya?</h2>
+      <p class="lead">Anotate y te avisamos primero cuando abramos.</p>
+      <form class="wl" data-src="cierre" novalidate>
+        <div class="row">
+          <label class="hp" aria-hidden="true">Web<input name="web" tabindex="-1" autocomplete="off"></label>
+          <input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="tu@mail.com" aria-label="Tu mail">
+          <button class="btn btn-g" type="submit">Quiero entrar primero</button>
+        </div>
+        <p class="err" role="alert" hidden></p>
+        <p class="fine">Gratis. Te escribimos cuando abramos, nada de spam.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="BrandIA">
+      <svg class="iso" viewBox="0 0 62 76" aria-hidden="true" style="height:24px"><use href="#iso"/></svg>
+      <svg class="lt" viewBox="0 0 7195.3 1699.3" aria-hidden="true" style="height:18px"><use href="#logotipo"/></svg>
+    </a>
+    <div class="lnk">
+      <span>brandiamos.com · Hecho en Uruguay</span>
+      <button type="button" class="lk" data-open="privacidad">Privacidad</button>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky" aria-hidden="true">
+  <p><b>Estamos por abrir.</b>Anotate y entrás primero.</p>
+  <a class="btn btn-n btn-sm" href="#unite" data-go="hero" tabindex="-1">Anotarme</a>
+</div>
+
+<!-- ============ PASO 2: perfil (después del mail) ============ -->
+<dialog id="perfil" aria-labelledby="pf-t">
+  <div class="dlg">
+    <button class="x" type="button" data-close aria-label="Cerrar">×</button>
+    <form id="pf" novalidate>
+      <p class="label" style="color:var(--nt)">¡Adentro! Ya estás en la lista</p>
+      <h2 id="pf-t">Contanos un poco más.</h2>
+      <p class="lead" style="margin-top:8px">Son 30 segundos. Nos ayuda a armar BrandIA para lo que vos necesitás.</p>
+
+      <div class="q two">
+        <div><label class="lb" for="pf-nombre">Tu nombre</label><input class="inp" id="pf-nombre" name="nombre" autocomplete="given-name" placeholder="Cómo te llamás"></div>
+        <div><label class="lb" for="pf-pais">País</label>
+          <select class="inp" id="pf-pais" name="pais">
+            <option value="UY">Uruguay</option><option value="AR">Argentina</option><option value="CL">Chile</option><option value="PY">Paraguay</option><option value="MX">México</option><option value="CO">Colombia</option><option value="PE">Perú</option><option value="ES">España</option><option value="OT">Otro</option>
+          </select></div>
+      </div>
+
+      <fieldset class="q"><legend>¿Ya tenés marca?</legend>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="tiene_marca" value="no"><span>No, arranco de cero</span></label>
+          <label class="chip"><input type="radio" name="tiene_marca" value="a_medias"><span>Tengo algo, pero no me convence</span></label>
+          <label class="chip"><input type="radio" name="tiene_marca" value="si"><span>Sí, y me gusta</span></label>
+        </div></fieldset>
+
+      <fieldset class="q"><legend>¿En qué momento estás?</legend>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="etapa" value="idea"><span>Tengo una idea</span></label>
+          <label class="chip"><input type="radio" name="etapa" value="arrancando"><span>Arranqué hace poco</span></label>
+          <label class="chip"><input type="radio" name="etapa" value="funcionando"><span>Ya estoy funcionando</span></label>
+          <label class="chip"><input type="radio" name="etapa" value="empresa"><span>Somos empresa, con equipo</span></label>
+        </div></fieldset>
+
+      <fieldset class="q"><legend>¿Qué querés resolver primero? <small>(podés marcar varias)</small></legend>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="interes" value="identidad"><span>Logo e identidad</span></label>
+          <label class="chip"><input type="checkbox" name="interes" value="productos"><span>Productos con mi marca</span></label>
+          <label class="chip"><input type="checkbox" name="interes" value="redes"><span>Contenido para redes</span></label>
+          <label class="chip"><input type="checkbox" name="interes" value="renovar"><span>Renovar mi marca</span></label>
+        </div></fieldset>
+
+      <fieldset class="q"><legend>Si hoy existiera, ¿cuánto pagarías por tu identidad completa? <small>(logo, paleta, tipografía, manual y archivos)</small></legend>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="precio" value="<50"><span>Menos de USD 50</span></label>
+          <label class="chip"><input type="radio" name="precio" value="50-100"><span>USD 50 a 100</span></label>
+          <label class="chip"><input type="radio" name="precio" value="100-200"><span>USD 100 a 200</span></label>
+          <label class="chip"><input type="radio" name="precio" value=">200"><span>Más de USD 200</span></label>
+          <label class="chip"><input type="radio" name="precio" value="no_se"><span>No sé todavía</span></label>
+        </div></fieldset>
+
+      <label class="beta"><input type="checkbox" name="beta" id="pf-beta"><span>Quiero probarla antes y darles mi opinión<small>Una charla de 20 minutos. Les escribimos a unos pocos.</small></span></label>
+      <div class="q" id="pf-wa-box" hidden><label class="lb" for="pf-wa">WhatsApp <small>(para coordinar la charla)</small></label><input class="inp" id="pf-wa" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="+598 9X XXX XXX"></div>
+
+      <div class="acts">
+        <button class="skip" type="button" data-skip>Ahora no</button>
+        <button class="btn btn-g" type="submit">Listo, enviar</button>
+      </div>
+    </form>
+
+    <div class="done" id="pf-done" hidden>
+      <p class="label" style="color:var(--nt)">Listo</p>
+      <h2 id="done-t">Estás en la lista.</h2>
+      <p class="lead" style="margin-top:8px">Te avisamos primero cuando abramos. ¿Conocés a alguien que esté arrancando? Pasale el dato.</p>
+      <div class="share">
+        <a class="btn btn-g" id="wa-share" target="_blank" rel="noopener">Compartir por WhatsApp</a>
+        <button class="btn btn-ghost" type="button" id="copy-link">Copiar link</button>
+      </div>
+      <div class="acts"><span></span><button class="skip" type="button" data-close>Cerrar</button></div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ PRIVACIDAD ============ -->
+<dialog id="privacidad" aria-labelledby="pv-t">
+  <div class="dlg prv">
+    <button class="x" type="button" data-close aria-label="Cerrar">×</button>
+    <p class="label">Borrador · pendiente de revisión legal</p>
+    <h2 id="pv-t">Privacidad</h2>
+    <p>En BrandIA cuidamos tus datos como nos gustaría que cuiden los nuestros. Esto es lo que hacemos con ellos.</p>
+    <h3>Qué datos guardamos</h3>
+    <p>Tu mail y, si nos los das, tu nombre, país, WhatsApp y tus respuestas sobre tu marca. También de dónde llegaste (por ejemplo, desde un anuncio).</p>
+    <h3>Para qué</h3>
+    <p>Para avisarte cuando abramos, invitarte a probar la plataforma si lo pediste y entender qué necesitás. Nada más.</p>
+    <h3>Con quién</h3>
+    <p>Con nadie. No vendemos ni compartimos tus datos. Los guardamos en proveedores que usamos para operar (base de datos y envío de mails).</p>
+    <h3>Medición de anuncios</h3>
+    <p>Este sitio usa el píxel de Meta para saber si nuestros anuncios funcionan. Meta puede asociar tu visita a tu cuenta según su propia política.</p>
+    <h3>Tus derechos</h3>
+    <p>Podés pedir ver, corregir o borrar tus datos, o darte de baja, cuando quieras. Escribinos a <a id="pv-mail" href="mailto:hola@brandiamos.com">hola@brandiamos.com</a>. Tratamos tus datos según la Ley 18.331 de Protección de Datos Personales de Uruguay.</p>
+    <div class="acts"><span></span><button class="btn btn-g btn-sm" type="button" data-close>Entendido</button></div>
+  </div>
+</dialog>
+
+<script>
+/* ============================================================
+   INTRO · las referencias vuelan y se arman en la B.
+   Es la escena del héroe de la web v3 (03-projects/00-plataforma/
+   outputs/drafts/web-v3/), con las casillas leídas del SVG del
+   logo v2. Allá avanza con el scroll; acá corre sola (~4 s).
+   ============================================================ */
+(function(){
+  var cbs=[],ready=!window.BIA_INTRO;
+  window.BIA_ONREADY=function(f){ready?f():cbs.push(f)};
+  var el=document.getElementById('intro');
+  if(ready){if(el)el.remove();return;}
+  var canvas=document.getElementById('gl'),MOB=innerWidth<720,done=false,raf=0,timers=[];
+  var EVS=['wheel','touchmove','keydown'];
+  function skip(){finish(true)}
+  function finish(fast){
+    if(done)return;done=true;cancelAnimationFrame(raf);timers.forEach(clearTimeout);
+    EVS.forEach(function(ev){removeEventListener(ev,skip)});
+    try{sessionStorage.setItem('bia_intro','1')}catch(e){}
+    el.classList.add('out');if(fast)el.classList.add('fast');
+    var hero=document.getElementById('hero');
+    setTimeout(function(){document.documentElement.classList.remove('intro-on');if(hero)hero.classList.add('in');},fast?120:260);
+    setTimeout(function(){el.remove();ready=true;cbs.splice(0).forEach(function(f){f()});},fast?300:650);
+  }
+  EVS.forEach(function(ev){addEventListener(ev,skip,{passive:true})});
+  el.addEventListener('click',skip);
+  timers.push(setTimeout(function(){finish(false)},9000));   /* tope por si algo se traba */
+
+  function fallback(){ /* sin WebGL: la B se encastra sola */
+    el.classList.add('nogl');
+    timers.push(setTimeout(function(){el.classList.add('say')},700));
+    timers.push(setTimeout(function(){finish(false)},2400));
+  }
+  var fontsReady=document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(function(r){setTimeout(r,1000)})]):Promise.resolve();
+  var t0=performance.now();
+  (function wait(){
+    if(done)return;
+    if(window.THREE){fontsReady.then(function(){if(!done&&!runGL())fallback()});return;}
+    if(performance.now()-t0>2200){fallback();return;}
+    timers.push(setTimeout(wait,40));
+  })();
+
+  function rnd(seed){return function(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};}
+  function seg(t,a,b,f){if(t<=a)return 0;if(t>=b)return 1;var x=(t-a)/(b-a);return f?f(x):x;}
+  function ez(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;}
+  function back(x){var c1=1.6,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);}
+
+  function runGL(){
+    var THREE=window.THREE,renderer;
+    try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});}catch(e){return false;}
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputEncoding=THREE.sRGBEncoding;
+    var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,1,1,3000);cam.position.set(0,0,190);
+    var R=rnd(7);
+    /* 1 · las casillas de la B: se leen del mismo SVG del logo v2 */
+    var cv=document.createElement('canvas').getContext('2d');
+    var pTop=new Path2D('M10,12 H38.5 A17.5,17.5 0 0 1 38.5,47 H36 V59 H20 V47 H10 Z'),pBot=new Path2D('M10,53 H18 V61 H38 V53 H54.5 A17.5,17.5 0 0 1 54.5,88 H10 Z');
+    var STEP=MOB?5.6:4.6,TS=STEP*.9,cells=[];
+    for(var y=12+STEP/2;y<88;y+=STEP)for(var x=10+STEP/2;x<72;x+=STEP){
+      if(cv.isPointInPath(pTop,x,y))cells.push({x:x-41,y:50-y,top:1});else if(cv.isPointInPath(pBot,x,y))cells.push({x:x-41,y:50-y,top:0});}
+    for(var i=cells.length-1;i>0;i--){var j=Math.floor(R()*(i+1));var t=cells[i];cells[i]=cells[j];cells[j]=t;}
+    /* 2 · las tarjetas del tablero de referencias (Costa, la marca de ejemplo) */
+    var SW=['#C8662B','#6B3A1E','#F3E9D6','#2F3B2F','#E3B578','#8FA3A0','#D9A441','#B85C3C','#F1D9C4','#7D8B6A'];
+    var WORDS=['cálida','de barrio','honesta','temprano','horno','costa','a mano','masa madre','vecinos','pan'];
+    function rr(c,w,h,r){c.beginPath();c.moveTo(r,0);c.arcTo(w,0,w,h,r);c.arcTo(w,h,0,h,r);c.arcTo(0,h,0,0,r);c.arcTo(0,0,w,0,r);c.closePath();}
+    function tex(k){var c=document.createElement('canvas');c.width=256;c.height=320;var x=c.getContext('2d');rr(x,256,320,22);x.save();x.clip();
+      var col=SW[k%SW.length],light=['#F3E9D6','#F1D9C4','#E3B578','#8FA3A0','#D9A441'].indexOf(col)>-1,kind=k%5;
+      if(kind===0){x.fillStyle=col;x.fillRect(0,0,256,320);x.fillStyle='#fff';x.fillRect(0,236,256,84);x.fillStyle='#1E1E1C';x.font='600 26px Instrument Sans, Arial';x.fillText(col,20,288);}
+      else if(kind===1){x.fillStyle='#FBF8F2';x.fillRect(0,0,256,320);x.fillStyle='#6B3A1E';x.font='italic 400 44px Fraunces, Georgia';x.fillText(WORDS[k%WORDS.length],22,180);x.font='500 17px Instrument Sans, Arial';x.fillStyle='#8a7f70';x.fillText('palabra',22,60);}
+      else if(kind===2){var g=x.createLinearGradient(0,0,0,320);g.addColorStop(0,'#F1C9A0');g.addColorStop(.55,'#E88A55');g.addColorStop(.56,'#5F7F86');g.addColorStop(1,'#2F4A52');x.fillStyle=g;x.fillRect(0,0,256,320);x.fillStyle='#FBE7C8';x.beginPath();x.arc(128,176,46,Math.PI,0);x.fill();x.strokeStyle='rgba(251,231,200,.8)';x.lineWidth=5;for(var q=0;q<3;q++){x.beginPath();for(var u=0;u<=256;u+=8){x.lineTo(u,206+q*26+Math.sin(u/22+q)*5);}x.stroke();}
+        for(var n=0;n<1400;n++){x.fillStyle='rgba(0,0,0,'+(Math.random()*.06)+')';x.fillRect(Math.random()*256,Math.random()*320,2,2);}}
+      else if(kind===3){x.fillStyle=light?'#2F3B2F':'#F3E9D6';x.fillRect(0,0,256,320);x.fillStyle=light?'#F3E9D6':'#6B3A1E';var fs=['Young Serif, Georgia','Karla, Arial','Fraunces, Georgia','Georgia'][k%4];x.font='400 150px '+fs;x.fillText('Aa',26,210);x.font='500 17px Instrument Sans, Arial';x.fillText(fs.split(',')[0],26,280);}
+      else{x.fillStyle=col;x.fillRect(0,0,256,320);x.fillStyle=light?'#6B3A1E':'#F3E9D6';x.beginPath();x.arc(128,170,70,Math.PI,0);x.fill();x.fillRect(58,190,140,12);x.fillRect(78,214,100,12);}
+      x.restore();var t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+    var TEX=[];for(var k=0;k<20;k++)TEX.push(tex(k));
+    var mc=document.createElement('canvas');mc.width=mc.height=64;var m2=mc.getContext('2d');rr(m2,64,64,24);m2.fillStyle='#fff';m2.fill();
+    var MASK=new THREE.CanvasTexture(mc);
+    var cG=new THREE.Color('#1E1E1C').convertSRGBToLinear(),cN=new THREE.Color('#FF5C1A').convertSRGBToLinear();
+    var geo=new THREE.PlaneGeometry(1,1),grp=new THREE.Group();scene.add(grp);
+    var cards=cells.map(function(c,i){
+      var m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:TEX[i%TEX.length],transparent:true,depthWrite:false}));
+      var o=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:MASK,color:c.top?cG:cN,transparent:true,opacity:0,depthWrite:false}));
+      o.position.z=.05;o.renderOrder=2;m.renderOrder=1;
+      var h=new THREE.Group();h.add(m);h.add(o);grp.add(h);
+      var w=MOB?11+R()*8:10+R()*9;
+      return {h:h,o:o,m:m,c:c,d:R()*.45,
+        sx:MOB?-48+R()*96:-95+R()*190,sy:MOB?-80+R()*160:-62+R()*124,sz:-340+R()*330,
+        rx:(R()-.5)*.9,ry:(R()-.5)*1.1,rz:(R()-.5)*.6,w:w,ph:R()*6.28};});
+    function size(){var w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+    size();addEventListener('resize',size);
+    var start=performance.now(),said=false;
+    function frame(now){
+      if(done)return;raf=requestAnimationFrame(frame);
+      var T=(now-start)/1000;
+      /* guion (segundos): vuelo · armado · encastre · color · «¿BrandIAmos?» · salida */
+      var F=seg(T,.05,1.0,ez),A=seg(T,.55,2.25),L=seg(T,2.3,2.7,back),S=seg(T,2.4,2.85);
+      if(T>2.6&&!said){said=true;el.classList.add('say');}
+      if(T>3.95){finish(false);return;}
+      var cz=190-165*F;cz=cz+((MOB?340:285)-cz)*ez(Math.min(1,A*1.1));
+      cam.position.set(0,0,cz);cam.lookAt(0,0,cz-200);
+      grp.position.y=(MOB?12:9)*A;
+      for(var i=0;i<cards.length;i++){var k=cards[i],c=k.c;
+        var e=ez(Math.max(0,Math.min(1,(A-k.d)/.55)));
+        var fz=Math.sin(T*.9+k.ph)*3*(1-e);
+        var tx=c.x,ty=c.y+(c.top?9*(1-L):0);
+        k.h.position.set(k.sx+(tx-k.sx)*e,k.sy+fz+(ty-k.sy-fz)*e,k.sz*(1-e));
+        k.h.rotation.set(k.rx*(1-e)+Math.sin(T*.5+k.ph)*.08*(1-e),k.ry*(1-e),k.rz*(1-e));
+        var w=k.w+(TS-k.w)*e,hh=k.w*1.25+(TS-k.w*1.25)*e;k.h.scale.set(w,hh,1);
+        k.o.material.opacity=Math.min(1,S*1.2*(.6+.4*e));k.m.material.opacity=1-Math.min(1,S*1.4);}
+      renderer.render(scene,cam);}
+    raf=requestAnimationFrame(frame);
+    return true;
+  }
+})();
+</script>
+<script>
+/* ============================================================
+   CONFIGURACIÓN — completar antes de publicar (ver README)
+   ============================================================ */
+const CONFIG = {
+  pixelId: '',            // ID del píxel de Meta (Events Manager). Vacío = sin píxel.
+  supabaseUrl: '',        // https://xxxx.supabase.co  (tablas en supabase-waitlist.sql)
+  supabaseAnonKey: '',    // clave pública "anon". Solo puede insertar, no leer.
+  webhookUrl: '',         // alternativa a Supabase: webhook de n8n / Apps Script (POST JSON)
+  videoUrl: '',           // .mp4 del video real. Vacío = se muestra la demo animada.
+  videoPoster: '',
+  contactEmail: 'hola@brandiamos.com',
+  shareUrl: 'https://brandiamos.com/',
+  landing: 'waitlist-v1'
+};
+
+/* Ángulos de anuncio: cada anuncio linkea con ?a=<clave> y el héroe repite su promesa. */
+const ANGULOS = {
+  marca:      { h:'Que se vea tan bien como lo que hacés.', b:'Contás qué hacés y BrandIA te propone logos, colores y tipografías. Elegís vos, descargás tu marca y la producís en tarjetas, bolsas y remeras. Estamos por abrir. Anotate y entrás primero.' },
+  historia:   { h:'Contás qué hacés. Elegís. Tenés marca.', b:'BrandIA te hace unas preguntas, te propone logos, colores y tipografías, y vos elegís. Sin saber de diseño. Estamos por abrir. Anotate y entrás primero.' },
+  fisico:     { h:'Tu marca, de la pantalla a la remera.', b:'Armás tu identidad y desde el mismo lugar pedís tarjetas, bolsas, tazas y remeras con tu marca. Te llegan a vos, listas. Estamos por abrir. Anotate y entrás primero.' },
+  velocidad:  { h:'Tu marca, sin la espera.', b:'Logo, paleta, tipografía y manual, listos para usar. Sin meses de agencia y sin plantillas que te dejan igual a todos. Estamos por abrir. Anotate y entrás primero.' },
+  alternativa:{ h:'Ni agencia, ni plantilla.', b:'Una marca con criterio de estudio, armada a partir de lo que hacés, y lista para producir. Estamos por abrir. Anotate y entrás primero.' }
+};
+
+(function(){
+  'use strict';
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}}};
+  const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  const uuid=()=>(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)}));
+
+  /* ---------- Atribución (UTM, fbclid, ángulo) ---------- */
+  const Q=new URLSearchParams(location.search);
+  let ATTR; try{ATTR=JSON.parse(ss.get('bia_attr')||'null')}catch(e){ATTR=null}
+  if(!ATTR || Q.get('utm_source') || Q.get('fbclid')){
+    ATTR={};
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'].forEach(k=>{const v=Q.get(k);if(v)ATTR[k]=v.slice(0,200)});
+    ATTR.angulo=(Q.get('a')||'marca').toLowerCase();
+    ATTR.referrer=document.referrer?document.referrer.slice(0,300):null;
+    ss.set('bia_attr',JSON.stringify(ATTR));
+  }
+  if(!ANGULOS[ATTR.angulo]) ATTR.angulo='marca';
+  if(ATTR.angulo!=='marca'){ $('#h1').textContent=ANGULOS[ATTR.angulo].h; $('#bajada').textContent=ANGULOS[ATTR.angulo].b; }
+
+  /* ---------- Píxel de Meta ---------- */
+  const px=(...a)=>{try{window.fbq&&window.fbq(...a)}catch(e){}};
+  if(CONFIG.pixelId){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    px('init',CONFIG.pixelId); px('track','PageView');
+  }
+
+  /* ---------- Guardado ---------- */
+  const configured=!!((CONFIG.supabaseUrl&&CONFIG.supabaseAnonKey)||CONFIG.webhookUrl);
+  if(!configured){const f=document.createElement('div');f.className='demo-flag';f.textContent='Demo · formulario sin conectar';document.body.appendChild(f);console.warn('[BrandIA] Formulario en modo demo: completar CONFIG (README).');}
+  async function save(table,row){
+    if(CONFIG.supabaseUrl&&CONFIG.supabaseAnonKey){
+      const r=await fetch(CONFIG.supabaseUrl.replace(/\/$/,'')+'/rest/v1/'+table,{method:'POST',headers:{'apikey':CONFIG.supabaseAnonKey,'Authorization':'Bearer '+CONFIG.supabaseAnonKey,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(row)});
+      if(r.status===409) return 'dup';
+      if(!r.ok) throw new Error('save '+r.status);
+      return 'ok';
+    }
+    if(CONFIG.webhookUrl){
+      await fetch(CONFIG.webhookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(Object.assign({tabla:table},row))});
+      return 'ok';
+    }
+    try{const k='bia_demo_'+table,a=JSON.parse(ls.get(k)||'[]');a.push(row);ls.set(k,JSON.stringify(a))}catch(e){}
+    console.info('[BrandIA demo] '+table,row);
+    await new Promise(r=>setTimeout(r,400));
+    return 'ok';
+  }
+
+  /* ---------- Paso 1: mail ---------- */
+  const EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  let LEAD=null; try{LEAD=JSON.parse(ls.get('bia_lead')||'null')}catch(e){}
+  const dlg=$('#perfil');
+
+  $$('form.wl').forEach(form=>{
+    const err=$('.err',form), btn=$('button[type=submit]',form), inp=$('input[type=email]',form);
+    inp.addEventListener('input',()=>{err.hidden=true});
+    form.addEventListener('submit',async ev=>{
+      ev.preventDefault();
+      if(form.web.value) return;                     // bot
+      const email=inp.value.trim().toLowerCase();
+      if(!EMAIL.test(email)){err.textContent='Revisá el mail: parece que le falta algo.';err.hidden=false;inp.focus();return}
+      btn.disabled=true; const txt=btn.textContent; btn.textContent='Anotando…';
+      const id=uuid();
+      const row=Object.assign({id,email,fuente:form.dataset.src,landing:CONFIG.landing,idioma:navigator.language||null},ATTR);
+      try{
+        const res=await save('waitlist',row);
+        LEAD={id,email,dup:res==='dup'}; ls.set('bia_lead',JSON.stringify(LEAD));
+        px('track','Lead',{content_name:'waitlist',content_category:ATTR.angulo},{eventID:'lead-'+id});
+        markDone(form);
+        openPerfil();
+      }catch(e){
+        err.textContent='No pudimos anotarte. Probá de nuevo en un ratito.'; err.hidden=false;
+        console.error(e);
+      }finally{btn.disabled=false;btn.textContent=txt}
+    });
+  });
+  function markDone(form){
+    form.innerHTML='<div class="ok"><span class="tick"><svg viewBox="0 0 16 16"><use href="#ico-check"/></svg></span><div><b>¡Adentro! Estás en la lista.</b><p>Te avisamos primero cuando abramos.</p></div></div>';
+    $$('form.wl').forEach(f=>{if(f!==form&&!f.querySelector('.ok'))f.innerHTML=form.innerHTML});
+  }
+  if(LEAD) $$('form.wl').forEach(f=>markDone(f));
+
+  /* ---------- Paso 2: perfil ---------- */
+  const pf=$('#pf');
+  function openPerfil(){ if(typeof dlg.showModal==='function'){dlg.showModal()} else {dlg.setAttribute('open','')} }
+  try{ const lang=(navigator.language||'').toUpperCase(); const m=lang.split('-')[1]; if(m&&pf.pais.querySelector('option[value="'+m+'"]')) pf.pais.value=m; }catch(e){}
+  $('#pf-beta').addEventListener('change',e=>{$('#pf-wa-box').hidden=!e.target.checked});
+  pf.addEventListener('submit',async ev=>{
+    ev.preventDefault();
+    const btn=$('button[type=submit]',pf); btn.disabled=true; btn.textContent='Enviando…';
+    const fd=new FormData(pf);
+    const row={
+      lead_id:LEAD?LEAD.id:null, email:LEAD?LEAD.email:null,
+      nombre:(fd.get('nombre')||'').toString().trim().slice(0,80)||null,
+      pais:fd.get('pais')||null,
+      tiene_marca:fd.get('tiene_marca')||null,
+      etapa:fd.get('etapa')||null,
+      interes:fd.getAll('interes'),
+      precio:fd.get('precio')||null,
+      beta:!!fd.get('beta'),
+      whatsapp:(fd.get('whatsapp')||'').toString().trim().slice(0,30)||null,
+      angulo:ATTR.angulo
+    };
+    try{ await save('waitlist_perfil',row); }catch(e){ console.error(e) }
+    px('track','CompleteRegistration',{content_name:'waitlist_perfil',status:row.beta?'beta':'lista'},{eventID:'perfil-'+(row.lead_id||uuid())});
+    showDone(row.nombre);
+    btn.disabled=false; btn.textContent='Listo, enviar';
+  });
+  function showDone(nombre){
+    pf.hidden=true; $('#pf-done').hidden=false;
+    $('#done-t').textContent=nombre?('Listo, '+nombre+'. Estás en la lista.'):'Estás en la lista.';
+  }
+  $$('[data-skip]').forEach(b=>b.addEventListener('click',()=>showDone(null)));
+  const shareText='Mirá esto: BrandIA te arma la marca: contás qué hacés, elegís entre sus ideas y después la producís. Me anoté para cuando abra: ';
+  $('#wa-share').href='https://wa.me/?text='+encodeURIComponent(shareText+CONFIG.shareUrl+'?utm_source=whatsapp&utm_medium=referido');
+  $('#wa-share').addEventListener('click',()=>px('trackCustom','Compartir',{canal:'whatsapp'}));
+  $('#copy-link').addEventListener('click',async e=>{
+    try{await navigator.clipboard.writeText(CONFIG.shareUrl+'?utm_source=link&utm_medium=referido');e.target.textContent='¡Copiado!'}catch(_){e.target.textContent=CONFIG.shareUrl}
+  });
+
+  /* ---------- Diálogos ---------- */
+  $$('[data-open]').forEach(b=>b.addEventListener('click',()=>{const d=document.getElementById(b.dataset.open);d.showModal?d.showModal():d.setAttribute('open','')}));
+  $$('dialog').forEach(d=>{
+    d.addEventListener('click',e=>{if(e.target===d)d.close()});
+    $$('[data-close]',d).forEach(b=>b.addEventListener('click',()=>d.close()));
+  });
+  $('#pv-mail').href='mailto:'+CONFIG.contactEmail; $('#pv-mail').textContent=CONFIG.contactEmail;
+
+  /* ---------- Botones "Anotarme": llevan al formulario del héroe ---------- */
+  $$('[data-go]').forEach(a=>a.addEventListener('click',e=>{
+    e.preventDefault();
+    const target=$('#hero form.wl');
+    const inp=target&&target.querySelector('input[type=email]');
+    if(inp){ window.scrollTo({top:Math.max(0,target.getBoundingClientRect().top+scrollY-140),behavior:'smooth'}); setTimeout(()=>inp.focus({preventScroll:true}),450); }
+    else { $('#hero').scrollIntoView({behavior:'smooth'}) }
+  }));
+
+  /* ---------- Header y barra fija ---------- */
+  const top=$('#top'), sticky=$('#sticky');
+  let heroVis=true, closeVis=false;
+  const upd=()=>{ const on=!heroVis&&!closeVis&&!LEAD; sticky.classList.toggle('on',on); sticky.setAttribute('aria-hidden',on?'false':'true'); $('a',sticky).tabIndex=on?0:-1; };
+  new IntersectionObserver(([e])=>{heroVis=e.isIntersecting;upd()},{rootMargin:'0px 0px -30% 0px'}).observe($('#hero form.wl')||$('#hero'));
+  new IntersectionObserver(([e])=>{closeVis=e.isIntersecting;upd()}).observe($('#unite'));
+  addEventListener('scroll',()=>top.classList.toggle('sc',scrollY>8),{passive:true});
+  dlg.addEventListener('close',()=>{LEAD=LEAD||{};upd()});
+
+  /* ---------- Película ---------- */
+  const film=$('#film'); let ctrlBtn;
+  if(CONFIG.videoUrl){
+    film.innerHTML='';
+    const v=document.createElement('video');
+    Object.assign(v,{src:CONFIG.videoUrl,controls:true,playsInline:true,muted:true,loop:true,autoplay:true,preload:'metadata'});
+    if(CONFIG.videoPoster) v.poster=CONFIG.videoPoster;
+    film.appendChild(v); $('#dur').textContent=''; ctrlBtn=$('#ctrl'); if(ctrlBtn) ctrlBtn.remove();
+    v.addEventListener('play',()=>px('trackCustom','VideoPlay'),{once:true});
+    return;
+  }
+  const scenes=$$('.scene',film), N=scenes.length, DUR=scenes.map(s=>+s.dataset.dur||5000);
+  $('#dur').textContent=Math.round(DUR.reduce((a,b)=>a+b,0)/1000)+' s';
+  const tabWrap=$('#tabs');
+  scenes.forEach((s,k)=>{ if(!s.dataset.tab) return;
+    const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Ir al paso '+(k+1)+': '+s.dataset.tab);
+    b.innerHTML=(k+1)+'<span class="lb"> · '+s.dataset.tab+'</span><i><b></b></i>';
+    b.addEventListener('click',e=>{e.stopPropagation();go(k);play()});tabWrap.appendChild(b)});
+  const tabs=$$('#tabs button'), fills=$$('#tabs i b'), ctrl=$('#ctrl'), ico=$('#ctrlIco'), ctrlTx=$('#ctrlTx');
+  let i=0,t=0,playing=false,last=0,loops=0,started=false;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(n){
+    i=n; t=0;
+    scenes.forEach((s,k)=>{ if(k===n){ s.classList.remove('on'); void s.offsetWidth; s.classList.add('on') } else s.classList.remove('on') });
+    film.classList.toggle('dark',!!scenes[n].dataset.dark);
+    tabs.forEach((b,k)=>b.classList.toggle('on',k===n));
+    paint();
+  }
+  function paint(){ fills.forEach((f,k)=>{f.style.width=(k<i?100:k===i?Math.min(100,t/DUR[i]*100):0)+'%'}) }
+  function frame(now){
+    if(!playing) return;
+    t+=Math.min(100,now-last); last=now;
+    if(t>=DUR[i]){
+      if(i===N-1){ loops++; if(loops===1) px('trackCustom','DemoCompleta'); }
+      go((i+1)%N);
+    }
+    paint(); requestAnimationFrame(frame);
+  }
+  function play(){ if(playing) return; playing=true; film.classList.remove('paused'); last=performance.now(); ctrl.setAttribute('aria-label','Pausar'); ctrlTx.textContent='Pausa'; ico.innerHTML='<rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/>'; requestAnimationFrame(frame); }
+  function pause(){ playing=false; film.classList.add('paused'); ctrl.setAttribute('aria-label','Reproducir'); ctrlTx.textContent='Ver'; ico.innerHTML='<path d="M3 1.5v11l9.5-5.5z"/>'; }
+  ctrl.addEventListener('click',e=>{e.stopPropagation(); playing?pause():play()});
+  film.addEventListener('click',e=>{ if(e.target.closest('a,button')) return; playing?pause():play() });
+  go(0); pause();
+  if(!reduce) window.BIA_ONREADY(()=>{   /* la demo arranca recién cuando termina el intro */
+    new IntersectionObserver(([e])=>{
+      if(e.isIntersecting){ if(!started){started=true;go(0);px('trackCustom','DemoVista')} play() } else pause();
+    },{threshold:.45}).observe(film);
+  });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause() });
+})();
+</script>
+</body>
+</html>
