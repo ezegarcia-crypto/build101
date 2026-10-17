@@ -160,7 +160,7 @@ export function Publicar({
           {qr && (
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <img src={qr} alt={`Código QR de la web de ${identidad.nombre}`} className="size-36 rounded-[10px] border" />
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col items-start gap-2">
                 <p className="max-w-[16em] text-sm text-muted-foreground">
                   Para la vidriera, el mostrador o tus tarjetas: lo escanean con el celular y entran a tu web.
                 </p>

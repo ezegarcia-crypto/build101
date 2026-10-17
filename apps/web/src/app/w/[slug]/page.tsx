@@ -32,7 +32,7 @@ export default async function WebPublicada({ params }: Props) {
       <VistaWeb web={datos.web} ficha={datos.ficha_web} identidad={datos.identidad} />
       <p className="px-5 pt-2 pb-6 text-center text-xs" style={{ color: texto, opacity: 0.55 }}>
         Hecha con{" "}
-        <a href="/" className="underline underline-offset-2">
+        <a href="/" className="underline underline-offset-2" style={{ color: "inherit" }}>
           BrandIA
         </a>
       </p>

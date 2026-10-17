@@ -258,7 +258,8 @@ export function VistaWeb({ web, ficha, identidad }: { web: Web; ficha: FichaWeb;
 
   return (
     <div
-      className="@container min-h-full"
+      // Los links toman el color de la marca, no el naranja de BrandIA (design-system.md, punto 5)
+      className="@container min-h-full [&_a]:[color:inherit]"
       style={{ background: colores.fondo, color: colores.texto, fontFamily: fuente(identidad.tipografias.texto, "sans-serif") }}
     >
       <header className="flex items-center justify-between gap-3 px-5 py-4 @2xl:px-10">
