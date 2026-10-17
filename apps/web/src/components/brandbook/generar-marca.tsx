@@ -231,11 +231,10 @@ export function GenerarMarca() {
               <Controles comprobaciones={estado.identidad.comprobaciones} />
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button size="lg" disabled>
+              <Link href="/crear/contenido" className={buttonVariants({ size: "lg" })}>
                 Ver mis contenidos
                 <ArrowRight data-icon="inline-end" />
-              </Button>
-              <span className="text-sm text-muted-foreground">Siguiente paso · en construcción</span>
+              </Link>
             </div>
           </>
         )}

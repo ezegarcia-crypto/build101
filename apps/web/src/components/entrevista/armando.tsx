@@ -23,6 +23,13 @@ const FRASES = {
     "Revisando que todo se lea bien…",
     "Armando tu brandbook…",
   ],
+  feed: [
+    "Pensando qué contar primero…",
+    "Escribiendo con la voz de tu marca…",
+    "Armando las fotos con tus colores…",
+    "Probando titulares…",
+    "Acomodando tu feed…",
+  ],
 };
 
 export function Armando({ que = "pregunta" }: { que?: keyof typeof FRASES }) {
