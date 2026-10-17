@@ -10,6 +10,9 @@ import { PASOS, type Paso } from "@/lib/ia/gastos";
 const DIAS = 30;
 
 /** Cuántas piezas trae un feed del motor (un lote). Sirve para sacar el costo por pieza. */
+/** Las fotos que saca BranderIA por marca: los 12 productos del catálogo (components/branderia/branderia.tsx). */
+const FOTOS_BRANDERIA = 12;
+
 export const PIEZAS_POR_FEED = Object.values(MEZCLA_DEMO).reduce((a, b) => a + b, 0);
 
 export type FilaPaso = {
@@ -236,6 +239,36 @@ export async function armarReporte() {
     .filter((c) => c.pasos.some((f) => f.paso === "direcciones"))
     .map((c) => c.pasos.filter((f) => PREVIA.includes(f.paso)).reduce((a, f) => a + f.total, 0));
 
+  // Un cliente que hace todo el recorrido, estimado con el promedio de cada paso. Sirve hasta que haya
+  // clientes reales medidos de punta a punta. Las veces que se repite cada paso salen de lo medido
+  // (cambios y fotos por cada web armada) o del producto (las fotos del catálogo de BranderIA).
+  const filaDe = (p: Paso) => pasos.find((f) => f.paso === p && f.corridas);
+  const porWeb = (p: Paso) => {
+    const armadas = filaDe("web-armar"), f = filaDe(p);
+    return armadas && f ? (f.corridas / armadas.corridas) * f.promedio : 0;
+  };
+  const fotoBranderia = promedio("branderia");
+  const partesCliente = [
+    {
+      parte: "Marca",
+      detalle: "Entrevista, nombres, direcciones, identidad y logos, una vez cada uno",
+      valor: marcaCompleta === null ? null : marcaCompleta + nombres,
+    },
+    { parte: "Feed del mes", detalle: "Un feed completo del motor", valor: feed },
+    {
+      parte: "Web",
+      detalle: "Entrevista y armado, más los cambios y las fotos que se pidieron en promedio por web",
+      valor: filaDe("web-armar")
+        ? (promedio("web-entrevista") ?? 0) + (promedio("web-armar") ?? 0) + porWeb("web-cambio") + porWeb("web-foto")
+        : null,
+    },
+    {
+      parte: "BranderIA",
+      detalle: `${FOTOS_BRANDERIA} fotos de productos con la marca`,
+      valor: fotoBranderia === null ? null : fotoBranderia * FOTOS_BRANDERIA,
+    },
+  ];
+
   const diaHoy = (porDia?.results ?? []).find((f) => f.day === fecha(hoy));
 
   return {
@@ -255,6 +288,12 @@ export async function armarReporte() {
       vistaPrevia: sumar([entrevista, promedio("direcciones")]) === null ? null : (entrevista ?? 0) + nombres + (promedio("direcciones") ?? 0),
       feed,
       pieza: feed === null ? null : feed / PIEZAS_POR_FEED,
+      /** Un cliente de punta a punta (marca, feed, web y BranderIA), sumando el promedio de cada paso. */
+      clienteCompleto: {
+        partes: partesCliente,
+        total: partesCliente.reduce((a, p) => a + (p.valor ?? 0), 0),
+        faltan: partesCliente.filter((p) => p.valor === null).map((p) => p.parte),
+      },
     },
     clientes,
     porCliente: {

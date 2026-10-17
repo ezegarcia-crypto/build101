@@ -112,7 +112,7 @@ export default async function Costos() {
   // Lo que costó una marca: si ya hay clientes reales que la completaron, su promedio; si no, la suma de promedios por paso
   const pc = r.porCliente;
   const marcaReal = pc.completos?.promedio ?? null;
-  const resumenClientes = pc.completos ?? pc.todos;
+  const ce = r.estimados.clienteCompleto;
   const clientes = (n = 0) => `${numero(n)} ${n === 1 ? "cliente" : "clientes"}`;
 
   const porModulo = (Object.keys(MODULOS) as (keyof typeof MODULOS)[]).map((m) => ({
@@ -219,29 +219,67 @@ export default async function Costos() {
             (ElevenLabs), que se reparten por mes en el registro de pagos.
           </p>
         </div>
-        {resumenClientes ? (
-          <>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
-              <Dato
-                titulo={pc.completos ? "Promedio por marca completa" : "Promedio por cliente"}
-                valor={usd(resumenClientes.promedio)}
-                detalle={
-                  pc.completos
-                    ? `${numero(pc.completos.cantidad)} de ${numero(pc.todos?.cantidad)} llegaron a la identidad y los logos`
-                    : "Todavía ninguno llegó a la marca completa: se cuentan todos, lleguen hasta donde lleguen"
-                }
-              />
-              <Dato titulo="El más barato" valor={usd(resumenClientes.minimo)} />
-              <Dato titulo="El más caro" valor={usd(resumenClientes.maximo)} />
+        {pc.completos && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-1">
+            <Dato
+              titulo="Promedio por marca completa"
+              valor={usd(pc.completos.promedio)}
+              detalle={`Medido: ${numero(pc.completos.cantidad)} de ${clientes(pc.todos?.cantidad)} llegaron a la identidad y los logos`}
+            />
+            {pc.completos.cantidad >= 2 && (
+              <>
+                <Dato titulo="El más barato" valor={usd(pc.completos.minimo)} />
+                <Dato titulo="El más caro" valor={usd(pc.completos.maximo)} />
+              </>
+            )}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-4 rounded-lg border bg-card p-5">
+          <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+            <div className="flex max-w-xl flex-col gap-1">
+              <span className="label">Un cliente de punta a punta · estimado</span>
+              <p className="lead">
+                Sumando el promedio de cada paso de la tabla de arriba.{" "}
+                {pc.completos
+                  ? "Sirve para comparar con lo medido."
+                  : "Hasta que un cliente real termine el recorrido, es la mejor referencia."}
+              </p>
             </div>
+            <span className="font-display text-4xl">{usd(ce.total)}</span>
+          </div>
+          <ul className="flex flex-col divide-y">
+            {ce.partes.map((p) => (
+              <li key={p.parte} className="flex items-baseline justify-between gap-4 py-2.5 text-[0.9375rem]">
+                <span>
+                  {p.parte}
+                  <span className="lead block">{p.detalle}</span>
+                </span>
+                <span className="shrink-0 font-semibold tabular-nums">
+                  {p.valor === null ? <span className="font-normal text-muted-foreground">sin datos todavía</span> : usd(p.valor)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="lead">
+            {ce.faltan.length > 0
+              ? `El total no incluye ${ce.faltan.join(" ni ")}, porque todavía no hay datos. Tampoco incluye`
+              : "No incluye"}{" "}
+            los pasos rehechos (por ejemplo, pedir otros logos), que un cliente real sí puede pedir: eso lo muestra lo
+            medido por cliente.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xl">Recorridos medidos</h3>
+          {r.clientes.length > 0 ? (
             <Tabla columnas={["Cliente", "Pasos que hizo", "Total"]} aIzquierda={[1]}>
               {r.clientes.map((c) => (
                 <tr key={c.id}>
                   <td className="align-top">
                     <span className="font-mono text-sm">{c.id.split("-").at(-1)}</span>
                     <span className="lead block">
-                      {c.inicio ? diaYHora.format(c.inicio) : "—"}
-                      {c.completo && " · marca completa"}
+                      {c.inicio ? diaYHora.format(c.inicio) : "—"} · {c.completo ? "marca completa" : "sin terminar"}
                     </span>
                   </td>
                   <td className="!text-left align-top">
@@ -258,12 +296,16 @@ export default async function Costos() {
                 </tr>
               ))}
             </Tabla>
-          </>
-        ) : (
-          <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
-            Todavía no hay clientes medidos. Aparecen acá apenas alguien hace la entrevista en la app.
+          ) : (
+            <p className="rounded-lg border bg-card px-5 py-4 text-[0.9375rem]">
+              Todavía no hay recorridos medidos. Aparecen acá apenas alguien usa la app.
+            </p>
+          )}
+          <p className="lead">
+            Se mide por cliente desde el 17/10 a la tarde: las pruebas de antes cuentan en el costo de cada paso, pero no
+            acá. Las pruebas en la compu también aparecen.
           </p>
-        )}
+        </div>
       </section>
 
       <section className="flex flex-col gap-5">
