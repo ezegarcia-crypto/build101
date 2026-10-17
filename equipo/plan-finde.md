@@ -19,7 +19,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 |---|---|---|---|---|
 | **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat y botón de voz), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
 | **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos. Junta las ramas en `main` |
-| **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" de newsletter, web y BranderIA |
+| **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" del módulo B (pauta en Meta, newsletter, LinkedIn, X, redes centralizadas y web) y de BranderIA (producimos y te mandamos) |
 
 **Datos de ejemplo:** sirven para dibujar pantallas mientras se desarrolla, pero en la demo todo sale de la IA. Antes de presentar se borran.
 
@@ -31,7 +31,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 | Sábado 18:00 | Con esa ficha sale la identidad completa: paleta, tipografías, logo y brandbook en pantalla |
 | Sábado 20:30 | El agente de voz hace la entrevista. Se dejan 2 o 3 agentes en la nube con tareas chicas |
 | Domingo 11:00 | Sale el feed: un par de posteos, historias y un reel con la marca aplicada |
-| Domingo 12:00 | Las pantallas "en construcción" de newsletter, web y BranderIA están hechas |
+| Domingo 12:00 | Las pantallas "en construcción" del módulo B y de BranderIA están hechas |
 | Domingo 13:00 | Se congela. Ensayo 3 veces, video de respaldo y pitch de 3 minutos |
 
 ## Decisiones pendientes
@@ -40,6 +40,9 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 - **Voz:** agente de voz de ElevenLabs (natural, con voces en español). Depende de los créditos.
 - **Imágenes** para logo, posteos y merch: modelo de imágenes por API (a elegir según los créditos).
 - **Reel:** la opción más segura es armarlo con imágenes generadas, textos animados y voz en off, en vez de un modelo de video (más caro y lento).
+- **Pauta en Meta: pasa a la siguiente etapa (decidido el 17/10).** Queda anotado para después:
+  - **Medir el rendimiento de los contenidos:** Higgsfield tiene una sección que lo predice. Evaluar si su API lo permite desde la app.
+- **Librería de anuncios de Meta ("qué funciona en tu rubro"), para la siguiente etapa:** la API oficial de Meta solo devuelve anuncios comerciales que se mostraron en la **Unión Europea o el Reino Unido**. Los anuncios que solo corrieron en Uruguay o Argentina no aparecen, y no trae métricas de rendimiento. La alternativa legal y rápida es buscar el rubro en español en **España**, por Zernio (su endpoint de librería de anuncios es gratis con un medio de pago cargado, sin cuenta de desarrollador de Meta). Como señal de "funciona" se usan los días que lleva activo el anuncio y el alcance que Meta publica para la UE. La búsqueda por palabra trae mucho anuncio que no es del rubro: la IA los filtra. Los scrapers (por ejemplo, Apify) sí traen anuncios de Uruguay, pero van contra las condiciones de Meta: no los usamos en el producto.
 - **Publicar en redes:** Zernio (una sola conexión para Instagram, Facebook, TikTok; gratis para 2 cuentas). Opcional, para el final.
 
 ## Herramientas que nos recomendaron
