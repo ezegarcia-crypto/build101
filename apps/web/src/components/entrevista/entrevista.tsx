@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Pasos } from "@/components/pasos";
 
-import { CLAVE_IDENTIDAD } from "@/components/brandbook/identidad";
+import { CLAVE_DIRECCIONES, CLAVE_IDENTIDAD } from "@/components/brandbook/identidad";
 
 import { Armando } from "./armando";
 import s from "./entrevista.module.css";
@@ -129,6 +129,7 @@ export function Entrevista() {
   function empezarDeNuevo() {
     setMessages([]);
     sessionStorage.removeItem(CLAVE_FICHA);
+    sessionStorage.removeItem(CLAVE_DIRECCIONES);
     sessionStorage.removeItem(CLAVE_IDENTIDAD);
   }
 

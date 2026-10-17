@@ -1,26 +1,27 @@
-// La identidad de la marca que genera la IA a partir de la ficha (la arma Eze, rama ia).
-// PROPUESTA de formato para POST /api/identidad, basada en brandia/motor-ia/03-direcciones.md
-// (una sola dirección, más nombre, frase y voz). Si Eze la cambia, se ajusta acá.
-//
-//   Pedido:    { ficha }   (la ficha de la entrevista)
-//   Respuesta: Identidad   (JSON)
-export type Color = { hex: string; nombre: string; rol: string };
+// Lo que devuelve la IA del módulo A (rama ia, de Eze; ver apps/web/src/lib/ia/README.md):
+//   POST /api/direcciones { brief }            → { direcciones }  3 para elegir, ~30 s
+//   POST /api/identidad   { brief, direccion } → { identidad }    ~30 s
+//   POST /api/logo        { brief, direccion } → { propuestas }   3 logos completos, ~25 s
+// Los tipos salen del código de Eze para que, si él cambia algo, la pantalla avise al compilar.
+import type { Comprobacion } from "@/lib/ia/comprobaciones";
+import type { Color, Direccion } from "@/lib/ia/direcciones";
+import type { Textos } from "@/lib/ia/identidad";
+import type { PropuestaLogo } from "@/lib/ia/logo";
 
-export type Identidad = {
-  nombre: string;
-  nombres_alternativos?: string[];
-  frase?: string; // la bajada o tagline
-  idea?: string; // la idea de la marca en una frase, para alguien sin formación en diseño
-  palabras?: string[];
-  voz?: { tono?: string; se_dice?: string[]; no_se_dice?: string[] };
-  paleta: Color[]; // 4 a 6, con rol: principal, acento, fondo, texto, apoyo
-  tipografias: {
-    titulos: { familia: string; por_que?: string };
-    texto: { familia: string; por_que?: string };
-  };
-  logo?: { svg?: string; imagen_url?: string; tipo?: string; por_que?: string };
+export type { Color, Comprobacion, Direccion, PropuestaLogo };
+
+export type DireccionConControl = Direccion & { comprobaciones?: Comprobacion[] };
+
+export type IdentidadIA = Textos & {
+  direccion: Pick<Direccion, "id" | "nombre" | "idea" | "palabras" | "formas">;
+  paleta: Color[];
+  tipografias: { titulos: string; texto: string };
+  fuentes_url: string;
+  logo: { tipo: string; isotipo_svg: string; explicacion: string };
+  comprobaciones: Comprobacion[];
 };
 
+export const CLAVE_DIRECCIONES = "brandia:direcciones";
 export const CLAVE_IDENTIDAD = "brandia:identidad";
 
 // --- Colores -------------------------------------------------------------
@@ -53,7 +54,7 @@ export function textoSobre(fondo: string, paleta: Color[]) {
 /** Los colores clave del lienzo, según el rol que puso la IA (con respaldo si falta alguno) */
 export function rolesDe(paleta: Color[]) {
   const validos = paleta.filter((c) => esHex(c.hex));
-  const buscar = (rol: string) => validos.find((c) => c.rol?.toLowerCase().includes(rol))?.hex;
+  const buscar = (rol: string) => validos.find((c) => c.rol === rol)?.hex;
   const claros = [...validos].sort((a, b) => luminancia(b.hex) - luminancia(a.hex));
   const fondo = buscar("fondo") ?? claros[0]?.hex ?? "#ffffff";
   const principal = buscar("principal") ?? validos.find((c) => c.hex !== fondo)?.hex ?? "#000000";
@@ -68,16 +69,36 @@ export function rolesDe(paleta: Color[]) {
 
 // --- Tipografías ---------------------------------------------------------
 
-/** Carga una familia de Google Fonts una sola vez. Sin pesos, para que no falle con fuentes de un solo peso */
-export function cargarFuente(familia: string) {
-  if (typeof document === "undefined" || !familia) return;
-  const id = `fuente-${familia.replace(/\s+/g, "-").toLowerCase()}`;
-  if (document.getElementById(id)) return;
+/** Carga un link de Google Fonts una sola vez */
+export function cargarFuentes(href: string) {
+  if (typeof document === "undefined" || !href) return;
+  if (document.querySelector(`link[data-fuente="${CSS.escape(href)}"]`)) return;
   const link = document.createElement("link");
-  link.id = id;
   link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(familia).replace(/%20/g, "+")}&display=swap`;
+  link.href = href;
+  link.dataset.fuente = href;
   document.head.appendChild(link);
 }
 
+/** Una familia sola, sin pesos, para que no falle con fuentes de un solo peso (para las direcciones) */
+export const urlFamilia = (familia: string) =>
+  `https://fonts.googleapis.com/css2?family=${encodeURIComponent(familia).replace(/%20/g, "+")}&display=swap`;
+
 export const fuente = (familia: string, respaldo: "serif" | "sans-serif") => `"${familia}", ${respaldo}`;
+
+// --- Logo ----------------------------------------------------------------
+
+/** El SVG ya viene limpio de la IA; esto saca además eventos escritos sin comillas (onload=…) */
+export const svgSeguro = (svg: string) => svg.replace(/\son\w+\s*=\s*[^\s>]+/gi, "");
+
+/**
+ * Un color de la paleta (que no sea el fondo) donde el símbolo se vea: el que más contrasta con
+ * los colores con que la IA dibujó el SVG. Si el SVG no trae colores, el principal.
+ */
+export function fondoParaSimbolo(svg: string, paleta: Color[], fondo: string, principal: string) {
+  const delSvg = [...new Set((svg.match(/#[0-9a-f]{6}\b/gi) ?? []).map((h) => h.toLowerCase()))];
+  if (!delSvg.length) return principal;
+  const candidatos = paleta.map((c) => c.hex).filter((h) => esHex(h) && h.toLowerCase() !== fondo.toLowerCase());
+  const puntaje = (h: string) => Math.min(...delSvg.map((s) => contraste(h, s)));
+  return candidatos.sort((a, b) => puntaje(b) - puntaje(a))[0] ?? principal;
+}

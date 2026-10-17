@@ -8,94 +8,188 @@ import { useCallback, useEffect, useState } from "react";
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
+import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
-import { Brandbook } from "./brandbook";
-import { CLAVE_IDENTIDAD, type Identidad } from "./identidad";
+import { Brandbook, Controles } from "./brandbook";
+import { Direcciones } from "./direcciones";
+import {
+  CLAVE_DIRECCIONES,
+  CLAVE_IDENTIDAD,
+  type DireccionConControl,
+  type IdentidadIA,
+  type PropuestaLogo,
+} from "./identidad";
 
-// Paso 2 · Tu marca. Toma la ficha de la entrevista, le pide la identidad a la IA y muestra el brandbook.
-// La identidad queda guardada junto con su ficha: si se recarga la página, no se vuelve a generar.
+// Paso 2 · Tu marca. Con la ficha de la entrevista:
+//   1. la IA propone 3 direcciones visuales y la persona elige una;
+//   2. con esa, la IA arma la identidad y dibuja 3 logos (en paralelo);
+//   3. se muestra el brandbook.
+// Todo queda guardado junto con su ficha: si se recarga la página, no se vuelve a generar.
+
+type Ficha = { texto: string; brief: Brief };
 
 type Estado =
   | { tipo: "cargando" }
   | { tipo: "sin-ficha" }
-  | { tipo: "generando" }
-  | { tipo: "lista"; identidad: Identidad }
-  | { tipo: "en-construccion" }
-  | { tipo: "error" };
+  | { tipo: "buscando" }
+  | { tipo: "elegir"; direcciones: DireccionConControl[] }
+  | { tipo: "armando"; direcciones: DireccionConControl[]; direccion: DireccionConControl }
+  | { tipo: "lista"; direcciones: DireccionConControl[]; identidad: IdentidadIA; logos: PropuestaLogo[] }
+  | { tipo: "error"; mensaje: string; reintentar: () => void };
 
-function leer(clave: string) {
+function leer<T>(clave: string): T | null {
   try {
-    return sessionStorage.getItem(clave);
+    return JSON.parse(sessionStorage.getItem(clave) ?? "null");
   } catch {
     return null;
   }
 }
 
+function guardar(clave: string, valor: unknown) {
+  try {
+    sessionStorage.setItem(clave, JSON.stringify(valor));
+    return true;
+  } catch {
+    return false; // sin lugar (los logos pesan): se sigue sin guardar
+  }
+}
+
+async function pedir<T>(ruta: string, cuerpo: unknown, senal?: AbortSignal): Promise<T> {
+  const res = await fetch(ruta, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(cuerpo),
+    signal: senal,
+  });
+  const datos = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(datos?.error || "No pudimos conectar con BrandIA.");
+  return datos as T;
+}
+
 export function GenerarMarca() {
   const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
+  const [ficha, setFicha] = useState<Ficha | null>(null);
 
-  const generar = useCallback(async (ficha: string, senal?: AbortSignal) => {
-    setEstado({ tipo: "generando" });
+  const buscarDirecciones = useCallback(async (f: Ficha, senal?: AbortSignal) => {
+    setEstado({ tipo: "buscando" });
     try {
-      const res = await fetch("/api/identidad", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ficha: JSON.parse(ficha) }),
-        signal: senal,
-      });
-      if (res.status === 404) return setEstado({ tipo: "en-construccion" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const identidad = (await res.json()) as Identidad;
-      if (!identidad?.nombre || !identidad.paleta?.length || !identidad.tipografias) throw new Error("Identidad incompleta");
-      sessionStorage.setItem(CLAVE_IDENTIDAD, JSON.stringify({ ficha, identidad }));
-      setEstado({ tipo: "lista", identidad });
+      const { direcciones } = await pedir<{ direcciones: DireccionConControl[] }>(
+        "/api/direcciones",
+        { brief: f.brief },
+        senal,
+      );
+      guardar(CLAVE_DIRECCIONES, { ficha: f.texto, direcciones });
+      setEstado({ tipo: "elegir", direcciones });
     } catch (e) {
-      if ((e as Error).name !== "AbortError") setEstado({ tipo: "error" });
+      if ((e as Error).name === "AbortError") return;
+      setEstado({ tipo: "error", mensaje: (e as Error).message, reintentar: () => buscarDirecciones(f) });
     }
   }, []);
 
+  const elegir = useCallback(async (f: Ficha, direcciones: DireccionConControl[], direccion: DireccionConControl) => {
+    setEstado({ tipo: "armando", direcciones, direccion });
+    document.querySelector("main")?.scrollTo({ top: 0 });
+    const cuerpo = { brief: f.brief, direccion };
+    const [identidad, logos] = await Promise.allSettled([
+      pedir<{ identidad: IdentidadIA }>("/api/identidad", cuerpo),
+      pedir<{ propuestas: PropuestaLogo[] }>("/api/logo", cuerpo),
+    ]);
+    if (identidad.status === "rejected") {
+      return setEstado({
+        tipo: "error",
+        mensaje: (identidad.reason as Error).message,
+        reintentar: () => elegir(f, direcciones, direccion),
+      });
+    }
+    // Si los logos completos fallan, el brandbook sigue con el símbolo de la identidad
+    const propuestas = logos.status === "fulfilled" ? logos.value.propuestas : [];
+    const lista = { ficha: f.texto, identidad: identidad.value.identidad, logos: propuestas };
+    if (!guardar(CLAVE_IDENTIDAD, lista)) guardar(CLAVE_IDENTIDAD, { ...lista, logos: [] });
+    setEstado({ tipo: "lista", direcciones, identidad: lista.identidad, logos: propuestas });
+  }, []);
+
   useEffect(() => {
-    const ficha = leer(CLAVE_FICHA);
-    if (!ficha) return setEstado({ tipo: "sin-ficha" });
-    try {
-      const guardada = JSON.parse(leer(CLAVE_IDENTIDAD) ?? "null");
-      if (guardada?.ficha === ficha && guardada.identidad) return setEstado({ tipo: "lista", identidad: guardada.identidad });
-    } catch {}
+    const texto = sessionStorage.getItem(CLAVE_FICHA);
+    const brief = leer<Brief>(CLAVE_FICHA);
+    if (!texto || !brief) return setEstado({ tipo: "sin-ficha" });
+    const f = { texto, brief };
+    setFicha(f);
+
+    const dirs = leer<{ ficha: string; direcciones: DireccionConControl[] }>(CLAVE_DIRECCIONES);
+    const ident = leer<{ ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] }>(CLAVE_IDENTIDAD);
+    if (dirs?.ficha === texto && ident?.ficha === texto) {
+      return setEstado({ tipo: "lista", direcciones: dirs.direcciones, identidad: ident.identidad, logos: ident.logos });
+    }
+    if (dirs?.ficha === texto) return setEstado({ tipo: "elegir", direcciones: dirs.direcciones });
+
     const control = new AbortController();
-    generar(ficha, control.signal);
+    buscarDirecciones(f, control.signal);
     return () => control.abort();
-  }, [generar]);
+  }, [buscarDirecciones]);
 
-  const reintentar = () => {
-    const ficha = leer(CLAVE_FICHA);
-    if (ficha) generar(ficha);
-  };
+  function otroCamino(direcciones: DireccionConControl[]) {
+    sessionStorage.removeItem(CLAVE_IDENTIDAD);
+    setEstado({ tipo: "elegir", direcciones });
+    document.querySelector("main")?.scrollTo({ top: 0 });
+  }
 
-  const volver = (
-    <Link href="/crear" className={`${buttonVariants({ variant: "ghost", size: "xs" })} text-foreground`}>
-      <ArrowLeft data-icon="inline-start" />
-      <span className="hidden sm:inline">Volver a la entrevista</span>
-    </Link>
-  );
+  const nombreMarca = ficha?.brief.marca.nombre ?? null;
 
   return (
     <main className="min-h-0 overflow-y-auto">
       <div className="mx-auto w-full max-w-[1080px] px-4 pt-5 pb-16">
         <div className="flex items-center justify-between gap-3">
           <Pasos actual={1} />
-          {volver}
+          <Link href="/crear" className={`${buttonVariants({ variant: "ghost", size: "xs" })} text-foreground`}>
+            <ArrowLeft data-icon="inline-start" />
+            <span className="hidden sm:inline">Volver a la entrevista</span>
+          </Link>
         </div>
 
-        {(estado.tipo === "cargando" || estado.tipo === "generando") && (
+        {(estado.tipo === "cargando" || estado.tipo === "buscando") && (
           <div className="flex min-h-[60svh] flex-col items-start justify-center">
             <h1 className={`${s.seCocina} display max-w-[16ch]`}>
+              Pensando <span className={s.it}>tres</span> caminos para tu marca.
+            </h1>
+            <p className="lead mt-4 max-w-[34em] text-base">
+              Con lo que nos contaste armamos tres direcciones distintas: colores, letras y estilo. Vos elegís. Tarda
+              unos 30 segundos.
+            </p>
+            <div className="mt-8">{estado.tipo === "buscando" && <Armando que="direcciones" />}</div>
+          </div>
+        )}
+
+        {estado.tipo === "elegir" && (
+          <>
+            <div className={`${s.entra} mt-10 mb-8`}>
+              <h1 className="display max-w-[18ch]">
+                Elegí <span className={s.it}>tu</span> camino.
+              </h1>
+              <p className="lead mt-3 max-w-[38em] text-base">
+                Tres formas de contar tu marca. Tocá la que más se parezca a lo que imaginás.
+              </p>
+            </div>
+            <Direcciones
+              direcciones={estado.direcciones}
+              nombreMarca={nombreMarca}
+              onElegir={(d) => ficha && elegir(ficha, estado.direcciones, d)}
+            />
+          </>
+        )}
+
+        {estado.tipo === "armando" && (
+          <div className="flex min-h-[60svh] flex-col items-start justify-center">
+            <p className="label">Elegiste · {estado.direccion.nombre}</p>
+            <h1 className={`${s.seCocina} display mt-3 max-w-[16ch]`}>
               Estamos armando <span className={s.it}>tu</span> marca.
             </h1>
             <p className="lead mt-4 max-w-[34em] text-base">
-              Con lo que nos contaste elegimos el nombre, la paleta, las tipografías y el logo. Puede tardar un minuto.
+              La esencia, la voz, los logos y el brandbook completo. Tarda unos 30 segundos.
             </p>
-            <div className="mt-8">{estado.tipo === "generando" && <Armando que="identidad" />}</div>
+            <div className="mt-8">
+              <Armando que="identidad" />
+            </div>
           </div>
         )}
 
@@ -112,25 +206,11 @@ export function GenerarMarca() {
           </div>
         )}
 
-        {estado.tipo === "en-construccion" && (
-          <div className={`${s.entra} flex min-h-[60svh] flex-col items-start justify-center`}>
-            <p className="label">En construcción</p>
-            <h1 className="display mt-3 max-w-[16ch]">
-              Tu brandbook está <span className={s.it}>en camino</span>.
-            </h1>
-            <p className="lead mt-4 max-w-[34em] text-base">
-              Ya tenemos tu ficha. La parte que genera la identidad la estamos terminando: muy pronto, acá.
-            </p>
-          </div>
-        )}
-
         {estado.tipo === "error" && (
           <div className={`${s.entra} flex min-h-[60svh] flex-col items-start justify-center`}>
             <h1 className="display max-w-[16ch]">Algo se trabó.</h1>
-            <p className="lead mt-4 max-w-[34em] text-base">
-              No pudimos armar tu marca esta vez. Tu ficha sigue guardada: probá de nuevo.
-            </p>
-            <Button size="lg" className="mt-8" onClick={reintentar}>
+            <p className="lead mt-4 max-w-[34em] text-base">{estado.mensaje} Tu ficha sigue guardada.</p>
+            <Button size="lg" className="mt-8" onClick={estado.reintentar}>
               Probar de nuevo
             </Button>
           </div>
@@ -138,17 +218,18 @@ export function GenerarMarca() {
 
         {estado.tipo === "lista" && (
           <>
-            <div className={`${s.entra} mt-10 mb-8`}>
+            <div className={`${s.entra} mt-10 mb-8 flex flex-wrap items-end justify-between gap-4`}>
               <h1 className="display">
                 Esta es <span className={s.it}>{estado.identidad.nombre}</span>.
               </h1>
-              {estado.identidad.nombres_alternativos && estado.identidad.nombres_alternativos.length > 0 && (
-                <p className="lead mt-3 text-base">
-                  Otros nombres posibles: {estado.identidad.nombres_alternativos.join(" · ")}
-                </p>
-              )}
+              <Button variant="outline" size="sm" onClick={() => otroCamino(estado.direcciones)}>
+                Probar otro camino
+              </Button>
             </div>
-            <Brandbook identidad={estado.identidad} />
+            <Brandbook identidad={estado.identidad} logos={estado.logos} />
+            <div className="mt-4">
+              <Controles comprobaciones={estado.identidad.comprobaciones} />
+            </div>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button size="lg" disabled>
                 Ver mis contenidos

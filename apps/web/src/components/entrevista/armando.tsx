@@ -9,12 +9,18 @@ import s from "./entrevista.module.css";
 const FRASES = {
   pregunta: ["Leyendo lo que contaste…", "Pensando la próxima pregunta…", "Ordenando las ideas…"],
   ficha: ["Armando tu ficha…", "Juntando todo lo que contaste…", "Ya casi está…"],
-  identidad: [
+  direcciones: [
     "Leyendo tu ficha…",
-    "Buscando la idea de tu marca…",
-    "Eligiendo tu paleta…",
-    "Probando tipografías…",
-    "Dibujando tu logo…",
+    "Pensando tres caminos distintos…",
+    "Probando paletas…",
+    "Combinando tipografías…",
+    "Ya casi están…",
+  ],
+  identidad: [
+    "Escribiendo la esencia de tu marca…",
+    "Encontrando cómo habla…",
+    "Dibujando tus logos…",
+    "Revisando que todo se lea bien…",
     "Armando tu brandbook…",
   ],
 };
