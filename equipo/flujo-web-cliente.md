@@ -1,6 +1,6 @@
 # La web del cliente, de punta a punta · ejemplo Costa · BORRADOR
 
-> **Estado (decidido el 17/10):** se trabaja en paralelo a los contenidos, para llegar a la demo, en la rama `web-cliente`. Hasta que funcione, la web se muestra como pantalla "en construcción".
+> **Estado (decidido el 17/10):** se trabaja en paralelo a los contenidos, para llegar a la demo. La hace Rodrigo, en la rama `web-cliente`. Hasta que funcione, la web se muestra como pantalla "en construcción".
 
 El recorrido completo de una clienta de BrandIA desde que pide su web hasta que la ve publicada en internet, con su propio dominio (la dirección de la web, como `panaderiacosta.com`).
 
