@@ -6,6 +6,13 @@
 //   node correr.mjs postrein     → solo los casos cuyo nombre contenga eso
 //   node correr.mjs --ver        → con la ventana a la vista (sin esto, corre escondido)
 //   node correr.mjs --sin-pedido → no manda el pedido de prueba de BranderIA
+//   node correr.mjs --whatsapp   → manda de verdad el pedido por WhatsApp Web (con la ventana a la vista)
+//   node correr.mjs --vincular-whatsapp → abre WhatsApp Web para escanear el QR una vez (queda en perfil/)
+//
+// Sin cortes: si está la variable CLAVE_EQUIPO (la contraseña de /costos de esa app), antes de grabar entra a
+// /costos y el navegador queda como del equipo: sin límite de prueba gratis ni tope diario (lib/equipo.ts).
+// Cada video arranca en la portada: la recorre entera y aprieta el botón "¿BrandIAmos?".
+// Si un caso se traba, se reintenta una vez.
 
 import { mkdirSync, readFileSync, renameSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -22,7 +29,12 @@ const ALTO = 900;
 const args = process.argv.slice(2);
 const VER = args.includes("--ver");
 const SIN_PEDIDO = args.includes("--sin-pedido");
+const WHATSAPP = args.includes("--whatsapp");
+const VINCULAR = args.includes("--vincular-whatsapp");
+const CLAVE_EQUIPO = process.env.CLAVE_EQUIPO;
+const PERFIL = join(AQUI, "perfil");
 const filtro = args.find((a) => !a.startsWith("--"))?.toLowerCase();
+const SIN_PORTADA = args.includes("--sin-portada");
 
 // ---- La clave del AI Gateway: la misma de la app, en apps/web/.env.local (fuera de git) ----
 
@@ -30,8 +42,11 @@ function leerClave() {
   if (process.env.AI_GATEWAY_API_KEY) return process.env.AI_GATEWAY_API_KEY;
   try {
     const env = readFileSync(join(REPO, "apps/web/.env.local"), "utf8");
-    const linea = env.split("\n").find((l) => l.startsWith("AI_GATEWAY_API_KEY="));
-    if (linea) return linea.slice("AI_GATEWAY_API_KEY=".length).trim().replace(/^["']|["']$/g, "");
+    // La clave fija, o el permiso temporal de Vercel que baja `vercel env pull` (dura unas 12 horas)
+    for (const nombre of ["AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN"]) {
+      const linea = env.split("\n").find((l) => l.startsWith(`${nombre}=`));
+      if (linea) return linea.slice(nombre.length + 1).trim().replace(/^["']|["']$/g, "");
+    }
   } catch {}
   throw new Error("Falta la clave del AI Gateway. Corré `vercel env pull` en apps/web.");
 }
@@ -197,9 +212,33 @@ async function reintentarSiSeCorto(page, vigia) {
 
 // ---- Los pasos del recorrido ----
 
+async function pasoPortada(page) {
+  anotar("Paso 0 · Portada");
+  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await esperar(4000);
+  // Bajada lenta, como alguien que mira la página: la animación de la B, el recorrido horizontal y cada sección
+  await page.mouse.move(ANCHO / 2, ALTO / 2);
+  let anterior = -1;
+  for (let i = 0; i < 400; i++) {
+    await page.mouse.wheel(0, 260);
+    await esperar(420);
+    const y = await page.evaluate(() => Math.round(window.scrollY));
+    const alFinal = await page.evaluate(() => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4);
+    if (alFinal || (y === anterior && i > 20)) break;
+    anterior = y;
+  }
+  await esperar(2500);
+  const boton = page.locator("#empezar .cta-gigante");
+  await boton.scrollIntoViewIfNeeded();
+  await boton.hover();
+  await esperar(1500);
+  await boton.click();
+  await page.waitForURL("**/crear", { timeout: 60_000 });
+}
+
 async function pasoEntrevista(page, vigia, caso, carpeta) {
   anotar("Paso 1 · Entrevista");
-  await page.goto(`${BASE}/crear`, { waitUntil: "networkidle" });
+  if (!page.url().endsWith("/crear")) await page.goto(`${BASE}/crear`, { waitUntil: "networkidle" });
   await esperar(2500);
   const campo = page.locator("textarea#mensaje");
   const listo = page.getByRole("link", { name: "Armar mi marca" });
@@ -289,9 +328,29 @@ async function pasoContenido(page, vigia, caso, carpeta) {
   if (await quiero.first().isVisible().catch(() => false)) {
     await esperarQuieto(vigia, { quieto: 4000, tope: 2 * 60_000, que: "la muestra de estilos" });
     await foto(page, carpeta, "3a-estilos");
-    const textos = await quiero.allInnerTexts();
-    const i = await elegir(caso, "¿Qué estilo de diseño elegís para el feed?", textos);
-    anotar(`  estilo: ${textos[i].split("\n")[0]}`);
+    // Los botones dicen todos "Quiero este": se lee la tarjeta entera de cada estilo (con su nombre)
+    const textos = await quiero.evaluateAll((bs) =>
+      bs.map((b) => {
+        let el = b.parentElement;
+        while (el && !el.querySelector("h2, h3")) el = el.parentElement;
+        return (el ?? b).innerText;
+      }),
+    );
+    // El estilo lo dice el caso ("Estilo del feed | **Editorial**"); si no lo dice, elige la IA del cliente
+    const pedido = caso.texto.match(/Estilo del feed \| \*\*([^*]+)\*\*/)?.[1]?.trim();
+    // Cada tarjeta tiene su título (h2/h3 "Impacto", "Editorial"): el índice es el del título que pide el caso
+    const titulos = await quiero.evaluateAll((bs) =>
+      bs.map((b) => {
+        let el = b.parentElement;
+        while (el && !el.querySelector("h2, h3")) el = el.parentElement;
+        const hs = el ? [...el.querySelectorAll("h2, h3")] : [];
+        return (hs.at(-1)?.textContent ?? "").trim().toLowerCase();
+      }),
+    );
+    const fijo = pedido ? titulos.findIndex((t) => t.startsWith(pedido.toLowerCase())) : -1;
+    if (pedido && fijo < 0) anotar(`  ⚠ no encontré el estilo «${pedido}» entre: ${titulos.join(", ")}`);
+    const i = fijo >= 0 ? fijo : await elegir(caso, "¿Qué estilo de diseño elegís para el feed?", textos);
+    anotar(`  estilo: ${titulos[i] || textos[i].replace(/\s+/g, " ").slice(0, 60)}`);
     await esperar(2000);
     await quiero.nth(i).click();
   }
@@ -376,16 +435,56 @@ async function pasoBranderia(page, vigia, caso, carpeta) {
   await pedir.scrollIntoViewIfNeeded();
   await pedir.click();
   await esperar(1000);
-  await page.locator('input[name="nombre"]').pressSequentially(`PRUEBA NOCHE · ${caso.nombre}`, { delay: 25 });
+  const persona = await preguntarIA(sistemaCliente(caso), "¿Cómo te llamás? Contestá solo tu nombre y apellido, como en tu ficha.");
+  await page.locator('input[name="nombre"]').pressSequentially(persona.replace(/[.\n]/g, "").slice(0, 60), { delay: 25 });
   await page.locator('input[name="contacto"]').pressSequentially("prueba@brandiamos.com", { delay: 25 });
   await page.locator('input[name="entrega"]').pressSequentially("Montevideo", { delay: 25 });
-  await page.locator('textarea[name="nota"]').pressSequentially("No producir, es una prueba", { delay: 25 });
+  await page.locator('textarea[name="nota"]').pressSequentially("Pedido de la demo de BrandIA: no producir", { delay: 25 });
   await esperar(1000);
-  // El WhatsApp se abre en otra pestaña: se cierra sin mandar nada (ver el context.on("page") de abajo)
+  // El WhatsApp se abre en otra pestaña: con --whatsapp se manda de verdad (ver mandarWhatsApp); si no, se cierra
+  const popup = WHATSAPP ? page.context().waitForEvent("page", { timeout: 60_000 }).catch(() => null) : null;
   await page.getByRole("button", { name: /Enviar por WhatsApp/ }).click();
-  await esperar(5000);
-  anotar("  pedido de prueba guardado (WhatsApp cerrado sin enviar)");
+  if (popup) {
+    const wa = await popup;
+    if (wa) await mandarWhatsApp(wa, carpeta);
+    await page.bringToFront().catch(() => {});
+  } else {
+    await esperar(5000);
+    anotar("  pedido guardado (WhatsApp cerrado sin enviar)");
+  }
+  await esperar(2500);
   await foto(page, carpeta, "4c-pedido");
+}
+
+/**
+ * Manda el mensaje del pedido por WhatsApp Web (la sesión quedó guardada en perfil/ con --vincular-whatsapp).
+ * La pestaña llega a wa.me con el texto: se pasa a web.whatsapp.com/send con el mismo número y texto y se envía.
+ */
+async function mandarWhatsApp(wa, carpeta) {
+  try {
+    const hasta = Date.now() + 60_000;
+    while (!/wa\.me|whatsapp\.com/.test(wa.url()) && Date.now() < hasta) await esperar(500);
+    const url = new URL(wa.url());
+    const numero = url.pathname.replace(/\D/g, "") || url.searchParams.get("phone") || "";
+    const texto = url.searchParams.get("text") ?? "";
+    await wa.goto(`https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(texto)}`, { waitUntil: "domcontentloaded" });
+    const caja = wa.locator('footer div[contenteditable="true"]');
+    await caja.waitFor({ state: "visible", timeout: 90_000 });
+    await esperar(3000);
+    await foto(wa, carpeta, "4d-whatsapp");
+    await caja.press("Enter");
+    await esperar(6000);
+    await foto(wa, carpeta, "4e-whatsapp-enviado");
+    anotar(`  WhatsApp enviado al ${numero}`);
+  } catch (e) {
+    anotar(`  ⚠ no se pudo mandar el WhatsApp: ${e.message.split("\n")[0]}`);
+    await foto(wa, carpeta, "4d-whatsapp-error");
+  } finally {
+    // Su video queda aparte: se renombra y se suma al del caso al editar
+    const video = wa.video();
+    await wa.close().catch(() => {});
+    if (video) renameSync(await video.path(), join(carpeta, "whatsapp.webm"));
+  }
 }
 
 async function pasoWeb(page, vigia, caso, carpeta) {
@@ -429,26 +528,19 @@ async function pasoWeb(page, vigia, caso, carpeta) {
 
 // ---- Un caso entero, con su video ----
 
-async function correrCaso(browser, caso, raiz) {
+async function correrCaso(context, caso, raiz, intento = 1) {
   const slug = caso.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
-  const carpeta = join(raiz, slug);
+  const carpeta = join(raiz, intento > 1 ? `${slug}-reintento` : slug);
   mkdirSync(carpeta, { recursive: true });
-  anotar(`=== ${caso.nombre} ===`);
+  anotar(`=== ${caso.nombre}${intento > 1 ? " (reintento)" : ""} ===`);
 
-  const context = await browser.newContext({
-    viewport: { width: ANCHO, height: ALTO },
-    recordVideo: { dir: carpeta, size: { width: ANCHO, height: ALTO } },
-    locale: "es-UY",
-  });
+  // Una pestaña nueva por caso: la marca vive en sessionStorage, así cada caso arranca de cero
   const page = await context.newPage();
-  // Cualquier otra pestaña (el WhatsApp del pedido) se cierra sin hacer nada
-  context.on("page", (p) => {
-    if (p !== page) p.close().catch(() => {});
-  });
   const vigia = vigilarPedidos(page);
   const inicio = Date.now();
   let ok = true;
   try {
+    if (!SIN_PORTADA) await pasoPortada(page);
     await pasoEntrevista(page, vigia, caso, carpeta);
     await pasoMarca(page, vigia, caso, carpeta);
     await pasoContenido(page, vigia, caso, carpeta);
@@ -460,17 +552,48 @@ async function correrCaso(browser, caso, raiz) {
     await foto(page, carpeta, "error");
   }
   const video = page.video();
-  await context.close();
+  await page.close();
   if (video) {
     const destino = join(carpeta, `${slug}${ok ? "" : "-incompleto"}.webm`);
     renameSync(await video.path(), destino);
     anotar(`  video: ${destino}`);
   }
   anotar(`  ${ok ? "✓ terminado" : "✗ incompleto"} en ${Math.round((Date.now() - inicio) / 60000)} min`);
+  if (!ok && intento === 1) {
+    anotar("  se reintenta una vez");
+    return correrCaso(context, caso, raiz, 2);
+  }
   return ok;
 }
 
+/** Deja el navegador como del equipo: entra a /costos con la contraseña de esa app. */
+async function llaveDelEquipo(context) {
+  if (!CLAVE_EQUIPO) {
+    anotar("⚠ Sin CLAVE_EQUIPO: corre con los límites de la beta (prueba gratis y tope diario)");
+    return;
+  }
+  const page = await context.newPage();
+  await page.goto(`${BASE}/costos`, { waitUntil: "domcontentloaded" });
+  await page.getByText("Este navegador es del equipo").waitFor({ timeout: 60_000 });
+  anotar("Llave del equipo: lista (sin límite ni tope)");
+  const video = page.video();
+  await page.close();
+  if (video) await video.delete().catch(() => {});
+}
+
 // ---- Arranque ----
+
+if (VINCULAR) {
+  const ctx = await chromium.launchPersistentContext(PERFIL, { headless: false, viewport: { width: ANCHO, height: ALTO } });
+  const p = ctx.pages()[0] ?? (await ctx.newPage());
+  await p.goto("https://web.whatsapp.com/");
+  console.log("Escaneá el QR con WhatsApp (Dispositivos vinculados → Vincular un dispositivo). Espero hasta 5 minutos…");
+  await p.locator("#pane-side").waitFor({ timeout: 5 * 60_000 });
+  console.log("Listo: WhatsApp Web quedó vinculado en perfil/.");
+  await esperar(5000);
+  await ctx.close();
+  process.exit(0);
+}
 
 const casos = leerCasos().filter((c) => !filtro || c.nombre.toLowerCase().includes(filtro));
 if (!casos.length) {
@@ -481,11 +604,25 @@ const sello = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
 const raiz = join(AQUI, "salida", sello);
 mkdirSync(raiz, { recursive: true });
 archivoRegistro = join(raiz, "registro.txt");
-anotar(`Corrida en ${BASE} · ${casos.map((c) => c.nombre).join(", ")}`);
+anotar(`Corrida en ${BASE} · ${casos.map((c) => c.nombre).join(", ")}${WHATSAPP ? " · con WhatsApp real" : ""}`);
 
-const browser = await chromium.launch({ headless: !VER });
+const context = await chromium.launchPersistentContext(PERFIL, {
+  headless: !(VER || WHATSAPP),
+  viewport: { width: ANCHO, height: ALTO },
+  recordVideo: { dir: join(raiz, "videos-sueltos"), size: { width: ANCHO, height: ALTO } },
+  locale: "es-UY",
+  httpCredentials: CLAVE_EQUIPO ? { username: "equipo", password: CLAVE_EQUIPO } : undefined,
+});
+for (const p of context.pages()) await p.close().catch(() => {});
+await llaveDelEquipo(context);
+// Sin --whatsapp, la pestaña del WhatsApp del pedido se cierra sin mandar nada
+if (!WHATSAPP) {
+  context.on("page", (p) => {
+    p.waitForURL(/wa\.me|whatsapp\.com/, { timeout: 20_000 }).then(() => p.close()).catch(() => {});
+  });
+}
 const resultados = [];
-for (const caso of casos) resultados.push([caso.nombre, await correrCaso(browser, caso, raiz)]);
-await browser.close();
+for (const caso of casos) resultados.push([caso.nombre, await correrCaso(context, caso, raiz)]);
+await context.close();
 anotar("Resumen: " + resultados.map(([n, ok]) => `${n} ${ok ? "✓" : "✗"}`).join(" · "));
 anotar(`Todo quedó en ${raiz}`);

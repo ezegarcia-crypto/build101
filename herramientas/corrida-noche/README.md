@@ -10,6 +10,18 @@ Recorre BrandIA solo, de punta a punta, con cada caso de `equipo/casos-demo.md`,
 
 Los casos se leen de `equipo/casos-demo.md`: si se cambia un caso ahí, la corrida lo toma sola. **Nada de esto va en la app**: los casos son solo para ensayar.
 
+## Sin cortes, con portada y con WhatsApp real (18/10)
+
+- **Cada video arranca en la portada:** la recorre entera (todas las animaciones) y aprieta "¿BrandIAmos?".
+- **Sin límites:** con `CLAVE_EQUIPO=<contraseña de /costos de esa app>`, antes de grabar entra a `/costos` y el
+  navegador queda como del equipo (sin prueba gratis ni tope diario). Si un caso se traba, se reintenta una vez.
+- **El estilo del feed** sale del caso ("Estilo del feed | **Editorial**").
+- **WhatsApp real:** `node correr.mjs --vincular-whatsapp` abre WhatsApp Web para escanear el QR una vez (la
+  sesión queda en `perfil/`, fuera de git). Después, `--whatsapp` manda el mensaje del pedido de verdad al número
+  de `WHATSAPP_BRANDIA` y graba ese momento en `whatsapp.webm`, dentro de la carpeta del caso.
+- **La IA:** usa `AI_GATEWAY_API_KEY` o, si no está, el `VERCEL_OIDC_TOKEN` de `apps/web/.env.local`, que vence a
+  las 12 horas de bajarlo con `vercel env pull`.
+
 ## Cómo correrlo
 
 La primera vez, en esta carpeta (instala Playwright y su Chromium, unos 150 MB, solo en la compu):
