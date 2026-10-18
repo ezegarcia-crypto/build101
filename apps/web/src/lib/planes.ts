@@ -2,8 +2,8 @@ import { z } from "zod";
 
 // Los planes de BrandIA y la gente que se anota para uno (tabla `interesados`, ver apps/web/supabase/interesados.sql).
 // Todavía no se cobra: quien elige un plan deja sus datos y el equipo lo contacta. El cobro automático (Mercado
-// Pago) está en construcción. Los precios son los del documento de costos (brandia/producto/motor-costos-y-precios.md)
-// hasta que los socios los cierren. Solo el servidor habla con Supabase, con la clave de servicio, como lib/pagos.ts.
+// Pago) está en construcción. Precios de lanzamiento que fijaron los socios el 18/10:
+// la marca USD 19,99 y la suscripción USD 29 por mes. Solo el servidor habla con Supabase, con la clave de servicio, como lib/pagos.ts.
 
 export type Plan = {
   id: "marca" | "mensual" | "branderia";
@@ -21,7 +21,7 @@ export const PLANES: Plan[] = [
   {
     id: "marca",
     nombre: "Tu marca",
-    precio: "USD 49",
+    precio: "USD 19,99",
     periodo: "un solo pago",
     resumen: "Contás tu negocio y te llevás la marca entera, lista para usar.",
     incluye: [

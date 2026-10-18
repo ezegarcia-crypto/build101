@@ -6,6 +6,8 @@
 // El id empieza con la hora en que se creó (en base 36), así el panel puede ordenar los clientes
 // del más nuevo al más viejo y mostrar la fecha sin pedirle nada más al Gateway.
 
+import { agotado, avisarLimite, contar, MENSAJE_PRUEBA } from "@/lib/prueba-gratis";
+
 export const HEADER_CLIENTE = "x-brandia-cliente";
 
 const CLAVE = "brandia:cliente";
@@ -47,19 +49,22 @@ export function idDeCliente() {
   }
 }
 
-function esDeLaApi(entrada: RequestInfo | URL) {
+/** La ruta de nuestra /api a la que va el pedido (por ejemplo "/api/nombres"), o null si es de afuera. */
+function rutaDeLaApi(entrada: RequestInfo | URL) {
   try {
     const texto = typeof entrada === "string" ? entrada : entrada instanceof URL ? entrada.href : entrada.url;
     const url = new URL(texto, window.location.href);
-    return url.origin === window.location.origin && url.pathname.startsWith("/api/");
+    return url.origin === window.location.origin && url.pathname.startsWith("/api/") ? url.pathname : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 /**
  * Suma el header del cliente a todos los pedidos a nuestra /api, sin tocar cada pantalla: así entran
  * también el chat de la entrevista (DefaultChatTransport usa este mismo fetch) y las rutas que se agreguen.
+ * Acá también se cuida la prueba gratis (lib/prueba-gratis.ts): si una ruta llegó a su tope en este navegador,
+ * el pedido no sale; y si el servidor avisa que se pasó el tope diario, aparece el aviso.
  */
 export function instalarClienteEnPedidos() {
   if (typeof window === "undefined") return;
@@ -69,9 +74,23 @@ export function instalarClienteEnPedidos() {
 
   const original = window.fetch.bind(window);
   window.fetch = (entrada, opciones) => {
-    if (!esDeLaApi(entrada)) return original(entrada, opciones);
+    const ruta = rutaDeLaApi(entrada);
+    if (!ruta) return original(entrada, opciones);
+    if (agotado(ruta)) {
+      avisarLimite("prueba");
+      return Promise.resolve(Response.json({ error: MENSAJE_PRUEBA, limite: "prueba" }, { status: 429 }));
+    }
     const headers = new Headers(opciones?.headers ?? (entrada instanceof Request ? entrada.headers : undefined));
     if (!headers.has(HEADER_CLIENTE)) headers.set(HEADER_CLIENTE, idDeCliente());
-    return original(entrada, { ...opciones, headers });
+    return original(entrada, { ...opciones, headers }).then((r) => {
+      if (r.ok) contar(ruta);
+      else if (r.status === 503) {
+        r.clone()
+          .json()
+          .then((d: { limite?: string }) => d?.limite === "diario" && avisarLimite("diario"))
+          .catch(() => {});
+      }
+      return r;
+    });
   };
 }

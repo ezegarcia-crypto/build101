@@ -7,6 +7,7 @@ import { hayBaseDeDatos, listarPagos, parteDeBrandia, saldos } from "@/lib/pagos
 
 import { minutos, numero, usd } from "./formato";
 import { GraficoEtapas } from "./grafico-etapas";
+import { NavegadorEquipo } from "./navegador-equipo";
 import { ESTILOS_SERIES, familia, Muestra } from "./series";
 import { Precios } from "./precios";
 import { type FilaPago, Registro } from "./registro";
@@ -133,6 +134,9 @@ export default async function Costos() {
           pensamos los precios. Leído a las {hora.format(r.leidoEl)}; lo último puede tardar unos minutos en
           aparecer. <a href="/costos">Actualizar</a>
         </p>
+        <div className="flex">
+          <NavegadorEquipo />
+        </div>
         {r.errores.length > 0 && (
           <p className="rounded-lg border px-4 py-3 text-[0.9375rem]">
             No se pudo leer {r.errores.join(", ")}. Probá actualizar en un rato.

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
 
 import "../index.css";
+import { AvisoLimite } from "@/components/aviso-limite";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
             <Header />
             {children}
           </div>
+          <AvisoLimite />
         </Providers>
       </body>
     </html>

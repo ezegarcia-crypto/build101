@@ -19,7 +19,7 @@ export default function Planes() {
       <Entrada className="flex flex-col gap-14">
         <header className="flex flex-col gap-5">
           <div data-entra>
-            <EnConstruccion texto="El cobro está en construcción" />
+            <EnConstruccion texto="Beta abierta: hoy lo probás gratis" />
           </div>
           <p data-entra className="label">
             BrandIA · planes
@@ -28,8 +28,8 @@ export default function Planes() {
             Elegí cómo <span className="pe-[0.14em]"><Clave>BrandIAr</Clave></span> tu marca.
           </h1>
           <p data-entra className="max-w-2xl text-lg text-muted-foreground">
-            Hoy probás todo sin pagar. Elegí el plan que te sirve, dejanos tus datos y te escribimos apenas se pueda pagar
-            desde acá.
+            Estos son los precios de lanzamiento. Durante la beta, cada persona arma una marca completa gratis. Elegí el
+            plan que te sirve, dejanos tus datos y te escribimos apenas se pueda pagar desde acá.
           </p>
         </header>
 

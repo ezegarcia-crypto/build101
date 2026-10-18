@@ -4,6 +4,8 @@ import type { generateText } from "ai";
 import { after } from "next/server";
 
 import { clienteValido, HEADER_CLIENTE } from "@/lib/cliente";
+import { esDelEquipo } from "@/lib/equipo";
+import { pasadoDelTope } from "@/lib/ia/tope-diario";
 import { grabarPrueba, hayDondeGuardar } from "@/lib/pruebas";
 
 // Cuánto cuesta cada generación. Cada pedido a la IA sale etiquetado con su paso y su módulo,
@@ -94,7 +96,8 @@ function frenar(paso: Paso) {
 
 /**
  * Envuelve una ruta: todo lo que la IA genere adentro queda anotado a ese paso, como una corrida.
- * Además frena los pedidos de más (ver POR_MINUTO) y guarda la señal del pedido: si la persona se va
+ * Además frena los pedidos de más (ver POR_MINUTO), corta todo si hoy se pasó el tope diario de gasto
+ * (lib/ia/tope-diario.ts; al equipo no lo frena) y guarda la señal del pedido: si la persona se va
  * de la página, la IA deja de generar (y de cobrar) en vez de terminar una respuesta que nadie va a ver.
  */
 export function medir<A extends unknown[], R>(paso: Paso, ruta: (...args: A) => Promise<R>) {
@@ -109,21 +112,39 @@ export function medir<A extends unknown[], R>(paso: Paso, ruta: (...args: A) => 
       );
     }
     const pedido = args[0] instanceof Request ? args[0] : undefined;
-    const cliente = clienteValido(pedido?.headers.get(HEADER_CLIENTE));
-    const actual = { paso, corrida: crypto.randomUUID().slice(0, 8), cliente, senal: pedido?.signal };
-    const inicio = Date.now();
-    // Una copia del pedido para guardar la prueba entera (lib/pruebas.ts), antes de que la ruta lo lea
-    const entrada = pedido && hayDondeGuardar() ? pedido.clone() : undefined;
-    return corridaActual.run(actual, async () => {
-      const respuesta = await ruta(...args);
-      if (entrada && respuesta instanceof Response) {
-        const salida = respuesta.clone();
-        // Se guarda cuando ya terminó de responder: no demora a la persona
-        after(() => grabarPrueba({ paso, corrida: actual.corrida, cliente, inicio, entrada, salida }));
-      }
-      return respuesta;
-    });
+    return topeDiario(paso, pedido).then((frenado) => (frenado ?? correr(paso, pedido, ruta, args)) as R) as R;
   };
+}
+
+/** Si hoy ya se pasó el tope de gasto (y el pedido no es del equipo), la respuesta que corta; si no, null. */
+async function topeDiario(paso: Paso, pedido: Request | undefined) {
+  if (paso === "web-publicar") return null; // no usa IA
+  if (!(await pasadoDelTope()) || (await esDelEquipo(pedido))) return null;
+  console.warn(`[gastos] tope diario: no se atiende ${paso}`);
+  return Response.json(
+    {
+      error: "BrandIA está a full por hoy: llegamos al tope de pruebas del día. Volvé mañana o anotate en los planes.",
+      limite: "diario",
+    },
+    { status: 503 },
+  );
+}
+
+function correr<A extends unknown[], R>(paso: Paso, pedido: Request | undefined, ruta: (...args: A) => Promise<R>, args: A) {
+  const cliente = clienteValido(pedido?.headers.get(HEADER_CLIENTE));
+  const actual = { paso, corrida: crypto.randomUUID().slice(0, 8), cliente, senal: pedido?.signal };
+  const inicio = Date.now();
+  // Una copia del pedido para guardar la prueba entera (lib/pruebas.ts), antes de que la ruta lo lea
+  const entrada = pedido && hayDondeGuardar() ? pedido.clone() : undefined;
+  return corridaActual.run(actual, async () => {
+    const respuesta = await ruta(...args);
+    if (entrada && respuesta instanceof Response) {
+      const salida = respuesta.clone();
+      // Se guarda cuando ya terminó de responder: no demora a la persona
+      after(() => grabarPrueba({ paso, corrida: actual.corrida, cliente, inicio, entrada, salida }));
+    }
+    return respuesta;
+  });
 }
 
 /** La señal del pedido en curso, para pasarla como `abortSignal` a cada llamada a la IA. */

@@ -127,9 +127,23 @@ Todos los textos de muestra están marcados como ejemplo: nada de esto lo gener�
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
-| `/crear/planes` | Los planes y sus precios (los del documento de costos, hasta que los socios los cierren): **Tu marca** USD 49 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. "Quiero este plan" lleva al formulario: nombre, mail o WhatsApp y marca (se completa sola si la armó en esa pestaña). **No cobra:** guarda a la persona y el equipo la contacta. Abajo, "Qué pasa cuando te suscribís" | "Planes" en la barra de arriba, o "Mirá los planes" desde `/crear/proximamente` | Después de anotarse, "Seguir con mi marca" → `/crear` | La tabla `interesados` de Supabase (`apps/web/supabase/interesados.sql`). Los anotados se ven en el Table Editor de Supabase | Ninguna. `POST /api/planes` guarda (sin IA) |
+| `/crear/planes` | Los planes y sus precios (los del documento de costos, hasta que los socios los cierren): **Tu marca** USD 19,99 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. "Quiero este plan" lleva al formulario: nombre, mail o WhatsApp y marca (se completa sola si la armó en esa pestaña). **No cobra:** guarda a la persona y el equipo la contacta. Abajo, "Qué pasa cuando te suscribís" | "Planes" en la barra de arriba, o "Mirá los planes" desde `/crear/proximamente` | Después de anotarse, "Seguir con mi marca" → `/crear` | La tabla `interesados` de Supabase (`apps/web/supabase/interesados.sql`). Los anotados se ven en el Table Editor de Supabase | Ninguna. `POST /api/planes` guarda (sin IA) |
 
-Los precios y lo que incluye cada plan se cambian en `apps/web/src/lib/planes.ts`.
+Los precios y lo que incluye cada plan se cambian en `apps/web/src/lib/planes.ts`. Arriba dice "Beta abierta:
+hoy lo probás gratis" y que son precios de lanzamiento.
+
+## Los límites de la beta abierta
+
+- **Prueba gratis por navegador:** cada navegador puede hacer el recorrido completo una vez, con algunas vueltas
+  (topes por ruta en `apps/web/src/lib/prueba-gratis.ts`: por ejemplo 5 pedidos de nombres, 4 de logos, 2 feeds).
+  Al llegar al tope, el pedido no sale y aparece abajo el aviso "Ya usaste tu prueba gratis" con "Ver los planes".
+  Lo ya generado no se pierde. Los pedidos que fallan no descuentan. Se saltea con otro navegador o una ventana
+  privada: es un freno, no una seguridad.
+- **Tope diario de gasto:** si en el día (hora UTC) se gastaron USD 30 en IA, el servidor no atiende más pedidos a
+  la IA y aparece "BrandIA está a full por hoy". Se cambia en `apps/web/src/lib/ia/tope-diario.ts`.
+- **El equipo no tiene límite:** entrar una vez a `/costos` con la contraseña deja ese navegador como del equipo
+  (cookie del servidor y marca en el navegador). En `/costos` aparece "Este navegador es del equipo". Hay que
+  hacerlo en cada navegador y celular que se use para probar o para la demo.
 
 ## Solo en la compu
 
