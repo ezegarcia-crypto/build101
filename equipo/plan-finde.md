@@ -59,6 +59,9 @@ Lo que quedó anotado después de probar con «Lic. Sofía Méndez» y que no en
   otros negocios parecidos) y se lo recomiende.
 - **Más estilos de diseño:** el feed arranca con dos estilos para elegir antes de generar. Sumar más, y hacer lo
   mismo con las webs, para que las marcas no salgan todas parecidas.
+- **BranderIA según lo que producimos:** que la IA siga eligiendo productos para cada rubro, pero solo dentro de un
+  catálogo de lo que BrandIA tiene capacidad de producir. Mientras tanto, el carrito avisa "Armá tu carrito y
+  consultá por disponibilidad".
 - **Pedidos de BranderIA automáticos:** hoy el pedido se guarda y se manda por WhatsApp a mano; después, una
   automatización que le escriba al cliente con la cotización.
 

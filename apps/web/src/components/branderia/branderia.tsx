@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, buttonVariants } from "@build101/ui/components/button";
-import { ArrowLeft, ArrowRight, Plus, RotateCcw, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Info, Plus, RotateCcw, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -653,6 +653,15 @@ export function Branderia() {
                     <dd className="text-muted-foreground">Te lo cotizamos</dd>
                   </div>
                 </dl>
+
+                {/* Lo que sugiere la IA puede no estar todavía entre lo que producimos: se consulta antes de cotizar */}
+                <p className="flex items-start gap-2 rounded-[10px] bg-muted px-3 py-2.5 text-[13px] leading-snug text-muted-foreground">
+                  <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+                  <span>
+                    Armá tu carrito y <span className="font-semibold text-foreground">consultá por disponibilidad</span>: te
+                    confirmamos qué podemos producir y te pasamos la cotización.
+                  </span>
+                </p>
 
                 <PedirKit
                   identidad={marca.identidad}
