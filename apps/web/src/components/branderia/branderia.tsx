@@ -5,7 +5,6 @@ import { ArrowLeft, ArrowRight, Plus, RotateCcw, Sparkles, X } from "lucide-reac
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { EnConstruccion } from "@/app/crear/proximamente/_piezas/piezas";
 import { BotonWeb } from "@/components/boton-web";
 import { simboloConNombre } from "@/components/brandbook/archivos";
 import {
@@ -29,6 +28,7 @@ import type { Brief } from "@/lib/ia/brief";
 
 import s from "../entrevista/entrevista.module.css";
 import b from "./branderia.module.css";
+import { PedirKit } from "./pedido";
 
 // Paso 4 · Tus productos (módulo C, BranderIA). Al entrar, la IA elige los 10 productos con la marca que más le
 // sirven a ESE negocio (POST /api/branderia/sugerir: una pastelería, cajas y bolsas; un estudio, tarjetas y
@@ -38,7 +38,8 @@ import b from "./branderia.module.css";
 // completos, con todas sus fotos, de una sola vez. Después se pueden sumar más ("Otras opciones", en la línea
 // de los marcados con ♥) o pedir en palabras los que faltan; lo nuevo aparece cuando sus fotos están listas.
 // Nada se borra: las fotos de antes quedan como alternativas de cada producto.
-// La cotización está en construcción: se arma el kit, pero no se cotiza, cobra ni pide nada.
+// El pedido se guarda de verdad (pedido.tsx → POST /api/branderia/pedido) y el equipo lo ve en /pedidos, pero no
+// se cobra: BrandIA le escribe a la persona con la cotización.
 // Todo queda guardado (las fotos achicadas) junto con su marca: si se recarga, no se vuelve a pedir.
 
 export const CLAVE_BRANDERIA = "brandia:branderia";
@@ -179,7 +180,6 @@ export function Branderia() {
   const [pedidoNuevo, setPedidoNuevo] = useState("");
   const [renovando, setRenovando] = useState(false);
   const [nivel, setNivel] = useState<Record<string, number>>({});
-  const [pedido, setPedido] = useState(false);
 
   // Lo mismo que el estado, para leerlo dentro de las cargas sin esperar a que React vuelva a dibujar
   const listas = useRef<Record<string, string>>({});
@@ -405,12 +405,10 @@ export function Branderia() {
   const unidades = elegidos.reduce((t, p) => t + (CANTIDADES[nivel[p.id] ?? 0] ?? 0), 0);
 
   function cambiar(id: string, paso: number) {
-    setPedido(false);
     setNivel((n) => ({ ...n, [id]: Math.min(Math.max((n[id] ?? 0) + paso, 0), CANTIDADES.length - 1) }));
   }
 
   function quitar(id: string) {
-    setPedido(false);
     setNivel((n) => ({ ...n, [id]: 0 }));
   }
 
@@ -636,35 +634,26 @@ export function Branderia() {
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Precio</dt>
-                    <dd className="text-muted-foreground">Todavía sin precios</dd>
+                    <dd className="text-muted-foreground">Te lo cotizamos</dd>
                   </div>
                 </dl>
 
-                <Button size="lg" disabled={!elegidos.length} onClick={() => setPedido(true)}>
-                  Cotizar <span aria-hidden>→</span>
-                </Button>
-
-                {pedido && (
-                  <div
-                    role="status"
-                    className={`${s.entra} flex flex-col gap-2.5 rounded-[12px] bg-primary p-4 text-primary-foreground`}
-                  >
-                    <div>
-                      <EnConstruccion texto="La cotización está en construcción" />
-                    </div>
-                    <p className="font-semibold">Así va a funcionar.</p>
-                    <p className="text-sm opacity-85">
-                      BrandIA te cotiza tu kit. Si te sirve, produce cada producto con tu marca, controla que salga
-                      bien y te lo manda a tu puerta. Todavía no se cotizó, pidió ni cobró nada.
-                    </p>
-                  </div>
-                )}
+                <PedirKit
+                  identidad={marca.identidad}
+                  items={elegidos.map((p) => ({
+                    nombre: p.nombre,
+                    detalle: p.detalle,
+                    tecnica: p.tecnica,
+                    estampa: p.estampa,
+                    cantidad: CANTIDADES[nivel[p.id] ?? 0] ?? 0,
+                  }))}
+                />
               </aside>
             </div>
 
             <p className="mt-6 max-w-[40em] text-sm text-muted-foreground">
               Los productos los elige la IA para tu negocio y las fotos las genera con tu logo y el estilo de{" "}
-              {marca.identidad.nombre}. Sin precios ni pedidos reales por ahora.
+              {marca.identidad.nombre}. Tu pedido queda guardado y te escribimos con la cotización: todavía no se cobra nada.
             </p>
             <Button variant="ghost" size="sm" className="mt-2" disabled={sacando || renovando || !!sumando} onClick={() => fotosNuevas(marca)}>
               <RotateCcw data-icon="inline-start" />

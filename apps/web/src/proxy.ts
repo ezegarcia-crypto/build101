@@ -2,12 +2,12 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { revisarClave } from "@/lib/clave-costos";
 
-// Los paneles /costos y /pruebas son solo para el equipo: el navegador pide una contraseña antes de mostrarlos.
+// Los paneles /costos, /pruebas y /pedidos son solo para el equipo: el navegador pide una contraseña antes de mostrarlos.
 // La contraseña es la variable de entorno COSTOS_CLAVE (en Vercel y, si querés, en apps/web/.env.local).
 // El usuario puede ser cualquiera. Sin la variable, en la web publicada el panel no se abre;
 // en la compu de cada uno (npm run dev) se abre igual.
 
-export const config = { matcher: ["/costos", "/pruebas", "/pruebas/:path*"] };
+export const config = { matcher: ["/costos", "/pruebas", "/pruebas/:path*", "/pedidos"] };
 
 export function proxy(req: NextRequest) {
   const estado = revisarClave(req.headers.get("authorization"));
