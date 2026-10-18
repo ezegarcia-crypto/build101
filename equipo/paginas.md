@@ -27,6 +27,7 @@ flowchart LR
   proxweb["/crear/proximamente/web"]
   proxotras["/crear/proximamente/<br/>redes · pauta · newsletter ·<br/>linkedin · x · branderia"]
   costos["/costos<br/>(solo el equipo, con contraseña)"]
+  planes["/crear/planes<br/>Planes<br/>(precios y anotarse)"]
 
   crear -->|Armar mi marca| marca
   marca -->|Ver mis contenidos| contenido
@@ -39,6 +40,7 @@ flowchart LR
   prox --> proxotras
   proxotras -.->|Lo que viene| prox
   proxweb -.->|Lo que viene| prox
+  prox -->|Mirá los planes| planes
 
   marca -.->|Volver a la entrevista| crear
   contenido -.->|Volver a tu marca| marca
@@ -49,17 +51,16 @@ flowchart LR
   costos ~~~ espera
 ```
 
-En todas las páginas de la app, el logo de BrandIA de arriba lleva a la portada (`/`).
+En todas las páginas de la app, el logo de BrandIA de arriba lleva a la portada (`/`). En las de `/crear`, la barra
+de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes"** (`/crear/planes`).
 
 ## Lo que no está conectado (revisar antes de la demo)
 
 1. **El formulario de la portada no guarda.** Los botones de la portada ya llevan a la app, pero el formulario de
    abajo ("BrandIAmos la tuya →") solo muestra "Listo" y **no guarda los datos**: no está conectado a nada.
-2. **"Lo que viene" (`/crear/proximamente`) no tiene entrada desde el recorrido.** Solo se llega con el link o
-   desde la web del cliente. Juan Pedro iba a sumar el acceso desde `/crear`.
-3. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
+2. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
-4. **`/costos` no tiene links a propósito**: es solo para el equipo.
+3. **`/costos` no tiene links a propósito**: es solo para el equipo.
 
 ## Todo vive en la pestaña
 
@@ -106,7 +107,7 @@ Si falta lo que "Necesita", la página muestra un aviso con un botón a `/crear`
 
 | Dirección | Qué muestra | Cómo se llega |
 |---|---|---|
-| `/crear/proximamente` | El índice de lo que viene, con una tarjeta por pantalla | Solo con el link, o "Lo que viene" desde cada pantalla |
+| `/crear/proximamente` | El índice de lo que viene, con una tarjeta por pantalla. Al final, "Mirá los planes" → `/crear/planes` | "Lo que viene" en la barra de arriba de toda la app, o desde cada pantalla |
 | `/crear/proximamente/redes` | Todas tus redes en un solo lugar: cuentas y calendario | Desde el índice |
 | `/crear/proximamente/pauta` | Pauta en Meta: qué funciona en tu rubro (siguiente etapa) | Desde el índice |
 | `/crear/proximamente/newsletter` | Newsletter con tu voz y tu diseño | Desde el índice |
@@ -116,6 +117,14 @@ Si falta lo que "Necesita", la página muestra un aviso con un botón a `/crear`
 | `/crear/proximamente/branderia` | Cómo funciona BranderIA, con un kit de muestra (sin pedidos reales) | Desde el índice |
 
 Todos los textos de muestra están marcados como ejemplo: nada de esto lo generó la IA.
+
+### Planes
+
+| Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
+|---|---|---|---|---|---|
+| `/crear/planes` | Los planes y sus precios (los del documento de costos, hasta que los socios los cierren): **Tu marca** USD 49 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. "Quiero este plan" lleva al formulario: nombre, mail o WhatsApp y marca (se completa sola si la armó en esa pestaña). **No cobra:** guarda a la persona y el equipo la contacta. Abajo, "Qué pasa cuando te suscribís" | "Planes" en la barra de arriba, o "Mirá los planes" desde `/crear/proximamente` | Después de anotarse, "Seguir con mi marca" → `/crear` | La tabla `interesados` de Supabase (`apps/web/supabase/interesados.sql`). Los anotados se ven en el Table Editor de Supabase | Ninguna. `POST /api/planes` guarda (sin IA) |
+
+Los precios y lo que incluye cada plan se cambian en `apps/web/src/lib/planes.ts`.
 
 ## Solo en la compu
 
