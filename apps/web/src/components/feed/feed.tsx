@@ -13,6 +13,7 @@ import { FORMATOS } from "@/lib/ia/contenidos/formatos";
 import type { Kit } from "@/lib/ia/contenidos/kit";
 
 import s from "../entrevista/entrevista.module.css";
+import { Calendario } from "./calendario";
 import { archivosDePieza } from "./descargar-feed";
 import f from "./feed.module.css";
 
@@ -578,6 +579,7 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
               </li>
             ))}
           </ul>
+          <Calendario plan={plan} piezas={lote.piezas} c={c} titulos={titulos} />
         </div>
       </section>
 
