@@ -60,9 +60,13 @@ Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-e
 
 Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
-### 4b. Otra paleta · `POST /api/paleta`
+### 4b. Iterar sin borrar: caminos, paletas y logos
 
-Con la marca armada, `{ brief, direccion, paleta, vistas?, pedido? }` → `{ paleta, explicacion, uso_de_colores, comprobaciones }` (`paleta.ts`). La persona pide el cambio en palabras ("más cálida"); el contraste se asegura igual que en la identidad. La pantalla suma cada paleta a las anteriores (no borra), recolorea el símbolo por rol y ofrece sumar logos dibujados con la nueva (`/api/logo` con la dirección y esa paleta).
+Todo lo que se itera se suma a lo anterior (la pantalla nunca reemplaza) y lo marcado con ♥ guía la próxima vuelta.
+
+- **Otros caminos** · `POST /api/direcciones` con `{ brief, gustan?, vistos?, colores?, pedido? }`: tres caminos más, en la línea de los que gustaron, conservando los colores marcados y sin repetir los vistos. Los colores siempre salen del negocio (producto, material, lugar), y `por_que` dice de dónde.
+- **Otra paleta** · `POST /api/paleta` con `{ brief, direccion, paleta, vistas?, pedido?, conservar? }` → `{ paleta, explicacion, uso_de_colores, comprobaciones }` (`paleta.ts`). `conservar`: los hex marcados con ♥; quedan exactos (la ruta los repone si la IA los movió) y cambia el resto. Se usa en los caminos (la variante se suma al lado como "Otros colores N") y en el brandbook (la paleta se suma a "Tus paletas" y el símbolo la sigue, color por rol).
+- **Otros logos** · `POST /api/logo` con `{ brief, direccion, gustan?, vistos?, pedido? }`: tres más en la línea de los marcados (si se marcó el símbolo, los nuevos lo toman como idea). El símbolo exacto también se puede elegir como logo, solo o con el nombre en la tipografía de títulos ("simbolo" o "simbolo-nombre"); ese se dibuja en el navegador para las descargas y BranderIA.
 
 ## 5. Contar con audio (cambió el 17/10: BrandIA ya no habla)
 
@@ -83,7 +87,7 @@ eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/
 
 ### 6b. BranderIA · productos para el rubro · `POST /api/branderia/sugerir`
 
-`{ brief, marca: { nombre, eslogan }, ya? }` → `{ productos }`: 5 productos con la marca pensados para ese negocio (bolsas, delantales, etiquetas…), con su porqué y cómo se ve la foto (`branderia.ts`). No repite el catálogo fijo ni los de `ya`. La pantalla les saca la foto con `/api/branderia` antes que al catálogo.
+`{ brief, marca: { nombre, eslogan }, ya?, gustan?, pedido?, cantidad? }` → `{ productos }`: los productos con la marca pensados para ese negocio (una pastelería: cajas de torta, etiquetas, stickers de cierre), con su porqué y cómo se ve la foto (`branderia.ts`). Al entrar, 10; después, 5 más por vuelta en la línea de los marcados con ♥, o lo que se pida en palabras. Nunca repite los de `ya`. La pantalla saca la foto de cada uno con `/api/branderia` y los muestra cuando están todas.
 
 El lote de contenidos también acepta `gustaron` (las piezas que la persona marcó con ♥ en feeds anteriores): el planificador sigue esa línea con ideas nuevas.
 

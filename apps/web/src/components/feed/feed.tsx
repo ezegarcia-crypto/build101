@@ -281,26 +281,28 @@ function Acciones({
   c,
 }: {
   meGusta: boolean;
-  onMeGusta: () => void;
+  onMeGusta?: () => void;
   onBajar: () => Promise<void>;
   c: Colores;
 }) {
   const [bajando, setBajando] = useState(false);
   return (
     <div className="flex items-center gap-1 px-2 pt-2">
-      <button
-        type="button"
-        onClick={onMeGusta}
-        aria-pressed={meGusta}
-        aria-label={meGusta ? "Sacar el me gusta" : "Me gusta"}
-        className="grid size-10 place-items-center rounded-full transition-transform duration-300 ease-brandia active:scale-90"
-      >
-        <Heart
-          className={`size-6 transition-[transform,fill] duration-300 ease-brandia ${meGusta ? "scale-110" : ""}`}
-          style={{ color: meGusta ? c.principal : c.texto, fill: meGusta ? c.principal : "transparent" }}
-          aria-hidden="true"
-        />
-      </button>
+      {onMeGusta && (
+        <button
+          type="button"
+          onClick={onMeGusta}
+          aria-pressed={meGusta}
+          aria-label={meGusta ? "Sacar el me gusta" : "Me gusta"}
+          className="grid size-10 place-items-center rounded-full transition-transform duration-300 ease-brandia active:scale-90"
+        >
+          <Heart
+            className={`size-6 transition-[transform,fill] duration-300 ease-brandia ${meGusta ? "scale-110" : ""}`}
+            style={{ color: meGusta ? c.principal : c.texto, fill: meGusta ? c.principal : "transparent" }}
+            aria-hidden="true"
+          />
+        </button>
+      )}
       <button
         type="button"
         disabled={bajando}
@@ -332,7 +334,7 @@ function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario, n, meGusta,
   /** El orden de la pieza en el plan (para nombrar la descarga) */
   n: number;
   meGusta: boolean;
-  onMeGusta: () => void;
+  onMeGusta?: () => void;
 }) {
   const c = useMemo(() => coloresDeMarca(kit), [kit]);
   // Se vuelve a dibujar solo cuando cambian la pieza o sus imágenes
@@ -527,8 +529,9 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
   /** El logo que eligió la persona (null: el símbolo) */
   logo: PropuestaLogo | null;
   generando: boolean;
-  meGusta: string[];
-  onMeGusta: (id: string) => void;
+  /** Las piezas marcadas con ♥ (sin `onMeGusta`, por ejemplo en /pruebas, no se muestra el ♥) */
+  meGusta?: string[];
+  onMeGusta?: (id: string) => void;
 }) {
   const c = useMemo(() => coloresDeMarca(kit), [kit]);
   const titulos = `"${kit.tipografias.titulos.familia}", serif`;
@@ -587,8 +590,8 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
           <TarjetaPieza
             key={item.id}
             n={i + 1}
-            meGusta={meGusta.includes(item.id)}
-            onMeGusta={() => onMeGusta(item.id)}
+            meGusta={meGusta?.includes(item.id) ?? false}
+            onMeGusta={onMeGusta ? () => onMeGusta(item.id) : undefined}
             item={item}
             pieza={lote.piezas[item.id]}
             kit={kit}

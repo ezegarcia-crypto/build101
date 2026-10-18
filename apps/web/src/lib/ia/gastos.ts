@@ -68,8 +68,8 @@ const POR_MINUTO: Record<Paso, number> = {
   "web-cambio": 40,
   "web-foto": 30,
   "web-publicar": 20, // no usa IA: el tope es solo para cortar abusos
-  // 12 fotos del catálogo + 5 sugeridas por marca: alcanza para 4 personas entrando a la vez
-  branderia: 68,
+  // 10 fotos por marca al entrar, más las que se pidan: alcanza para 4 personas entrando a la vez
+  branderia: 60,
   "branderia-sugerir": 15,
 };
 const recientes = new Map<Paso, number[]>();

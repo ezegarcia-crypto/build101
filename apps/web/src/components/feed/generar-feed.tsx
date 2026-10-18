@@ -207,7 +207,7 @@ export function GenerarFeed() {
         {anteriores.length > 0 && (
           <nav aria-label="Tus feeds" className={`${s.entra} mt-8 flex flex-wrap items-center gap-2`}>
             <span className="label mr-1">Tus feeds</span>
-            {[...anteriores, ultimo].map((l, n) => {
+            {[...anteriores, ultimo].map((_, n) => {
               const activo = n === numero;
               const enCurso = n === anteriores.length && (generando || estado.tipo === "error");
               return (

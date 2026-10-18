@@ -35,7 +35,7 @@ export function OtraPaleta({
   logosViejos,
   onRedibujar,
   redibujando,
-  errorLogos,
+  marcados,
 }: {
   versiones: VersionPaleta[];
   /** La que está aplicada ahora */
@@ -47,7 +47,8 @@ export function OtraPaleta({
   logosViejos: boolean;
   onRedibujar: () => void;
   redibujando: boolean;
-  errorLogos?: string;
+  /** Cuántos colores de la paleta aplicada están marcados con ♥ (se quedan en la próxima) */
+  marcados: number;
 }) {
   const [pedido, setPedido] = useState("");
   const [pidiendo, setPidiendo] = useState(false);
@@ -100,6 +101,11 @@ export function OtraPaleta({
           </ul>
         </div>
       )}
+      <p className="mb-3 text-[13px] opacity-75">
+        {marcados
+          ? `${marcados === 1 ? "Marcaste un color" : `Marcaste ${marcados} colores`} con ♥: en la próxima paleta se quedan y cambia el resto.`
+          : "Tocá ♥ en los colores que te gustan: en la próxima paleta se quedan y cambia el resto."}
+      </p>
       {explicacion && <p className="mb-4 max-w-[40em] text-[15px] leading-relaxed italic opacity-85">{explicacion}</p>}
       <form onSubmit={enviar} className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <label htmlFor="pedido-paleta" className="text-sm font-semibold sm:sr-only">
@@ -142,11 +148,6 @@ export function OtraPaleta({
             <RefreshCw className={`size-4 ${redibujando ? "animate-spin" : ""}`} aria-hidden="true" />
             {redibujando ? "Dibujando…" : "Sumar logos con esta paleta"}
           </button>
-        </p>
-      )}
-      {errorLogos && (
-        <p className="mt-3 text-sm font-semibold" role="alert">
-          {errorLogos}
         </p>
       )}
     </div>

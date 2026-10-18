@@ -5,6 +5,7 @@ import { Check, Plus, RefreshCw, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Armando } from "@/components/entrevista/armando";
+import { alternar, MeGusta } from "@/components/me-gusta";
 import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import type { Brief } from "@/lib/ia/brief";
 import { ESTRATEGIAS, type NombrePropuesto } from "@/lib/ia/nombres";
@@ -25,6 +26,8 @@ type Guardado = {
   elegido: string | null;
   /** Los que escribió la persona */
   propios?: string[];
+  /** Los marcados con ♥: guían la próxima vuelta y no se descartan */
+  gustan?: string[];
 };
 
 function leer(ficha: string): Guardado | null {
@@ -55,6 +58,9 @@ export function Nombres({
   const [pedido, setPedido] = useState("");
   const [propios, setPropios] = useState<string[]>([]);
   const [suyo, setSuyo] = useState("");
+  const [gustan, setGustan] = useState<string[]>([]);
+  // Lo mismo, para guardar siempre lo último aunque se toquen varios ♥ seguidos
+  const gustanRef = useRef<string[]>([]);
   const avisar = useRef(onElegir);
   avisar.current = onElegir;
 
@@ -71,9 +77,9 @@ export function Nombres({
     (nombre: string | null, suyos = propios) => {
       setElegido(nombre);
       avisar.current(nombre);
-      guardar({ nombres, vistos, elegido: nombre, propios: suyos });
+      guardar({ nombres, vistos, elegido: nombre, propios: suyos, gustan });
     },
-    [nombres, vistos, propios, guardar],
+    [nombres, vistos, propios, gustan, guardar],
   );
 
   const pedir = useCallback(
@@ -98,14 +104,14 @@ export function Nombres({
         setVistos(todosVistos);
         setElegido(siguiente);
         avisar.current(siguiente);
-        guardar({ nombres: lista, vistos: todosVistos, elegido: siguiente, propios });
+        guardar({ nombres: lista, vistos: todosVistos, elegido: siguiente, propios, gustan });
       } catch (e) {
         setError((e as Error).message);
       } finally {
         setPidiendo(false);
       }
     },
-    [brief, nombres, vistos, propio, propios, guardar],
+    [brief, nombres, vistos, propio, propios, gustan, guardar],
   );
 
   // Al llegar: lo guardado de esta ficha o la primera vuelta
@@ -119,6 +125,8 @@ export function Nombres({
       setVistos(g.vistos);
       setElegido(g.elegido);
       setPropios(g.propios ?? []);
+      gustanRef.current = g.gustan ?? [];
+      setGustan(gustanRef.current);
       avisar.current(g.elegido);
       return;
     }
@@ -130,10 +138,11 @@ export function Nombres({
   function otros(e: React.FormEvent) {
     e.preventDefault();
     if (pidiendo) return;
-    const gustan = elegido && elegido !== propio ? [elegido] : [];
+    // Los marcados con ♥ (y el elegido) muestran la línea; el resto de lo que vio no se repite
+    const enLinea = [...new Set([...gustan, ...(elegido && elegido !== propio ? [elegido] : [])])];
     pedir({
-      descartados: vistos.filter((n) => n !== elegido),
-      gustan,
+      descartados: vistos.filter((n) => !enLinea.includes(n) && n !== elegido),
+      gustan: enLinea,
       pedido: pedido.trim() || undefined,
       actual: elegido,
     });
@@ -155,12 +164,18 @@ export function Nombres({
   function variantes() {
     if (pidiendo || !elegido) return;
     pedir({
-      descartados: vistos.filter((n) => n !== elegido),
+      descartados: vistos.filter((n) => n !== elegido && !gustan.includes(n)),
       gustan: [elegido],
       pedido: `Variantes de «${elegido}»: conservá su idea y su sonido, y probá otras palabras, combinaciones o grafías.${pedido.trim() ? ` Además: ${pedido.trim()}` : ""}`,
       actual: elegido,
     });
     setPedido("");
+  }
+
+  function meGusta(nombre: string) {
+    gustanRef.current = alternar(gustanRef.current, nombre);
+    setGustan(gustanRef.current);
+    guardar({ nombres, vistos, elegido, propios, gustan: gustanRef.current });
   }
 
   const opciones: (NombrePropuesto | { propio: string; suyo?: boolean })[] = [
@@ -177,7 +192,8 @@ export function Nombres({
       <p className="lead mt-3 max-w-[40em] text-base">
         {propio
           ? `Podés quedarte con ${propio} o explorar otros. Cada propuesta te cuenta de dónde sale y qué dice de tu negocio.`
-          : "Cada propuesta te cuenta de dónde sale y qué dice de tu negocio. Elegí la que más te represente."}
+          : "Cada propuesta te cuenta de dónde sale y qué dice de tu negocio. Elegí la que más te represente."}{" "}
+        Marcá con ♥ los que te gustan: los nuevos van por ahí y los de antes no se borran.
       </p>
 
       {nombres.length === 0 && pidiendo && (
@@ -192,12 +208,12 @@ export function Nombres({
             const nombre = "propio" in o ? o.propio : o.nombre;
             const activo = elegido === nombre;
             return (
-              <li key={nombre} className={s.entra} style={{ animationDelay: `${i * 80}ms` }}>
+              <li key={nombre} className={`${s.entra} relative`} style={{ animationDelay: `${(i % 6) * 80}ms` }}>
                 <button
                   type="button"
                   aria-pressed={activo}
                   onClick={() => elegir(nombre)}
-                  className={`flex h-full w-full flex-col gap-2 rounded-lg border bg-card p-5 text-left transition-[transform,box-shadow] duration-300 ease-brandia outline-none hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring ${activo ? "border-foreground ring-1 ring-foreground" : ""}`}
+                  className={`flex h-full w-full flex-col gap-2 rounded-lg border bg-card p-5 pb-12 text-left transition-[transform,box-shadow] duration-300 ease-brandia outline-none hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ring ${activo ? "border-foreground ring-1 ring-foreground" : ""}`}
                 >
                   <span className="flex items-center justify-between gap-2">
                     <span className="label">
@@ -224,6 +240,12 @@ export function Nombres({
                     </>
                   )}
                 </button>
+                <MeGusta
+                  activo={gustan.includes(nombre)}
+                  onClick={() => meGusta(nombre)}
+                  que={`el nombre ${nombre}`}
+                  className="absolute right-3 bottom-3 size-9 text-foreground"
+                />
               </li>
             );
           })}

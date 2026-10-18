@@ -27,6 +27,8 @@ export const PROMPT_PALETA = `Sos el director visual de BrandIA. La persona ya t
 Reglas:
 - El pedido de la persona manda: cambiá lo que pide. Si no pide nada concreto, proponé una variante distinta pero dentro de la misma idea de marca.
 - Si pide algo puntual (un color, el fondo, más contraste), conservá el resto de la paleta lo más parecida posible.
+- Los colores que la persona marcó con "me gusta" se quedan tal cual (mismo hex y mismo rol): cambiá solo los demás.
+- Los colores nuevos salen del negocio: lo que vende o hace, sus materiales, su lugar y su público (una pastelería: crema, frutilla, chocolate). La explicación dice de dónde sale cada color nuevo.
 - Respetá colores_no y lo que la marca nunca tiene que transmitir (palabras_no) de la ficha.
 - De 4 a 6 colores: exactamente uno "fondo" y uno "texto" (que se lean muy bien juntos), uno "principal" y uno "acento"; el resto, "apoyo".
 - El principal tiene que verse sobre el fondo en títulos y formas grandes.
@@ -39,17 +41,26 @@ export function pedidoPaleta({
   actual,
   vistas,
   pedido,
+  conservar = [],
 }: {
   brief: unknown;
   direccion: unknown;
   actual: z.infer<typeof colorSchema>[];
   vistas: z.infer<typeof colorSchema>[][];
   pedido?: string;
+  /** Los hex que la persona marcó con "me gusta": no se tocan */
+  conservar?: string[];
 }) {
   return [
     `Ficha de la marca:\n${JSON.stringify(brief, null, 1)}`,
     `Dirección visual elegida:\n${JSON.stringify(direccion, null, 1)}`,
     `Paleta actual:\n${JSON.stringify(actual)}`,
+    conservar.length
+      ? `Colores que le gustan y se quedan igual: ${actual
+          .filter((c) => conservar.some((h) => h.toLowerCase() === c.hex.toLowerCase()))
+          .map((c) => `${c.hex} (${c.rol}, «${c.nombre}»)`)
+          .join(", ")}`
+      : "",
     vistas.length ? `Paletas que ya vio y no quiere repetir:\n${vistas.map((p) => p.map((c) => c.hex).join(" ")).join("\n")}` : "",
     pedido?.trim() ? `Lo que pide la persona: ${pedido.trim()}` : "La persona no pidió nada concreto: proponé una variante.",
   ]

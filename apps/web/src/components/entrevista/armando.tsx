@@ -30,6 +30,7 @@ const FRASES = {
     "Armando tu brandbook…",
   ],
   paleta: ["Leyendo lo que pediste…", "Mezclando colores…", "Revisando que todo se lea bien…"],
+  logos: ["Pensando ideas nuevas…", "Dibujando tus logos…", "Escribiendo bien tu nombre…", "Ya casi están…"],
   productos: [
     "Pensando qué usa tu negocio todos los días…",
     "Eligiendo productos para tu rubro…",

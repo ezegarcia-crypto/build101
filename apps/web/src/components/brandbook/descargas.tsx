@@ -5,7 +5,7 @@ import { Download, FileText } from "lucide-react";
 import { useState } from "react";
 
 import s from "../entrevista/entrevista.module.css";
-import { archivosDeMarca, bajar, brandbookHtml, simboloAPng, slug, zip } from "./archivos";
+import { archivosDeMarca, bajar, brandbookHtml, simboloAPng, simboloConNombre, slug, zip } from "./archivos";
 import { type IdentidadIA, type LogoElegido, logoDeMarca, type PropuestaLogo, svgConTamano } from "./identidad";
 
 // Los archivos finales de la marca, para llevarse: todo en un .zip, o de a uno. Va con la ropa de BrandIA.
@@ -24,6 +24,7 @@ export function Descargas({
   const base = slug(identidad.nombre);
   const logo = logoDeMarca(logos, elegido);
   const svg = identidad.logo.isotipo_svg;
+  const conNombre = elegido === "simbolo-nombre" && !!svg;
 
   async function todo() {
     setArmando(true);
@@ -43,16 +44,20 @@ export function Descargas({
       const res = await fetch(logo.imagen);
       return bajar(await res.blob(), `${base}-logo.${logo.imagen.startsWith("data:image/webp") ? "webp" : "png"}`);
     }
+    if (conNombre) {
+      const lienzo = await simboloConNombre(identidad, 512);
+      return lienzo.toBlob((b) => b && bajar(b, `${base}-logo.png`), "image/png");
+    }
     if (svg) bajar(new Blob([(await simboloAPng(svg, 1024)) as BlobPart], { type: "image/png" }), `${base}-logo.png`);
   }
 
   function brandbookPdf() {
     // El brandbook se abre en otra pestaña y se manda a imprimir: ahí se elige "Guardar como PDF"
-    const url = URL.createObjectURL(new Blob([brandbookHtml(identidad, logo)], { type: "text/html" }));
+    const url = URL.createObjectURL(new Blob([brandbookHtml(identidad, logo, conNombre)], { type: "text/html" }));
     const ventana = window.open(url, "_blank");
     if (!ventana) {
       URL.revokeObjectURL(url);
-      return bajar(new Blob([brandbookHtml(identidad, logo)], { type: "text/html" }), `${base}-brandbook.html`);
+      return bajar(new Blob([brandbookHtml(identidad, logo, conNombre)], { type: "text/html" }), `${base}-brandbook.html`);
     }
     ventana.addEventListener("load", () => setTimeout(() => ventana.print(), 600));
     setTimeout(() => URL.revokeObjectURL(url), 60_000);

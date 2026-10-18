@@ -4,6 +4,7 @@
 
 import {
   contraste,
+  esperarFuente,
   fondoParaSimbolo,
   type IdentidadIA,
   type LogoElegido,
@@ -69,6 +70,43 @@ export async function simboloAPng(svg: string, lado: number) {
   }
 }
 
+/**
+ * El símbolo exacto con el nombre al lado en la tipografía de títulos (el logo "símbolo con tu nombre"),
+ * como lo muestra el brandbook. Fondo transparente, o del color que se pida.
+ */
+export async function simboloConNombre(identidad: IdentidadIA, alto: number, fondo?: string) {
+  const { titulos } = identidad.tipografias;
+  await esperarFuente(identidad.fuentes_url, titulos);
+  const url = URL.createObjectURL(new Blob([svgConTamano(identidad.logo.isotipo_svg, alto)], { type: "image/svg+xml" }));
+  try {
+    const simbolo = await cargar(url);
+    const margen = Math.round(alto * 0.25);
+    const separacion = Math.round(alto * 0.28);
+    const letra = `${Math.round(alto * 0.62)}px "${titulos}", Georgia, serif`;
+    const medir = document.createElement("canvas").getContext("2d");
+    if (!medir) throw new Error("Sin lienzo");
+    medir.font = letra;
+    const ancho = Math.ceil(margen * 2 + alto + separacion + medir.measureText(identidad.nombre).width);
+    const lienzo = document.createElement("canvas");
+    lienzo.width = ancho;
+    lienzo.height = alto + margen * 2;
+    const c = lienzo.getContext("2d");
+    if (!c) throw new Error("Sin lienzo");
+    if (fondo) {
+      c.fillStyle = fondo;
+      c.fillRect(0, 0, lienzo.width, lienzo.height);
+    }
+    c.drawImage(simbolo, margen, margen, alto, alto);
+    c.font = letra;
+    c.fillStyle = rolesDe(identidad.paleta).principal;
+    c.textBaseline = "middle";
+    c.fillText(identidad.nombre, margen + alto + separacion, margen + alto / 2);
+    return lienzo;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 /** Las muestras de la paleta en una imagen, con su nombre y su código */
 async function paletaAPng(identidad: IdentidadIA) {
   const { paleta } = identidad;
@@ -120,11 +158,12 @@ function tipografias(identidad: IdentidadIA) {
   ].join("\n");
 }
 
-function leeme(identidad: IdentidadIA, logoEsSimbolo: boolean, propuestas: number) {
+function leeme(identidad: IdentidadIA, cual: "propuesta" | "simbolo" | "simbolo-nombre", propuestas: number) {
+  const queEs = { propuesta: "el logo que elegiste", simbolo: "tu logo: el símbolo solo", "simbolo-nombre": "tu logo: el símbolo con tu nombre" }[cual];
   return [
     `Los archivos de ${identidad.nombre}, hechos con BrandIA`,
     "",
-    `logo.png · ${logoEsSimbolo ? "tu logo: el símbolo solo" : "el logo que elegiste"}, en alta (fondo ${logoEsSimbolo ? "transparente" : "blanco"})`,
+    `logo.png · ${queEs}, en alta (fondo ${cual === "propuesta" ? "blanco" : "transparente"})`,
     "simbolo.svg · el símbolo en vector: se agranda sin perder calidad (para imprenta, cartelería, bordado)",
     "simbolo.png · el símbolo con fondo transparente",
     propuestas ? `propuestas/ · las ${propuestas} propuestas de logo` : "",
@@ -143,7 +182,7 @@ const esc = (t: string | null | undefined) =>
   (t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** El manual de marca en una sola página, con los colores y las letras del cliente. Se imprime en PDF. */
-export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null) {
+export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null, conNombre = false) {
   const { nombre, eslogan, esencia, voz, estilo, brandbook: bb, paleta, tipografias: t, logo: simbolo } = identidad;
   const c = rolesDe(paleta);
   const sobrePrincipal = textoSobre(c.principal, paleta);
@@ -151,7 +190,9 @@ export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null
   const svg = simbolo.isotipo_svg ? svgSeguro(simbolo.isotipo_svg) : "";
   const marcaLogo = logo
     ? `<img class="logo" src="${logo.imagen}" alt="Logo de ${esc(nombre)}">`
-    : `<div class="simbolo">${svg}</div>`;
+    : conNombre
+      ? `<div class="con-nombre"><div class="simbolo">${svg}</div><span>${esc(nombre)}</span></div>`
+      : `<div class="simbolo">${svg}</div>`;
   const par = (titulo: string, valor?: string | null) =>
     valor ? `<div><h3>${esc(titulo)}</h3><p>${esc(valor)}</p></div>` : "";
   const lista = (items: string[], marca = "·") => `<ul>${items.map((i) => `<li><span>${marca}</span>${esc(i)}</li>`).join("")}</ul>`;
@@ -179,6 +220,9 @@ export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null
   .caja { border-radius: 10px; padding: 20px; box-shadow: inset 0 0 0 1px ${c.texto}26; }
   .logo { width: 220px; height: 220px; object-fit: contain; background: #fff; border-radius: 10px; }
   .simbolo { width: 140px; height: 140px; color: ${c.principal}; }
+  .con-nombre { display: flex; align-items: center; gap: 28px; }
+  .con-nombre .simbolo { width: 96px; height: 96px; flex-shrink: 0; }
+  .con-nombre span { font-family: "${t.titulos}", Georgia, serif; font-size: 56px; line-height: 1; color: ${c.principal}; }
   .simbolo svg, .aplicado svg { width: 100%; height: 100%; }
   .aplicado { display: grid; place-items: center; min-height: 180px; border-radius: 10px; }
   .aplicado div { width: 96px; height: 96px; }
@@ -273,7 +317,9 @@ export async function archivosDeMarca(identidad: IdentidadIA, logos: PropuestaLo
     }
   };
 
+  const conNombre = elegido === "simbolo-nombre" && !!svg;
   if (logo) await sumar("logo.png", () => imagenAPng(logo.imagen, 1024, "#ffffff"));
+  else if (conNombre) await sumar("logo.png", async () => aPng(await simboloConNombre(identidad, 512)));
   else if (svg) await sumar("logo.png", () => simboloAPng(svg, 1024));
   if (svg) {
     await sumar("simbolo.svg", () => texto(svgConTamano(svg, 1024)));
@@ -285,8 +331,9 @@ export async function archivosDeMarca(identidad: IdentidadIA, logos: PropuestaLo
   await sumar("paleta.png", () => paletaAPng(identidad));
   await sumar("colores.txt", () => texto(colores(identidad)));
   await sumar("tipografias.txt", () => texto(tipografias(identidad)));
-  await sumar("brandbook.html", () => texto(brandbookHtml(identidad, logo)));
-  await sumar("LEEME.txt", () => texto(leeme(identidad, !logo, logos.length > 1 ? logos.length : 0)));
+  await sumar("brandbook.html", () => texto(brandbookHtml(identidad, logo, conNombre)));
+  const cual = logo ? "propuesta" : conNombre ? "simbolo-nombre" : "simbolo";
+  await sumar("LEEME.txt", () => texto(leeme(identidad, cual, logos.length > 1 ? logos.length : 0)));
   return archivos;
 }
 

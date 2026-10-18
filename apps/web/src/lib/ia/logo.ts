@@ -43,9 +43,13 @@ Reglas:
 - Lo que no está en la ficha no lo inventes: no agregues eslóganes ni años que no estén.`;
 
 // Lo que recibe POST /api/logo: la ficha y la dirección elegida, tal como salen de /api/direcciones.
+// Para otra vuelta: las ideas de los logos que le gustaron, las que ya vio y un pedido en palabras.
 export const pedidoLogoSchema = z.object({
   brief: briefSchema,
   direccion: direccionSchema,
+  gustan: z.array(z.string().max(600)).max(20).optional(),
+  vistos: z.array(z.string().max(600)).max(40).optional(),
+  pedido: z.string().max(400).optional(),
 });
 
 const conceptosSchema = z.object({
@@ -90,7 +94,19 @@ async function dibujar(prompt: string) {
   return null;
 }
 
-export async function generarLogos({ brief, direccion }: { brief: Brief; direccion: Direccion }) {
+export async function generarLogos({
+  brief,
+  direccion,
+  gustan = [],
+  vistos = [],
+  pedido,
+}: {
+  brief: Brief;
+  direccion: Direccion;
+  gustan?: string[];
+  vistos?: string[];
+  pedido?: string;
+}) {
   const nombre = brief.marca.nombre ?? direccion.nombre_marca;
   const sugerido = direccion.logo_sugerido.tipo;
   const tipos = [sugerido, ...TIPOS.filter((t) => t !== sugerido).slice(0, 2)];
@@ -119,7 +135,14 @@ export async function generarLogos({ brief, direccion }: { brief: Brief; direcci
           1,
         )}`,
         `Ficha de la marca:\n${JSON.stringify(brief, null, 1)}`,
-      ].join("\n\n"),
+        vistos.length ? `Ideas de logo que ya vio (no las repitas):\n${vistos.map((v) => `- ${v}`).join("\n")}` : "",
+        gustan.length
+          ? `Ideas de logo que le gustaron (seguí esa línea con ideas nuevas, sin copiarlas):\n${gustan.map((v) => `- ${v}`).join("\n")}`
+          : "",
+        pedido?.trim() ? `Lo que pide la persona (manda sobre todo, salvo la ficha): ${pedido.trim()}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
     }),
   );
 

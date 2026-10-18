@@ -1,6 +1,4 @@
-import { buttonVariants } from "@build101/ui/components/button";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { BotonWeb } from "@/components/boton-web";
 
 import { Entrada } from "../_piezas/entrada";
 import { DetrasDeEscena, Encabezado, Lienzo, LugarLogo, Pasos, Renglon } from "../_piezas/piezas";
@@ -59,10 +57,7 @@ export default function Web() {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/crear/web" className={buttonVariants({ size: "lg" })}>
-          Armar mi web
-          <ArrowRight data-icon="inline-end" />
-        </Link>
+        <BotonWeb variant="default" />
         <p className="text-sm text-muted-foreground">La entrevista, la web y los cambios por chat ya funcionan.</p>
       </div>
 
