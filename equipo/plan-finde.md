@@ -47,6 +47,21 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 - **Web del cliente: se trabaja en paralelo a los contenidos, para llegar a la demo (decidido el 17/10).** La hace **Rodrigo**, en la rama `web-cliente`. El recorrido está en `equipo/flujo-web-cliente.md`. Primero los pasos 1, 3 y 4 (entrevista, web generada y cambios por chat); después, si llega, el 2 (competencia) y el 5 (chequeo de dominios). El pago y la compra del dominio quedan "en construcción". Hasta que funcione, la web se muestra como pantalla "en construcción". No puede frenar los hitos de las 15:00 y las 18:00.
 - **Publicar en redes:** Zernio (una sola conexión para Instagram, Facebook, TikTok; gratis para 2 cuentas). Opcional, para el final.
 
+## Después de la demo (pedido del equipo, 18/10)
+
+Lo que quedó anotado después de probar con «Lic. Sofía Méndez» y que no entra para la demo:
+
+- **Subir referencias en el logo:** un espacio en la sección del logo para que la persona suba su logo actual o
+  imágenes que le gustan, como referencia para la IA.
+- **Íconos de la marca para la web:** los íconos de las historias destacadas ya se hacen con el feed; faltan los
+  de la web.
+- **Auditoría del rubro:** que la IA revise si al cliente le falta algo típico de su rubro (mirando sitios de
+  otros negocios parecidos) y se lo recomiende.
+- **Más estilos de diseño:** el feed arranca con dos estilos para elegir antes de generar. Sumar más, y hacer lo
+  mismo con las webs, para que las marcas no salgan todas parecidas.
+- **Pedidos de BranderIA automáticos:** hoy el pedido se guarda y se manda por WhatsApp a mano; después, una
+  automatización que le escriba al cliente con la cotización.
+
 ## Herramientas que nos recomendaron
 
 | Herramienta | ¿La usamos? | Por qué |
