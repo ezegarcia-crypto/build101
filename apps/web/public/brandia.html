@@ -313,10 +313,17 @@ p{margin:0}
 /* ====== A7 · EMPEZAR sobre naranja ====== */
 #empezar{background:var(--n);color:var(--g)}
 /* Toda la sección es un solo botón gigante que lleva a la app */
-#empezar .cta-gigante{display:flex;align-items:center;justify-content:center;width:100%;min-height:clamp(220px,32vw,420px);padding:clamp(28px,4vw,56px);border-radius:clamp(28px,4vw,56px);background:var(--g);color:var(--h);text-decoration:none;font-family:var(--fd);font-size:clamp(3.2rem,1rem + 9vw,11rem);font-weight:500;letter-spacing:-.03em;line-height:1;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 0;text-align:center;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-#empezar .cta-gigante:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 40px 70px -40px rgba(30,30,28,.6)}
-#empezar .cta-gigante:active{transform:translateY(-2px) scale(.995)}
+#empezar .cta-gigante{position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(18px,2.4vw,40px);width:100%;min-height:clamp(220px,32vw,420px);padding:clamp(28px,4vw,56px);border-radius:clamp(28px,4vw,56px);background:var(--g);color:var(--h);text-decoration:none;font-family:var(--fd);font-size:clamp(3.2rem,1rem + 9vw,11rem);font-weight:500;letter-spacing:-.03em;line-height:1;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 0;text-align:center;
+  /* Relieve de tecla: canto inferior más oscuro, brillo arriba y sombra larga; al apretar se hunde */
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset 0 -6px 0 rgba(0,0,0,.35),0 14px 0 #0d0d0c,0 34px 60px -18px rgba(30,30,28,.55);
+  transform:translateY(-6px);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+#empezar .cta-gigante .fl{display:grid;place-items:center;flex:none;width:1em;height:1em;border-radius:50%;background:var(--h);color:var(--g);font-family:var(--ft);font-size:.56em;line-height:1;transition:transform .35s var(--ease)}
+#empezar .cta-gigante .fl svg{width:46%;height:46%}
+#empezar .cta-gigante:hover{transform:translateY(-10px);box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -6px 0 rgba(0,0,0,.35),0 18px 0 #0d0d0c,0 44px 70px -18px rgba(30,30,28,.6)}
+#empezar .cta-gigante:hover .fl{transform:translateX(8px)}
+#empezar .cta-gigante:active{transform:translateY(6px);box-shadow:inset 0 2px 0 rgba(255,255,255,.08),inset 0 -3px 0 rgba(0,0,0,.35),0 2px 0 #0d0d0c,0 10px 24px -12px rgba(30,30,28,.5)}
 #empezar .cta-gigante:focus-visible{outline:3px solid var(--g);outline-offset:6px}
+@media (max-width:860px){#empezar .cta-gigante{flex-direction:column;gap:22px;font-size:clamp(2.6rem,1rem + 9vw,5.5rem);min-height:auto;padding:48px 24px 52px}}
 
 footer{background:var(--g);color:var(--h);padding-block:56px calc(40px + env(safe-area-inset-bottom,0px))}
 footer .wrap{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
@@ -620,7 +627,7 @@ footer .r{text-align:right;font-size:13px;color:var(--pd);line-height:1.8}
 <!-- ================= A7 · EMPEZAR ================= -->
 <section class="sec" id="empezar">
   <div class="wrap">
-    <a class="cta-gigante rv" href="/crear">¿Brand<span class="it">IA</span>mos?</a>
+    <a class="cta-gigante rv" href="/crear"><span>¿Brand<span class="it">IA</span>mos?</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
   </div>
 </section>
 </main>
