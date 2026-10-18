@@ -15,19 +15,21 @@ export function OtrosLogos({
   error,
   marcados,
 }: {
-  pedir: (pedido: string) => Promise<void>;
+  /** `iniciales`: una vuelta de logos con las iniciales (o la sigla) como protagonista */
+  pedir: (pedido: string, iniciales: boolean) => Promise<void>;
   pidiendo: boolean;
   error?: string;
   /** Cuántos logos marcó con ♥ */
   marcados: number;
 }) {
   const [pedido, setPedido] = useState("");
+  const [iniciales, setIniciales] = useState(false);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (pidiendo) return;
     try {
-      await pedir(pedido);
+      await pedir(pedido, iniciales);
       setPedido("");
     } catch {
       // El error lo muestra `error`
@@ -43,6 +45,17 @@ export function OtrosLogos({
           ? `Van a seguir la línea de ${marcados === 1 ? "el logo que marcaste" : `los ${marcados} logos que marcaste`} con ♥. Los de ahora no se borran.`
           : "Marcá con ♥ los que te gustan y los nuevos van por ahí. Los de ahora no se borran."}
       </p>
+      <button
+        type="button"
+        aria-pressed={iniciales}
+        onClick={() => setIniciales((v) => !v)}
+        disabled={pidiendo}
+        className="mt-3 inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors duration-300 ease-brandia disabled:opacity-50"
+        // Va sobre el lienzo con los colores de la marca: activo es el borde grueso y la marca ✓, sin rellenar
+        style={{ boxShadow: iniciales ? "inset 0 0 0 2px currentColor" : `inset 0 0 0 1px ${linea}` }}
+      >
+        {iniciales ? "✓ " : ""}Con las iniciales
+      </button>
       <form onSubmit={enviar} className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
         <label htmlFor="pedido-logos" className="sr-only">
           Qué buscás en el logo
@@ -64,7 +77,7 @@ export function OtrosLogos({
           style={{ boxShadow: "inset 0 0 0 1.5px currentColor" }}
         >
           <RefreshCw className={`size-4 ${pidiendo ? "animate-spin" : ""}`} aria-hidden="true" />
-          {pidiendo ? "Dibujando…" : "Otros logos"}
+          {pidiendo ? "Dibujando…" : iniciales ? "Logos con las iniciales" : "Otros logos"}
         </button>
       </form>
       {pidiendo && (

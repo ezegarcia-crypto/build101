@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
 import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
-import { MODELO_NOMBRES, nombresSchema, PROMPT_NOMBRES, pedidoNombres } from "@/lib/ia/nombres";
+import { ESTRATEGIAS, type Estrategia, MODELO_NOMBRES, nombresSchema, PROMPT_NOMBRES, pedidoNombres } from "@/lib/ia/nombres";
 import { conReintento } from "@/lib/ia/reintentar";
 
 // Módulo A, nombres: con la ficha, cinco nombres con su trasfondo. Se puede pedir otra vuelta.
-// Entra: { brief, descartados?, gustan?, pedido? }. Sale: { nombres }.
+// Entra: { brief, descartados?, gustan?, pedido?, guia?, estilo? }. Sale: { nombres }.
 
 export const maxDuration = 60;
 
@@ -15,6 +15,8 @@ const iteracionSchema = z.object({
   descartados: z.array(z.string()).max(60).optional(),
   gustan: z.array(z.string()).max(20).optional(),
   pedido: z.string().max(500).optional(),
+  guia: z.string().max(400).optional(),
+  estilo: z.enum(Object.keys(ESTRATEGIAS) as [Estrategia, ...Estrategia[]]).optional(),
 });
 
 export const POST = medir("nombres", async (req: Request) => {

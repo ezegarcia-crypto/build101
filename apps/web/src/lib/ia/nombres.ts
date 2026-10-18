@@ -5,6 +5,8 @@ import type { Brief } from "@/lib/ia/brief";
 // Módulo A, nombres: con la ficha, cinco nombres con trasfondo. Ninguno es "porque sí": cada uno dice de
 // dónde sale (significado, combinación con el nombre del negocio, palabras del rubro…) y cómo se conecta
 // con la historia de la marca. Se puede iterar: nombres que no gustaron, nombres que sí y un pedido en palabras.
+// La persona puede dejar una guía fija (vale para todas las vueltas) y pedir una vuelta de un solo estilo
+// (por ejemplo, todas siglas).
 
 export const MODELO_NOMBRES = "anthropic/claude-sonnet-5.5";
 
@@ -14,7 +16,10 @@ export const ESTRATEGIAS = {
   rubro: "Con palabras de tu rubro",
   evocativo: "Evoca una imagen o sensación",
   inventado: "Palabra nueva",
+  sigla: "Sigla",
 } as const;
+
+export type Estrategia = keyof typeof ESTRATEGIAS;
 
 export const nombreSchema = z.object({
   nombre: z.string().describe("El nombre, tal como se escribiría en el logo. De una a tres palabras"),
@@ -42,6 +47,10 @@ export type Iteracion = {
   descartados?: string[];
   gustan?: string[];
   pedido?: string;
+  /** La guía que escribió la persona: vale para todas las vueltas */
+  guia?: string;
+  /** Una vuelta de un solo estilo (por ejemplo, todas siglas) */
+  estilo?: Estrategia;
 };
 
 export const PROMPT_NOMBRES = `Sos el especialista en nombres de BrandIA. Con la ficha de un negocio, proponés cinco nombres de marca. Un nombre nunca es "porque sí": cada uno tiene un trasfondo que se puede contar y que alimenta la historia de la marca.
@@ -52,6 +61,7 @@ Cómo se arman los cinco (usá al menos cuatro estrategias distintas):
 - rubro: toma una palabra, un objeto, una herramienta o un gesto propio del rubro y lo usa con una vuelta.
 - evocativo: nombra una imagen, un momento o una sensación que el cliente asocia con el negocio.
 - inventado: una palabra nueva, corta y sonora, armada con partes que significan algo (y explicás cuáles).
+- sigla: las iniciales de las palabras clave del negocio o del nombre de la persona, de 2 a 4 letras en mayúsculas (como «BMR» o «LUA»). Tiene que leerse fácil: que se pueda pronunciar como palabra o deletrear sin trabarse. Puede llevar una palabra corta al lado si ayuda a entender el rubro («BMR Taller»). En de_donde_sale decí qué palabra hay detrás de cada letra.
 
 Reglas:
 - Corto (una a tres palabras), fácil de decir y de escribir en español rioplatense, que se entienda dicho en voz alta.
@@ -65,12 +75,16 @@ Reglas:
 Si te pasan lo que la persona ya opinó:
 - Nunca repitas un nombre descartado ni uno muy parecido.
 - Los que le gustaron muestran el estilo que busca: proponé nombres nuevos en esa línea, sin repetirlos.
-- Si hay un pedido en palabras, manda sobre todo lo demás (salvo las reglas de la ficha).`;
+- Si hay un pedido en palabras, manda sobre todo lo demás (salvo las reglas de la ficha).
+- Si te pasan la guía de la persona, todas las propuestas la respetan.
+- Si te piden un solo estilo, los cinco nombres son de esa estrategia, bien distintos entre sí (y no hace falta mezclar estrategias).`;
 
 export function pedidoNombres(brief: Brief, iteracion: Iteracion = {}) {
   const partes = [`Ficha de la marca:\n${JSON.stringify(brief, null, 2)}`];
   if (iteracion.descartados?.length) partes.push(`Nombres que no le gustaron: ${iteracion.descartados.join(", ")}`);
   if (iteracion.gustan?.length) partes.push(`Nombres que le gustaron: ${iteracion.gustan.join(", ")}`);
+  if (iteracion.guia?.trim()) partes.push(`Guía de la persona para el nombre (respetala en todas): ${iteracion.guia.trim()}`);
+  if (iteracion.estilo) partes.push(`Esta vuelta, los cinco nombres son de la estrategia «${iteracion.estilo}» (${ESTRATEGIAS[iteracion.estilo]}).`);
   if (iteracion.pedido?.trim()) partes.push(`Lo que pide la persona: ${iteracion.pedido.trim()}`);
   return partes.join("\n\n");
 }

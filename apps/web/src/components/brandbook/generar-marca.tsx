@@ -314,7 +314,7 @@ export function GenerarMarca() {
    * Otros logos: se suman a los de antes (el elegido no cambia). Van con la paleta aplicada, en la línea de los
    * marcados con ♥ y con el pedido en palabras, sin repetir ideas que ya vio.
    */
-  async function otrosLogos(l: Lista, pedido = "") {
+  async function otrosLogos(l: Lista, pedido = "", iniciales = false) {
     const { brief, direccion } = contexto(l);
     setRedibujando(true);
     setErrorLogos(undefined);
@@ -332,6 +332,7 @@ export function GenerarMarca() {
           .filter((x): x is string => !!x),
         vistos: l.logos.map((x) => x.concepto),
         pedido: pedido.trim() || undefined,
+        tipo: iniciales ? "monograma" : undefined,
       });
       actualizar((actual) => ({
         ...actual,
@@ -633,7 +634,7 @@ export function GenerarMarca() {
               extra={{
                 logo: (
                   <OtrosLogos
-                    pedir={(pedido) => otrosLogos(estado, pedido)}
+                    pedir={(pedido, iniciales) => otrosLogos(estado, pedido, iniciales)}
                     pidiendo={redibujando}
                     error={errorLogos}
                     marcados={estado.logosGustan.length}
