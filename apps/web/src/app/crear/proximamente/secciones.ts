@@ -1,5 +1,6 @@
 // Las pantallas "en construcción", agrupadas por módulo. La página índice las lista desde acá.
-export type Seccion = { ruta: string; nombre: string; resumen: string };
+// Si `lista` está, la sección ya funciona: se enlaza a esa ruta y no se marca "en construcción".
+export type Seccion = { ruta: string; nombre: string; resumen: string; lista?: string };
 
 export const GRUPOS: { modulo: string; secciones: Seccion[] }[] = [
   {
@@ -34,6 +35,7 @@ export const GRUPOS: { modulo: string; secciones: Seccion[] }[] = [
         ruta: "web",
         nombre: "Tu web",
         resumen: "Contás qué necesitás y BrandIA arma tu web con tu marca. La cambiás hablando.",
+        lista: "/crear/web",
       },
     ],
   },
@@ -44,6 +46,7 @@ export const GRUPOS: { modulo: string; secciones: Seccion[] }[] = [
         ruta: "branderia",
         nombre: "BranderIA",
         resumen: "Elegís tus productos y BrandIA los produce con tu marca y te los manda.",
+        lista: "/crear/branderia",
       },
     ],
   },
