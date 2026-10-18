@@ -125,11 +125,19 @@ function rgb(hex: string) {
   return [0, 2, 4].map((i) => Number.parseInt(h.slice(i, i + 2), 16)).join(", ");
 }
 
+/** CMYK aproximado (sin perfil de color): para que la imprenta tenga un punto de partida */
+function cmyk(hex: string) {
+  const [r, g, b] = [0, 2, 4].map((i) => Number.parseInt(hex.replace("#", "").slice(i, i + 2), 16) / 255);
+  const k = 1 - Math.max(r!, g!, b!);
+  if (k >= 1) return "0 0 0 100";
+  return [r!, g!, b!].map((v) => Math.round(((1 - v - k) / (1 - k)) * 100)).concat(Math.round(k * 100)).join(" ");
+}
+
 function colores(identidad: IdentidadIA) {
   return [
     `Paleta de ${identidad.nombre}`,
     "",
-    ...identidad.paleta.map((c) => `${c.nombre} · ${c.rol}\n  HEX ${c.hex.toUpperCase()} · RGB ${rgb(c.hex)}`),
+    ...identidad.paleta.map((c) => `${c.nombre} · ${c.rol}\n  HEX ${c.hex.toUpperCase()} · RGB ${rgb(c.hex)} · CMYK ${cmyk(c.hex)} (aprox.)`),
     "",
     identidad.estilo.uso_de_colores,
     "",
@@ -187,14 +195,16 @@ function mezclar(a: string, b: string, t: number) {
  * cada sección arranca en una hoja nueva y nada se corta entre hojas (tarjetas, colores y logos enteros).
  */
 export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
-  const { nombre, eslogan, esencia, voz, estilo, brandbook: bb, paleta, tipografias: t, logo: simbolo } = identidad;
+  const { nombre, eslogan, esencia, voz, estilo, brandbook: bb, paleta, tipografias: t } = identidad;
   const c = rolesDe(paleta);
   const neg = coloresNegativo(paleta);
   const hex = (h: string) => /^#[0-9a-f]{6}$/i.test(h);
-  // Los bloques: el color de fondo de cada sección y el texto que mejor se lee sobre él
+  const anio = new Date().getFullYear();
+  const completo = versiones.lista.find((v) => v.clave === "completo")!;
+  const simbolo = versiones.lista.find((v) => v.clave === "simbolo") ?? completo;
+
+  // Los bloques: el color de fondo de cada página y el texto que mejor se lee sobre él
   const bloque = (fondo: string) => ({ fondo, texto: contraste(fondo, c.texto) >= 4.5 ? c.texto : textoSobre(fondo, paleta) });
-  const portada = bloque(c.principal);
-  portada.texto = textoSobre(c.principal, paleta);
   const claro = bloque(c.fondo);
   const tinte = bloque(mezclar(c.fondo, c.principal, 0.1));
   const tinteAcento = bloque(hex(c.acento) ? mezclar(c.fondo, c.acento, 0.18) : tinte.fondo);
@@ -202,24 +212,78 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
   // Un detalle de color en cada bloque (la raya del título), que se lea sobre su fondo
   const detalle = (fondo: string) =>
     [c.acento, c.principal, c.texto].find((x) => hex(x) && contraste(x, fondo) >= 2.2) ?? textoSobre(fondo, paleta);
+  // Las portadillas van cada una en un color de la paleta (menos el fondo), en orden y dando la vuelta
+  const coloresCapitulo = [c.principal, ...paleta.map((x) => x.hex)].filter(
+    (h, i, todos) => hex(h) && contraste(h, c.fondo) >= 1.5 && todos.indexOf(h) === i,
+  );
 
   const par = (titulo: string, valor?: string | null) =>
     valor ? `<div class="par"><h3>${esc(titulo)}</h3><p>${esc(valor)}</p></div>` : "";
   const lista = (items: string[], marca = "·") =>
     `<ul>${items.map((i) => `<li><span>${marca}</span>${esc(i)}</li>`).join("")}</ul>`;
-  let numero = 0;
-  const seccion = (b: { fondo: string; texto: string }, titulo: string, cuerpo: string, clase = "") => {
-    numero += 1;
-    return `<section class="${clase}" style="--fondo:${b.fondo};--texto:${b.texto};--detalle:${detalle(b.fondo)}">
-  <header><p class="rotulo">${String(numero).padStart(2, "0")} · ${esc(nombre)}</p><h2>${esc(titulo)}</h2></header>
-  ${cuerpo}
+
+  let capitulo = 0;
+  let tituloCapitulo = "";
+  // La marca de agua: el símbolo en blanco sobre los fondos oscuros y en negro sobre los claros, muy transparente
+  const aguaPara = (fondo: string) => (contraste(fondo, "#ffffff") > contraste(fondo, "#000000") ? "var(--agua-claro)" : "var(--agua-oscuro)");
+  /** La portadilla de un capítulo: a sangre en un color de la marca, con el símbolo gigante tono sobre tono */
+  const portadilla = (titulo: string) => {
+    capitulo += 1;
+    tituloCapitulo = titulo;
+    const fondo = coloresCapitulo[(capitulo - 1) % Math.max(1, coloresCapitulo.length)] ?? c.principal;
+    const texto = textoSobre(fondo, paleta);
+    return `<section class="portadilla" style="--fondo:${fondo};--texto:${texto};--agua:${aguaPara(fondo)}">
+  <div class="agua" aria-hidden="true"></div>
+  <p class="rotulo">${esc(nombre)} · Brandbook</p>
+  <div><p class="num">${String(capitulo).padStart(2, "0")}</p><p class="cap">${esc(titulo)}</p></div>
 </section>`;
   };
+  /** Una página de contenido, con su título, su color de bloque y su pie */
+  const seccion = (b: { fondo: string; texto: string }, titulo: string, cuerpo: string) =>
+    `<section class="pagina" style="--fondo:${b.fondo};--texto:${b.texto};--detalle:${detalle(b.fondo)}">
+  <header><p class="rotulo">${String(capitulo).padStart(2, "0")} · ${esc(tituloCapitulo)}</p><h2>${esc(titulo)}</h2></header>
+  <div class="cuerpo">${cuerpo}</div>
+  <footer class="pie-pagina"><span>${esc(nombre)}</span><span>${esc(tituloCapitulo)}</span><span>Brandbook</span><span>${anio}</span></footer>
+</section>`;
 
   const versionesHtml = versiones.lista
     .map(
       (v) =>
         `<figure class="version"><div class="lamina" style="${v.fondo ? `background:${v.fondo}` : ""}"><img src="${v.imagen}" alt="${esc(v.titulo)}"></div><figcaption>${esc(v.titulo)}</figcaption></figure>`,
+    )
+    .join("");
+
+  // El logo sobre cada color de la paleta, en el color que mejor se lee (con la silueta del logo completo)
+  const sobreColores = paleta
+    .filter((x) => hex(x.hex))
+    .map(
+      (x) =>
+        `<figure class="version"><div class="lamina" style="background:${x.hex};${contraste(x.hex, c.fondo) < 1.3 ? `box-shadow:inset 0 0 0 1px ${c.texto}22` : ""}"><div class="silueta logo-sil" style="background:${textoSobre(x.hex, paleta)}"></div></div><figcaption>${esc(x.nombre)}</figcaption></figure>`,
+    )
+    .join("");
+  // Escala de grises: el símbolo en negro al 100, 70, 40 y 20 %, y en blanco sobre negro
+  const grises = [1, 0.7, 0.4, 0.2]
+    .map(
+      (o) =>
+        `<figure class="version"><div class="lamina" style="background:#ffffff"><div class="silueta simbolo-sil" style="background:#000000;opacity:${o}"></div></div><figcaption>Negro ${Math.round(o * 100)} %</figcaption></figure>`,
+    )
+    .concat(
+      `<figure class="version"><div class="lamina" style="background:#000000"><div class="silueta simbolo-sil" style="background:#ffffff"></div></div><figcaption>Blanco</figcaption></figure>`,
+    )
+    .join("");
+  // Lo que no se hace: transformaciones sobre el mismo logo, cada una con su leyenda
+  const mal = (
+    [
+      ["Estirarlo o aplastarlo", "transform:scaleX(1.55)", ""],
+      ["Girarlo", "transform:rotate(-14deg)", ""],
+      ["Cambiarle los colores", "filter:hue-rotate(160deg) saturate(1.6)", ""],
+      ["Sumarle sombras o efectos", "filter:drop-shadow(6px 8px 3px rgba(0,0,0,.45))", ""],
+      ["Ponerlo sobre un fondo que no contrasta", "", `background:${c.principal}`],
+    ] as const
+  )
+    .map(
+      ([leyenda, efecto, fondo]) =>
+        `<figure class="version"><div class="lamina mal" style="${fondo}"><span class="img-logo" style="${efecto}"></span></div><figcaption>× ${leyenda}</figcaption></figure>`,
     )
     .join("");
 
@@ -243,10 +307,13 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
 <link rel="stylesheet" href="${esc(identidad.fuentes_url)}">
 <style>
   @page { size: A4; margin: 0; }
+  :root { --simbolo: url("${simbolo.imagen}"); --logo: url("${completo.imagen}"); --portada: url("${versiones.portada}"); --agua-claro: url("${versiones.agua.claro}"); --agua-oscuro: url("${versiones.agua.oscuro}"); }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; background: ${claro.fondo}; }
   body { color: ${claro.texto}; font: 16px/1.6 "${t.texto}", system-ui, sans-serif; }
-  section { background: var(--fondo); color: var(--texto); padding: 64px 8vw; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  section { position: relative; background: var(--fondo); color: var(--texto); padding: 64px 8vw; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .pagina { display: flex; flex-direction: column; }
+  .cuerpo { flex: 1; }
   header { margin-bottom: 36px; break-after: avoid; page-break-after: avoid; }
   header h2 { padding-top: 18px; border-top: 3px solid var(--detalle); max-width: 18ch; }
   .rotulo, .mini { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .75; margin: 0 0 14px; }
@@ -258,24 +325,45 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
   .intro { font-size: 18px; margin-bottom: 28px; }
   .grilla { display: grid; gap: 22px 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 28px; }
   .caja { border-radius: 12px; padding: 20px 22px; background: color-mix(in srgb, var(--texto) 6%, var(--fondo)); }
-  .caja .grande { font-size: 24px; color: var(--detalle-texto, inherit); }
-  .par, .caja, .version, .color, li, .aa-caja { break-inside: avoid; page-break-inside: avoid; }
+  .caja .grande { font-size: 24px; }
+  .par, .caja, .version, .color, li, .aa-caja, .bloque { break-inside: avoid; page-break-inside: avoid; }
   ul { list-style: none; padding: 0; margin: 8px 0 0; }
   li { display: flex; gap: 8px; }
   .pie { font-size: 12px; opacity: .7; }
+  .pie-pagina { display: flex; justify-content: space-between; gap: 12px; margin-top: 40px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--texto) 25%, transparent); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
 
-  /* Portada: el color principal entero, con el logo en claro */
-  .portada { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; gap: 48px; }
-  .portada .logo { max-width: min(360px, 70vw); max-height: 200px; object-fit: contain; display: block; margin-bottom: 40px; }
-  .portada .idea { font-size: 19px; margin-top: 20px; max-width: 34em; }
-  .portada .franja { display: flex; height: 14px; border-radius: 999px; overflow: hidden; max-width: 420px; }
-  .portada .franja span { flex: 1; }
+  /* Tapa: el color principal entero, con el logo en claro */
+  .tapa { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; gap: 48px; overflow: hidden; }
+  .tapa .logo { max-width: min(360px, 70vw); max-height: 200px; object-fit: contain; display: block; margin-bottom: 40px; }
+  .tapa .idea { font-size: 19px; margin-top: 20px; max-width: 34em; }
+  .franja { display: flex; height: 14px; border-radius: 999px; overflow: hidden; max-width: 420px; }
+  .franja span { flex: 1; }
 
-  /* Logo: las 4 versiones */
+  /* Portadillas de capítulo: el símbolo gigante, tono sobre tono, de marca de agua */
+  .portadilla { min-height: 70vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+  .portadilla > * { position: relative; }
+  .agua, .contratapa .patron { position: absolute !important; background: var(--agua) center / contain no-repeat; opacity: .12; }
+  .agua { width: min(95vw, 900px); aspect-ratio: 1; right: -22%; bottom: -18%; }
+  .num { font-family: "${t.titulos}", Georgia, serif; font-size: clamp(110px, 22vw, 220px); line-height: .9; }
+  .cap { font-size: 15px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; margin-top: 18px; }
+
+  /* Contratapa: el patrón hecho con el símbolo */
+  .contratapa { min-height: 60vh; display: grid; place-items: center; overflow: hidden; }
+  .contratapa .patron { inset: 0; background: var(--agua) 0 0 / 56px 56px space; opacity: .1; }
+
+  /* Logo: versiones y usos */
   .versiones { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .versiones.chicas { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
   .version { margin: 0; }
-  .lamina { position: relative; aspect-ratio: 4 / 3; border-radius: 12px; background: ${c.fondo}; box-shadow: inset 0 0 0 1px ${c.texto}1f; }
-  .lamina img { position: absolute; inset: 14%; width: 72%; height: 72%; object-fit: contain; }
+  .lamina { position: relative; aspect-ratio: 4 / 3; border-radius: 12px; background: ${c.fondo}; box-shadow: inset 0 0 0 1px ${c.texto}1f; overflow: hidden; }
+  .lamina img, .lamina .img-logo, .silueta { position: absolute; inset: 14%; width: 72%; height: 72%; object-fit: contain; }
+  .img-logo { display: block; background: var(--logo) center / contain no-repeat; }
+  .img-portada { position: relative; display: block; width: min(320px, 60vw); aspect-ratio: 3; background: var(--portada) center / contain no-repeat; }
+  .silueta { -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+  .silueta.simbolo-sil { -webkit-mask-image: var(--simbolo); mask-image: var(--simbolo); }
+  .lamina.mal::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent calc(50% - 1px), #d0302f calc(50% - 1px), #d0302f calc(50% + 1px), transparent calc(50% + 1px)); opacity: .55; }
+  .proteccion { position: relative; display: inline-block; padding: 7%; outline: 1.5px dashed color-mix(in srgb, var(--texto) 55%, transparent); outline-offset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, color-mix(in srgb, var(--texto) 7%, transparent) 8px 9px); border-radius: 6px; max-width: 100%; }
+  .proteccion .img-logo { width: min(380px, 70vw); aspect-ratio: 3.2; background-color: var(--fondo); }
   figcaption { font-size: 13px; font-weight: 600; margin-top: 8px; }
 
   /* Paleta */
@@ -290,18 +378,20 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
     .grilla { gap: 16px 22px; margin-top: 20px; }
     .caja { padding: 14px 16px; }
     .aa { font-size: 80px; }
-    section { padding: 18mm 17mm; min-height: 297mm; break-before: page; page-break-before: always; }
+    section { padding: 18mm 17mm 12mm; min-height: 297mm; break-before: page; page-break-before: always; }
     section:first-of-type { break-before: auto; page-break-before: auto; }
-    .portada { height: 297mm; min-height: 0; overflow: hidden; }
+    .tapa, .portadilla, .contratapa { height: 297mm; min-height: 0; overflow: hidden; }
+    .agua { width: 190mm; }
     .grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .versiones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versiones { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .versiones.chicas { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .colores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
-  @media (max-width: 520px) { section { padding: 44px 20px; } .aa { font-size: 72px; } }
+  @media (max-width: 520px) { section { padding: 44px 20px; } .aa { font-size: 72px; } .pie-pagina span:nth-child(3) { display: none; } }
 </style>
 </head>
 <body>
-<section class="portada" style="--fondo:${portada.fondo};--texto:${portada.texto}">
+<section class="tapa" style="--fondo:${c.principal};--texto:${textoSobre(c.principal, paleta)}">
   <p class="rotulo">Brandbook · ${esc(nombre)}</p>
   <div>
     <img class="logo" src="${versiones.portada}" alt="Logo de ${esc(nombre)}">
@@ -313,33 +403,52 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
     <p style="margin-top:24px">${esc(bb.introduccion)}</p>
   </div>
 </section>
+${portadilla("Esencia")}
 ${seccion(
   claro,
-  "Esencia",
+  "Quiénes somos",
   `${esencia.mision || esencia.vision ? `<div class="grilla">${par("Misión", esencia.mision)}${par("Visión", esencia.vision)}</div>` : ""}
   <div class="grilla">${par("Por qué existe", esencia.proposito)}${par("Lo que prometemos", esencia.promesa)}${par("Dónde nos paramos", esencia.posicionamiento)}${par("Para quién", esencia.publico)}</div>
   <div class="grilla">${esencia.valores.map((v) => `<div class="caja"><p class="grande">${esc(v.valor)}</p><p style="margin-top:8px">${esc(v.significa)}</p></div>`).join("")}</div>`,
 )}
+${portadilla("Logotipo")}
 ${seccion(
   tinte,
-  "Logo",
-  `<p class="intro">${esc(versiones.simboloSvg ? simbolo.explicacion : "Tu logo y sus cuatro versiones: completo, solo el nombre, solo el símbolo y en negativo, para fondos oscuros.")}</p>
-  <div class="versiones">${versionesHtml}</div>`,
+  "Tu logo y sus versiones",
+  `<p class="intro">${esc(versiones.simboloSvg ? identidad.logo.explicacion : "Tu logo y sus cuatro versiones: completo, solo el nombre, solo el símbolo y en negativo, para fondos oscuros.")}</p>
+  <div class="versiones">${versionesHtml}</div>
+  <div class="grilla">
+    <div class="bloque"><h3>Área de protección</h3><p style="margin-bottom:14px">Alrededor del logo queda siempre este aire libre: nada de texto, bordes ni otras imágenes adentro.</p><div class="proteccion"><span class="img-logo"></span></div></div>
+    <div class="bloque"><h3>Tamaño mínimo</h3><p>Logo completo: 2,5 cm de ancho impreso, 120 px en pantalla.</p><p>Solo el símbolo: 1 cm impreso, 32 px en pantalla.</p><p style="margin-top:10px" class="pie">Más chico se pierde: usá el símbolo solo.</p></div>
+  </div>`,
 )}
 ${seccion(
   claro,
-  "Paleta",
+  "El logo en uso",
+  `<h3>Sobre cada color de la marca</h3>
+  <div class="versiones chicas">${sobreColores}</div>
+  <h3 style="margin-top:28px">En blanco y negro</h3>
+  <div class="versiones chicas">${grises}</div>
+  <h3 style="margin-top:28px">Lo que no se hace</h3>
+  <div class="versiones chicas">${mal}</div>
+  <div class="grilla"><div class="par"><h3>Siempre</h3>${lista(bb.usos_correctos)}</div><div class="par"><h3>Nunca</h3>${lista(bb.usos_incorrectos, "×")}</div></div>`,
+)}
+${portadilla("Colores")}
+${seccion(
+  claro,
+  "La paleta",
   `<div class="colores">${paleta
     .map(
       (col) =>
-        `<div class="color" style="background:${col.hex};color:${textoSobre(col.hex, paleta)};${contraste(col.hex, c.fondo) < 1.3 ? `box-shadow:inset 0 0 0 1px ${c.texto}33` : ""}"><b>${esc(col.nombre)}</b><span>${col.hex.toUpperCase()}</span><span>${esc(col.rol)}</span></div>`,
+        `<div class="color" style="background:${col.hex};color:${textoSobre(col.hex, paleta)};${contraste(col.hex, c.fondo) < 1.3 ? `box-shadow:inset 0 0 0 1px ${c.texto}33` : ""}"><b>${esc(col.nombre)}</b><span>HEX ${col.hex.toUpperCase()}</span><span>RGB ${rgb(col.hex)}</span><span>CMYK ${cmyk(col.hex)}</span><span>${esc(col.rol)}</span></div>`,
     )
     .join("")}</div>
   <p style="margin-top:28px">${esc(estilo.uso_de_colores)}</p>`,
 )}
+${portadilla("Tipografía")}
 ${seccion(
   tinteAcento,
-  "Tipografías",
+  "Las letras de la marca",
   `<div class="grilla">
     <div class="aa-caja"><p class="aa" style="font-family:'${esc(t.titulos)}',serif">Aa</p><p style="font-family:'${esc(t.titulos)}',serif;font-size:22px">${esc(t.titulos)}</p><p class="pie">Títulos</p></div>
     <div class="aa-caja"><p class="aa" style="font-family:'${esc(t.texto)}',sans-serif">Aa</p><p style="font-family:'${esc(t.texto)}',sans-serif;font-size:22px">${esc(t.texto)}</p><p class="pie">Texto</p></div>
@@ -347,13 +456,13 @@ ${seccion(
   <p class="grande" style="font-size:clamp(28px,4vw,44px);margin-top:48px;max-width:18ch">${esc(eslogan || nombre)}</p>
   <p style="margin-top:14px">${esc(esencia.promesa)}</p>`,
 )}
+${portadilla("Voz y tono")}
 ${seccion(
   oscuro,
-  "Voz y tono",
+  "Cómo habla la marca",
   `<p class="grande" style="font-size:clamp(24px,3vw,34px);max-width:26ch">${esc(voz.resumen)}</p>
   <div class="grilla">${voz.rasgos.map((r) => `<div class="caja"><h3 style="font-size:18px">${esc(r.rasgo)}</h3><p>Es · ${esc(r.es)}</p><p>No es · ${esc(r.no_es)}</p></div>`).join("")}</div>
-  ${(voz.tono ?? []).length ? `<div class="grilla">${voz.tono.map((m) => `<div class="caja"><h3 style="font-size:18px">${esc(m.momento)}</h3><p>${esc(m.como)}</p><p style="margin-top:10px;font-style:italic">«${esc(m.ejemplo)}»</p></div>`).join("")}</div>` : ""}
-`,
+  ${(voz.tono ?? []).length ? `<div class="grilla">${voz.tono.map((m) => `<div class="caja"><h3 style="font-size:18px">${esc(m.momento)}</h3><p>${esc(m.como)}</p><p style="margin-top:10px;font-style:italic">«${esc(m.ejemplo)}»</p></div>`).join("")}</div>` : ""}`,
 )}
 ${seccion(
   tinte,
@@ -361,13 +470,18 @@ ${seccion(
   `<div class="grilla"><div class="par"><h3>Palabras nuestras</h3>${lista(voz.palabras_si)}</div><div class="par"><h3>Nunca decimos</h3>${lista(voz.palabras_no, "×")}</div></div>
   <div class="grilla">${ejemplos}</div>`,
 )}
+${portadilla("Aplicaciones")}
 ${seccion(
   claro,
   "Cómo se usa",
-  `<div class="grilla">${par("Fotografía", estilo.fotografia)}${par("Íconos e ilustración", estilo.iconos_e_ilustracion)}<div class="par"><h3>Siempre</h3>${lista(bb.usos_correctos)}</div><div class="par"><h3>Nunca</h3>${lista(bb.usos_incorrectos, "×")}</div></div>
+  `<div class="grilla">${par("Fotografía", estilo.fotografia)}${par("Íconos e ilustración", estilo.iconos_e_ilustracion)}</div>
   <div class="grilla">${bb.aplicaciones.map((a) => `<div class="caja"><p class="grande" style="font-size:20px">${esc(a.donde)}</p><p style="margin-top:8px">${esc(a.como)}</p></div>`).join("")}</div>
-  <p class="pie" style="margin-top:48px">Brandbook de ${esc(nombre)} · Hecho con BrandIA</p>`,
+  <p class="pie" style="margin-top:40px">Brandbook de ${esc(nombre)} · Hecho con BrandIA</p>`,
 )}
+<section class="contratapa" style="--fondo:${c.principal};--texto:${textoSobre(c.principal, paleta)};--agua:${aguaPara(c.principal)}">
+  <div class="patron" aria-hidden="true"></div>
+  <span class="img-portada" role="img" aria-label="${esc(nombre)}"></span>
+</section>
 </body>
 </html>`;
 }

@@ -25,11 +25,11 @@ export type ClaveVersion = "completo" | "nombre" | "simbolo" | "negativo";
 export type Version = {
   clave: ClaveVersion;
   titulo: string;
-  /** La versión sin fondo (PNG transparente, data URL), para mostrarla sobre `fondo` */
+  /** La versión sin fondo (PNG transparente de hasta 1024, data URL), para mostrarla sobre `fondo` */
   imagen: string;
   /** El fondo con que va (el oscuro de la marca, en el negativo); null = sin fondo */
   fondo: string | null;
-  /** El PNG para descargar: con su fondo y su margen, si lleva */
+  /** El PNG para descargar, grande (2048): con su fondo y su margen, si lleva */
   archivo: string;
 };
 
@@ -41,6 +41,8 @@ export type Versiones = {
   simboloSvg: boolean;
   /** Si el símbolo todavía se está separando, o no salió y va el de la identidad */
   aviso?: string;
+  /** El símbolo todo en blanco y todo en negro: marca de agua y patrón del brandbook (tono sobre tono, con transparencia) */
+  agua: { claro: string; oscuro: string };
 };
 
 export const TITULOS: Record<ClaveVersion, string> = {
@@ -64,12 +66,15 @@ function lienzo(ancho: number, alto: number) {
   return [c, x] as const;
 }
 
-async function cargar(src: string) {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.src = src;
-  await img.decode();
-  return img;
+// Con el evento load y no con img.decode(): decode() puede quedar esperando si la pestaña está en segundo plano
+function cargar(src: string) {
+  return new Promise<HTMLImageElement>((ok, mal) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => ok(img);
+    img.onerror = () => mal(new Error("No cargó la imagen"));
+    img.src = src;
+  });
 }
 
 /** Cuánta "tinta" tiene un pixel: lo que se aleja del blanco (0 = blanco, 255 = color pleno u oscuro) */
@@ -188,6 +193,16 @@ async function svgALienzo(svg: string) {
 
 const png = (c: HTMLCanvasElement) => c.toDataURL("image/png");
 
+/** Una copia más chica (para mostrar en pantalla y en el brandbook; las de descargar quedan grandes) */
+function liviana(c: HTMLCanvasElement, lado = 1024) {
+  const escala = Math.min(1, lado / Math.max(c.width, c.height));
+  if (escala === 1) return png(c);
+  const [chica, x] = lienzo(c.width * escala, c.height * escala);
+  x.imageSmoothingQuality = "high";
+  x.drawImage(c, 0, 0, chica.width, chica.height);
+  return png(chica);
+}
+
 // ---- Colores ----
 
 const esHex = (v?: string) => !!v && /^#[0-9a-f]{6}$/i.test(v.trim());
@@ -280,7 +295,7 @@ export async function armarVersiones(
   const version = (clave: ClaveVersion, dibujo: HTMLCanvasElement, fondo: string | null = null): Version => ({
     clave,
     titulo: TITULOS[clave],
-    imagen: png(dibujo),
+    imagen: liviana(dibujo),
     fondo,
     archivo: png(fondo ? conFondo(dibujo, fondo) : dibujo),
   });
@@ -291,9 +306,10 @@ export async function armarVersiones(
 
   return {
     lista,
-    portada: png(pintar(completo, textoSobre(c.principal, paleta))),
+    portada: liviana(pintar(completo, textoSobre(c.principal, paleta))),
     simboloSvg: deSvg,
     aviso,
+    agua: { claro: liviana(pintar(simbolo ?? completo, "#ffffff")), oscuro: liviana(pintar(simbolo ?? completo, "#000000")) },
   };
 }
 
