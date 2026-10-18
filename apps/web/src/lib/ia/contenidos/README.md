@@ -33,9 +33,13 @@ Marcado mínimo en los textos de la imagen: `*palabra*` va en el color de acento
 ## Estilos de diseño (`estilos.ts`)
 
 La IA escribe igual en todos; cambia cómo se dibuja. **La persona elige el estilo antes de generar**
-(en `/crear/contenido`, `components/feed/elegir-estilo.tsx`): ve dos o tres piezas de muestra
-compuestas en el momento con su marca (colores, letras, logo), con textos marcados "Ejemplo" y la
-foto como una forma de color, sin IA. Así no se gasta en un estilo que no le gusta.
+(en `/crear/contenido`, `components/feed/elegir-estilo.tsx`): ve tres piezas de muestra por estilo,
+compuestas en el momento con su marca (colores, letras, logo) y con **dos fotos de su rubro hechas por
+la IA** (`POST /api/contenidos/muestra` con `{ brief, identidad, cual: "a" | "b" }`, paso
+`contenidos-muestra`, ~USD 0,01 cada una, 10 a 25 s). La escena de cada foto se arma con lo que contó
+en la entrevista, sin otra IA de texto. Las fotos se piden una sola vez por marca, se achican y quedan
+en la sesión (`brandia:muestra-estilos`); si una falla no se reintenta sola. Mientras llegan, su lugar
+es una forma de color y ya se puede elegir. Los textos van marcados "Ejemplo": no los escribió la IA.
 
 | Estilo | Grilla | Foto | Letra | Color |
 |---|---|---|---|---|

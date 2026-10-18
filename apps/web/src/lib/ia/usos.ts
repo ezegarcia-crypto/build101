@@ -43,6 +43,7 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-plan": [{ modelo: MODELO_PLAN, para: "Planifica el mes" }],
   "contenidos-pieza": [{ modelo: MODELO_REDACCION, para: "Escribe y corrige una pieza" }],
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
+  "contenidos-muestra": [{ modelo: MODELO_FOTOS_FEED, para: "Foto de muestra del rubro para elegir el estilo del feed" }],
   // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
   "contenidos-simple": [],
   "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],

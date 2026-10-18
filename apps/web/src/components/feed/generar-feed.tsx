@@ -263,12 +263,12 @@ export function GenerarFeed() {
             <h1 className="display max-w-[18ch]">
               ¿Cuál te gusta <span className={s.it}>más</span>?
             </h1>
-            <p className="lead mt-4 mb-8 max-w-[38em] text-base">
-              Dos estilos para el feed de {marca.identidad.nombre}, con tus colores, tus letras y tu logo. Elegí uno y armamos
-              el feed así. Los textos y las fotos de la muestra son de ejemplo: los reales los hace la IA después.
+            <p className="lead mt-4 mb-6 max-w-[38em] text-base">
+              Dos estilos para el feed de {marca.identidad.nombre}, con tus colores, tus letras, tu logo y fotos de tu rubro.
+              Elegí uno y armamos el feed entero así.
             </p>
             {kitPrevio ? (
-              <ElegirEstilo kit={kitPrevio} onElegir={elegir} />
+              <ElegirEstilo kit={kitPrevio} clave={huella(marca)} brief={marca.brief} identidad={marca.identidad} onElegir={elegir} />
             ) : (
               <Button size="lg" onClick={() => elegir(ESTILO_POR_DEFECTO)}>
                 Armar mi feed

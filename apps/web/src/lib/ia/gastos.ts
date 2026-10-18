@@ -27,6 +27,7 @@ export const PASOS = {
   "contenidos-plan": { modulo: "B", nombre: "Plan del mes", unidad: "pedido" },
   "contenidos-pieza": { modulo: "B", nombre: "Una pieza del feed", unidad: "pieza" },
   "contenidos-imagen": { modulo: "B", nombre: "Una imagen del feed", unidad: "imagen" },
+  "contenidos-muestra": { modulo: "B", nombre: "Foto de muestra para elegir el estilo", unidad: "foto" },
   "contenidos-simple": { modulo: "B", nombre: "Feed simple (retirado)", unidad: "feed" },
   "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
   "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
@@ -62,6 +63,8 @@ const POR_MINUTO: Record<Paso, number> = {
   "contenidos-plan": 15,
   "contenidos-pieza": 60,
   "contenidos-imagen": 120,
+  // 2 fotos por marca nueva, una sola vez (la pantalla las guarda)
+  "contenidos-muestra": 30,
   "contenidos-simple": 8,
   "web-entrevista": 90,
   "web-armar": 15,

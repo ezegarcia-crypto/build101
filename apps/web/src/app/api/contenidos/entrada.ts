@@ -30,6 +30,13 @@ export const entradaLote = z.object({
   estilo: z.enum(ID_ESTILOS).optional(),
 });
 
+/** Una de las dos fotos de muestra para elegir el estilo (antes de generar el feed) */
+export const entradaMuestra = z.object({
+  brief: briefSchema,
+  identidad: identidadEntradaSchema,
+  cual: z.enum(["a", "b"]),
+});
+
 export const entradaPieza = z.object({
   brief: briefSchema,
   identidad: identidadEntradaSchema,
@@ -46,11 +53,11 @@ export const entradaImagen = z.object({
 });
 
 /** Lee y valida el cuerpo y, si trae ficha e identidad, le suma el kit de contenidos. */
-export async function leerConKit<T extends typeof entradaLote | typeof entradaPieza>(req: Request, esquema: T) {
+export async function leerConKit<T extends typeof entradaLote | typeof entradaPieza | typeof entradaMuestra>(req: Request, esquema: T) {
   const entrada = await leer(req, esquema);
   if (entrada instanceof Response) return entrada;
   const e = entrada as z.infer<T>;
-  return { ...e, kit: armarKit(e.identidad, e.brief, e.estilo) };
+  return { ...e, kit: armarKit(e.identidad, e.brief, "estilo" in e ? e.estilo : undefined) };
 }
 
 /** Lee y valida el cuerpo; si no sirve, devuelve la respuesta 400 con el motivo. */
