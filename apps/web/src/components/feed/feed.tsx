@@ -16,6 +16,7 @@ import s from "../entrevista/entrevista.module.css";
 import { Calendario } from "./calendario";
 import { archivosDePieza } from "./descargar-feed";
 import f from "./feed.module.css";
+import { Instagram } from "./instagram";
 
 // El feed de la marca, como se vería su perfil. Cada pieza la dibuja el compositor del motor
 // (componerPieza, sin IA) en SVG con los colores, las letras y el isotipo del cliente: el lienzo
@@ -545,6 +546,17 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
   return (
     <div className="flex flex-col gap-4">
       <Progreso lote={lote} plan={plan} generando={generando} />
+
+      {/* Cómo quedaría como perfil de Instagram, dentro de un celular */}
+      <Instagram
+        lote={lote}
+        kit={kit}
+        plan={plan}
+        c={c}
+        usuario={usuario}
+        bio={identidad.voz.ejemplos.bio_instagram}
+        avatar={<Avatar kit={kit} logo={logo} c={c} />}
+      />
 
       {/* El perfil y el plan del mes */}
       <section
