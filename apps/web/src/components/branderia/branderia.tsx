@@ -25,6 +25,7 @@ import { Pasos } from "@/components/pasos";
 import { MENSAJE_FRENO, puedoArrancarSolo } from "@/lib/freno";
 import { PRODUCTOS_MAS, PRODUCTOS_SUGERIDOS, type ProductoSugerido } from "@/lib/ia/branderia";
 import type { Brief } from "@/lib/ia/brief";
+import { MAXIMO_UNIDADES } from "@/lib/pedidos";
 
 import s from "../entrevista/entrevista.module.css";
 import b from "./branderia.module.css";
@@ -38,8 +39,9 @@ import { PedirKit } from "./pedido";
 // completos, con todas sus fotos, de una sola vez. Después se pueden sumar más ("Otras opciones", en la línea
 // de los marcados con ♥) o pedir en palabras los que faltan; lo nuevo aparece cuando sus fotos están listas.
 // Nada se borra: las fotos de antes quedan como alternativas de cada producto.
-// El pedido se guarda de verdad (pedido.tsx → POST /api/branderia/pedido) y el equipo lo ve en /pedidos, pero no
-// se cobra: BrandIA le escribe a la persona con la cotización.
+// Las cantidades van con − y + y una barra, en la escala que propone la IA para cada producto (un cartel de a 1;
+// las tarjetas, de a 50 o 100). El pedido se guarda de verdad (pedido.tsx → POST /api/branderia/pedido), sale por
+// WhatsApp al de BrandIA y el equipo lo ve en /pedidos, pero no se cobra: BrandIA le responde con la cotización.
 // Todo queda guardado (las fotos achicadas) junto con su marca: si se recarga, no se vuelve a pedir.
 
 export const CLAVE_BRANDERIA = "brandia:branderia";
@@ -63,8 +65,22 @@ type Guardado = {
 /** Cómo va una carga: primero la IA piensa los productos y después saca sus fotos */
 type Avance = { fase: "pensando" | "fotos"; listas: number; total: number };
 
-const CANTIDADES = [0, 25, 50, 100, 250, 500];
 const A_LA_VEZ = 5;
+
+/**
+ * De cuánto a cuánto se pide un producto: lo propone la IA (cantidad_minima, cantidad_paso y cantidad_tipica).
+ * Si no vino o vino raro, lo prudente: desde 1, de a 1. La barra llega hasta 4 veces la típica (20 pasos como mínimo).
+ */
+function escala(p: Partial<ProductoSugerido>) {
+  const entero = (n: unknown, otro: number) => (typeof n === "number" && Number.isFinite(n) && n >= 1 ? Math.round(n) : otro);
+  const minimo = Math.min(entero(p.cantidad_minima, 1), MAXIMO_UNIDADES / 2);
+  const paso = Math.min(entero(p.cantidad_paso, 1), 1000);
+  const tipica = entero(p.cantidad_tipica, minimo);
+  const enPaso = (n: number, redondeo: (x: number) => number) =>
+    minimo + redondeo((Math.min(Math.max(n, minimo), MAXIMO_UNIDADES) - minimo) / paso) * paso;
+  const maximo = enPaso(Math.max(minimo + paso * 20, tipica * 4), Math.floor);
+  return { minimo, paso, maximo, tipica: Math.min(enPaso(tipica, Math.round), maximo) };
+}
 
 function leer<T>(clave: string): T | null {
   try {
@@ -75,9 +91,9 @@ function leer<T>(clave: string): T | null {
 }
 
 // Para reconocer si lo guardado es de esta misma marca y de este mismo logo
-// (v4: los productos los elige la IA para el rubro; ya no hay catálogo fijo)
+// (v5: cada producto trae su escala de cantidades; v4: los productos los elige la IA para el rubro)
 const huella = (m: Marca) =>
-  `v4|${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}|${m.logo ? m.logo.imagen.slice(-48) : m.conNombre ? "simbolo-nombre" : "simbolo"}`;
+  `v5|${m.ficha}|${m.identidad.nombre}|${m.identidad.paleta.map((c) => c.hex).join()}|${m.logo ? m.logo.imagen.slice(-48) : m.conNombre ? "simbolo-nombre" : "simbolo"}`;
 
 /** Las frases de la marca para los productos: el eslogan y las palabras propias, en ese orden. */
 function frasesDe(id: IdentidadIA) {
@@ -179,7 +195,8 @@ export function Branderia() {
   const [errorSumar, setErrorSumar] = useState<string | null>(null);
   const [pedidoNuevo, setPedidoNuevo] = useState("");
   const [renovando, setRenovando] = useState(false);
-  const [nivel, setNivel] = useState<Record<string, number>>({});
+  /** Las unidades de cada producto en el kit (0: no está) */
+  const [cantidad, setCantidad] = useState<Record<string, number>>({});
 
   // Lo mismo que el estado, para leerlo dentro de las cargas sin esperar a que React vuelva a dibujar
   const listas = useRef<Record<string, string>>({});
@@ -401,15 +418,21 @@ export function Branderia() {
   }
 
   const sacando = productos.some((p) => fotos[p.id]?.estado === "sacando");
-  const elegidos = productos.filter((p) => (nivel[p.id] ?? 0) > 0);
-  const unidades = elegidos.reduce((t, p) => t + (CANTIDADES[nivel[p.id] ?? 0] ?? 0), 0);
+  const elegidos = productos.filter((p) => (cantidad[p.id] ?? 0) > 0);
+  const unidades = elegidos.reduce((t, p) => t + (cantidad[p.id] ?? 0), 0);
 
-  function cambiar(id: string, paso: number) {
-    setNivel((n) => ({ ...n, [id]: Math.min(Math.max((n[id] ?? 0) + paso, 0), CANTIDADES.length - 1) }));
+  /** El + suma un paso (o, si no estaba en el kit, la cantidad típica); el − resta uno y debajo de la mínima lo saca */
+  function cambiar(p: Producto, sentido: 1 | -1) {
+    const e = escala(p);
+    setCantidad((c) => {
+      const n = c[p.id] ?? 0;
+      const nueva = sentido > 0 ? (n ? Math.min(n + e.paso, e.maximo) : e.tipica) : n - e.paso < e.minimo ? 0 : n - e.paso;
+      return { ...c, [p.id]: nueva };
+    });
   }
 
-  function quitar(id: string) {
-    setNivel((n) => ({ ...n, [id]: 0 }));
+  function fijar(id: string, n: number) {
+    setCantidad((c) => ({ ...c, [id]: n }));
   }
 
   return (
@@ -491,8 +514,9 @@ export function Branderia() {
                       producto={p}
                       foto={fotos[p.id] ?? { estado: "error" }}
                       marca={marca}
-                      cantidad={nivel[p.id] ?? 0}
-                      onCambiar={(paso) => cambiar(p.id, paso)}
+                      cantidad={cantidad[p.id] ?? 0}
+                      onCambiar={(sentido) => cambiar(p, sentido)}
+                      onFijar={(n) => fijar(p.id, n)}
                       onSacar={() => otraFoto(marca, p)}
                       otras={otras[p.id] ?? []}
                       onUsarOtra={(url) => usarOtra(marca, p.id, url)}
@@ -576,10 +600,9 @@ export function Branderia() {
                 {elegidos.length ? (
                   <ul className="flex flex-col divide-y">
                     {elegidos.map((p) => {
-                      const n = nivel[p.id] ?? 0;
                       const foto = fotos[p.id];
                       return (
-                        <li key={p.id} className={`${s.entra} flex items-center gap-3 py-3 first:pt-0`}>
+                        <li key={p.id} className={`${s.entra} flex items-start gap-3 py-3 first:pt-0`}>
                           <div className="relative size-14 shrink-0 overflow-hidden rounded-[8px] bg-muted">
                             {foto?.estado === "lista" && <img src={foto.url} alt="" className="size-full object-cover" />}
                           </div>
@@ -592,26 +615,19 @@ export function Branderia() {
                               <button
                                 type="button"
                                 aria-label={`Sacar ${p.nombre} del kit`}
-                                onClick={() => quitar(p.id)}
+                                onClick={() => fijar(p.id, 0)}
                                 className="grid size-6 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-300 ease-brandia hover:bg-muted hover:text-foreground"
                               >
                                 <X className="size-3.5" />
                               </button>
                             </div>
-                            <div className="mt-1.5 flex items-center gap-2">
-                              <Paso etiqueta={`Menos ${p.nombre}`} disabled={n === 0} onClick={() => cambiar(p.id, -1)} chico>
-                                −
-                              </Paso>
-                              <span className="w-14 text-center text-sm tabular-nums">{CANTIDADES[n]} u.</span>
-                              <Paso
-                                etiqueta={`Más ${p.nombre}`}
-                                disabled={n === CANTIDADES.length - 1}
-                                onClick={() => cambiar(p.id, 1)}
-                                chico
-                              >
-                                +
-                              </Paso>
-                            </div>
+                            <Cantidad
+                              producto={p}
+                              valor={cantidad[p.id] ?? 0}
+                              onCambiar={(sentido) => cambiar(p, sentido)}
+                              onFijar={(n) => fijar(p.id, n)}
+                              chico
+                            />
                           </div>
                         </li>
                       );
@@ -645,7 +661,7 @@ export function Branderia() {
                     detalle: p.detalle,
                     tecnica: p.tecnica,
                     estampa: p.estampa,
-                    cantidad: CANTIDADES[nivel[p.id] ?? 0] ?? 0,
+                    cantidad: cantidad[p.id] ?? 0,
                   }))}
                 />
               </aside>
@@ -737,6 +753,7 @@ function Tarjeta({
   marca,
   cantidad,
   onCambiar,
+  onFijar,
   onSacar,
   otras,
   onUsarOtra,
@@ -747,7 +764,8 @@ function Tarjeta({
   foto: Foto;
   marca: Marca;
   cantidad: number;
-  onCambiar: (paso: number) => void;
+  onCambiar: (sentido: 1 | -1) => void;
+  onFijar: (n: number) => void;
   onSacar: () => void;
   /** Fotos de antes del producto, para volver a una */
   otras: string[];
@@ -807,21 +825,64 @@ function Tarjeta({
         <p className="text-xs text-muted-foreground">{p.detalle}</p>
         <p className="mt-1.5 text-xs leading-snug">{p.por_que}</p>
       </div>
-      <div className="mt-auto flex items-center justify-between gap-1">
-        <Paso etiqueta={`Menos ${p.nombre}`} disabled={cantidad === 0} onClick={() => onCambiar(-1)}>
-          −
-        </Paso>
-        <span className="text-sm tabular-nums">{CANTIDADES[cantidad] ? `${CANTIDADES[cantidad]} u.` : "—"}</span>
-        <Paso etiqueta={`Más ${p.nombre}`} disabled={cantidad === CANTIDADES.length - 1} onClick={() => onCambiar(1)}>
-          +
-        </Paso>
+      <div className="mt-auto">
+        <Cantidad producto={p} valor={cantidad} onCambiar={onCambiar} onFijar={onFijar} />
       </div>
     </li>
   );
 }
 
 const resumen = (productos: number, unidades: number) =>
-  `${productos} producto${productos > 1 ? "s" : ""} · ${unidades} unidades`;
+  `${productos} producto${productos > 1 ? "s" : ""} · ${unidades} unidad${unidades === 1 ? "" : "es"}`;
+
+/**
+ * Las unidades de un producto: − y + de a un paso y, cuando está en el kit, una barra para moverse rápido
+ * entre la mínima y la máxima de su escala. Sin estar en el kit dice desde cuánto se pide.
+ */
+function Cantidad({
+  producto: p,
+  valor,
+  onCambiar,
+  onFijar,
+  chico,
+}: {
+  producto: Producto;
+  valor: number;
+  onCambiar: (sentido: 1 | -1) => void;
+  onFijar: (n: number) => void;
+  chico?: boolean;
+}) {
+  const e = escala(p);
+  return (
+    <div className={`flex flex-col gap-1 ${chico ? "mt-1.5" : ""}`}>
+      <div className={`flex items-center gap-2 ${chico ? "" : "justify-between"}`}>
+        <Paso etiqueta={`Menos ${p.nombre}`} disabled={valor === 0} onClick={() => onCambiar(-1)} chico={chico}>
+          −
+        </Paso>
+        <span className={`${chico ? "w-16" : ""} text-center text-sm tabular-nums`}>{valor ? `${valor} u.` : "—"}</span>
+        <Paso etiqueta={`Más ${p.nombre}`} disabled={valor >= e.maximo} onClick={() => onCambiar(1)} chico={chico}>
+          +
+        </Paso>
+      </div>
+      {valor > 0 && e.maximo > e.minimo ? (
+        <input
+          type="range"
+          min={e.minimo}
+          max={e.maximo}
+          step={e.paso}
+          value={valor}
+          onChange={(ev) => onFijar(Number(ev.target.value))}
+          aria-label={`Unidades de ${p.nombre}`}
+          aria-valuetext={`${valor} unidades`}
+          className="h-6 w-full cursor-pointer [accent-color:var(--foreground)]"
+        />
+      ) : null}
+      <p className="text-[0.6875rem] leading-tight text-muted-foreground">
+        Desde {e.minimo} u.{e.paso > 1 ? ` · de a ${e.paso}` : ""}
+      </p>
+    </div>
+  );
+}
 
 /**
  * La foto del producto con la marca impresa por la IA. Mientras se saca una nueva, se ve la anterior;

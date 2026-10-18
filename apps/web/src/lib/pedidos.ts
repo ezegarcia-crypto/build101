@@ -16,12 +16,22 @@ export const ESTADOS = {
 
 export type Estado = keyof typeof ESTADOS;
 
+/**
+ * El WhatsApp de BrandIA, al que la persona le manda su pedido. Solo números, con el código del país y sin el 0:
+ * un celular uruguayo 099 123 456 va como "59899123456". Mientras esté vacío, el pedido se guarda igual, pero el
+ * botón "Mandar por WhatsApp" avisa que falta configurarlo. Es el único lugar donde se cambia.
+ */
+export const WHATSAPP_BRANDIA = "";
+
+/** El tope de unidades de un producto en un pedido */
+export const MAXIMO_UNIDADES = 10_000;
+
 const itemSchema = z.object({
   nombre: z.string().trim().min(1).max(80),
   detalle: z.string().trim().max(200).default(""),
   tecnica: z.string().trim().max(60).default(""),
   estampa: z.string().trim().max(30).default(""),
-  cantidad: z.number().int().positive().max(10_000),
+  cantidad: z.number().int().positive().max(MAXIMO_UNIDADES),
 });
 
 export const pedidoSchema = z.object({
@@ -44,6 +54,36 @@ export type Pedido = PedidoNuevo & { id: number; creado: string; estado: Estado;
 
 /** El número que ve la persona: BR-0012 */
 export const numeroDe = (id: number) => `BR-${String(id).padStart(4, "0")}`;
+
+const ESTAMPAS: Record<string, string> = {
+  logo: "con el logo",
+  "logo-nombre": "con el logo y el nombre",
+  nombre: "con el nombre",
+  frase: "con una frase de la marca",
+  "logo-frase": "con el logo y una frase",
+};
+
+const unidadesDe = (n: number) => `${n} ${n === 1 ? "unidad" : "unidades"}`;
+
+/** El mensaje del pedido para el WhatsApp de BrandIA, legible tal cual llega. Sin número si no se pudo guardar. */
+export function mensajeWhatsApp(p: Omit<PedidoNuevo, "colores"> & { numero?: string | null }) {
+  const total = p.items.reduce((t, i) => t + i.cantidad, 0);
+  const lineas = p.items.map((i) => {
+    const detalle = [i.detalle, i.tecnica, ESTAMPAS[i.estampa]].map((d) => d?.trim()).filter(Boolean).join(", ");
+    return `• ${i.cantidad} × ${i.nombre}${detalle ? ` (${detalle})` : ""}`;
+  });
+  const datos = [`Nombre: ${p.nombre}`, `Contacto: ${p.contacto}`, `Enviar a: ${p.entrega}`];
+  if (p.nota?.trim()) datos.push(`Nota: ${p.nota.trim()}`);
+  const bloques = [`Hola, soy ${p.marca}. Este es mi pedido:`, lineas.join("\n"), `*Total: ${unidadesDe(total)}*`, datos.join("\n")];
+  if (p.numero) bloques.push(`Número de pedido: *${p.numero}*`);
+  return bloques.join("\n\n");
+}
+
+/** El link que abre WhatsApp con el mensaje listo (la app en el celular, WhatsApp Web en la compu). null: falta el número. */
+export function linkWhatsApp(texto: string) {
+  const numero = WHATSAPP_BRANDIA.replace(/\D/g, "");
+  return numero ? `https://wa.me/${numero}?text=${encodeURIComponent(texto)}` : null;
+}
 
 function conexion() {
   const url = process.env.SUPABASE_URL;

@@ -30,6 +30,20 @@ export const productoSugeridoSchema = z.object({
     .describe("Qué lleva impreso, como haría una marca real con ese producto"),
   tecnica: z.string().describe("Cómo se marca ese material: «sello», «bordado», «impreso», «grabado láser», «etiqueta tejida»…"),
   color: z.enum(["claro", "marca"]).describe("claro: blanco, crudo o natural · marca: del color principal de la marca"),
+  // La escala de cantidades del kit: un cartel se pide de a 1; las tarjetas, de a 50 o 100. La pantalla arma con
+  // esto la barra de cada producto (y si falta, va de a 1: ver escala() en components/branderia/branderia.tsx).
+  cantidad_minima: z
+    .number()
+    .int()
+    .describe("La menor cantidad que tiene sentido pedir de este producto: 1 para un cartel, un banner o una bandera; 50 o 100 para tarjetas o stickers"),
+  cantidad_paso: z
+    .number()
+    .int()
+    .describe("De a cuánto se sube la cantidad: 1 para carteles o uniformes, 5 o 10 para tazas o remeras, 50 o 100 para tarjetas, stickers o bolsas"),
+  cantidad_tipica: z
+    .number()
+    .int()
+    .describe("Cuántas pediría ESTE negocio para arrancar, según su tamaño y su rubro (entre la mínima y unas miles)"),
 });
 
 export const sugeridosSchema = z.object({
@@ -49,7 +63,8 @@ Reglas:
 - Empezá por lo más útil para este negocio. Si la ficha dice dónde se ve primero la marca (aplicaciones_prioritarias), eso va primero.
 - Nada genérico: un producto va solo si este negocio lo usaría de verdad. Productos clásicos (tarjetas, tazas, remeras) solo si le sirven a este rubro.
 - Productos reales que se fabrican con marca en Uruguay y la región, sin marcas comerciales ajenas (es «vaso térmico», no la marca).
-- Nada de precios, proveedores ni cantidades.
+- Nada de precios ni proveedores.
+- Las cantidades (la mínima, de a cuánto sube y la típica) son las de un taller o una imprenta real para ese producto y para el tamaño de ESTE negocio: un cartel o un banner se pide de a 1; las tarjetas o los stickers, de a 50 o 100; un local chico no pide miles de bolsas.
 - Español rioplatense, simple.
 
 Si te pasan lo que la persona ya vio u opinó:
