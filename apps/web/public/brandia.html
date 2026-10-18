@@ -330,7 +330,9 @@ footer .r{text-align:right;font-size:13px;color:var(--pd);line-height:1.8}
 /* ===== angosto (celular o panel chico): mismo scrollytelling, otro encuadre ===== */
 @media (max-width:860px){
   #hero{height:100vh;height:100svh;min-height:560px}
-  #hero .veil{background:linear-gradient(0deg,var(--h) 0%,rgba(237,236,232,.95) 24%,rgba(237,236,232,0) 40%)}
+  /* el velo cubre toda la zona del texto (título, bajada y botones, y después los textos de la animación);
+     cuando se arma la B se va, así la B se ve entera (ver la línea de tiempo de A0) */
+  #hero .veil{background:linear-gradient(0deg,var(--h) 0%,rgba(237,236,232,.97) 52%,rgba(237,236,232,.6) 62%,rgba(237,236,232,0) 74%)}
   .hrest{left:var(--gut);right:var(--gut);top:auto;bottom:26px;transform:none;max-width:none}
   .hrest .lead{margin-top:16px;font-size:1rem}
   .hrest .ctas{margin-top:22px}
@@ -813,6 +815,7 @@ tl.to('.hrest',{x:MOB?0:-60,y:MOB?30:0,autoAlpha:0,duration:.4,ease:'power1.in'}
   .to(st,{asm:1,duration:1.5,ease:'none'},1.05)
   .fromTo('#c2',{autoAlpha:0,y:40},{autoAlpha:1,y:0,duration:.3},1.5)
   .to('#c2',{autoAlpha:0,y:-30,duration:.3},2.35)
+  .to('.veil',{opacity:0,duration:.35},MOB?2.45:2.6)
   .to(st,{lock:1,duration:.45,ease:'back.out(1.6)'},2.6)
   .to(st,{solid:1,duration:.5},2.75)
   .fromTo('#c3',{autoAlpha:0,y:50},{autoAlpha:1,y:0,duration:.45},3.1)
