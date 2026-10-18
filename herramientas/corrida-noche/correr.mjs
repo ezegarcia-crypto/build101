@@ -337,10 +337,20 @@ async function pasoContenido(page, vigia, caso, carpeta) {
       }),
     );
     // El estilo lo dice el caso ("Estilo del feed | **Editorial**"); si no lo dice, elige la IA del cliente
-    const pedido = caso.texto.match(/Estilo del feed \| \*\*([^*]+)\*\*/)?.[1]?.trim().toLowerCase();
-    const fijo = pedido ? textos.findIndex((t) => t.toLowerCase().includes(pedido)) : -1;
+    const pedido = caso.texto.match(/Estilo del feed \| \*\*([^*]+)\*\*/)?.[1]?.trim();
+    // Cada tarjeta tiene su título (h2/h3 "Impacto", "Editorial"): el índice es el del título que pide el caso
+    const titulos = await quiero.evaluateAll((bs) =>
+      bs.map((b) => {
+        let el = b.parentElement;
+        while (el && !el.querySelector("h2, h3")) el = el.parentElement;
+        const hs = el ? [...el.querySelectorAll("h2, h3")] : [];
+        return (hs.at(-1)?.textContent ?? "").trim().toLowerCase();
+      }),
+    );
+    const fijo = pedido ? titulos.findIndex((t) => t.startsWith(pedido.toLowerCase())) : -1;
+    if (pedido && fijo < 0) anotar(`  ⚠ no encontré el estilo «${pedido}» entre: ${titulos.join(", ")}`);
     const i = fijo >= 0 ? fijo : await elegir(caso, "¿Qué estilo de diseño elegís para el feed?", textos);
-    anotar(`  estilo: ${textos[i].replace(/\s+/g, " ").slice(0, 60)}`);
+    anotar(`  estilo: ${titulos[i] || textos[i].replace(/\s+/g, " ").slice(0, 60)}`);
     await esperar(2000);
     await quiero.nth(i).click();
   }
@@ -452,7 +462,8 @@ async function pasoBranderia(page, vigia, caso, carpeta) {
  */
 async function mandarWhatsApp(wa, carpeta) {
   try {
-    await wa.waitForURL(/wa\.me|whatsapp\.com/, { timeout: 60_000 });
+    const hasta = Date.now() + 60_000;
+    while (!/wa\.me|whatsapp\.com/.test(wa.url()) && Date.now() < hasta) await esperar(500);
     const url = new URL(wa.url());
     const numero = url.pathname.replace(/\D/g, "") || url.searchParams.get("phone") || "";
     const texto = url.searchParams.get("text") ?? "";
