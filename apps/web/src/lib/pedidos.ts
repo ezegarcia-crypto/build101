@@ -21,7 +21,7 @@ export type Estado = keyof typeof ESTADOS;
  * un celular uruguayo 099 123 456 va como "59899123456". Mientras esté vacío, el pedido se guarda igual, pero el
  * botón "Mandar por WhatsApp" avisa que falta configurarlo. Es el único lugar donde se cambia.
  */
-export const WHATSAPP_BRANDIA = "";
+export const WHATSAPP_BRANDIA = "59895829024"; // provisorio: 095 829 024
 
 /** El tope de unidades de un producto en un pedido */
 export const MAXIMO_UNIDADES = 10_000;
