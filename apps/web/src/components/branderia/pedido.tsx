@@ -1,22 +1,26 @@
 "use client";
 
 import { Button } from "@build101/ui/components/button";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { IdentidadIA } from "@/components/brandbook/identidad";
+import { linkWhatsApp, mensajeWhatsApp } from "@/lib/pedidos";
 
 import s from "../entrevista/entrevista.module.css";
 
 // El pedido del kit de BranderIA: "Pedir cotización" abre el formulario (nombre, WhatsApp, a dónde mandarlo),
-// el pedido se guarda en Supabase (POST /api/branderia/pedido) y la persona ve su número y en qué paso está.
-// No se cobra nada: el equipo lo ve en /pedidos y le escribe con la cotización.
+// el pedido se guarda en Supabase (POST /api/branderia/pedido) y se abre WhatsApp con el mensaje listo para el
+// WhatsApp de BrandIA (WHATSAPP_BRANDIA en lib/pedidos.ts): los productos, las cantidades, los datos y el número.
+// Si no se pudo guardar, WhatsApp se abre igual. La persona ve su número, los pasos y el botón "Mandar por
+// WhatsApp" (por si el navegador no dejó abrir la ventana). No se cobra nada: el equipo lo ve en /pedidos.
 
 const CLAVE_PEDIDO = "brandia:pedido-branderia";
 
 export type ItemKit = { nombre: string; detalle: string; tecnica: string; estampa: string; cantidad: number };
 
-type Hecho = { numero: string; marca: string; unidades: number; contacto: string };
+/** `numero` null: no se pudo guardar, pero el pedido salió por WhatsApp. `mensaje`: el texto para WhatsApp. */
+type Hecho = { numero: string | null; marca: string; unidades: number; contacto: string; mensaje: string };
 
 const PASOS = ["Recibido", "Cotización por WhatsApp", "Producción con tu marca", "En camino", "Entregado"];
 
@@ -26,7 +30,7 @@ const campo =
 function leerHecho(marca: string): Hecho | null {
   try {
     const h = JSON.parse(sessionStorage.getItem(CLAVE_PEDIDO) ?? "null") as Hecho | null;
-    return h?.marca === marca ? h : null;
+    return h?.marca === marca && h.mensaje ? h : null;
   } catch {
     return null;
   }
@@ -44,32 +48,57 @@ export function PedirKit({ identidad, items }: { identidad: IdentidadIA; items: 
   async function enviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const datos = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+    const pedido = {
+      nombre: datos.nombre ?? "",
+      contacto: datos.contacto ?? "",
+      entrega: datos.entrega ?? "",
+      nota: datos.nota || undefined,
+      marca: identidad.nombre,
+      items,
+    };
+    // La pestaña de WhatsApp se abre ya, con el toque: abierta después de esperar a Supabase, algunos navegadores
+    // la bloquean. Cuando el pedido está guardado, se le pone el link con el número.
+    const ventana = linkWhatsApp("") ? window.open("", "_blank") : null;
+    if (ventana) ventana.document.title = "Abriendo WhatsApp…";
     setModo("enviando");
     setError("");
+
+    let numero: string | null = null;
     try {
       const r = await fetch("/api/branderia/pedido", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          ...datos,
-          nota: datos.nota || undefined,
-          marca: identidad.nombre,
-          colores: identidad.paleta.map((c) => c.hex),
-          items,
-        }),
+        body: JSON.stringify({ ...pedido, colores: identidad.paleta.map((c) => c.hex), sitio: datos.sitio }),
       });
       const respuesta = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(respuesta.error ?? "No pudimos guardar tu pedido. Probá de nuevo en un rato.");
-      const nuevo: Hecho = { numero: respuesta.numero, marca: identidad.nombre, unidades, contacto: datos.contacto };
-      setHecho(nuevo);
-      setModo("cerrado");
-      try {
-        sessionStorage.setItem(CLAVE_PEDIDO, JSON.stringify(nuevo));
-      } catch {}
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No pudimos guardar tu pedido. Probá de nuevo en un rato.");
-      setModo("formulario");
+      // Datos mal cargados: se corrigen en el formulario y no sale nada por WhatsApp
+      if (r.status === 400) {
+        ventana?.close();
+        setError(respuesta.error ?? "Revisá los datos.");
+        setModo("formulario");
+        return;
+      }
+      if (r.ok) numero = respuesta.numero ?? null;
+    } catch {
+      // Sin conexión con la base: el pedido sale igual por WhatsApp
     }
+
+    const mensaje = mensajeWhatsApp({ ...pedido, numero });
+    const link = linkWhatsApp(mensaje);
+    if (!numero && !link) {
+      ventana?.close();
+      setError("No pudimos guardar tu pedido. Probá de nuevo en un rato.");
+      setModo("formulario");
+      return;
+    }
+    if (link) abrir(link, ventana);
+
+    const nuevo: Hecho = { numero, marca: identidad.nombre, unidades, contacto: pedido.contacto, mensaje };
+    setHecho(nuevo);
+    setModo("cerrado");
+    try {
+      sessionStorage.setItem(CLAVE_PEDIDO, JSON.stringify(nuevo));
+    } catch {}
   }
 
   function otroPedido() {
@@ -80,14 +109,34 @@ export function PedirKit({ identidad, items }: { identidad: IdentidadIA; items: 
   }
 
   if (hecho) {
+    const link = linkWhatsApp(hecho.mensaje);
     return (
       <div role="status" className={`${s.entra} flex flex-col gap-3 rounded-[12px] bg-primary p-4 text-primary-foreground`}>
-        <p className="text-xs font-semibold tracking-[0.12em] uppercase opacity-75">Pedido {hecho.numero}</p>
-        <p className="font-semibold">Listo, recibimos tu pedido.</p>
+        {hecho.numero && <p className="text-xs font-semibold tracking-[0.12em] uppercase opacity-75">Pedido {hecho.numero}</p>}
+        <p className="font-semibold">{hecho.numero ? "Listo, guardamos tu pedido." : "Tu pedido va por WhatsApp."}</p>
         <p className="text-sm opacity-85">
-          {hecho.unidades} unidades con la marca {hecho.marca}. Te escribimos a {hecho.contacto} con la cotización. Todavía
-          no se cobró nada.
+          {hecho.unidades} {hecho.unidades === 1 ? "unidad" : "unidades"} con la marca {hecho.marca}.{" "}
+          {link
+            ? "Mandanos el mensaje por WhatsApp (si no se abrió solo, tocá el botón) y te respondemos con la cotización."
+            : `Te escribimos a ${hecho.contacto} con la cotización.`}{" "}
+          Todavía no se cobró nada.
         </p>
+        {link ? (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 self-start rounded-full bg-primary-foreground px-5 text-[0.9375rem] font-semibold text-primary transition-opacity duration-300 ease-brandia hover:opacity-90"
+          >
+            <MessageCircle className="size-4" aria-hidden />
+            Mandar por WhatsApp
+          </a>
+        ) : (
+          <span className="inline-flex h-11 items-center gap-2 self-start rounded-full border border-current/40 px-5 text-sm opacity-75">
+            <MessageCircle className="size-4" aria-hidden />
+            Falta configurar el WhatsApp de BrandIA
+          </span>
+        )}
         <ol className="flex flex-col gap-1.5 text-sm">
           {PASOS.map((p, i) => (
             <li key={p} className={`flex items-center gap-2 ${i === 0 ? "font-semibold" : "opacity-60"}`}>
@@ -121,7 +170,9 @@ export function PedirKit({ identidad, items }: { identidad: IdentidadIA; items: 
     <form onSubmit={enviar} className={`${s.entra} flex flex-col gap-3 rounded-[12px] border p-4`}>
       <div>
         <p className="font-semibold">¿A quién le escribimos?</p>
-        <p className="text-sm text-muted-foreground">Te pasamos la cotización por WhatsApp. No se cobra nada ahora.</p>
+        <p className="text-sm text-muted-foreground">
+          Se abre WhatsApp con tu pedido listo para mandarnos. Te pasamos la cotización por ahí: no se cobra nada ahora.
+        </p>
       </div>
       <label className="flex flex-col gap-1 text-sm font-semibold">
         Tu nombre
@@ -156,7 +207,7 @@ export function PedirKit({ identidad, items }: { identidad: IdentidadIA; items: 
       )}
       <div className="flex flex-wrap items-center gap-2">
         <Button type="submit" size="lg" disabled={modo === "enviando" || !items.length}>
-          {modo === "enviando" ? "Enviando…" : "Enviar pedido"} <ArrowRight data-icon="inline-end" />
+          {modo === "enviando" ? "Enviando…" : "Enviar por WhatsApp"} <ArrowRight data-icon="inline-end" />
         </Button>
         <Button type="button" variant="ghost" onClick={() => setModo("cerrado")}>
           Cancelar
@@ -164,4 +215,14 @@ export function PedirKit({ identidad, items }: { identidad: IdentidadIA; items: 
       </div>
     </form>
   );
+}
+
+/** Lleva la pestaña ya abierta a WhatsApp; si el navegador no la dejó abrir, prueba abrir una nueva. */
+function abrir(link: string, ventana: Window | null) {
+  if (ventana && !ventana.closed) {
+    ventana.opener = null;
+    ventana.location.href = link;
+    return;
+  }
+  window.open(link, "_blank", "noopener");
 }
