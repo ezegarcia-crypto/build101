@@ -312,20 +312,9 @@ p{margin:0}
 
 /* ====== A7 · EMPEZAR sobre naranja ====== */
 #empezar{background:var(--n);color:var(--g)}
-#empezar .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
 #empezar .lead{color:var(--g)}
 #empezar .eb{color:var(--g)}
-form{display:grid;gap:14px;background:var(--h);padding:28px;border-radius:20px}
-.fld{display:grid;gap:6px}
-.fld label{font-size:13.5px;font-weight:500}
-.fld input,.fld select{font:inherit;font-size:16px;color:var(--g);background:var(--w);border:1.5px solid var(--ll);border-radius:12px;padding:13px 14px;width:100%}
-.fld input:focus,.fld select:focus{outline:none;border-color:var(--g)}
-.fld .err{font-size:13px;color:var(--nt);font-weight:500}
-form .btn{justify-self:start;margin-top:4px}
-.fine{font-size:12.5px;color:var(--p)}
-.okmsg{background:var(--h);border-radius:20px;padding:32px;display:grid;gap:10px}
-.okmsg h3{font-size:2rem;font-weight:500}
-.okmsg p{color:var(--p)}
+#empezar .btn{margin-top:36px;padding:22px 34px;font-size:18px}
 
 footer{background:var(--g);color:var(--h);padding-block:56px calc(40px + env(safe-area-inset-bottom,0px))}
 footer .wrap{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
@@ -614,23 +603,12 @@ footer .r{text-align:right;font-size:13px;color:var(--pd);line-height:1.8}
 
 <!-- ================= A7 · EMPEZAR ================= -->
 <section class="sec" id="empezar">
-  <div class="wrap grid">
+  <div class="wrap">
     <div class="rv">
       <p class="eb">Empezá por acá</p>
       <h2 class="big" style="margin-top:20px">¿Arrancamos con <span class="it">la tuya?</span></h2>
-      <p class="lead" style="margin-top:24px">Contanos quién sos y qué hacés. Te escribimos para empezar a trabajar en tu marca.</p>
-    </div>
-    <div class="rv">
-      <form id="wl" novalidate>
-        <div class="fld"><label for="f-nom">Tu nombre</label><input id="f-nom" name="nombre" autocomplete="name" required><span class="err" id="e-nom"></span></div>
-        <div class="fld"><label for="f-mail">Tu mail</label><input id="f-mail" name="mail" type="email" autocomplete="email" required><span class="err" id="e-mail"></span></div>
-        <div class="fld"><label for="f-neg">¿Qué hacés?</label><input id="f-neg" name="negocio" placeholder="Ej.: una panadería de barrio"></div>
-        <div class="fld"><label for="f-eta">¿En qué momento está tu marca?</label>
-          <select id="f-eta" name="etapa"><option value="nada">No tengo marca todavía</option><option value="rehacer">Tengo una, pero no me representa</option><option value="producir">Tengo marca, necesito producir</option></select></div>
-        <button class="btn btn-d" type="submit">BrandIAmos la tuya →</button>
-        <p class="fine">Usamos tus datos solo para escribirte sobre tu marca.</p>
-      </form>
-      <div class="okmsg" id="okmsg" hidden><p class="eb">Anotado</p><h3 id="okh">Listo.</h3><p>Te escribimos al mail que dejaste para arrancar con tu marca.</p></div>
+      <p class="lead" style="margin-top:24px">Contanos qué hacés, escribiendo o con audios. BrandIA arma tu marca en minutos.</p>
+      <a class="btn btn-d" href="/crear">BrandIAmos →</a>
     </div>
   </div>
 </section>
@@ -706,14 +684,6 @@ $('#lgFile').addEventListener('change',function(){var fl=this.files&&this.files[
  $('#lgPrev').innerHTML='<img alt="" src="'+url+'">';$('#lgName').textContent='Tu logo · '+fl.name.replace(/\.[^.]+$/,'').slice(0,24);
  $$('#prods .stamp').forEach(function(st){st.innerHTML='<img alt="" src="'+url+'">';});});
 
-/* ---------- lista de espera (v1 sin backend: en la app va a Supabase · tabla waitlist) ---------- */
-var f=$('#wl');
-f.addEventListener('submit',function(e){e.preventDefault();
- var n=$('#f-nom'),m=$('#f-mail'),ok=true;$('#e-nom').textContent='';$('#e-mail').textContent='';
- if(!n.value.trim()){$('#e-nom').textContent='Escribí tu nombre, así sabemos a quién le escribimos.';ok=false;}
- if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.value.trim())){$('#e-mail').textContent='Revisá el mail: le falta algo (por ejemplo, la @).';ok=false;}
- if(!ok)return;
- $('#okh').textContent='Listo, '+n.value.trim().split(' ')[0]+'.';f.hidden=true;$('#okmsg').hidden=false;});
 
 /* ---------- header y reveals ---------- */
 var hd=$('#hd');
