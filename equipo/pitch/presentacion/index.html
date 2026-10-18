@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrandIA · pitch</title>
+<!-- La presentación del pitch: 4 slides a pantalla completa, sin internet (las letras y las imágenes van en esta
+     carpeta). Flechas o clic para avanzar, F para pantalla completa. El video va en video.mp4, al lado de este
+     archivo; mientras no esté, la slide 3 lo avisa. -->
+<link rel="stylesheet" href="fuentes.css">
+<style>
+  :root{--g:#1E1E1C;--n:#FF5C1A;--h:#EDECE8;--c:#C9C6BE;--p:#5C5A54;--fd:"Fraunces",Georgia,serif;--ft:"Instrument Sans",Helvetica,Arial,sans-serif}
+  *{box-sizing:border-box;margin:0}
+  html,body{height:100%;background:var(--g);overflow:hidden}
+  body{font-family:var(--ft);color:var(--g);cursor:default}
+  .slide{position:fixed;inset:0;display:grid;place-items:center;opacity:0;visibility:hidden;transition:opacity .6s cubic-bezier(.22,.8,.24,1),visibility .6s}
+  .slide.on{opacity:1;visibility:visible}
+  .hueso{background:var(--h)}
+
+  /* 1 · El logo, solo */
+  #s1 img{width:min(64vw,1100px);height:auto}
+
+  /* 2 · Los datos (la lámina de Rodrigo, 16:9) */
+  #s2 img{width:100vw;height:100vh;object-fit:contain;background:var(--h)}
+
+  /* 3 · El video */
+  #s3{background:#000}
+  #s3 video{width:100vw;height:100vh;object-fit:contain;background:#000}
+  #s3 .falta{position:absolute;color:var(--h);font-family:var(--fd);font-size:3vw;text-align:center}
+
+  /* 4 · Probalo */
+  #s4{grid-template-columns:auto auto;gap:7vw;align-content:center;justify-content:center}
+  #s4 .qr{background:#fff;padding:2.6vw;border-radius:2.2vw;box-shadow:0 3vw 6vw -3vw rgba(30,30,28,.35)}
+  #s4 .qr img{display:block;width:min(30vw,52vh);height:auto}
+  #s4 .eb{font-size:1.3vw;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--p);display:flex;align-items:center;gap:.8vw}
+  #s4 .eb::before{content:"";width:.9vw;height:.9vw;border-radius:50%;background:var(--n)}
+  #s4 h2{font-family:var(--fd);font-weight:500;font-size:6.2vw;line-height:1;letter-spacing:-.03em;margin-top:2vw}
+  #s4 .link{font-family:var(--fd);font-weight:600;font-size:3.4vw;margin-top:3vw;letter-spacing:-.01em}
+  #s4 .sub{font-size:1.6vw;color:var(--p);margin-top:1.2vw}
+  #s4 .marca{position:absolute;right:4vw;bottom:4vh;width:12vw}
+
+  .pie{position:fixed;left:50%;bottom:2.2vh;transform:translateX(-50%);display:flex;gap:.7vw;z-index:5;opacity:.0;transition:opacity .3s}
+  body:hover .pie{opacity:.55}
+  .pie i{width:.6vw;height:.6vw;border-radius:50%;background:var(--c)}
+  .pie i.on{background:var(--n)}
+</style>
+</head>
+<body>
+  <section class="slide hueso on" id="s1" aria-label="BrandIA">
+    <img src="logo.svg" alt="BrandIA">
+  </section>
+
+  <section class="slide hueso" id="s2" aria-label="La estadística nos avala">
+    <img src="datos.png" alt="La estadística nos avala: 99,5 % son PyMEs, 85 % de las PyMEs son micro, 52,8 % de los mayores no usa IA y 44,4 % de las PyMEs no sabe aplicar la IA">
+  </section>
+
+  <section class="slide" id="s3" aria-label="BrandIA funcionando">
+    <video id="video" src="video.mp4" playsinline preload="auto"></video>
+    <p class="falta" id="falta" hidden>Falta el video (video.mp4)</p>
+  </section>
+
+  <section class="slide hueso" id="s4" aria-label="Probalo">
+    <div class="qr"><img src="qr.svg" alt="QR a app.brandiamos.com"></div>
+    <div>
+      <p class="eb">Probalo ahora</p>
+      <h2>Tu marca,<br>en minutos.</h2>
+      <p class="link">app.brandiamos.com</p>
+      <p class="sub">Escaneá el QR desde tu celular o entrá desde el navegador.</p>
+    </div>
+    <img class="marca" src="logo.svg" alt="">
+  </section>
+
+  <nav class="pie" aria-hidden="true"><i></i><i></i><i></i><i></i></nav>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  const puntos = [...document.querySelectorAll(".pie i")];
+  const video = document.getElementById("video");
+  let actual = 0;
+  video.addEventListener("error", () => (document.getElementById("falta").hidden = false));
+
+  function ir(n) {
+    actual = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle("on", i === actual));
+    puntos.forEach((p, i) => p.classList.toggle("on", i === actual));
+    // El video arranca solo al llegar a su slide y se pausa al salir
+    if (slides[actual].id === "s3") { video.currentTime = 0; video.play().catch(() => {}); }
+    else video.pause();
+  }
+  addEventListener("keydown", (e) => {
+    if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); ir(actual + 1); }
+    if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); ir(actual - 1); }
+    if (e.key === "f" || e.key === "F") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    if (e.key === "Home") ir(0);
+    if (e.key === "End") ir(slides.length - 1);
+    // En el video, la tecla P lo pausa o lo sigue
+    if ((e.key === "p" || e.key === "P") && slides[actual].id === "s3") video.paused ? video.play() : video.pause();
+  });
+  addEventListener("click", (e) => ir(actual + (e.clientX > innerWidth / 3 ? 1 : -1)));
+  ir(0);
+</script>
+</body>
+</html>
