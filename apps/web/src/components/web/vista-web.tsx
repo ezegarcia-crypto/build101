@@ -59,12 +59,13 @@ function destino(boton: Boton, ficha: FichaWeb): string | null {
 
 type Colores = ReturnType<typeof rolesDe> & {
   sobrePrincipal: string;
-  sobreAcento: string;
   titulos: string;
   texto2: string;
   /** El más oscuro y el más claro entre el fondo y el texto: para las bandas oscuras y el héroe */
   tinta: string;
   claro: string;
+  /** El color de apoyo de la paleta (si no tiene, el acento): para las bandas suaves y los números */
+  apoyo: string;
 };
 
 function BotonWeb({
@@ -123,7 +124,8 @@ function Foto({ texto, colores, alto, lento }: { texto: string; colores: Colores
   return (
     <figure
       className={`vw-rev vw-foto relative grid place-items-end overflow-hidden rounded-[16px] p-4 ${alto ? "aspect-[4/3]" : "aspect-[16/10] @2xl:aspect-[4/3]"} ${!url && generando ? "animate-pulse" : ""}`}
-      style={{ background: colores.acento, color: colores.sobreAcento }}
+      // Un tono suave del color de apoyo: el acento es para detalles (muchos brandbooks prohíben llenar piezas con él)
+      style={{ background: `${colores.apoyo}26`, color: colores.texto }}
     >
       {url ? (
         <>
@@ -154,6 +156,60 @@ function isotipoComoImagen(svg: string) {
   const limpio = svgSeguro(svg);
   const conXmlns = /xmlns=/.test(limpio) ? limpio : limpio.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(conXmlns)}`;
+}
+
+/**
+ * El logo de la marca, el que eligió la persona en el brandbook. Si eligió una propuesta completa, va esa imagen
+ * (ya trae el nombre); si eligió el símbolo, o no hay propuesta, el isotipo con el nombre en la tipografía de títulos.
+ * Sobre un fondo oscuro, la imagen va sobre una pastilla clara para que se lea (las propuestas se dibujan sobre blanco).
+ */
+function LogoMarca({
+  imagen,
+  svg,
+  nombre,
+  colores,
+  sobreOscuro,
+  tamano,
+}: {
+  imagen?: string | null;
+  svg: string;
+  nombre: string;
+  colores: Colores;
+  sobreOscuro?: boolean;
+  tamano: "chico" | "medio" | "grande";
+}) {
+  if (imagen) {
+    const alto = {
+      chico: "h-7 max-w-[min(150px,100%)]",
+      medio: "h-10 max-w-[min(190px,100%)]",
+      grande: "h-20 max-w-[min(260px,100%)]",
+    }[tamano];
+    return (
+      <span
+        className={`inline-flex min-w-0 items-center ${sobreOscuro ? "rounded-[10px] px-2.5 py-1.5" : ""}`}
+        style={sobreOscuro ? { background: colores.claro } : undefined}
+      >
+        <img src={imagen} alt={nombre} className={`block w-auto object-contain ${alto}`} />
+      </span>
+    );
+  }
+  const iso = { chico: "size-6", medio: "size-9", grande: "size-[68px]" }[tamano];
+  const texto = { chico: "text-sm", medio: "text-xl", grande: "text-xl" }[tamano];
+  return (
+    <span className={`flex min-w-0 items-center gap-2.5 ${tamano === "grande" ? "flex-col gap-5" : ""}`}>
+      {svg && (
+        <span
+          className={`block shrink-0 [&>svg]:size-full ${iso}`}
+          aria-hidden="true"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
+          dangerouslySetInnerHTML={{ __html: svg }}
+        />
+      )}
+      <span className={`truncate ${texto}`} style={{ fontFamily: colores.titulos }}>
+        {nombre}
+      </span>
+    </span>
+  );
 }
 
 /**
@@ -503,7 +559,7 @@ function SeccionWeb({
                 className="vw-rev vw-card flex gap-4 rounded-[16px] border p-6"
                 style={{ borderColor: `${colores.texto}1f`, background: `${colores.claro}55`, transitionDelay: `${pasos ? i * 140 : (i % 3) * 80}ms` }}
               >
-                <span className="num shrink-0 text-[1.9rem] leading-none italic opacity-40" style={titulo}>
+                <span className="num shrink-0 text-[1.9rem] leading-none opacity-70" style={{ ...titulo, color: colores.apoyo }}>
                   {pasos ? i + 1 : String(i + 1).padStart(2, "0")}
                 </span>
                 <div>
@@ -590,7 +646,8 @@ const ESTILOS = `
 
 /** Lo que la vista usa de la identidad (lo mismo que se guarda al publicar, ver lib/webs.ts) */
 export type IdentidadVista = Pick<IdentidadIA, "nombre" | "paleta" | "tipografias" | "fuentes_url"> & {
-  logo: Pick<IdentidadIA["logo"], "isotipo_svg">;
+  /** imagen: el logo elegido sin fondo (logo-web.ts); si no hay, va el isotipo con el nombre */
+  logo: Pick<IdentidadIA["logo"], "isotipo_svg"> & { imagen?: string | null };
 };
 
 export function VistaWeb({
@@ -619,19 +676,22 @@ export function VistaWeb({
   const [altoVisible, setAltoVisible] = useState<number | null>(null);
 
   const roles = rolesDe(identidad.paleta);
+  const apoyo = identidad.paleta.find((c) => c.rol === "apoyo" && /^#[0-9a-f]{6}$/i.test(c.hex))?.hex ?? roles.acento;
   const oscuroPrimero = contraste(roles.fondo, "#000000") < contraste(roles.texto, "#000000");
   const colores: Colores = {
     ...roles,
     sobrePrincipal: textoSobre(roles.principal, identidad.paleta),
-    sobreAcento: textoSobre(roles.acento, identidad.paleta),
     titulos: fuente(identidad.tipografias.titulos, "serif"),
-    // Un fondo apenas distinto para separar secciones, hecho con el color del texto muy suave
-    texto2: `${roles.texto}0d`,
+    // Un fondo apenas distinto para separar secciones: el color de apoyo de la marca muy suave
+    texto2: `${apoyo}1a`,
     tinta: oscuroPrimero ? roles.fondo : roles.texto,
     claro: oscuroPrimero ? roles.texto : roles.fondo,
+    apoyo,
   };
   const ig = ficha.contacto.instagram;
   const svg = identidad.logo.isotipo_svg ? svgSeguro(identidad.logo.isotipo_svg) : "";
+  // Solo imágenes PNG o WebP propias (las arma logo-web.ts): nunca un link de afuera
+  const logoImagen = /^data:image\/(png|webp);base64,/.test(identidad.logo.imagen ?? "") ? identidad.logo.imagen : null;
   const conHeroe = web.secciones[0]?.tipo === "portada";
   // El header va en claro sobre el héroe solo cuando el héroe es a pantalla completa (estilo "vidriera")
   const sobreHeroe = conHeroe && web.estilo === "vidriera" && !bajo;
@@ -716,16 +776,24 @@ export function VistaWeb({
           {/* La ventanita de carga: el isotipo y el nombre, una barra que se llena, y sube para revelar la web */}
           <div className="pointer-events-none sticky top-0 z-[60] h-0" aria-hidden="true">
             <div className={`vw-pre ${cargada ? "fuera" : ""}`} style={{ height: altoVisible ?? "100svh" }}>
-              {svg && (
-                <span
-                  className="iso"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
-                  dangerouslySetInnerHTML={{ __html: svg }}
-                />
+              {logoImagen ? (
+                <span className="nom">
+                  <LogoMarca imagen={logoImagen} svg={svg} nombre={identidad.nombre} colores={colores} sobreOscuro tamano="grande" />
+                </span>
+              ) : (
+                <>
+                  {svg && (
+                    <span
+                      className="iso"
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
+                      dangerouslySetInnerHTML={{ __html: svg }}
+                    />
+                  )}
+                  <span className="nom text-xl" style={{ fontFamily: colores.titulos }}>
+                    {identidad.nombre}
+                  </span>
+                </>
               )}
-              <span className="nom text-xl" style={{ fontFamily: colores.titulos }}>
-                {identidad.nombre}
-              </span>
               <span className="barra">
                 <i />
               </span>
@@ -752,19 +820,14 @@ export function VistaWeb({
               aria-hidden="true"
             />
             <div className="mx-auto flex h-full w-full max-w-[1180px] items-center justify-between gap-3 px-5 @2xl:px-10">
-              <span className="flex min-w-0 items-center gap-2.5">
-                {svg && (
-                  <span
-                    className="block size-9 shrink-0 [&>svg]:size-full"
-                    aria-hidden="true"
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
-                    dangerouslySetInnerHTML={{ __html: svg }}
-                  />
-                )}
-                <span className="truncate text-xl" style={{ fontFamily: colores.titulos }}>
-                  {identidad.nombre}
-                </span>
-              </span>
+              <LogoMarca
+                imagen={logoImagen}
+                svg={svg}
+                nombre={identidad.nombre}
+                colores={colores}
+                sobreOscuro={sobreHeroe || oscuroPrimero}
+                tamano="medio"
+              />
               <nav className="vw-nav hidden gap-6 text-sm @3xl:flex">
                 {web.secciones
                   .filter((s) => s.tipo !== "portada")
@@ -790,16 +853,20 @@ export function VistaWeb({
 
           <footer className="border-t py-8" style={{ borderColor: `${colores.texto}1f` }}>
             <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center justify-between gap-4 px-5 text-sm @2xl:px-10">
-              <span className="flex items-center gap-3 opacity-80">
-                {svg && (
-                  <span
-                    className="block size-6 shrink-0 opacity-80 [&>svg]:size-full"
-                    aria-hidden="true"
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
-                    dangerouslySetInnerHTML={{ __html: svg }}
-                  />
+              <span className="flex items-center gap-3">
+                {logoImagen ? (
+                  <LogoMarca imagen={logoImagen} svg={svg} nombre={identidad.nombre} colores={colores} sobreOscuro={oscuroPrimero} tamano="chico" />
+                ) : (
+                  svg && (
+                    <span
+                      className="block size-6 shrink-0 opacity-80 [&>svg]:size-full"
+                      aria-hidden="true"
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: el SVG ya viene limpio de /api/identidad
+                      dangerouslySetInnerHTML={{ __html: svg }}
+                    />
+                  )
                 )}
-                {web.pie}
+                <span className="opacity-80">{web.pie}</span>
               </span>
               {ig && <span className="opacity-70">{ig}</span>}
             </div>
