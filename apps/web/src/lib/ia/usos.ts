@@ -1,5 +1,7 @@
 import { MODELO_IMAGEN as MODELO_FOTOS_FEED } from "@/lib/ia/contenidos/imagen";
 import { MODELO_PLAN, MODELO_REDACCION } from "@/lib/ia/contenidos/prompts";
+import { MODELO_COMPLETAR } from "@/lib/ia/completar";
+import { MODELO_DESTACADAS } from "@/lib/ia/destacadas";
 import { MODELO_DIRECCIONES } from "@/lib/ia/direcciones";
 import { MODELO_ENTREVISTA } from "@/lib/ia/entrevistador";
 import type { Paso } from "@/lib/ia/gastos";
@@ -44,6 +46,8 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-plan": [{ modelo: MODELO_PLAN, para: "Planifica el mes" }],
   "contenidos-pieza": [{ modelo: MODELO_REDACCION, para: "Escribe y corrige una pieza" }],
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
+  "contenidos-completar": [{ modelo: MODELO_COMPLETAR, para: "Reescribe las piezas con los datos que confirmó la persona" }],
+  "contenidos-destacadas": [{ modelo: MODELO_DESTACADAS, para: "Elige el ícono y el nombre de cada historia destacada" }],
   // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
   "contenidos-simple": [],
   "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],

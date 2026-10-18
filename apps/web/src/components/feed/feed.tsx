@@ -16,6 +16,7 @@ import s from "../entrevista/entrevista.module.css";
 import { Calendario } from "./calendario";
 import { archivosDePieza } from "./descargar-feed";
 import f from "./feed.module.css";
+import { Instagram } from "./instagram";
 
 // El feed de la marca, como se vería su perfil. Cada pieza la dibuja el compositor del motor
 // (componerPieza, sin IA) en SVG con los colores, las letras y el isotipo del cliente: el lienzo
@@ -445,30 +446,118 @@ function Progreso({ lote, plan, generando }: { lote: Lote; plan: Plan; generando
   );
 }
 
-/** Todo lo que la persona tiene que mirar antes de publicar, junto. */
-function Pendientes({ lote, plan }: { lote: Lote; plan: Plan }) {
+/** Todo lo que la persona tiene que mirar antes de publicar, junto. Los datos a confirmar se
+ * responden acá (o se marcan "No va") y la IA reescribe las piezas que los necesitaban. */
+function Pendientes({ lote, plan, kit, onCorregidas }: {
+  lote: Lote;
+  plan: Plan;
+  kit: Kit;
+  onCorregidas: (contenidos: Record<string, Pieza["contenido"]>) => void;
+}) {
   const piezas = plan.piezas.map((p) => lote.piezas[p.id]).filter(Boolean);
   const revisar = piezas.filter((p) => p.estado === "revisar");
   const datos = [...new Set(piezas.flatMap((p) => p.contenido.datos_a_confirmar))];
-  if (!revisar.length && !datos.length) return null;
+  // dato → lo que escribió la persona; null = "No va"
+  const [respuestas, setRespuestas] = useState<Record<string, string | null>>({});
+  const [aplicando, setAplicando] = useState(false);
+  const [aviso, setAviso] = useState("");
+
+  const listas = datos.filter((d) => d in respuestas && (respuestas[d] === null || respuestas[d]!.trim()));
+  const responder = (d: string, valor: string | null) => setRespuestas((r) => ({ ...r, [d]: valor }));
+
+  async function aplicar() {
+    const enviar = listas.map((d) => ({ dato: d, valor: respuestas[d]?.trim() || null }));
+    const afectadas = piezas.filter((p) => p.contenido.datos_a_confirmar.some((d) => listas.includes(d)));
+    setAplicando(true);
+    setAviso("");
+    try {
+      const r = await fetch("/api/contenidos/completar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          kit: { nombre: kit.nombre, voz: { trato: kit.voz.trato, tono: kit.voz.tono, reglas: kit.voz.reglas } },
+          piezas: afectadas.map((p) => ({ id: p.id, formato: p.formato, idea: p.plan.idea, contenido: p.contenido })),
+          respuestas: enviar,
+        }),
+      });
+      if (!r.ok) throw new Error();
+      const { piezas: nuevas } = (await r.json()) as { piezas: ({ id: string; contenido: Pieza["contenido"] } | { id: string; error: string })[] };
+      const bien = Object.fromEntries(nuevas.flatMap((n) => ("contenido" in n ? [[n.id, n.contenido]] : [])));
+      const mal = nuevas.length - Object.keys(bien).length;
+      onCorregidas(bien);
+      setRespuestas((r) => Object.fromEntries(Object.entries(r).filter(([d]) => !listas.includes(d))));
+      const n = Object.keys(bien).length;
+      setAviso(
+        `${n === 1 ? "Actualizamos una pieza" : `Actualizamos ${n} piezas`} con tus datos.${mal ? ` ${mal === 1 ? "Una no se pudo" : `${mal} no se pudieron`} cambiar: probá de nuevo.` : ""}`,
+      );
+    } catch {
+      setAviso("No pudimos aplicar tus datos. Probá de nuevo.");
+    } finally {
+      setAplicando(false);
+    }
+  }
+
+  if (!revisar.length && !datos.length) {
+    return aviso ? <p className={`${s.entra} text-sm text-muted-foreground`}>{aviso} Ya no queda nada por confirmar.</p> : null;
+  }
   return (
     <section className={`${s.entra} rounded-[14px] border bg-card p-6 text-card-foreground`}>
       <p className="label">Antes de publicar</p>
       {datos.length > 0 && (
         <div className="mt-3">
           <p className="font-semibold">Datos que tenés que confirmar</p>
-          <p className="text-sm text-muted-foreground">BrandIA no inventa precios, horarios ni fechas: los dejó marcados «[a confirmar]».</p>
-          <ul className="mt-2 flex flex-wrap gap-1.5 text-sm">
-            {datos.map((d) => (
-              <li key={d} className="rounded-[4px] border px-3 py-1.5">
-                {d}
-              </li>
-            ))}
+          <p className="text-sm text-muted-foreground">
+            BrandIA no inventa precios, plazos ni testimonios: los dejó marcados «[a confirmar]». Escribí cada dato, o marcá «No va», y
+            BrandIA reescribe las piezas que lo usan.
+          </p>
+          <ul className="mt-4 flex flex-col gap-4">
+            {datos.map((d, i) => {
+              const sacar = respuestas[d] === null;
+              return (
+                <li key={d} className="flex flex-col gap-2">
+                  <label htmlFor={`dato-${i}`} className="text-sm leading-snug">
+                    {d}
+                  </label>
+                  <div className="flex min-w-0 gap-2">
+                    <input
+                      id={`dato-${i}`}
+                      type="text"
+                      disabled={sacar || aplicando}
+                      value={sacar ? "" : (respuestas[d] ?? "")}
+                      onChange={(e) => responder(d, e.target.value)}
+                      placeholder={sacar ? "No va: se saca de la pieza" : "Escribilo acá"}
+                      className="h-10 min-w-0 flex-1 rounded-[4px] border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+                    />
+                    <button
+                      type="button"
+                      aria-pressed={sacar}
+                      disabled={aplicando}
+                      onClick={() => responder(d, sacar ? "" : null)}
+                      className={`h-10 shrink-0 rounded-full border px-4 text-sm transition-colors duration-300 ease-brandia ${sacar ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
+                    >
+                      No va
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Button onClick={aplicar} disabled={!listas.length || aplicando}>
+              {aplicando ? "Aplicando tus datos…" : listas.length > 1 ? `Aplicar ${listas.length} datos` : "Aplicar a las piezas"}
+            </Button>
+            {aplicando ? (
+              <Armando que="feed" mensaje="Reescribiendo las piezas con tus datos" />
+            ) : (
+              <span className="text-sm text-muted-foreground" role="status">
+                {aviso || "Lo que dejes vacío sigue marcado para después."}
+              </span>
+            )}
+          </div>
         </div>
       )}
       {revisar.length > 0 && (
-        <div className="mt-4">
+        <div className="mt-6">
           <p className="font-semibold">
             {revisar.length === 1 ? "Una pieza para revisar" : `${revisar.length} piezas para revisar`}
           </p>
@@ -522,7 +611,7 @@ function BajarFeed({ lote, kit, plan, generando }: { lote: Lote; kit: Kit; plan:
   );
 }
 
-export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onMeGusta }: {
+export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meGusta, onMeGusta }: {
   lote: Lote;
   kit: Kit;
   plan: Plan;
@@ -538,6 +627,32 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
   const titulos = `"${kit.tipografias.titulos.familia}", serif`;
   const usuario = usuarioDe(kit.nombre);
 
+  // Los textos que la IA reescribió con los datos que confirmó la persona ("Antes de publicar").
+  // Se guardan en la pestaña para que no se pierdan al recargar; el resto de la pieza queda igual.
+  const claveCorregidas = `brandia:completadas:${kit.nombre}|${plan.objetivo}`;
+  const [corregidas, setCorregidas] = useState<Record<string, Pieza["contenido"]>>({});
+  useEffect(() => {
+    try {
+      setCorregidas(JSON.parse(sessionStorage.getItem(claveCorregidas) ?? "{}"));
+    } catch {}
+  }, [claveCorregidas]);
+  const corregir = (nuevas: Record<string, Pieza["contenido"]>) =>
+    setCorregidas((antes) => {
+      const todas = { ...antes, ...nuevas };
+      try {
+        sessionStorage.setItem(claveCorregidas, JSON.stringify(todas));
+      } catch {}
+      return todas;
+    });
+  const lote = useMemo(() => {
+    if (!Object.keys(corregidas).length) return llegado;
+    const piezas = { ...llegado.piezas };
+    for (const [id, contenido] of Object.entries(corregidas)) {
+      if (piezas[id]) piezas[id] = { ...piezas[id], contenido } as Pieza;
+    }
+    return { ...llegado, piezas };
+  }, [llegado, corregidas]);
+
   useEffect(() => {
     for (const u of kit.fuentes) cargarFuentes(u);
   }, [kit.fuentes]);
@@ -545,6 +660,17 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
   return (
     <div className="flex flex-col gap-4">
       <Progreso lote={lote} plan={plan} generando={generando} />
+
+      {/* Cómo quedaría como perfil de Instagram, dentro de un celular */}
+      <Instagram
+        lote={lote}
+        kit={kit}
+        plan={plan}
+        c={c}
+        usuario={usuario}
+        bio={identidad.voz.ejemplos.bio_instagram}
+        avatar={<Avatar kit={kit} logo={logo} c={c} />}
+      />
 
       {/* El perfil y el plan del mes */}
       <section
@@ -583,7 +709,7 @@ export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onM
         </div>
       </section>
 
-      <Pendientes lote={lote} plan={plan} />
+      <Pendientes lote={lote} plan={plan} kit={kit} onCorregidas={corregir} />
       <BajarFeed lote={lote} kit={kit} plan={plan} generando={generando} />
 
       {/* Las piezas, en el orden del plan */}
