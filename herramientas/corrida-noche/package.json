@@ -1,0 +1,12 @@
+{
+  "name": "corrida-noche",
+  "private": true,
+  "type": "module",
+  "description": "Corre los casos de equipo/casos-demo.md solos en app.brandiamos.com y graba un video por caso",
+  "scripts": {
+    "correr": "node correr.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}
