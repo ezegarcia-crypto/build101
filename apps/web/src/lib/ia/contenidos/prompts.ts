@@ -142,7 +142,15 @@ Límites (palabras, salvo que diga caracteres): ${limites}.
 - Nada de datos inventados: precios, horarios, fechas, porcentajes, direcciones o teléfonos solo si están en lo que contó el negocio. Si la pieza necesita uno que no está, escribí la frase sin el número o con «[a confirmar]» en ese lugar, y anotalo en datos_a_confirmar.
 - Las imágenes las genera otra IA a partir de tu "escena": describí algo concreto y fotografiable de este negocio (quién, qué, dónde, con qué luz). Nunca pidas texto, carteles legibles ni logos dentro de la imagen.
 - Usá foto cuando hay algo que mostrar (un producto, un lugar, una persona trabajando); tipográfica cuando la pieza es una frase, un dato o una pregunta.
-- Hashtags: pocos y del rubro y la zona, nunca genéricos como #love o #instagood.`;
+- Hashtags: pocos y del rubro y la zona, nunca genéricos como #love o #instagood.${
+    identidad.estilo === "editorial"
+      ? `
+
+## El estilo de diseño que eligió la persona: editorial
+- La foto no va a sangre: va recortada en una forma (arco o círculo) sobre un fondo liso. En la "escena", pedí un sujeto claro y centrado, con aire alrededor y un fondo simple.
+- El titular va muy grande y con mucho aire: que sea corto y con peso.`
+      : ""
+  }`;
 }
 
 /** La segunda vuelta: el control encontró problemas y el redactor corrige solo eso. */
