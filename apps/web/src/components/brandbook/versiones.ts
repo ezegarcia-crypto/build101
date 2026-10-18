@@ -52,6 +52,9 @@ export const TITULOS: Record<ClaveVersion, string> = {
 
 // ---- Lienzos ----
 
+/** El lado de los dibujos: los PNG que se descargan salen de este tamaño (más que 1024, para que no se pixelen) */
+const LADO = 2048;
+
 function lienzo(ancho: number, alto: number) {
   const c = document.createElement("canvas");
   c.width = Math.max(1, Math.round(ancho));
@@ -76,13 +79,17 @@ const tintaDe = (r: number, g: number, b: number) => Math.max(255 - r, 255 - g, 
  * La imagen sin el fondo blanco y recortada a lo que tiene dibujo, con un margen parejo. Lo casi blanco
  * (ruido de la compresión, detalles blancos dentro del símbolo) queda transparente; los bordes, suaves.
  */
-async function sinFondo(src: string, lado = 1024) {
+async function sinFondo(src: string, lado = LADO) {
   const img = await cargar(src);
-  const escala = Math.min(1, lado / Math.max(img.naturalWidth, img.naturalHeight));
+  // Se agranda (con suavizado) ANTES de sacar el fondo: así los bordes salen lisos en grande, no en escalones.
+  // Los logos de la IA son de 1024; el resultado queda de 2048, que alcanza para imprenta chica y redes.
+  const escala = lado / Math.max(img.naturalWidth, img.naturalHeight);
   const [w, h] = [Math.round(img.naturalWidth * escala) || lado, Math.round(img.naturalHeight * escala) || lado];
   const [c, x] = lienzo(w, h);
   x.fillStyle = "#ffffff";
   x.fillRect(0, 0, w, h);
+  x.imageSmoothingEnabled = true;
+  x.imageSmoothingQuality = "high";
   x.drawImage(img, 0, 0, w, h);
   const datos = x.getImageData(0, 0, w, h);
   const p = datos.data;
@@ -150,7 +157,7 @@ function juntar(simbolo: HTMLCanvasElement, nombre: HTMLCanvasElement) {
 }
 
 /** El nombre de la marca en su tipografía de títulos, sin fondo */
-async function soloNombre(identidad: IdentidadIA, color: string, tamano = 200) {
+async function soloNombre(identidad: IdentidadIA, color: string, tamano = 360) {
   const { titulos } = identidad.tipografias;
   await esperarFuente(identidad.fuentes_url, titulos);
   const letra = `${tamano}px "${titulos}", Georgia, serif`;
@@ -171,7 +178,7 @@ async function soloNombre(identidad: IdentidadIA, color: string, tamano = 200) {
 }
 
 async function svgALienzo(svg: string) {
-  const url = URL.createObjectURL(new Blob([svgConTamano(svg, 1024)], { type: "image/svg+xml" }));
+  const url = URL.createObjectURL(new Blob([svgConTamano(svg, LADO)], { type: "image/svg+xml" }));
   try {
     return await sinFondo(url);
   } finally {
@@ -210,10 +217,12 @@ export async function limpiarSimbolo(imagen: string) {
   const c = await sinFondo(imagen);
   const cubre = cobertura(c);
   if (c.width < 24 || c.height < 24 || cubre < 0.03 || cubre > 0.97) return null;
-  const escala = Math.min(1, 512 / Math.max(c.width, c.height));
+  // 1024 de lado como mucho; en WebP donde se puede (Chrome), que pesa menos en el guardado del navegador
+  const escala = Math.min(1, 1024 / Math.max(c.width, c.height));
   const [chico, x] = lienzo(c.width * escala, c.height * escala);
+  x.imageSmoothingQuality = "high";
   x.drawImage(c, 0, 0, chico.width, chico.height);
-  return png(chico);
+  return chico.toDataURL("image/webp", 0.92);
 }
 
 /** El logo achicado para mandarlo a la IA (PNG de 768, liviano) */
