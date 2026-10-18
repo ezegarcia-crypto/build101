@@ -7,7 +7,9 @@ import type { FichaWeb } from "@/lib/ia/web/ficha-web";
 import type { PedidoFoto } from "@/lib/ia/web/fotos";
 import type { Web } from "@/lib/ia/web/web";
 
-// Las fotos de la web, cuando la persona eligió que las genere BrandIA (ficha_web.fotos === "generar").
+// Las fotos de la web: las genera BrandIA salvo que la persona diga que trae las suyas (ficha_web.fotos === "propias").
+// Si no lo definió ("sin_definir", por ejemplo "completalo como te parezca") o pidió usar su Instagram (todavía no
+// se lee), van fotos generadas, marcadas como ilustrativas: mejor que dejar los lugares vacíos.
 // Pide a /api/web/foto cada foto que falta, una vez por descripción: si falla no se reintenta sola
 // (queda el lugar con la descripción), y hay un tope por sesión para que un loop no se coma el crédito.
 
@@ -50,7 +52,7 @@ export function useFotosWeb({
   const pedidas = useRef(new Set<string>());
 
   useEffect(() => {
-    if (fichaWeb.fotos !== "generar") return;
+    if (fichaWeb.fotos === "propias") return;
     const faltan = [...new Set(web.secciones.map((s) => s.foto).filter((f): f is string => !!f))].filter(
       (d) => !fotos[d] && !pedidas.current.has(d),
     );

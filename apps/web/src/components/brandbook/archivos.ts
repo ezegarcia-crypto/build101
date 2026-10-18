@@ -268,6 +268,17 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brandbook · ${esc(nombre)}</title>
+<script>
+  // Safari (y todo navegador del iPhone o iPad, que usan su motor) ignora "@page { margin: 0 }" y le suma sus
+  // márgenes y el pie con la dirección: una hoja de 297 mm no entra y deja media página en blanco. Ahí las
+  // hojas van sin alto fijo (ver .safari en @media print).
+  (function () {
+    var ua = navigator.userAgent;
+    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var safari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Android/.test(ua);
+    if (ios || safari) document.documentElement.classList.add("safari");
+  })();
+</script>
 <link rel="stylesheet" href="${esc(identidad.fuentes_url)}">
 <style>
   @page { size: A4; margin: 0; }
@@ -340,6 +351,9 @@ export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
     .versiones { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .versiones.chicas { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .colores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .safari section { min-height: 0; padding: 12mm 12mm 10mm; }
+    .safari .tapa, .safari .portadilla { height: 235mm; }
+    .safari .agua { width: 150mm; }
   }
   @media (max-width: 520px) { section { padding: 44px 20px; } .aa { font-size: 72px; } }
 </style>

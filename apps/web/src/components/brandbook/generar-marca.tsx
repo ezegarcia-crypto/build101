@@ -117,8 +117,13 @@ function guardarMarca(ficha: string, l: Lista) {
     coloresGustan: l.coloresGustan,
     logosGustan: l.logosGustan,
   };
-  // Sin lugar (los logos pesan): se guarda sin los logos completos
-  if (!guardar(CLAVE_IDENTIDAD, marca)) guardar(CLAVE_IDENTIDAD, { ...marca, logos: [], elegido: undefined });
+  if (guardar(CLAVE_IDENTIDAD, marca)) return;
+  // Sin lugar (los logos pesan, sobre todo en el celular): se guarda al menos el logo elegido, que es el que usan
+  // el feed, BranderIA y la web. Si tampoco entra con su símbolo, va sin el símbolo; y si no, sin logos.
+  const elegido = typeof l.elegido === "number" ? l.logos[l.elegido] : undefined;
+  if (elegido && guardar(CLAVE_IDENTIDAD, { ...marca, logos: [elegido], elegido: 0, logosGustan: [] })) return;
+  if (elegido && guardar(CLAVE_IDENTIDAD, { ...marca, logos: [{ ...elegido, simbolo: undefined }], elegido: 0, logosGustan: [] })) return;
+  guardar(CLAVE_IDENTIDAD, { ...marca, logos: [], elegido: undefined });
 }
 
 function leer<T>(clave: string): T | null {
