@@ -11,6 +11,8 @@ import s from "@/components/entrevista/entrevista.module.css";
 import type { FichaWeb } from "@/lib/ia/web/ficha-web";
 import type { Web } from "@/lib/ia/web/web";
 
+import type { IdentidadConLogo } from "./web-cliente";
+
 // Web del cliente, pasos 7 y 8 (versión demo): publicar en /w/[slug] y la entrega (link y QR).
 // La dirección y su clave quedan en la sesión: si la persona cambia algo y vuelve a publicar, se actualiza
 // la misma dirección. Elegir un dominio propio y pagarlo sigue en construcción.
@@ -65,7 +67,7 @@ export function Publicar({
   ficha: string;
   web: Web;
   fichaWeb: FichaWeb;
-  identidad: IdentidadIA;
+  identidad: IdentidadConLogo;
   fotos: Record<string, string>;
   ocupado: boolean;
 }) {
@@ -73,7 +75,9 @@ export function Publicar({
   const [publicando, setPublicando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
-  const version = useMemo(() => JSON.stringify({ web, fichaWeb, fotos }), [web, fichaWeb, fotos]);
+  // El logo entra a la versión por su largo (es una imagen): si cambia el logo elegido, hay que volver a publicar
+  const logo = identidad.logo.imagen?.length ?? 0;
+  const version = useMemo(() => JSON.stringify({ web, fichaWeb, fotos, logo }), [web, fichaWeb, fotos, logo]);
   const qr = useQr(publicada?.url ?? null, identidad);
 
   useEffect(() => setPublicada(leerPublicada(ficha)), [ficha]);
@@ -95,7 +99,7 @@ export function Publicar({
             paleta: identidad.paleta,
             tipografias: identidad.tipografias,
             fuentes_url: identidad.fuentes_url,
-            logo: { isotipo_svg: identidad.logo.isotipo_svg },
+            logo: { isotipo_svg: identidad.logo.isotipo_svg, imagen: identidad.logo.imagen ?? undefined },
           },
           fotos,
           anterior: publicada ? { slug: publicada.slug, clave: publicada.clave } : undefined,
