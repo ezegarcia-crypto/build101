@@ -312,9 +312,11 @@ p{margin:0}
 
 /* ====== A7 · EMPEZAR sobre naranja ====== */
 #empezar{background:var(--n);color:var(--g)}
-#empezar .lead{color:var(--g)}
-#empezar .eb{color:var(--g)}
-#empezar .btn{margin-top:36px;padding:22px 34px;font-size:18px}
+/* Toda la sección es un solo botón gigante que lleva a la app */
+#empezar .cta-gigante{display:flex;align-items:center;justify-content:center;width:100%;min-height:clamp(220px,32vw,420px);padding:clamp(28px,4vw,56px);border-radius:clamp(28px,4vw,56px);background:var(--g);color:var(--h);text-decoration:none;font-family:var(--fd);font-size:clamp(3.2rem,1rem + 9vw,11rem);font-weight:500;letter-spacing:-.03em;line-height:1;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 0;text-align:center;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+#empezar .cta-gigante:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 40px 70px -40px rgba(30,30,28,.6)}
+#empezar .cta-gigante:active{transform:translateY(-2px) scale(.995)}
+#empezar .cta-gigante:focus-visible{outline:3px solid var(--g);outline-offset:6px}
 
 footer{background:var(--g);color:var(--h);padding-block:56px calc(40px + env(safe-area-inset-bottom,0px))}
 footer .wrap{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
@@ -604,12 +606,7 @@ footer .r{text-align:right;font-size:13px;color:var(--pd);line-height:1.8}
 <!-- ================= A7 · EMPEZAR ================= -->
 <section class="sec" id="empezar">
   <div class="wrap">
-    <div class="rv">
-      <p class="eb">Empezá por acá</p>
-      <h2 class="big" style="margin-top:20px">¿Arrancamos con <span class="it">la tuya?</span></h2>
-      <p class="lead" style="margin-top:24px">Contanos qué hacés, escribiendo o con audios. BrandIA arma tu marca en minutos.</p>
-      <a class="btn btn-d" href="/crear">BrandIAmos →</a>
-    </div>
+    <a class="cta-gigante rv" href="/crear">¿Brand<span class="it">IA</span>mos?</a>
   </div>
 </section>
 </main>
