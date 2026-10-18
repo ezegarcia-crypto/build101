@@ -1,20 +1,9 @@
-// Los archivos finales de la marca, armados en el navegador (sin IA y sin servidor): el logo elegido,
-// el símbolo en SVG y PNG, la paleta, las tipografías y el brandbook en HTML listo para guardar en PDF.
+// Los archivos finales de la marca, armados en el navegador (sin IA y sin servidor): el logo elegido en sus
+// 4 versiones (versiones.ts), la paleta, las tipografías y el brandbook en HTML listo para guardar en PDF.
 // Todo sale de lo que ya generó la IA para esta marca. El .zip se arma acá mismo (sin comprimir).
 
-import {
-  contraste,
-  esperarFuente,
-  fondoParaSimbolo,
-  type IdentidadIA,
-  type LogoElegido,
-  logoDeMarca,
-  type PropuestaLogo,
-  rolesDe,
-  svgConTamano,
-  svgSeguro,
-  textoSobre,
-} from "./identidad";
+import { contraste, esperarFuente, type IdentidadIA, rolesDe, svgConTamano, textoSobre } from "./identidad";
+import { coloresNegativo, type Versiones } from "./versiones";
 
 export type Archivo = { nombre: string; datos: Uint8Array };
 
@@ -158,21 +147,25 @@ function tipografias(identidad: IdentidadIA) {
   ].join("\n");
 }
 
-function leeme(identidad: IdentidadIA, cual: "propuesta" | "simbolo" | "simbolo-nombre", propuestas: number) {
-  const queEs = { propuesta: "el logo que elegiste", simbolo: "tu logo: el símbolo solo", "simbolo-nombre": "tu logo: el símbolo con tu nombre" }[cual];
+function leeme(identidad: IdentidadIA, versiones: Versiones) {
   return [
     `Los archivos de ${identidad.nombre}, hechos con BrandIA`,
     "",
-    `logo.png · ${queEs}, en alta (fondo ${cual === "propuesta" ? "blanco" : "transparente"})`,
-    "simbolo.svg · el símbolo en vector: se agranda sin perder calidad (para imprenta, cartelería, bordado)",
-    "simbolo.png · el símbolo con fondo transparente",
-    propuestas ? `propuestas/ · las ${propuestas} propuestas de logo` : "",
+    "Solo lo que elegiste: las pruebas que fuiste viendo no vienen.",
+    "",
+    "logo/1-logo-completo.png · el logo completo: símbolo y nombre (fondo transparente)",
+    "logo/2-solo-nombre.png · solo el nombre, en tu tipografía de títulos (fondo transparente)",
+    versiones.lista.some((v) => v.clave === "simbolo")
+      ? "logo/3-solo-simbolo.png · solo el símbolo: para el perfil de tus redes, el ícono de la web o un sello (fondo transparente)"
+      : null,
+    "logo/4-negativo.png · el logo en claro sobre el color oscuro de tu marca, para fondos oscuros",
+    versiones.simboloSvg ? "logo/simbolo.svg · el símbolo en vector: se agranda sin perder calidad (imprenta, cartelería, bordado)" : null,
     "paleta.png y colores.txt · tus colores, con su código HEX y RGB",
     "tipografias.txt · tus dos tipografías y dónde bajarlas",
     "brandbook.html · tu manual de marca: abrilo en el navegador y guardalo como PDF (Imprimir → Guardar como PDF)",
     "",
   ]
-    .filter((l) => l !== "")
+    .filter((l) => l !== null)
     .join("\n");
 }
 
@@ -181,21 +174,65 @@ function leeme(identidad: IdentidadIA, cual: "propuesta" | "simbolo" | "simbolo-
 const esc = (t: string | null | undefined) =>
   (t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** El manual de marca en una sola página, con los colores y las letras del cliente. Se imprime en PDF. */
-export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null, conNombre = false) {
+/** Mezcla dos colores hex (t = cuánto del segundo) */
+function mezclar(a: string, b: string, t: number) {
+  const canal = (h: string, i: number) => Number.parseInt(h.replace("#", "").slice(i, i + 2), 16);
+  const v = [0, 2, 4].map((i) => Math.round(canal(a, i) * (1 - t) + canal(b, i) * t));
+  return `#${v.map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/**
+ * El manual de marca con los colores y las letras del cliente: portada en su color principal y un bloque de
+ * color por sección, siempre con el texto que mejor se lee encima. Se imprime en A4 (Guardar como PDF):
+ * cada sección arranca en una hoja nueva y nada se corta entre hojas (tarjetas, colores y logos enteros).
+ */
+export function brandbookHtml(identidad: IdentidadIA, versiones: Versiones) {
   const { nombre, eslogan, esencia, voz, estilo, brandbook: bb, paleta, tipografias: t, logo: simbolo } = identidad;
   const c = rolesDe(paleta);
-  const sobrePrincipal = textoSobre(c.principal, paleta);
-  const fondoSimbolo = fondoParaSimbolo(simbolo.isotipo_svg, paleta, c.fondo, c.principal);
-  const svg = simbolo.isotipo_svg ? svgSeguro(simbolo.isotipo_svg) : "";
-  const marcaLogo = logo
-    ? `<img class="logo" src="${logo.imagen}" alt="Logo de ${esc(nombre)}">`
-    : conNombre
-      ? `<div class="con-nombre"><div class="simbolo">${svg}</div><span>${esc(nombre)}</span></div>`
-      : `<div class="simbolo">${svg}</div>`;
+  const neg = coloresNegativo(paleta);
+  const hex = (h: string) => /^#[0-9a-f]{6}$/i.test(h);
+  // Los bloques: el color de fondo de cada sección y el texto que mejor se lee sobre él
+  const bloque = (fondo: string) => ({ fondo, texto: contraste(fondo, c.texto) >= 4.5 ? c.texto : textoSobre(fondo, paleta) });
+  const portada = bloque(c.principal);
+  portada.texto = textoSobre(c.principal, paleta);
+  const claro = bloque(c.fondo);
+  const tinte = bloque(mezclar(c.fondo, c.principal, 0.1));
+  const tinteAcento = bloque(hex(c.acento) ? mezclar(c.fondo, c.acento, 0.18) : tinte.fondo);
+  const oscuro = { fondo: neg.oscuro, texto: neg.claro };
+  // Un detalle de color en cada bloque (la raya del título), que se lea sobre su fondo
+  const detalle = (fondo: string) =>
+    [c.acento, c.principal, c.texto].find((x) => hex(x) && contraste(x, fondo) >= 2.2) ?? textoSobre(fondo, paleta);
+
   const par = (titulo: string, valor?: string | null) =>
-    valor ? `<div><h3>${esc(titulo)}</h3><p>${esc(valor)}</p></div>` : "";
-  const lista = (items: string[], marca = "·") => `<ul>${items.map((i) => `<li><span>${marca}</span>${esc(i)}</li>`).join("")}</ul>`;
+    valor ? `<div class="par"><h3>${esc(titulo)}</h3><p>${esc(valor)}</p></div>` : "";
+  const lista = (items: string[], marca = "·") =>
+    `<ul>${items.map((i) => `<li><span>${marca}</span>${esc(i)}</li>`).join("")}</ul>`;
+  let numero = 0;
+  const seccion = (b: { fondo: string; texto: string }, titulo: string, cuerpo: string, clase = "") => {
+    numero += 1;
+    return `<section class="${clase}" style="--fondo:${b.fondo};--texto:${b.texto};--detalle:${detalle(b.fondo)}">
+  <header><p class="rotulo">${String(numero).padStart(2, "0")} · ${esc(nombre)}</p><h2>${esc(titulo)}</h2></header>
+  ${cuerpo}
+</section>`;
+  };
+
+  const versionesHtml = versiones.lista
+    .map(
+      (v) =>
+        `<figure class="version"><div class="lamina" style="${v.fondo ? `background:${v.fondo}` : ""}"><img src="${v.imagen}" alt="${esc(v.titulo)}"></div><figcaption>${esc(v.titulo)}</figcaption></figure>`,
+    )
+    .join("");
+
+  const ejemplos = (
+    [
+      ["Bio de Instagram", voz.ejemplos.bio_instagram],
+      ["Un posteo", voz.ejemplos.posteo],
+      ["Respuesta a un cliente", voz.ejemplos.respuesta_cliente],
+      ["Un cartel", voz.ejemplos.cartel],
+    ] as const
+  )
+    .map(([titulo, v]) => `<div class="caja ejemplo"><p class="mini">${titulo}</p><p>${esc(v)}</p></div>`)
+    .join("");
 
   return `<!doctype html>
 <html lang="es">
@@ -205,108 +242,157 @@ export function brandbookHtml(identidad: IdentidadIA, logo: PropuestaLogo | null
 <title>Brandbook · ${esc(nombre)}</title>
 <link rel="stylesheet" href="${esc(identidad.fuentes_url)}">
 <style>
+  @page { size: A4; margin: 0; }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { margin: 0; background: ${c.fondo}; color: ${c.texto}; font: 16px/1.6 "${t.texto}", system-ui, sans-serif; }
-  section { padding: 56px 8vw; break-inside: avoid; page-break-inside: avoid; }
-  section + section { border-top: 1px solid ${c.texto}22; }
-  .portada { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-  .rotulo { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .7; margin: 0 0 24px; }
+  html, body { margin: 0; background: ${claro.fondo}; }
+  body { color: ${claro.texto}; font: 16px/1.6 "${t.texto}", system-ui, sans-serif; }
+  section { background: var(--fondo); color: var(--texto); padding: 64px 8vw; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  header { margin-bottom: 36px; break-after: avoid; page-break-after: avoid; }
+  header h2 { padding-top: 18px; border-top: 3px solid var(--detalle); max-width: 18ch; }
+  .rotulo, .mini { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; opacity: .75; margin: 0 0 14px; }
   h1, h2, .grande { font-family: "${t.titulos}", Georgia, serif; font-weight: 400; line-height: 1.05; margin: 0; }
-  h1 { font-size: clamp(40px, 7vw, 80px); max-width: 16ch; margin-top: 32px; }
-  h2 { font-size: clamp(28px, 4vw, 44px); max-width: 24ch; }
-  h3 { font-size: 14px; margin: 0 0 6px; }
-  p { margin: 0; max-width: 40em; }
-  .grilla { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 28px; }
-  .caja { border-radius: 10px; padding: 20px; box-shadow: inset 0 0 0 1px ${c.texto}26; }
-  .logo { width: 220px; height: 220px; object-fit: contain; background: #fff; border-radius: 10px; }
-  .simbolo { width: 140px; height: 140px; color: ${c.principal}; }
-  .con-nombre { display: flex; align-items: center; gap: 28px; }
-  .con-nombre .simbolo { width: 96px; height: 96px; flex-shrink: 0; }
-  .con-nombre span { font-family: "${t.titulos}", Georgia, serif; font-size: 56px; line-height: 1; color: ${c.principal}; }
-  .simbolo svg, .aplicado svg { width: 100%; height: 100%; }
-  .aplicado { display: grid; place-items: center; min-height: 180px; border-radius: 10px; }
-  .aplicado div { width: 96px; height: 96px; }
-  .colores { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-top: 28px; }
-  .color { aspect-ratio: .9; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 13px; line-height: 1.35; }
-  .aa { font-size: 88px; line-height: 1; }
-  .voz { background: ${c.principal}; color: ${sobrePrincipal}; }
-  .voz .caja { box-shadow: inset 0 0 0 1px ${sobrePrincipal}40; }
+  h1 { font-size: clamp(40px, 7vw, 76px); max-width: 15ch; }
+  h2 { font-size: clamp(30px, 4.2vw, 46px); }
+  h3 { font-size: 14px; margin: 0 0 6px; break-after: avoid; }
+  p { margin: 0; max-width: 42em; }
+  .intro { font-size: 18px; margin-bottom: 28px; }
+  .grilla { display: grid; gap: 22px 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 28px; }
+  .caja { border-radius: 12px; padding: 20px 22px; background: color-mix(in srgb, var(--texto) 6%, var(--fondo)); }
+  .caja .grande { font-size: 24px; color: var(--detalle-texto, inherit); }
+  .par, .caja, .version, .color, li, .aa-caja { break-inside: avoid; page-break-inside: avoid; }
   ul { list-style: none; padding: 0; margin: 8px 0 0; }
   li { display: flex; gap: 8px; }
-  .ejemplo { background: ${c.fondo}; color: ${c.texto}; border-radius: 10px; padding: 20px; white-space: pre-line; }
-  .pie { font-size: 12px; opacity: .6; }
-  @media print { section { padding: 36px 48px; } .portada { min-height: 90vh; } }
+  .pie { font-size: 12px; opacity: .7; }
+
+  /* Portada: el color principal entero, con el logo en claro */
+  .portada { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; gap: 48px; }
+  .portada .logo { max-width: min(360px, 70vw); max-height: 200px; object-fit: contain; display: block; margin-bottom: 40px; }
+  .portada .idea { font-size: 19px; margin-top: 20px; max-width: 34em; }
+  .portada .franja { display: flex; height: 14px; border-radius: 999px; overflow: hidden; max-width: 420px; }
+  .portada .franja span { flex: 1; }
+
+  /* Logo: las 4 versiones */
+  .versiones { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .version { margin: 0; }
+  .lamina { position: relative; aspect-ratio: 4 / 3; border-radius: 12px; background: ${c.fondo}; box-shadow: inset 0 0 0 1px ${c.texto}1f; }
+  .lamina img { position: absolute; inset: 14%; width: 72%; height: 72%; object-fit: contain; }
+  figcaption { font-size: 13px; font-weight: 600; margin-top: 8px; }
+
+  /* Paleta */
+  .colores { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+  .color { aspect-ratio: .85; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 13px; line-height: 1.35; }
+  .aa { font-size: 96px; line-height: 1; margin: 0 0 8px; }
+  .ejemplo { white-space: pre-line; }
+
+  @media print {
+    body { font-size: 13px; line-height: 1.5; }
+    header { margin-bottom: 24px; }
+    .grilla { gap: 16px 22px; margin-top: 20px; }
+    .caja { padding: 14px 16px; }
+    .aa { font-size: 80px; }
+    section { padding: 18mm 17mm; min-height: 297mm; break-before: page; page-break-before: always; }
+    section:first-of-type { break-before: auto; page-break-before: auto; }
+    .portada { height: 297mm; min-height: 0; overflow: hidden; }
+    .grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .versiones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .colores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) { section { padding: 44px 20px; } .aa { font-size: 72px; } }
 </style>
 </head>
 <body>
-<section class="portada">
+<section class="portada" style="--fondo:${portada.fondo};--texto:${portada.texto}">
   <p class="rotulo">Brandbook · ${esc(nombre)}</p>
-  <div>${marcaLogo}<h1>${esc(eslogan || nombre)}</h1><p style="margin-top:20px;font-size:18px">${esc(esencia.idea)}</p></div>
-  <p style="margin-top:32px">${esc(bb.introduccion)}</p>
+  <div>
+    <img class="logo" src="${versiones.portada}" alt="Logo de ${esc(nombre)}">
+    <h1>${esc(eslogan || nombre)}</h1>
+    <p class="idea">${esc(esencia.idea)}</p>
+  </div>
+  <div>
+    <div class="franja">${paleta.filter((x) => hex(x.hex)).map((x) => `<span style="background:${x.hex}"></span>`).join("")}</div>
+    <p style="margin-top:24px">${esc(bb.introduccion)}</p>
+  </div>
 </section>
-<section>
-  <p class="rotulo">Esencia</p>
-  <div class="grilla">${par("Misión", esencia.mision)}${par("Visión", esencia.vision)}</div>
+${seccion(
+  claro,
+  "Esencia",
+  `${esencia.mision || esencia.vision ? `<div class="grilla">${par("Misión", esencia.mision)}${par("Visión", esencia.vision)}</div>` : ""}
   <div class="grilla">${par("Por qué existe", esencia.proposito)}${par("Lo que prometemos", esencia.promesa)}${par("Dónde nos paramos", esencia.posicionamiento)}${par("Para quién", esencia.publico)}</div>
-  <div class="grilla">${esencia.valores.map((v) => `<div class="caja"><p class="grande" style="font-size:24px;color:${c.principal}">${esc(v.valor)}</p><p style="margin-top:8px">${esc(v.significa)}</p></div>`).join("")}</div>
-</section>
-<section>
-  <p class="rotulo">Logo</p>
-  ${logo ? `<div class="grilla"><img class="logo" src="${logo.imagen}" alt=""><p>${esc(logo.concepto)}</p></div>` : ""}
-  ${
-    svg
-      ? `<div class="grilla"><div class="aplicado caja" style="color:${c.principal}"><div>${svg}</div></div><div class="aplicado" style="background:${fondoSimbolo}"><div>${svg}</div></div></div><p style="margin-top:20px">${esc(simbolo.explicacion)}</p>`
-      : ""
-  }
-</section>
-<section>
-  <p class="rotulo">Paleta</p>
-  <div class="colores">${paleta
+  <div class="grilla">${esencia.valores.map((v) => `<div class="caja"><p class="grande">${esc(v.valor)}</p><p style="margin-top:8px">${esc(v.significa)}</p></div>`).join("")}</div>`,
+)}
+${seccion(
+  tinte,
+  "Logo",
+  `<p class="intro">${esc(versiones.simboloSvg ? simbolo.explicacion : "Tu logo y sus cuatro versiones: completo, solo el nombre, solo el símbolo y en negativo, para fondos oscuros.")}</p>
+  <div class="versiones">${versionesHtml}</div>`,
+)}
+${seccion(
+  claro,
+  "Paleta",
+  `<div class="colores">${paleta
     .map(
       (col) =>
         `<div class="color" style="background:${col.hex};color:${textoSobre(col.hex, paleta)};${contraste(col.hex, c.fondo) < 1.3 ? `box-shadow:inset 0 0 0 1px ${c.texto}33` : ""}"><b>${esc(col.nombre)}</b><span>${col.hex.toUpperCase()}</span><span>${esc(col.rol)}</span></div>`,
     )
     .join("")}</div>
-  <p style="margin-top:24px">${esc(estilo.uso_de_colores)}</p>
-</section>
-<section>
-  <p class="rotulo">Tipografías</p>
-  <div class="grilla">
-    <div><p class="aa" style="font-family:'${esc(t.titulos)}',serif">Aa</p><p style="font-family:'${esc(t.titulos)}',serif;font-size:20px">${esc(t.titulos)}</p><p class="pie">Títulos</p></div>
-    <div><p class="aa" style="font-family:'${esc(t.texto)}',sans-serif">Aa</p><p style="font-family:'${esc(t.texto)}',sans-serif;font-size:20px">${esc(t.texto)}</p><p class="pie">Texto</p></div>
+  <p style="margin-top:28px">${esc(estilo.uso_de_colores)}</p>`,
+)}
+${seccion(
+  tinteAcento,
+  "Tipografías",
+  `<div class="grilla">
+    <div class="aa-caja"><p class="aa" style="font-family:'${esc(t.titulos)}',serif">Aa</p><p style="font-family:'${esc(t.titulos)}',serif;font-size:22px">${esc(t.titulos)}</p><p class="pie">Títulos</p></div>
+    <div class="aa-caja"><p class="aa" style="font-family:'${esc(t.texto)}',sans-serif">Aa</p><p style="font-family:'${esc(t.texto)}',sans-serif;font-size:22px">${esc(t.texto)}</p><p class="pie">Texto</p></div>
   </div>
-</section>
-<section class="voz">
-  <p class="rotulo">Voz y tono</p>
-  <h2>${esc(voz.resumen)}</h2>
+  <p class="grande" style="font-size:clamp(28px,4vw,44px);margin-top:48px;max-width:18ch">${esc(eslogan || nombre)}</p>
+  <p style="margin-top:14px">${esc(esencia.promesa)}</p>`,
+)}
+${seccion(
+  oscuro,
+  "Voz y tono",
+  `<p class="grande" style="font-size:clamp(24px,3vw,34px);max-width:26ch">${esc(voz.resumen)}</p>
   <div class="grilla">${voz.rasgos.map((r) => `<div class="caja"><h3 style="font-size:18px">${esc(r.rasgo)}</h3><p>Es · ${esc(r.es)}</p><p>No es · ${esc(r.no_es)}</p></div>`).join("")}</div>
   ${(voz.tono ?? []).length ? `<div class="grilla">${voz.tono.map((m) => `<div class="caja"><h3 style="font-size:18px">${esc(m.momento)}</h3><p>${esc(m.como)}</p><p style="margin-top:10px;font-style:italic">«${esc(m.ejemplo)}»</p></div>`).join("")}</div>` : ""}
-  <div class="grilla"><div><h3>Palabras nuestras</h3>${lista(voz.palabras_si)}</div><div><h3>Nunca decimos</h3>${lista(voz.palabras_no, "×")}</div></div>
-  <div class="grilla">${(
-    [
-      ["Bio de Instagram", voz.ejemplos.bio_instagram],
-      ["Un posteo", voz.ejemplos.posteo],
-      ["Respuesta a un cliente", voz.ejemplos.respuesta_cliente],
-      ["Un cartel", voz.ejemplos.cartel],
-    ] as const
-  )
-    .map(([titulo, v]) => `<div class="ejemplo"><p class="rotulo" style="margin-bottom:8px">${titulo}</p>${esc(v)}</div>`)
-    .join("")}</div>
-</section>
-<section>
-  <p class="rotulo">Cómo se usa</p>
-  <div class="grilla">${par("Fotografía", estilo.fotografia)}${par("Íconos e ilustración", estilo.iconos_e_ilustracion)}<div><h3>Siempre</h3>${lista(bb.usos_correctos)}</div><div><h3>Nunca</h3>${lista(bb.usos_incorrectos, "×")}</div></div>
-  <div class="grilla">${bb.aplicaciones.map((a) => `<div class="caja"><p class="grande" style="font-size:20px;color:${c.principal}">${esc(a.donde)}</p><p style="margin-top:8px">${esc(a.como)}</p></div>`).join("")}</div>
-  <p class="pie" style="margin-top:40px">Hecho con BrandIA</p>
-</section>
+`,
+)}
+${seccion(
+  tinte,
+  "Así suena",
+  `<div class="grilla"><div class="par"><h3>Palabras nuestras</h3>${lista(voz.palabras_si)}</div><div class="par"><h3>Nunca decimos</h3>${lista(voz.palabras_no, "×")}</div></div>
+  <div class="grilla">${ejemplos}</div>`,
+)}
+${seccion(
+  claro,
+  "Cómo se usa",
+  `<div class="grilla">${par("Fotografía", estilo.fotografia)}${par("Íconos e ilustración", estilo.iconos_e_ilustracion)}<div class="par"><h3>Siempre</h3>${lista(bb.usos_correctos)}</div><div class="par"><h3>Nunca</h3>${lista(bb.usos_incorrectos, "×")}</div></div>
+  <div class="grilla">${bb.aplicaciones.map((a) => `<div class="caja"><p class="grande" style="font-size:20px">${esc(a.donde)}</p><p style="margin-top:8px">${esc(a.como)}</p></div>`).join("")}</div>
+  <p class="pie" style="margin-top:48px">Brandbook de ${esc(nombre)} · Hecho con BrandIA</p>`,
+)}
 </body>
 </html>`;
 }
 
 // ---- Todos los archivos ----
 
-export async function archivosDeMarca(identidad: IdentidadIA, logos: PropuestaLogo[], elegido: LogoElegido | undefined) {
-  const logo = logoDeMarca(logos, elegido);
+/** Un data URL (las versiones del logo) como archivo */
+export function deDataUrl(url: string) {
+  const [cabeza, datos = ""] = url.split(",");
+  const tipo = cabeza?.match(/data:([^;]+)/)?.[1] ?? "application/octet-stream";
+  const binario = atob(datos);
+  const bytes = new Uint8Array(binario.length);
+  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+  return new Blob([bytes], { type: tipo });
+}
+
+const ARCHIVO_VERSION: Record<string, string> = {
+  completo: "logo/1-logo-completo.png",
+  nombre: "logo/2-solo-nombre.png",
+  simbolo: "logo/3-solo-simbolo.png",
+  negativo: "logo/4-negativo.png",
+};
+
+/** Solo lo final: el logo elegido en sus 4 versiones, la paleta y las tipografías que quedaron, y el brandbook */
+export async function archivosDeMarca(identidad: IdentidadIA, versiones: Versiones) {
   const svg = identidad.logo.isotipo_svg;
   const archivos: Archivo[] = [];
   const sumar = async (nombre: string, armar: () => Promise<Uint8Array> | Uint8Array) => {
@@ -317,23 +403,15 @@ export async function archivosDeMarca(identidad: IdentidadIA, logos: PropuestaLo
     }
   };
 
-  const conNombre = elegido === "simbolo-nombre" && !!svg;
-  if (logo) await sumar("logo.png", () => imagenAPng(logo.imagen, 1024, "#ffffff"));
-  else if (conNombre) await sumar("logo.png", async () => aPng(await simboloConNombre(identidad, 512)));
-  else if (svg) await sumar("logo.png", () => simboloAPng(svg, 1024));
-  if (svg) {
-    await sumar("simbolo.svg", () => texto(svgConTamano(svg, 1024)));
-    await sumar("simbolo.png", () => simboloAPng(svg, 1024));
+  for (const v of versiones.lista) {
+    await sumar(ARCHIVO_VERSION[v.clave] ?? `logo/${v.clave}.png`, async () => new Uint8Array(await deDataUrl(v.archivo).arrayBuffer()));
   }
-  if (logos.length > 1) {
-    for (const [i, l] of logos.entries()) await sumar(`propuestas/logo-${i + 1}.png`, () => imagenAPng(l.imagen, 1024, "#ffffff"));
-  }
+  if (versiones.simboloSvg && svg) await sumar("logo/simbolo.svg", () => texto(svgConTamano(svg, 1024)));
   await sumar("paleta.png", () => paletaAPng(identidad));
   await sumar("colores.txt", () => texto(colores(identidad)));
   await sumar("tipografias.txt", () => texto(tipografias(identidad)));
-  await sumar("brandbook.html", () => texto(brandbookHtml(identidad, logo, conNombre)));
-  const cual = logo ? "propuesta" : conNombre ? "simbolo-nombre" : "simbolo";
-  await sumar("LEEME.txt", () => texto(leeme(identidad, cual, logos.length > 1 ? logos.length : 0)));
+  await sumar("brandbook.html", () => texto(brandbookHtml(identidad, versiones)));
+  await sumar("LEEME.txt", () => texto(leeme(identidad, versiones)));
   return archivos;
 }
 

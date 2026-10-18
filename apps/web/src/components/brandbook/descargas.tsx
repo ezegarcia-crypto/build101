@@ -5,32 +5,26 @@ import { Download, FileText } from "lucide-react";
 import { useState } from "react";
 
 import s from "../entrevista/entrevista.module.css";
-import { archivosDeMarca, bajar, brandbookHtml, simboloAPng, simboloConNombre, slug, zip } from "./archivos";
-import { type IdentidadIA, type LogoElegido, logoDeMarca, type PropuestaLogo, svgConTamano } from "./identidad";
+import { archivosDeMarca, bajar, brandbookHtml, deDataUrl, slug, zip } from "./archivos";
+import { type IdentidadIA, svgConTamano } from "./identidad";
+import type { Versiones } from "./versiones";
 
-// Los archivos finales de la marca, para llevarse: todo en un .zip, o de a uno. Va con la ropa de BrandIA.
+// Los archivos finales de la marca, para llevarse: todo en un .zip, o de a uno. Solo lo elegido: el logo
+// en sus 4 versiones, la paleta y las tipografías que quedaron, y el brandbook. Las pruebas no viajan.
+// Va con la ropa de BrandIA.
 
-export function Descargas({
-  identidad,
-  logos,
-  elegido,
-}: {
-  identidad: IdentidadIA;
-  logos: PropuestaLogo[];
-  elegido: LogoElegido | undefined;
-}) {
+export function Descargas({ identidad, versiones }: { identidad: IdentidadIA; versiones: Versiones | null }) {
   const [armando, setArmando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const base = slug(identidad.nombre);
-  const logo = logoDeMarca(logos, elegido);
-  const svg = identidad.logo.isotipo_svg;
-  const conNombre = elegido === "simbolo-nombre" && !!svg;
+  const completo = versiones?.lista.find((v) => v.clave === "completo");
 
   async function todo() {
+    if (!versiones) return;
     setArmando(true);
     setError(null);
     try {
-      const archivos = await archivosDeMarca(identidad, logos, elegido);
+      const archivos = await archivosDeMarca(identidad, versiones);
       bajar(zip(archivos.map((a) => ({ ...a, nombre: `${base}/${a.nombre}` }))), `marca-${base}.zip`);
     } catch {
       setError("No pudimos armar el archivo. Probá de nuevo.");
@@ -39,27 +33,17 @@ export function Descargas({
     }
   }
 
-  async function soloLogo() {
-    if (logo) {
-      const res = await fetch(logo.imagen);
-      return bajar(await res.blob(), `${base}-logo.${logo.imagen.startsWith("data:image/webp") ? "webp" : "png"}`);
-    }
-    if (conNombre) {
-      const lienzo = await simboloConNombre(identidad, 512);
-      return lienzo.toBlob((b) => b && bajar(b, `${base}-logo.png`), "image/png");
-    }
-    if (svg) bajar(new Blob([(await simboloAPng(svg, 1024)) as BlobPart], { type: "image/png" }), `${base}-logo.png`);
-  }
-
   function brandbookPdf() {
+    if (!versiones) return;
     // El brandbook se abre en otra pestaña y se manda a imprimir: ahí se elige "Guardar como PDF"
-    const url = URL.createObjectURL(new Blob([brandbookHtml(identidad, logo, conNombre)], { type: "text/html" }));
+    const html = brandbookHtml(identidad, versiones);
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     const ventana = window.open(url, "_blank");
     if (!ventana) {
       URL.revokeObjectURL(url);
-      return bajar(new Blob([brandbookHtml(identidad, logo, conNombre)], { type: "text/html" }), `${base}-brandbook.html`);
+      return bajar(new Blob([html], { type: "text/html" }), `${base}-brandbook.html`);
     }
-    ventana.addEventListener("load", () => setTimeout(() => ventana.print(), 600));
+    ventana.addEventListener("load", () => setTimeout(() => ventana.print(), 800));
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 
@@ -70,27 +54,34 @@ export function Descargas({
         Llevate <span className={s.it}>tu</span> marca.
       </h2>
       <p className="lead mt-2 max-w-[38em] text-base">
-        El logo que elegiste, el símbolo en vector, la paleta, las tipografías y el brandbook, listos para la imprenta,
-        tus redes o quien te haga la web.
+        Solo lo que elegiste: tu logo en sus 4 versiones, tu paleta, tus tipografías y el brandbook, listos para la
+        imprenta, tus redes o quien te haga la web.
       </p>
       <div className="mt-5 flex flex-wrap gap-2">
-        <Button size="lg" onClick={todo} disabled={armando}>
+        <Button size="lg" onClick={todo} disabled={armando || !versiones}>
           <Download data-icon="inline-start" className={armando ? "animate-bounce" : ""} />
           {armando ? "Armando tus archivos…" : "Descargar todo (.zip)"}
         </Button>
-        <Button variant="outline" size="lg" onClick={soloLogo}>
+        <Button
+          variant="outline"
+          size="lg"
+          disabled={!completo}
+          onClick={() => completo && bajar(deDataUrl(completo.archivo), `${base}-logo.png`)}
+        >
           Logo
         </Button>
-        {svg && (
+        {versiones?.simboloSvg && identidad.logo.isotipo_svg && (
           <Button
             variant="outline"
             size="lg"
-            onClick={() => bajar(new Blob([svgConTamano(svg, 1024)], { type: "image/svg+xml" }), `${base}-simbolo.svg`)}
+            onClick={() =>
+              bajar(new Blob([svgConTamano(identidad.logo.isotipo_svg, 1024)], { type: "image/svg+xml" }), `${base}-simbolo.svg`)
+            }
           >
             Símbolo (SVG)
           </Button>
         )}
-        <Button variant="outline" size="lg" onClick={brandbookPdf}>
+        <Button variant="outline" size="lg" onClick={brandbookPdf} disabled={!versiones}>
           <FileText data-icon="inline-start" />
           Brandbook en PDF
         </Button>

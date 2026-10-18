@@ -82,6 +82,13 @@ export type PropuestaLogo = {
   imagen: string;
   modelo: string;
   segundos: number;
+  /**
+   * Solo el símbolo de este logo, sin el texto (POST /api/logo/simbolo, se pide una vez cuando se elige el logo).
+   * Lo guarda la pantalla ya limpio: PNG chico, con fondo transparente.
+   */
+  simbolo?: string;
+  /** Si la IA no pudo separar el símbolo: se usa el símbolo SVG de la identidad, con un aviso */
+  simboloFallo?: boolean;
 };
 
 async function dibujar(prompt: string) {
