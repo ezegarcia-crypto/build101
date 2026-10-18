@@ -14,7 +14,7 @@
 // Cada video arranca en la portada: la recorre entera y aprieta el botón "¿BrandIAmos?".
 // Si un caso se traba, se reintenta una vez.
 
-import { mkdirSync, readFileSync, renameSync, appendFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, appendFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
@@ -23,8 +23,10 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const REPO = join(AQUI, "..", "..");
 const BASE = process.env.BASE ?? "https://app.brandiamos.com";
 const MODELO = process.env.MODELO ?? "anthropic/claude-sonnet-5.5";
-const ANCHO = 1440;
-const ALTO = 900;
+// 16:9 como el proyector. La ventana va escondida (sin el límite de alto de la pantalla de la compu)
+const ANCHO = Number(process.env.ANCHO ?? 1600);
+const ALTO = Number(process.env.ALTO ?? 900);
+const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
 
 const args = process.argv.slice(2);
 const VER = args.includes("--ver");
@@ -72,6 +74,13 @@ function anotar(...cosas) {
   const linea = `[${new Date().toLocaleTimeString("es-UY")}] ${cosas.join(" ")}`;
   console.log(linea);
   if (archivoRegistro) appendFileSync(archivoRegistro, linea + "\n");
+}
+
+// ---- Las marcas para editar: qué pasa en cada momento del video (editar.mjs acelera según eso) ----
+
+let marcas = null;
+function marcar(tipo, ini, que = "") {
+  if (marcas) marcas.lista.push({ tipo, ini: ini - marcas.t0, fin: Date.now() - marcas.t0, que });
 }
 
 // ---- La IA que hace de cliente ----
@@ -159,20 +168,24 @@ async function esperarQuieto(vigia, { quieto = 12000, tope = 8 * 60_000, que = "
   const inicio = Date.now();
   await esperar(1500);
   while (Date.now() - inicio < tope) {
-    if (vigia.enCurso.size === 0 && Date.now() - vigia.ultimo > quieto) return;
+    if (vigia.enCurso.size === 0 && Date.now() - vigia.ultimo > quieto) return marcar("espera", inicio, que);
     await esperar(1000);
   }
+  marcar("espera", inicio, que);
   anotar(`  ⚠ ${que || "la pantalla"} siguió pidiendo cosas más de ${Math.round(tope / 60000)} min; sigo igual`);
 }
 
 // ---- Movimientos para que el video se entienda ----
 
-async function recorrer(page, pasos = 8, pausa = 900) {
-  await page.mouse.move(ANCHO / 2, ALTO / 2);
+// Scroll tranquilo, para que en el video se pueda leer (después se acelera un poco, no mucho)
+async function recorrer(page, pasos = 8, pausa = 1300, centrar = true) {
+  const inicio = Date.now();
+  if (centrar) await page.mouse.move(ANCHO / 2, ALTO / 2);
   for (let i = 0; i < pasos; i++) {
-    await page.mouse.wheel(0, 450);
+    await page.mouse.wheel(0, 340);
     await esperar(pausa);
   }
+  marcar("scroll", inicio);
 }
 
 async function arriba(page) {
@@ -180,15 +193,21 @@ async function arriba(page) {
   await esperar(800);
 }
 
-async function foto(page, carpeta, nombre) {
+/** Un resultado a la vista: queda quieto unos segundos (en el video va a velocidad normal) y se saca la captura. */
+async function foto(page, carpeta, nombre, quieto = 2600) {
+  const inicio = Date.now();
+  await esperar(quieto);
+  marcar("resultado", inicio, nombre);
   await page.screenshot({ path: join(carpeta, `${nombre}.png`) }).catch(() => {});
 }
 
 async function escribir(campo, texto) {
+  const inicio = Date.now();
   await campo.click();
   await campo.pressSequentially(texto, { delay: 14 });
   await esperar(400);
   await campo.press("Enter");
+  marcar("escribe", inicio);
 }
 
 // ---- Los chats (entrevista y web): las burbujas de BrandIA y del cliente ----
@@ -214,6 +233,7 @@ async function reintentarSiSeCorto(page, vigia) {
 
 async function pasoPortada(page) {
   anotar("Paso 0 · Portada");
+  const inicioPortada = Date.now();
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   await esperar(4000);
   // Bajada lenta, como alguien que mira la página: la animación de la B, el recorrido horizontal y cada sección
@@ -234,6 +254,7 @@ async function pasoPortada(page) {
   await esperar(1500);
   await boton.click();
   await page.waitForURL("**/crear", { timeout: 60_000 });
+  marcar("portada", inicioPortada);
 }
 
 async function pasoEntrevista(page, vigia, caso, carpeta) {
@@ -311,7 +332,7 @@ async function pasoMarca(page, vigia, caso, carpeta) {
   }
   await arriba(page);
   await foto(page, carpeta, "2c-marca");
-  await recorrer(page, 18, 1100);
+  await recorrer(page, 18);
   await seguir.scrollIntoViewIfNeeded();
   await esperar(1500);
   await seguir.click();
@@ -376,7 +397,7 @@ async function pasoContenido(page, vigia, caso, carpeta) {
   }
   await arriba(page);
   await foto(page, carpeta, "3b-feed");
-  await recorrer(page, 22, 1100);
+  await recorrer(page, 22);
   await seguir.scrollIntoViewIfNeeded();
   await esperar(1500);
   await seguir.click();
@@ -408,7 +429,7 @@ async function pasoBranderia(page, vigia, caso, carpeta) {
     }
   }
   await arriba(page);
-  await recorrer(page, 12, 1000);
+  await recorrer(page, 12);
 
   // El kit: los productos que pide el caso (el + suma la cantidad típica)
   const elegidos = await preguntarIA(
@@ -446,6 +467,7 @@ async function pasoBranderia(page, vigia, caso, carpeta) {
   await page.getByRole("button", { name: /Enviar por WhatsApp/ }).click();
   if (popup) {
     const wa = await popup;
+    marcar("whatsapp-aca", Date.now());
     if (wa) await mandarWhatsApp(wa, carpeta);
     await page.bringToFront().catch(() => {});
   } else {
@@ -468,13 +490,17 @@ async function mandarWhatsApp(wa, carpeta) {
     const numero = url.pathname.replace(/\D/g, "") || url.searchParams.get("phone") || "";
     const texto = url.searchParams.get("text") ?? "";
     await wa.goto(`https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(texto)}`, { waitUntil: "domcontentloaded" });
+    const t0 = Date.now();
     const caja = wa.locator('footer div[contenteditable="true"]');
     await caja.waitFor({ state: "visible", timeout: 90_000 });
-    await esperar(3000);
-    await foto(wa, carpeta, "4d-whatsapp");
+    await esperar(1500);
+    await wa.screenshot({ path: join(carpeta, "4d-whatsapp.png") }).catch(() => {});
+    const enviado = Date.now();
     await caja.press("Enter");
     await esperar(6000);
-    await foto(wa, carpeta, "4e-whatsapp-enviado");
+    await wa.screenshot({ path: join(carpeta, "4e-whatsapp-enviado.png") }).catch(() => {});
+    // Dónde está el mensaje enviado en el video del WhatsApp (en segundos desde que se abrió la pestaña)
+    writeFileSync(join(carpeta, "whatsapp.json"), JSON.stringify({ desdeApertura: (Date.now() - t0) / 1000, enviado: (enviado - t0) / 1000 }));
     anotar(`  WhatsApp enviado al ${numero}`);
   } catch (e) {
     anotar(`  ⚠ no se pudo mandar el WhatsApp: ${e.message.split("\n")[0]}`);
@@ -485,6 +511,19 @@ async function mandarWhatsApp(wa, carpeta) {
     await wa.close().catch(() => {});
     if (video) renameSync(await video.path(), join(carpeta, "whatsapp.webm"));
   }
+}
+
+/** Pone el mouse sobre la vista previa de la web (el recuadro más grande con scroll propio, o un iframe). */
+async function sobreLaWeb(page) {
+  const caja = await page.evaluate(() => {
+    const candidatos = [...document.querySelectorAll("main iframe, main *")].filter((e) => {
+      const s = getComputedStyle(e);
+      return e.tagName === "IFRAME" || (/(auto|scroll)/.test(s.overflowY) && e.scrollHeight > e.clientHeight + 40);
+    });
+    const r = candidatos.map((e) => e.getBoundingClientRect()).filter((r) => r.width > 200 && r.height > 200).sort((a, b) => b.width * b.height - a.width * a.height)[0];
+    return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+  });
+  await page.mouse.move(caja?.x ?? ANCHO / 3, caja?.y ?? ALTO / 2);
 }
 
 async function pasoWeb(page, vigia, caso, carpeta) {
@@ -510,7 +549,9 @@ async function pasoWeb(page, vigia, caso, carpeta) {
   await cambios.waitFor({ state: "visible", timeout: 8 * 60_000 });
   await esperarQuieto(vigia, { quieto: 10000, tope: 8 * 60_000, que: "la web" });
   await foto(page, carpeta, "5a-web");
-  await recorrer(page, 10, 1100);
+  // La web armada tiene su propio recuadro: el scroll se hace con el mouse encima de ella, no del panel de al lado
+  await sobreLaWeb(page);
+  await recorrer(page, 10, 1300, false);
 
   const cambio = await preguntarIA(
     sistemaCliente(caso),
@@ -522,7 +563,8 @@ async function pasoWeb(page, vigia, caso, carpeta) {
   await esperarQuieto(vigia, { quieto: 8000, tope: 6 * 60_000, que: "el cambio de la web" });
   await arriba(page);
   await foto(page, carpeta, "5b-web-cambiada");
-  await recorrer(page, 10, 1100);
+  await sobreLaWeb(page);
+  await recorrer(page, 10, 1300, false);
   await esperar(3000);
 }
 
@@ -536,6 +578,7 @@ async function correrCaso(context, caso, raiz, intento = 1) {
 
   // Una pestaña nueva por caso: la marca vive en sessionStorage, así cada caso arranca de cero
   const page = await context.newPage();
+  marcas = { t0: Date.now(), lista: [] };
   const vigia = vigilarPedidos(page);
   const inicio = Date.now();
   let ok = true;
@@ -552,7 +595,9 @@ async function correrCaso(context, caso, raiz, intento = 1) {
     await foto(page, carpeta, "error");
   }
   const video = page.video();
+  const fin = Date.now() - marcas.t0;
   await page.close();
+  writeFileSync(join(carpeta, "marcas.json"), JSON.stringify({ fin, lista: marcas.lista }, null, 1));
   if (video) {
     const destino = join(carpeta, `${slug}${ok ? "" : "-incompleto"}.webm`);
     renameSync(await video.path(), destino);
@@ -607,7 +652,8 @@ archivoRegistro = join(raiz, "registro.txt");
 anotar(`Corrida en ${BASE} · ${casos.map((c) => c.nombre).join(", ")}${WHATSAPP ? " · con WhatsApp real" : ""}`);
 
 const context = await chromium.launchPersistentContext(PERFIL, {
-  headless: !(VER || WHATSAPP),
+  headless: !VER,
+  userAgent: UA,
   viewport: { width: ANCHO, height: ALTO },
   recordVideo: { dir: join(raiz, "videos-sueltos"), size: { width: ANCHO, height: ALTO } },
   locale: "es-UY",
