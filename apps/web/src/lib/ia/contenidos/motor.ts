@@ -71,8 +71,10 @@ export async function planificar(o: {
 /** Las imágenes que necesita la pieza, con la marca ya aplicada al prompt. */
 function pedidosDeImagen(formato: IdFormato, contenido: Pieza["contenido"], identidad: Kit): PedidoImagen[] {
   const { ancho, alto } = FORMATOS[formato];
+  // En el estilo editorial la foto va recortada en una forma y el texto afuera: no hace falta zona libre
+  const editorial = identidad.estilo === "editorial";
   const pedido = (clave: string, escena: string | null | undefined, zona: "abajo" | "centro") =>
-    escena ? [{ clave, prompt: promptImagen(escena, identidad, ancho, alto, zona), ancho, alto }] : [];
+    escena ? [{ clave, prompt: promptImagen(escena, identidad, ancho, alto, editorial ? "forma" : zona), ancho, alto }] : [];
 
   switch (formato) {
     case "post":

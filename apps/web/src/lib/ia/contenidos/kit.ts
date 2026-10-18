@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { Brief } from "@/lib/ia/brief";
+import { ESTILO_POR_DEFECTO, type IdEstilo } from "@/lib/ia/contenidos/estilos";
 
 // El kit de contenidos: lo que los motores del módulo B necesitan saber de la marca, sacado de la
 // identidad que arma el módulo A (/api/identidad) más la ficha. Es la única puerta de entrada:
@@ -59,6 +60,8 @@ export type Kit = {
   estilo_visual: { fotografia: string; uso_de_colores: string; formas: string; evitar: string[] };
   /** El símbolo de la marca en SVG (100×100), tal cual. Va al lado del nombre: nunca se redibuja. */
   isotipo_svg: string | null;
+  /** El estilo de diseño que eligió la persona (estilos.ts). Sin él, "impacto", el de siempre. */
+  estilo?: IdEstilo;
 };
 
 /** ¿El link de fuentes trae el peso 700 de esta familia? */
@@ -67,7 +70,7 @@ function tieneNegrita(fuentesUrl: string, familia: string): boolean {
   return fuentesUrl.includes(`family=${nombre}:wght@400;700`);
 }
 
-export function armarKit(identidad: IdentidadEntrada, brief: Brief): Kit {
+export function armarKit(identidad: IdentidadEntrada, brief: Brief, estilo: IdEstilo = ESTILO_POR_DEFECTO): Kit {
   const v = identidad.voz;
   const { titulos, texto } = identidad.tipografias;
   return {
@@ -103,5 +106,6 @@ export function armarKit(identidad: IdentidadEntrada, brief: Brief): Kit {
       evitar: [...brief.personalidad.palabras_no.map((p) => `nada que se sienta ${p}`), ...brief.gustos.colores_no.map((c) => `el color ${c}`)],
     },
     isotipo_svg: identidad.logo.isotipo_svg.trim() || null,
+    estilo,
   };
 }

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { briefSchema } from "@/lib/ia/brief";
 import { planSchema } from "@/lib/ia/contenidos/esquemas";
+import { ID_ESTILOS } from "@/lib/ia/contenidos/estilos";
 import { armarKit, identidadEntradaSchema } from "@/lib/ia/contenidos/kit";
 
 // Lo que reciben las rutas del módulo B: la ficha y la identidad tal cual las devolvieron
@@ -25,6 +26,8 @@ export const entradaLote = z.object({
   mezcla: mezcla.optional(),
   imagenes: z.boolean().default(true),
   gustaron: gustaronSchema.optional(),
+  /** El estilo de diseño que eligió la persona (lib/ia/contenidos/estilos.ts). Sin él, el de siempre */
+  estilo: z.enum(ID_ESTILOS).optional(),
 });
 
 export const entradaPieza = z.object({
@@ -32,6 +35,7 @@ export const entradaPieza = z.object({
   identidad: identidadEntradaSchema,
   plan: planSchema,
   id: z.string().describe("El id de la pieza del plan a (re)generar"),
+  estilo: z.enum(ID_ESTILOS).optional(),
 });
 
 export const entradaImagen = z.object({
@@ -46,7 +50,7 @@ export async function leerConKit<T extends typeof entradaLote | typeof entradaPi
   const entrada = await leer(req, esquema);
   if (entrada instanceof Response) return entrada;
   const e = entrada as z.infer<T>;
-  return { ...e, kit: armarKit(e.identidad, e.brief) };
+  return { ...e, kit: armarKit(e.identidad, e.brief, e.estilo) };
 }
 
 /** Lee y valida el cuerpo; si no sirve, devuelve la respuesta 400 con el motivo. */

@@ -3,7 +3,7 @@
 import { Button, buttonVariants } from "@build101/ui/components/button";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { BotonWeb } from "@/components/boton-web";
 import {
@@ -17,9 +17,12 @@ import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
 import type { Brief } from "@/lib/ia/brief";
+import { ESTILO_POR_DEFECTO, ESTILOS, type IdEstilo, ID_ESTILOS } from "@/lib/ia/contenidos/estilos";
+import { armarKit, type IdentidadEntrada } from "@/lib/ia/contenidos/kit";
 import type { Evento } from "@/lib/ia/contenidos/motor";
 
 import s from "../entrevista/entrevista.module.css";
+import { ElegirEstilo } from "./elegir-estilo";
 import { Feed, type Lote } from "./feed";
 
 // Paso 3 · Tu contenido. Con la ficha y la identidad, el motor de contenidos de Eze arma el lote:
@@ -28,6 +31,8 @@ import { Feed, type Lote } from "./feed";
 // sale y se vuelve a dibujar cuando llegan sus imágenes. Tarda ~70 s.
 // El lote terminado queda guardado junto con su identidad: si se recarga, no se vuelve a generar.
 // "Sumar otro feed" no borra: los anteriores quedan para ir y volver, y los "me gusta" de todos guían al nuevo.
+// Antes del primer feed, la persona elige el estilo de diseño (elegir-estilo.tsx, vista previa con su
+// marca y sin IA). El estilo viaja al motor y vuelve dentro del kit: queda guardado con cada lote.
 
 export const CLAVE_FEED = "brandia:feed";
 /** Las piezas que la persona marcó con "me gusta", del feed que está viendo */
@@ -39,6 +44,7 @@ type Gusto = { formato: string; pilar: string; idea: string };
 type Estado =
   | { tipo: "cargando" }
   | { tipo: "sin-marca" }
+  | { tipo: "elegir" }
   | { tipo: "lote"; lote: Lote; generando: boolean }
   | { tipo: "error"; mensaje: string };
 
@@ -87,7 +93,15 @@ export function GenerarFeed() {
   /** "número de feed:id de pieza" de lo que la persona marcó con "me gusta", en todos los feeds */
   const [meGusta, setMeGusta] = useState<string[]>([]);
 
-  const generar = useCallback(async (m: Marca, senal?: AbortSignal, gustaron?: Gusto[]) => {
+  /** El estilo del próximo feed: el que eligió antes de generar, o el que cambió para "Sumar otro feed" */
+  const [estilo, setEstilo] = useState<IdEstilo>(ESTILO_POR_DEFECTO);
+  const control = useRef<AbortController | null>(null);
+  useEffect(() => () => control.current?.abort(), []);
+
+  const generar = useCallback(async (m: Marca, estiloElegido: IdEstilo, gustaron?: Gusto[]) => {
+    control.current?.abort();
+    control.current = new AbortController();
+    const senal = control.current.signal;
     let lote = LOTE_VACIO;
     setEstado({ tipo: "lote", lote, generando: true });
     document.querySelector("main")?.scrollTo({ top: 0 });
@@ -95,7 +109,7 @@ export function GenerarFeed() {
       const res = await fetch("/api/contenidos/lote", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ brief: m.brief, identidad: m.identidad, imagenes: true, gustaron }),
+        body: JSON.stringify({ brief: m.brief, identidad: m.identidad, imagenes: true, gustaron, estilo: estiloElegido }),
         signal: senal,
       });
       if (!res.ok || !res.body) {
@@ -150,13 +164,29 @@ export function GenerarFeed() {
       setAnteriores(previos.current);
       const gustos = leer<{ huella: string; ids: string[] }>(CLAVE_ME_GUSTA);
       if (gustos?.huella === huella(m)) setMeGusta(gustos.ids);
+      setEstilo(previo.lote.kit?.estilo ?? ESTILO_POR_DEFECTO);
       return setEstado({ tipo: "lote", lote: previo.lote, generando: false });
     }
 
-    const control = new AbortController();
-    generar(m, control.signal);
-    return () => control.abort();
-  }, [generar]);
+    // Marca nueva: antes de gastar, que elija el estilo
+    setEstado({ tipo: "elegir" });
+  }, []);
+
+  function elegir(e: IdEstilo) {
+    if (!marca) return;
+    setEstilo(e);
+    generar(marca, e);
+  }
+
+  // La vista previa de los estilos se compone con el mismo kit que arma el motor, sin IA
+  const kitPrevio = useMemo(() => {
+    if (!marca) return null;
+    try {
+      return armarKit(marca.identidad as unknown as IdentidadEntrada, marca.brief);
+    } catch {
+      return null;
+    }
+  }, [marca]);
 
   function marcar(clave: string) {
     if (!marca) return;
@@ -182,7 +212,7 @@ export function GenerarFeed() {
     previos.current = todos;
     setAnteriores(todos);
     setVer(null);
-    generar(marca, undefined, gustaron.length ? gustaron : undefined);
+    generar(marca, estilo, gustaron.length ? gustaron : undefined);
   }
 
   const ultimo = estado.tipo === "lote" ? estado.lote : null;
@@ -227,6 +257,27 @@ export function GenerarFeed() {
           </nav>
         )}
 
+        {/* Marca nueva: elige el estilo antes de generar */}
+        {estado.tipo === "elegir" && marca && (
+          <div className={`${s.entra} mt-10`}>
+            <h1 className="display max-w-[18ch]">
+              ¿Cuál te gusta <span className={s.it}>más</span>?
+            </h1>
+            <p className="lead mt-4 mb-8 max-w-[38em] text-base">
+              Dos estilos para el feed de {marca.identidad.nombre}, con tus colores, tus letras y tu logo. Elegí uno y armamos
+              el feed así. Los textos y las fotos de la muestra son de ejemplo: los reales los hace la IA después.
+            </p>
+            {kitPrevio ? (
+              <ElegirEstilo kit={kitPrevio} onElegir={elegir} />
+            ) : (
+              <Button size="lg" onClick={() => elegir(ESTILO_POR_DEFECTO)}>
+                Armar mi feed
+                <ArrowRight data-icon="inline-end" />
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Hasta que llega el plan, la pantalla de espera */}
         {ver === null && (estado.tipo === "cargando" || (lote && !lote.plan)) && (
           <div className="flex min-h-[60svh] flex-col items-start justify-center">
@@ -258,7 +309,7 @@ export function GenerarFeed() {
           <div className={`${s.entra} flex min-h-[60svh] flex-col items-start justify-center`}>
             <h1 className="display max-w-[16ch]">Algo se trabó.</h1>
             <p className="lead mt-4 max-w-[34em] text-base">{estado.mensaje} Tu marca sigue guardada.</p>
-            <Button size="lg" className="mt-8" onClick={() => marca && generar(marca)}>
+            <Button size="lg" className="mt-8" onClick={() => marca && generar(marca, estilo)}>
               Probar de nuevo
             </Button>
           </div>
@@ -275,6 +326,16 @@ export function GenerarFeed() {
                   <RotateCcw data-icon="inline-start" />
                   {meGusta.length ? "Sumar otro en esta línea" : "Sumar otro feed"}
                 </Button>
+                {!generando && (
+                  <div role="group" aria-label="Estilo del próximo feed" className="flex items-center gap-1 text-xs">
+                    <span className="mr-1 text-muted-foreground">Estilo del próximo:</span>
+                    {ID_ESTILOS.map((e) => (
+                      <Button key={e} size="xs" variant={estilo === e ? "default" : "ghost"} aria-pressed={estilo === e} onClick={() => setEstilo(e)}>
+                        {ESTILOS[e].nombre}
+                      </Button>
+                    ))}
+                  </div>
+                )}
                 {!generando && (
                   <p className="text-xs text-muted-foreground">
                     {meGusta.length
