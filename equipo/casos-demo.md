@@ -4,45 +4,18 @@ Tres negocios inventados para ensayar el recorrido completo: chat → ficha → 
 
 **Regla:** estos casos son **solo para ensayar**. No van en el código, ni como ejemplo precargado ni como respuesta guardada. El jurado va a usar casos propios, y todo tiene que funcionar igual con cualquier negocio.
 
-Están elegidos para que no sean fáciles: cada uno tiene una tensión que la IA tiene que resolver (dos públicos, B2B, temporada, temas delicados) y datos que **no** damos a propósito, para ver si la IA los pregunta o los marca como "hueco" en vez de inventarlos.
+Están elegidos para que no sean fáciles: cada uno tiene una tensión que la IA tiene que resolver (B2B, temporada, salud y alimentación) y datos que **no** damos a propósito, para ver si la IA los pregunta o los marca como "hueco" en vez de inventarlos.
 
-Se probaron con nombres que no usamos antes (Miga, Valeria, Hierro Box, Costa, Don Aldo, Raíz y Mansa ya están en `entrevistas-simuladas.md` y `identidades-de-prueba.html`).
+Son negocios que no usamos antes: Miga, Valeria, Hierro Box, Costa, Don Aldo, Raíz y Mansa ya están en `entrevistas-simuladas.md` y `identidades-de-prueba.html`, y la fonoaudióloga la probamos a mano.
 
----
+**Cada caso tiene dos usos:**
 
-## Caso 1 · Profesional independiente: fonoaudióloga con dos públicos
-
-**Quién:** Sofía Méndez, 34 años, fonoaudióloga. Atiende en un consultorio compartido en Parque Batlle y online. Marca **nueva**: hoy solo tiene un Instagram personal.
-
-**La tensión:** tiene **dos públicos muy distintos**: chicos de 3 a 8 años con retraso del lenguaje (le escriben las madres y los padres) y adultos mayores después de un ACV. La marca tiene que servir para los dos sin quedar infantil ni de clínica fría. Además, es salud: **no se puede prometer curas ni inventar testimonios.**
-
-**Mensajes para pegar en el chat** (uno por turno, adaptando a lo que pregunte BrandIA):
-
-1. > Hola, soy fonoaudióloga y quiero armar mi marca. Hoy uso mi Instagram personal y me da vergüenza mandarlo a los pacientes.
-2. > Me llamo Sofía Méndez. No sé si usar mi nombre o inventar uno, decime vos qué conviene. Atiendo en Parque Batlle y también online, sobre todo gente del interior. Trabajo con chicos de 3 a 8 años que hablan tarde o no se les entiende, y con adultos mayores que tuvieron un ACV y perdieron el habla.
-3. > Me eligen porque les explico a la familia qué hacer en casa, les mando videos cortos con ejercicios. No quiero que parezca un jardín de infantes ni un hospital. Quiero que se sienta cercana, paciente y seria. Nada de colores chillones ni dibujitos.
-4. > Precios intermedios, cobro por sesión. No trabajo con mutualistas por ahora.
-
-**Lo que no le damos a propósito:** colores que le gustan, tipografías y qué quiere renovar primero. A ver qué hace la IA.
-
-**Qué mirar en cada paso:**
-
-| Paso | Está bien si… |
-|---|---|
-| Chat | Pregunta por los colores y por el nombre (nombre propio o nombre de fantasía), en vez de suponer. Si recomienda nombre propio, lo justifica (profesional de salud, confianza) |
-| Ficha | Aparecen **los dos públicos**. En "no" figura algo como infantil, hospitalaria o chillona. Los huecos marcan lo que no dijo |
-| Nombres y caminos | Al menos un camino con su nombre y otro de fantasía. Ninguno suena a juguetería |
-| Paleta y logo | Ni rosa y celeste de bebé ni blanco y verde de clínica. El símbolo funciona chico (avatar de Instagram) |
-| Brandbook | El tono cambia según el momento: con familias de chicos y con adultos mayores no se habla igual |
-| Feed del mes | Mezcla contenido para los dos públicos. **Cero testimonios inventados, cero "curamos"**, cero cifras que ella no dio. Los ejercicios en casa aparecen como idea de contenido (es lo que la diferencia) |
-| Web | Explica las dos áreas por separado y deja claro "presencial y online" |
-| BranderIA | Tarjetas, sellos o fichas para pacientes, carpeta, quizás material para las familias. Si sugiere algo raro para el rubro (gorras, latas), anotarlo |
-
-**Para iterar en vivo:** "Me gusta el segundo camino pero lo quiero un poco más cálido" o "cambiá el verde por algo menos de hospital".
+- **A mano:** se pegan los cuatro mensajes en el chat y se revisa con la tabla "Qué mirar".
+- **Solo, de noche (con video):** otra IA hace de cliente, como en `entrevistas-simuladas.md`. Arranca con los mismos mensajes, pero si BrandIA pregunta algo más contesta con la **ficha del personaje**, y en cada pantalla elige lo que dice **"Qué elige en cada pantalla"**. Así la corrida llega de punta a punta sin que nadie toque nada.
 
 ---
 
-## Caso 2 · Pyme B2B: empresa de refrigeración comercial
+## Caso 1 · Pyme B2B: empresa de refrigeración comercial
 
 **Quién:** Frío Sur, mantenimiento e instalación de cámaras frigoríficas y heladeras comerciales para almacenes, carnicerías, heladerías y restoranes. Canelones y Montevideo. 14 empleados y 6 camionetas. Dueño: Gustavo Rivero, segunda generación. Es una **renovación**: el logo es un copo de nieve de clip art en azul y rojo.
 
@@ -70,11 +43,33 @@ Se probaron con nombres que no usamos antes (Miga, Valeria, Hierro Box, Costa, D
 | Web | Botón o sección de urgencias bien visible y otra para pedir el preventivo |
 | BranderIA | Es el caso que más luce: ploteo de camioneta, uniformes, gorras, adhesivo de "mantenido por Frío Sur" para la cámara, carpeta para presentar propuestas |
 
+**Ficha del personaje** (para la IA que hace de cliente; solo lo cuenta si BrandIA lo pregunta):
+
+- **Cómo habla:** Gustavo, 46 años. Directo, frases cortas, algo de desconfianza con "lo de marketing". Tutea y usa "viejo", "laburo". No escribe largo.
+- **Logo viejo:** no quiere conservar nada del copo de nieve. Si le insisten, "que siga diciendo Frío Sur bien grande, que se lea de lejos en la camioneta".
+- **Colores:** el azul lo cansa pero acepta "un azul más oscuro, tipo petróleo o marino". Le gustaría un acento que diga "urgencia" (naranja o amarillo de señalización). Nada de rojo, "parece de bomberos".
+- **Clientes:** carnicerías, heladerías, almacenes y restoranes chicos de Canelones y Montevideo. Quiere entrar a cadenas de supermercados y farmacias.
+- **Cómo lo contactan:** por WhatsApp y por teléfono. Tiene Instagram con pocos posteos y una página de Facebook vieja.
+- **Precios:** "en el medio; las grandes cobran más y tardan más".
+- **Lo que no sabe o no dice:** cantidad de clientes, años de garantía y certificaciones. Si se lo preguntan: "eso no lo tengo a mano, dejalo para después".
+
+**Qué elige en cada pantalla:**
+
+| Pantalla | Elige |
+|---|---|
+| Nombres | Se queda con **Frío Sur** (no pide otros) |
+| Caminos | El más sobrio y técnico; le da ♥ al azul oscuro si aparece |
+| Logo | La propuesta donde el nombre se lee mejor de lejos |
+| Estilo del feed | **Impacto** (foto a sangre y panel de color) |
+| Feed | Le da ♥ a una pieza de consejos útiles. En "Antes de publicar", marca "No va" en todo lo que no sabe |
+| Web | Contesta la mini entrevista con lo mismo de la ficha y pide un cambio: "que el botón de urgencias esté arriba de todo" |
+| BranderIA | Agrega "ploteo para camioneta" si no aparece. Pide cotización de 6 ploteos y 30 remeras (con los datos de prueba de abajo) |
+
 **Para iterar en vivo:** "Dame un camino sin azul, a ver qué pasa" (prueba si la IA se anima a salir del cliché sin perder el rubro).
 
 ---
 
-## Caso 3 · Emprendimiento de temporada: turismo de naturaleza en Rocha
+## Caso 2 · Emprendimiento de temporada: turismo de naturaleza en Rocha
 
 **Quién:** Bañado, salidas en kayak y caminatas guiadas por la Laguna de Rocha, con avistamiento de aves. Lo arman una bióloga y un guía de La Paloma, Camila y Nacho. **Marca nueva**, nombre tentativo. Funciona fuerte de diciembre a abril y flojo el resto del año.
 
@@ -102,13 +97,99 @@ Se probaron con nombres que no usamos antes (Miga, Valeria, Hierro Box, Costa, D
 | Web | Qué incluye cada salida y cómo reservar. Si no sabe el precio, no lo inventa |
 | BranderIA | Remeras, gorros, botellas, stickers, quizás una guía impresa de aves con la marca. Bueno para mostrar productos que el cliente vende o regala |
 
+**Ficha del personaje** (para la IA que hace de cliente; solo lo cuenta si BrandIA lo pregunta):
+
+- **Cómo habla:** Camila, 31 años, bióloga. Entusiasta, cálida, explica con detalle y le gustan los datos de la naturaleza. Usa signos de admiración.
+- **Nombre:** les gusta Bañado pero temen que en portugués no se entienda. Aceptan ver otras opciones y deciden después.
+- **Colores:** los del lugar: verde junco apagado, el gris celeste del agua quieta, arena y un rosado flamenco como acento. Nada de verde flúor ni naranja de chaleco.
+- **Reservas:** por WhatsApp y por Instagram. Todavía no tienen web.
+- **Idiomas:** español y portugués (Nacho habla portugués); inglés básico.
+- **Lo que no dice:** el precio de la salida ("todavía lo estamos definiendo") y los horarios exactos ("dependen del viento y de la marea").
+
+**Qué elige en cada pantalla:**
+
+| Pantalla | Elige |
+|---|---|
+| Nombres | Le da ♥ a Bañado y a una propuesta que funcione en portugués; se queda con **Bañado** |
+| Caminos | El que sale de la laguna (agua, juncos, flamenco); pide "Probar otros colores" una vez y se queda con la variante más tranquila |
+| Logo | La propuesta con un símbolo de ave o de agua |
+| Estilo del feed | **Editorial** (mucho aire, foto recortada y letras grandes) |
+| Feed | Le da ♥ a un posteo sobre las aves. En "Antes de publicar", marca "No va" en precios y horarios |
+| Web | Pide un cambio por chat: "sumá una sección en portugués" |
+| BranderIA | Pide "una guía de aves impresa" en "¿Te falta algo?". Cotiza 50 remeras y 100 stickers |
+
 **Para iterar en vivo:** "Mostrame el feed de enero, en plena temporada" o "hacé un posteo en portugués para los brasileños".
+
+---
+
+## Caso 3 · Producto de consumo: postres saludables Postrein
+
+**Quién:** Postrein, postres sin azúcar agregada y altos en proteína: brownies, cheesecakes en frasco, budines y helado proteico. Lo arma Martina Suárez, nutricionista, con una cocina habilitada en Malvín. Vende por Instagram con envío en Montevideo y en dos almacenes naturales y un gimnasio. Marca **nueva**: el nombre Postrein ya está decidido.
+
+**La tensión:** le habla a **dos públicos que no se parecen**: personas con diabetes, que buscan un postre seguro, y gente que entrena o se cuida, que busca proteína. Pero el foco es otro: **gente saludable que quiere comer rico**, sin sentir que come "de dieta". La marca no puede verse de farmacia ni de suplemento de gimnasio. Además, es alimentación: **nada de prometer efectos en la salud** ("baja la glucosa", "adelgazá") **ni inventar datos nutricionales** (gramos de proteína, calorías, sellos o certificaciones).
+
+**Mensajes para pegar en el chat:**
+
+1. > Hola! Tengo una marca de postres saludables que se llama Postrein. Son sin azúcar agregada y altos en proteína. El nombre ya está, lo que necesito es todo lo demás.
+2. > Hago brownies, cheesecake en frasco, budines y un helado proteico. Soy nutricionista y cocino en una cocina habilitada en Malvín. Vendo por Instagram con envío en Montevideo, y estoy en dos almacenes naturales y en un gimnasio de Punta Carretas.
+3. > Me compran personas con diabetes que extrañan comer un postre, y gente que entrena y quiere proteína. Pero la idea es que lo coma cualquiera que se cuida y quiere comer rico. Me eligen porque no tiene gusto a "dieta": la gente me dice que no se dan cuenta de que no tiene azúcar.
+4. > Quiero que se sienta tentador, alegre y confiable. No quiero que parezca un remedio, ni una marca de suplementos con músculos, ni nada que diga "light" o "culpa". Precios un poco más altos que un postre común.
+
+**Lo que no le damos a propósito:** la información nutricional (gramos de proteína, calorías), si tiene algún aval o sello, colores y qué endulzante usa. Si la IA los pone en el feed, la web o los envases, **está inventando** y en salud eso es grave.
+
+**Qué mirar en cada paso:**
+
+| Paso | Está bien si… |
+|---|---|
+| Chat | **Respeta el nombre** y no propone otro. Pregunta por los colores, cómo endulza y si tiene datos nutricionales o algún aval, en vez de suponer |
+| Ficha | Tipo nueva. Los tres públicos, con "gente que se cuida y quiere comer rico" como el principal. En "no": remedio, suplemento, light, culpa. Los datos nutricionales figuran como hueco |
+| Nombres y caminos | Los caminos trabajan el nombre Postrein (cómo se escribe, cómo suena) sin cambiarlo. Se diferencian entre sí |
+| Paleta y logo | Colores que den hambre (chocolate, crema, fruta), no el blanco y celeste de farmacia ni el negro y verde flúor de gimnasio. El logo funciona en la tapa de un frasco y en un sticker chico |
+| Brandbook | Tono tentador y sin culpa. Con las personas con diabetes, claro y responsable sin sonar médico |
+| Feed del mes | Habla de **sabor primero**, salud después. **Cero promesas de salud, cero gramos o calorías inventados**, cero testimonios inventados. Bien si aparece "dónde comprarlo" con los almacenes y el gimnasio, sin inventar sus nombres |
+| Web | Muestra los productos y cómo pedir. Si no sabe la información nutricional, la deja para completar, no la inventa |
+| BranderIA | Es el caso para mostrar envases: frascos con tapa, etiquetas, cajas de brownies, bolsas, stickers de cierre, exhibidor para el mostrador del almacén |
+
+**Ficha del personaje** (para la IA que hace de cliente; solo lo cuenta si BrandIA lo pregunta):
+
+- **Cómo habla:** Martina, 29 años, nutricionista. Alegre, rápida, usa emojis de vez en cuando y le encanta hablar de sabores. Cuando habla de diabetes se pone seria y cuidadosa.
+- **Nombre:** **Postrein** es definitivo: junta "postre" y "protein". No quiere otro.
+- **Endulzante:** eritritol y stevia; en algunos, dátiles. No quiere que el endulzante sea el protagonista de la marca.
+- **Colores:** "colores que den hambre": marrón chocolate, crema, y un acento de fruta (frutilla o maracuyá). Nada de celeste de farmacia, negro de gimnasio ni verde de dietética.
+- **Productos estrella:** el brownie y el cheesecake de maracuyá en frasco.
+- **Dónde vende:** Instagram con envío en Montevideo, dos almacenes naturales y un gimnasio en Punta Carretas (no dice los nombres: "prefiero no nombrarlos todavía").
+- **Lo que no tiene:** la tabla nutricional definitiva ("la estoy haciendo analizar") ni ningún aval o sello. Si le preguntan: "todavía no, no lo pongas".
+
+**Qué elige en cada pantalla:**
+
+| Pantalla | Elige |
+|---|---|
+| Nombres | Se queda con **Postrein** (no pide otros) |
+| Caminos | El más tentador y alegre; le da ♥ al color chocolate y al acento de fruta |
+| Logo | Una propuesta que funcione en la tapa de un frasco |
+| Estilo del feed | **Impacto** (foto a sangre: el producto tiene que dar hambre) |
+| Feed | Le da ♥ al posteo del brownie. En "Antes de publicar", marca "No va" en gramos, calorías y avales |
+| Web | Pide un cambio por chat: "que los productos estrella vayan primero" |
+| BranderIA | Agrega "frascos con tapa y etiqueta" si no aparecen. Cotiza 200 etiquetas, 100 frascos y 50 cajas de brownies |
+
+**Para iterar en vivo:** "Hacelo más tentador, que dé ganas de comerlo ya" o "un posteo para personas con diabetes que no suene a hospital".
 
 ---
 
 ## Cómo usarlos para ensayar
 
-1. Correr cada caso entero al menos una vez antes del domingo y anotar lo que salió mal (en `/pruebas` queda guardado todo lo que generó la IA).
+1. Correr cada caso entero al menos una vez antes de la demo y anotar lo que salió mal (en `/pruebas` queda guardado todo lo que generó la IA).
 2. En el ensayo final, **uno de nosotros hace de jurado**: inventa un negocio en el momento, sin mirar estos casos. Eso es lo más parecido a la demo real.
 3. Si un caso rompe algo (por ejemplo, la IA inventa cifras en el feed de Frío Sur), se arregla el **prompt o el motor**, nunca el caso.
-4. Para el pitch, el mejor para mostrar en vivo es **Frío Sur**: es el menos "lindo", así que si BrandIA le hace una marca que se ve profesional, el jurado lo nota. Y BranderIA luce con la camioneta y los uniformes.
+4. Para el pitch, el mejor para mostrar en vivo es **Frío Sur**: es el menos "lindo", así que si BrandIA le hace una marca que se ve profesional, el jurado lo nota. Y BranderIA luce con la camioneta y los uniformes. Si se quiere mostrar envases, **Postrein** es el mejor para BranderIA.
+
+## Corrida de noche, con video
+
+La idea: dejar los tres casos corriendo solos y que quede **un video por caso**, de la primera pantalla a la última, para usar uno en el pitch.
+
+1. **Dónde:** en https://app.brandiamos.com, todo en **una sola pestaña** (la marca vive en la pestaña; si se cierra, se pierde). La web del cliente se abre en una pestaña nueva y también se graba.
+2. **Quién escribe:** una IA que hace de cliente. Arranca con los cuatro mensajes del caso y después contesta con la ficha del personaje, con su forma de hablar. Si BrandIA pregunta algo que la ficha no tiene, contesta "eso no lo sé todavía" (no inventa).
+3. **Qué elige:** lo de la tabla "Qué elige en cada pantalla". Si una pantalla no tiene esa opción, sigue con lo primero que ofrece BrandIA y lo anota.
+4. **Pedido de BranderIA:** nombre `PRUEBA NOCHE · <caso>`, contacto `prueba@brandiamos.com` y nota "No producir, es una prueba". **No se manda el WhatsApp**: se cierra esa pestaña sin enviar. Al otro día se marca como cancelado en `/pedidos`.
+5. **Video:** uno por caso, de pantalla completa en tamaño computadora. Las esperas de la IA quedan largas: para el pitch se acelera o se corta después.
+6. **Al terminar:** en `/pruebas` queda todo lo generado. Revisar cada caso con la tabla "Qué mirar" y elegir el mejor video.
