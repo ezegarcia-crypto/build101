@@ -14,7 +14,15 @@ export const identidadWebSchema = z.object({
   paleta: z.array(colorSchema).min(1).max(8),
   tipografias: z.object({ titulos: z.string().max(60), texto: z.string().max(60) }),
   fuentes_url: z.union([z.literal(""), z.string().max(500).startsWith("https://fonts.googleapis.com/")]),
-  logo: z.object({ isotipo_svg: z.string().max(60_000) }),
+  logo: z.object({
+    isotipo_svg: z.string().max(60_000),
+    // El logo que eligió la persona, sin fondo y achicado (components/web/logo-web.ts). Sin él, va el isotipo
+    imagen: z
+      .string()
+      .max(250_000)
+      .regex(/^data:image\/(png|webp);base64,[A-Za-z0-9+/=]+$/)
+      .optional(),
+  }),
 });
 
 export type IdentidadWeb = z.infer<typeof identidadWebSchema>;

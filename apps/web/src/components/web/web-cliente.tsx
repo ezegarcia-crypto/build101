@@ -8,7 +8,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { heredarDeLaQueAbrio } from "@/components/boton-web";
-import { CLAVE_IDENTIDAD, type Comprobacion, type IdentidadIA } from "@/components/brandbook/identidad";
+import {
+  CLAVE_IDENTIDAD,
+  type Comprobacion,
+  type IdentidadIA,
+  logoDeMarca,
+  type MarcaGuardada,
+} from "@/components/brandbook/identidad";
 import { Armando } from "@/components/entrevista/armando";
 import s from "@/components/entrevista/entrevista.module.css";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
@@ -17,6 +23,7 @@ import type { Brief } from "@/lib/ia/brief";
 import { type FichaWeb, primeraPregunta } from "@/lib/ia/web/ficha-web";
 import type { MarcaWeb, Web } from "@/lib/ia/web/web";
 
+import { logoSinFondo } from "./logo-web";
 import { Publicar } from "./publicar";
 import { useFotosWeb } from "./usar-fotos";
 import { VistaWeb } from "./vista-web";
@@ -29,6 +36,9 @@ import { VistaWeb } from "./vista-web";
 // Parte de la ficha y la identidad que dejaron /crear y /crear/marca. Todo queda guardado en la sesión.
 
 const CLAVE_WEB = "brandia:web";
+
+/** La identidad con el logo que eligió la persona, ya sin fondo (logo-web.ts). Sin imagen, la web usa el isotipo */
+export type IdentidadConLogo = IdentidadIA & { logo: IdentidadIA["logo"] & { imagen?: string | null } };
 
 type Guardada = {
   ficha: string;
@@ -304,7 +314,7 @@ function WebLista({
   onReiniciar,
 }: {
   marca: MarcaWeb;
-  identidad: IdentidadIA;
+  identidad: IdentidadConLogo;
   guardada: Guardada;
   onCambio: (g: Guardada) => void;
   onReiniciar: () => void;
@@ -455,6 +465,7 @@ export function WebCliente() {
   const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
   const [marca, setMarca] = useState<MarcaWeb | null>(null);
   const [identidad, setIdentidad] = useState<IdentidadIA | null>(null);
+  const [logoImagen, setLogoImagen] = useState<string | null>(null);
   const [textoFicha, setTextoFicha] = useState("");
   const [vuelta, setVuelta] = useState(0); // para reiniciar la entrevista desde cero
 
@@ -462,8 +473,11 @@ export function WebCliente() {
     heredarDeLaQueAbrio();
     const texto = sessionStorage.getItem(CLAVE_FICHA);
     const brief = leer<Brief>(CLAVE_FICHA);
-    const ident = leer<{ ficha: string; identidad: IdentidadIA }>(CLAVE_IDENTIDAD);
+    const ident = leer<MarcaGuardada>(CLAVE_IDENTIDAD);
     if (!texto || !brief || !ident || ident.ficha !== texto) return setEstado({ tipo: "sin-marca" });
+    // El logo que eligió en el brandbook (si eligió el símbolo, logoDeMarca da null y la web usa el isotipo)
+    const logo = logoDeMarca(ident.logos ?? [], ident.elegido);
+    if (logo?.imagen) logoSinFondo(logo.imagen).then(setLogoImagen);
     setTextoFicha(texto);
     setIdentidad(ident.identidad);
     setMarca({ brief, identidad: ident.identidad });
@@ -495,6 +509,11 @@ export function WebCliente() {
     setVuelta((n) => n + 1);
     setEstado({ tipo: "entrevista" });
   }, []);
+
+  const identidadWeb = useMemo<IdentidadConLogo | null>(
+    () => identidad && { ...identidad, logo: { ...identidad.logo, imagen: logoImagen } },
+    [identidad, logoImagen],
+  );
 
   if (estado.tipo === "cargando") return <main />;
 
@@ -555,7 +574,7 @@ export function WebCliente() {
   return (
     <WebLista
       marca={marca}
-      identidad={identidad}
+      identidad={identidadWeb ?? identidad}
       guardada={estado.guardada}
       onCambio={(g) => {
         guardar(g);

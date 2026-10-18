@@ -11,7 +11,8 @@ import type { FichaWeb } from "./ficha-web";
 
 // ---- Lo que entra: la marca ----
 
-// De la identidad se usa solo lo que sirve para escribir (los colores y el logo los aplica la pantalla)
+// De la identidad se usa lo que sirve para escribir: la voz con su tono por momento, el estilo de las fotos
+// y lo que la marca nunca hace. Los colores, las tipografías y el logo los aplica la pantalla.
 export const marcaWebSchema = z.object({
   brief: briefSchema,
   identidad: z.object({
@@ -24,8 +25,11 @@ export const marcaWebSchema = z.object({
         palabras_si: z.array(z.string()),
         palabras_no: z.array(z.string()),
         rasgos: z.array(z.object({ rasgo: z.string(), es: z.string(), no_es: z.string() })),
+        tono: z.array(z.object({ momento: z.string(), como: z.string(), ejemplo: z.string() })),
       })
       .partial(),
+    estilo: z.object({ fotografia: z.string(), uso_de_colores: z.string() }).partial().optional(),
+    brandbook: z.object({ usos_incorrectos: z.array(z.string()) }).partial().optional(),
   }),
 });
 
@@ -45,6 +49,8 @@ export function describirMarca({ brief, identidad }: MarcaWeb) {
       publico: brief.publico.descripcion,
       esencia: identidad.esencia,
       voz: identidad.voz,
+      estilo_de_fotos: identidad.estilo?.fotografia,
+      la_marca_nunca: identidad.brandbook?.usos_incorrectos,
       no_parecerse_a: brief.gustos.no_parecerse_a,
     },
     null,
@@ -102,6 +108,8 @@ export type Seccion = z.infer<typeof seccionSchema>;
 
 const REGLAS = `## Reglas
 - Escribís todos los textos con la voz de la marca: su trato, sus palabras sí y nunca sus palabras no.
+- La voz es siempre la misma; el tono se ajusta a cada sección según los momentos de tono de la marca (vender en la portada, explicar en cómo pedir, invitar en el contacto). Tomá sus ejemplos como guía de cómo suena, sin copiarlos.
+- Nada de lo que la marca nunca hace (la_marca_nunca) ni de lo que no quiere parecerse (no_parecerse_a).
 - Nunca inventes un dato: ni productos, ni precios, ni horarios, ni teléfonos, ni direcciones, ni premios, ni años de historia, ni reseñas. Usás solo lo que está en la ficha de la marca y en la ficha de la web.
 - Tampoco inventes cómo trabaja el negocio: ni servicios extra, ni promesas, ni detalles de lo que hace por el cliente que la persona no contó (por ejemplo «te avisamos cuando toca la vacuna», «envíos en el día», «ingredientes orgánicos», «garantía»). La voz de la marca está en cómo lo decís, no en agregar cosas nuevas.
 - El texto de cada producto o paso dice lo mismo que la ficha, con otras palabras. Si la ficha no tiene detalle de un producto, dejás el texto corto y general, o vacío.
@@ -111,7 +119,7 @@ const REGLAS = `## Reglas
 - Un solo botón principal en la portada, con la acción principal de la ficha de la web. Si no hay dato para esa acción (por ejemplo, no hay WhatsApp), elegí la que sí tenga dato, o "ninguna".
 - Textos cortos, para leer en el celular.
 - No repitas: cada sección cuenta algo distinto (qué hay, cómo se pide, quién está detrás, dónde y cuándo). El diferencial de la marca va en la portada y, como mucho, una vez más; el eslogan, una sola vez. Ni el pie ni los títulos repiten frases de otras secciones.
-- Cada foto describe una escena distinta y concreta del negocio (un producto, el lugar, las manos trabajando, un cliente usándolo), no la misma escena con otras palabras.`;
+- Cada foto describe una escena distinta y concreta del negocio (un producto, el lugar, las manos trabajando, un cliente usándolo), no la misma escena con otras palabras, y sigue el estilo de fotos de la marca (estilo_de_fotos).`;
 
 export const PROMPT_ARMAR_WEB = `Sos el diseñador web de BrandIA, una app que arma marcas con IA para emprendedores y PyMEs.
 Con la ficha de la marca, su identidad y la ficha de la web, armás una web de una sola página: elegís el estilo, el orden de las secciones y escribís todos los textos, también el título y la descripción para Google.

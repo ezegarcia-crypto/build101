@@ -6,7 +6,7 @@ import { inicioFotos, publicarWeb, webPublicadaSchema } from "@/lib/webs";
 // Entra: { web, ficha_web, identidad, fotos, anterior?: { slug, clave } }. Sale: { slug, clave, url }.
 // Con `anterior` (lo que devolvió la publicación anterior), actualiza la misma dirección en vez de crear otra.
 
-const MAXIMO = 200_000; // bytes: una web con su logo pesa bastante menos
+const MAXIMO = 450_000; // bytes: una web con su logo (el SVG y la imagen achicada) pesa bastante menos
 
 export const POST = medir("web-publicar", async (req: Request) => {
   const texto = await req.text();
