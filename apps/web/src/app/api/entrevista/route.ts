@@ -8,6 +8,7 @@ import {
 
 import { briefSchema } from "@/lib/ia/brief";
 import { MODELO_ENTREVISTA, PROMPT_ENTREVISTADOR } from "@/lib/ia/entrevistador";
+import { etiquetar, fijarCorrida, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 // La entrevista por chat. La pantalla usa useChat de @ai-sdk/react contra /api/entrevista.
 // Cuando la persona confirma el resumen, la IA llama a `terminar_entrevista`: en los mensajes
@@ -15,11 +16,14 @@ import { MODELO_ENTREVISTA, PROMPT_ENTREVISTADOR } from "@/lib/ia/entrevistador"
 
 export const maxDuration = 60;
 
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+export const POST = medir("entrevista", async (req: Request) => {
+  const { messages, id }: { messages: UIMessage[]; id?: string } = await req.json();
+  fijarCorrida(id); // toda la conversación cuenta como una sola corrida
 
   const result = streamText({
     model: MODELO_ENTREVISTA,
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar(),
     instructions: PROMPT_ENTREVISTADOR,
     messages: await convertToModelMessages(messages),
     tools: {
@@ -35,4 +39,4 @@ export async function POST(req: Request) {
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({ stream: result.stream }),
   });
-}
+});

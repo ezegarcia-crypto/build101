@@ -18,6 +18,7 @@ import {
   textosSchema,
 } from "@/lib/ia/identidad";
 import { conReintento } from "@/lib/ia/reintentar";
+import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 // Módulo A, paso 3: con la ficha y la dirección elegida, el contenido del brandbook y el símbolo del logo.
 // Entra: { brief, direccion }. Sale: { identidad }, con las comprobaciones de calidad
@@ -28,7 +29,7 @@ export const maxDuration = 180;
 // Si una tipografía no existe en Google Fonts, se reemplaza por una segura del mismo uso
 const REEMPLAZO = { titulos: "DM Serif Display", texto: "DM Sans" } as const;
 
-export async function POST(req: Request) {
+export const POST = medir("identidad", async (req: Request) => {
   const cuerpo = await req.json();
   const ficha = briefSchema.safeParse(cuerpo.brief);
   const elegida = direccionSchema.safeParse(cuerpo.direccion);
@@ -36,13 +37,17 @@ export async function POST(req: Request) {
     return Response.json({ error: "Faltan la ficha o la dirección elegida" }, { status: 400 });
   }
   const brief = ficha.data;
-  const direccion = elegida.data;
+  // El nombre de la ficha manda (el que la persona eligió entre las propuestas, o el que el negocio ya
+  // tenía): reemplaza la propuesta que traía la dirección, para que textos y logos digan lo mismo.
+  const direccion = brief.marca.nombre ? { ...elegida.data, nombre_marca: brief.marca.nombre } : elegida.data;
   const contexto = `Ficha de la marca:\n${JSON.stringify(brief, null, 2)}\n\nDirección visual elegida:\n${JSON.stringify(direccion, null, 2)}`;
 
   const [textos, logo, fuenteTitulos, fuenteTexto] = await Promise.all([
     conReintento(() =>
       generateText({
         model: MODELO_TEXTOS,
+        abortSignal: senalDelPedido(),
+        providerOptions: etiquetar(),
         instructions: PROMPT_TEXTOS,
         output: Output.object({ schema: textosSchema }),
         prompt: contexto,
@@ -51,6 +56,8 @@ export async function POST(req: Request) {
     conReintento(() =>
       generateText({
         model: MODELO_LOGO,
+        abortSignal: senalDelPedido(),
+        providerOptions: etiquetar(),
         instructions: PROMPT_LOGO,
         output: Output.object({ schema: logoSchema }),
         prompt: `${contexto}\n\nTipo de logo: ${direccion.logo_sugerido.tipo}. Formas: ${direccion.formas}.`,
@@ -85,6 +92,7 @@ export async function POST(req: Request) {
   return Response.json({
     identidad: {
       ...textos.output,
+      nombre: brief.marca.nombre ?? textos.output.nombre,
       direccion: {
         id: direccion.id,
         nombre: direccion.nombre,
@@ -99,4 +107,4 @@ export async function POST(req: Request) {
       comprobaciones,
     },
   });
-}
+});

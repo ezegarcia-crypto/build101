@@ -1,5 +1,6 @@
 import { entradaLote, leerConKit } from "@/app/api/contenidos/entrada";
 import { generarLote } from "@/lib/ia/contenidos/motor";
+import { medir } from "@/lib/ia/gastos";
 
 // El lote completo del módulo B: plan, piezas e imágenes, en una sola llamada.
 // Responde una línea JSON por evento (NDJSON) apenas cada cosa está lista, para que la pantalla
@@ -7,7 +8,7 @@ import { generarLote } from "@/lib/ia/contenidos/motor";
 
 export const maxDuration = 300;
 
-export async function POST(req: Request) {
+export const POST = medir("contenidos-lote", async (req: Request) => {
   const entrada = await leerConKit(req, entradaLote);
   if (entrada instanceof Response) return entrada;
 
@@ -24,4 +25,4 @@ export async function POST(req: Request) {
   });
 
   return new Response(cuerpo, { headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store" } });
-}
+});

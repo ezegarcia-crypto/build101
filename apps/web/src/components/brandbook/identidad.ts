@@ -10,7 +10,24 @@ import type { PropuestaLogo } from "@/lib/ia/logo";
 
 export type { Color, Comprobacion, Direccion, PropuestaLogo };
 
-export type DireccionConControl = Direccion & { comprobaciones?: Comprobacion[] };
+export type DireccionConControl = Direccion & {
+  comprobaciones?: Comprobacion[];
+  /** Identifica el camino en la pantalla: la IA repite A, B y C en cada vuelta (A, A2, A-c1…) */
+  clave?: string;
+  /** De qué vuelta salió: "Nueva vuelta 2", "Otros colores" */
+  etiqueta?: string;
+  /** Si son otros colores para un camino: qué cambió y de dónde salen */
+  explicacion?: string;
+};
+
+/** La clave de un camino (los de la primera vuelta no la traen: es su letra) */
+export const claveDe = (d: DireccionConControl) => d.clave ?? d.id;
+
+/** El camino tal como lo espera la IA, sin lo que agrega la pantalla */
+export function direccionPura(d: DireccionConControl): Direccion {
+  const { comprobaciones: _c, clave: _k, etiqueta: _e, explicacion: _x, ...pura } = d;
+  return pura;
+}
 
 export type IdentidadIA = Textos & {
   direccion: Pick<Direccion, "id" | "nombre" | "idea" | "palabras" | "formas">;
@@ -23,6 +40,52 @@ export type IdentidadIA = Textos & {
 
 export const CLAVE_DIRECCIONES = "brandia:direcciones";
 export const CLAVE_IDENTIDAD = "brandia:identidad";
+
+/**
+ * El logo que eligió la persona: el número de una de las propuestas completas, "simbolo" (el isotipo solo) o
+ * "simbolo-nombre" (el isotipo exacto con el nombre en la tipografía de títulos, como en el brandbook).
+ * Queda guardado junto con la identidad: el feed, BranderIA y las descargas usan este, no el primero.
+ */
+export type LogoElegido = number | "simbolo" | "simbolo-nombre";
+
+/** Si el elegido es el símbolo (solo o con el nombre): esos no son una imagen de la IA sino el SVG */
+export const esSimbolo = (e: LogoElegido | undefined): e is "simbolo" | "simbolo-nombre" =>
+  e === "simbolo" || e === "simbolo-nombre";
+
+/** Lo que queda guardado en CLAVE_IDENTIDAD */
+export type MarcaGuardada = {
+  ficha: string;
+  identidad: IdentidadIA;
+  logos: PropuestaLogo[];
+  elegido?: LogoElegido;
+};
+
+/** La propuesta elegida, o null si eligió el símbolo solo (o no hay propuestas): entonces va el isotipo */
+export function logoDeMarca(logos: PropuestaLogo[], elegido: LogoElegido | undefined) {
+  if (esSimbolo(elegido)) return null;
+  return logos[elegido ?? 0] ?? logos[0] ?? null;
+}
+
+/** El isotipo con ancho y alto fijos, para dibujarlo en un lienzo o descargarlo (sin tamaño, el navegador lo hace de 300 × 150) */
+export function svgConTamano(svg: string, lado: number) {
+  return svgSeguro(svg)
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg([^>]*?)\s(width|height)="[^"]*"/gi, "<svg$1")
+    .replace(/<svg/i, `<svg width="${lado}" height="${lado}"`);
+}
+
+/**
+ * Pasa los colores del isotipo de una paleta a otra: cada color de la paleta vieja se cambia por el del
+ * mismo rol en la nueva (o el de la misma posición, si el rol no está). Así el símbolo sigue a la paleta.
+ */
+export function recolorearSvg(svg: string, vieja: Color[], nueva: Color[]) {
+  const cambio = new Map<string, string>();
+  vieja.forEach((c, i) => {
+    const par = nueva.find((n) => n.rol === c.rol) ?? nueva[i];
+    if (par && esHex(c.hex)) cambio.set(c.hex.toLowerCase(), par.hex);
+  });
+  return svg.replace(/#[0-9a-f]{6}\b/gi, (h) => cambio.get(h.toLowerCase()) ?? h);
+}
 
 // --- Colores -------------------------------------------------------------
 
@@ -68,6 +131,25 @@ export function rolesDe(paleta: Color[]) {
 }
 
 // --- Tipografías ---------------------------------------------------------
+
+/** Espera a que esté lista una tipografía de la marca (para dibujarla en un lienzo, que no espera solo) */
+export async function esperarFuente(href: string, familia: string) {
+  if (typeof document === "undefined") return;
+  cargarFuentes(href);
+  const link = document.querySelector<HTMLLinkElement>(`link[data-fuente="${CSS.escape(href)}"]`);
+  if (link && !link.sheet) {
+    await new Promise((ok) => {
+      link.addEventListener("load", ok, { once: true });
+      link.addEventListener("error", ok, { once: true });
+      setTimeout(ok, 4000);
+    });
+  }
+  try {
+    await document.fonts.load(`64px "${familia}"`);
+  } catch {
+    // Si no llega, se dibuja con la de respaldo
+  }
+}
 
 /** Carga un link de Google Fonts una sola vez */
 export function cargarFuentes(href: string) {

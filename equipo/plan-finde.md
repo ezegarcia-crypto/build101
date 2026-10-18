@@ -7,9 +7,9 @@ Qué construimos y en qué orden. El alcance está en `CLAUDE.md` → "El produc
 ## Hecho (sábado a la mañana)
 
 - Consigna leída, material de BrandIA en `brandia/`, repo público y organizador invitado.
-- Web publicada en Vercel (https://build101-bice.vercel.app); `app.brandiamos.com` en camino (falta el registro en GoDaddy).
+- Web publicada en Vercel en https://app.brandiamos.com (también responde en https://build101-bice.vercel.app).
 - Design system de BrandIA cargado en la app y la web original como portada. **Guía obligatoria: `equipo/design-system.md`.**
-- Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y la voz por ElevenLabs.
+- Decidido: la IA va por Vercel AI Gateway (texto, imágenes y video) y los audios de la persona se pasan a texto con ElevenLabs (Scribe).
 
 ## Reparto (confirmado)
 
@@ -17,8 +17,8 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 
 | Quién | Rama | Parte | Toca solo | Qué hace |
 |---|---|---|---|---|
-| **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat y botón de voz), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
-| **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, el agente de voz y los contenidos. Junta las ramas en `main` |
+| **Juan Pedro** | `pantallas` | Todo lo que se ve | `apps/web/src/app/crear/` y `apps/web/src/components/` | El recorrido de la app: entrevista (chat, con audios desde la caja), brandbook y feed, con el diseño de la web original. Después, la demo y el pitch |
+| **Eze** | `ia` | El motor | `apps/web/src/lib/ia/` y `apps/web/src/app/api/` | La entrevista que arma la ficha de la marca (partiendo de `brandia/motor-ia/`), la identidad, los audios a texto y los contenidos. Junta las ramas en `main` |
 | **Rodrigo** | `pruebas` | Pruebas y pantallas en construcción | `pruebas/` y `apps/web/src/app/crear/proximamente/` | 5 negocios inventados bien distintos para probar (no Costa) y las pantallas "en construcción" del módulo B (pauta en Meta, newsletter, LinkedIn, X, redes centralizadas y web) y de BranderIA (producimos y te mandamos) |
 | **Rodrigo** | `web-cliente` | La web del cliente | Carpetas propias, a acordar con Eze antes de escribir código | La web del cliente con IA real, en paralelo a los contenidos, siguiendo `equipo/flujo-web-cliente.md` |
 
@@ -30,7 +30,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 |---|---|
 | Sábado 15:00 | La entrevista por chat genera la ficha de una marca nueva (no Costa) |
 | Sábado 18:00 | Con esa ficha sale la identidad completa: paleta, tipografías, logo y brandbook en pantalla |
-| Sábado 20:30 | El agente de voz hace la entrevista. Se dejan 2 o 3 agentes en la nube con tareas chicas |
+| Sábado 20:30 | La persona puede contar su negocio con audios desde el chat (reemplazó al agente de voz, decidido el 17/10). Se dejan 2 o 3 agentes en la nube con tareas chicas |
 | Domingo 11:00 | Sale el feed: un par de posteos, historias y un reel con la marca aplicada |
 | Domingo 12:00 | Las pantallas "en construcción" del módulo B y de BranderIA están hechas |
 | Domingo 13:00 | Se congela. Ensayo 3 veces, video de respaldo y pitch de 3 minutos |
@@ -38,7 +38,7 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 ## Decisiones pendientes
 
 - **Modelo de texto** para entrevista, identidad y textos: Claude (Sonnet u Opus). Depende de los créditos.
-- **Voz:** agente de voz de ElevenLabs (natural, con voces en español). Depende de los créditos.
+- **Voz: decidido el 17/10.** BrandIA no habla: la persona manda audios desde la caja del chat de `/crear` y se pasan a texto con ElevenLabs Scribe (`POST /api/transcribir`). La entrevista sigue por escrito. El agente de voz que conversaba hablando se retiró, y con él la idea de elegir la voz según el rubro.
 - **Imágenes** para logo, posteos y merch: modelo de imágenes por API (a elegir según los créditos).
 - **Reel:** la opción más segura es armarlo con imágenes generadas, textos animados y voz en off, en vez de un modelo de video (más caro y lento).
 - **Pauta en Meta: pasa a la siguiente etapa (decidido el 17/10).** Queda anotado para después:
@@ -46,6 +46,21 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 - **Librería de anuncios de Meta ("qué funciona en tu rubro"), para la siguiente etapa:** la API oficial de Meta solo devuelve anuncios comerciales que se mostraron en la **Unión Europea o el Reino Unido**. Los anuncios que solo corrieron en Uruguay o Argentina no aparecen, y no trae métricas de rendimiento. La alternativa legal y rápida es buscar el rubro en español en **España**, por Zernio (su endpoint de librería de anuncios es gratis con un medio de pago cargado, sin cuenta de desarrollador de Meta). Como señal de "funciona" se usan los días que lleva activo el anuncio y el alcance que Meta publica para la UE. La búsqueda por palabra trae mucho anuncio que no es del rubro: la IA los filtra. Los scrapers (por ejemplo, Apify) sí traen anuncios de Uruguay, pero van contra las condiciones de Meta: no los usamos en el producto.
 - **Web del cliente: se trabaja en paralelo a los contenidos, para llegar a la demo (decidido el 17/10).** La hace **Rodrigo**, en la rama `web-cliente`. El recorrido está en `equipo/flujo-web-cliente.md`. Primero los pasos 1, 3 y 4 (entrevista, web generada y cambios por chat); después, si llega, el 2 (competencia) y el 5 (chequeo de dominios). El pago y la compra del dominio quedan "en construcción". Hasta que funcione, la web se muestra como pantalla "en construcción". No puede frenar los hitos de las 15:00 y las 18:00.
 - **Publicar en redes:** Zernio (una sola conexión para Instagram, Facebook, TikTok; gratis para 2 cuentas). Opcional, para el final.
+
+## Después de la demo (pedido del equipo, 18/10)
+
+Lo que quedó anotado después de probar con «Lic. Sofía Méndez» y que no entra para la demo:
+
+- **Subir referencias en el logo:** un espacio en la sección del logo para que la persona suba su logo actual o
+  imágenes que le gustan, como referencia para la IA.
+- **Íconos de la marca para la web:** los íconos de las historias destacadas ya se hacen con el feed; faltan los
+  de la web.
+- **Auditoría del rubro:** que la IA revise si al cliente le falta algo típico de su rubro (mirando sitios de
+  otros negocios parecidos) y se lo recomiende.
+- **Más estilos de diseño:** el feed arranca con dos estilos para elegir antes de generar. Sumar más, y hacer lo
+  mismo con las webs, para que las marcas no salgan todas parecidas.
+- **Pedidos de BranderIA automáticos:** hoy el pedido se guarda y se manda por WhatsApp a mano; después, una
+  automatización que le escriba al cliente con la cotización.
 
 ## Herramientas que nos recomendaron
 

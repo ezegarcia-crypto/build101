@@ -41,8 +41,8 @@ Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (un
 **Ruta:** `POST /api/identidad` con `{ brief, direccion }` (la dirección que eligió la persona, tal cual vino). Devuelve `{ identidad }`:
 
 - `nombre`, `eslogan`
-- `esencia`: idea, propósito, promesa, posicionamiento, público y valores
-- `voz`: resumen, rasgos (qué es y qué no es), palabras sí y no, y ejemplos (bio de Instagram, posteo, respuesta a un cliente, cartel)
+- `esencia`: idea, misión, visión, propósito, promesa, posicionamiento, público y valores
+- `voz`: resumen, rasgos (qué es y qué no es), tono según el momento (cómo se ajusta y un ejemplo), palabras sí y no, y ejemplos (bio de Instagram, posteo, respuesta a un cliente, cartel)
 - `estilo`: uso de colores, fotografía e íconos
 - `brandbook`: introducción, usos correctos e incorrectos, aplicaciones
 - `paleta` (ya con el contraste corregido si hacía falta) y `tipografias` (`titulos` y `texto`)
@@ -60,28 +60,23 @@ Prueba sin pantalla: `node scripts/probar-identidad.mjs salida.html [resultado-e
 
 Prueba sin pantalla: `node scripts/probar-logo.mjs`.
 
-## 5. La entrevista por voz (lo hizo la sesión "Agente de voz de ElevenLabs para la entrevista")
+### 4b. Iterar sin borrar: caminos, paletas y logos
 
-- `GET /api/voz` devuelve `{ signedUrl }` para conectar la pantalla con el agente de ElevenLabs (`@elevenlabs/react`, ya instalado). La clave queda en el servidor.
-- Cuando termina la llamada: `POST /api/voz/ficha` con `{ transcripcion: [{ rol: "usuario" | "agente", texto }] }` → `{ ficha }`, **la misma ficha que la entrevista por chat**. Probado: unos 5 segundos.
-- El prompt del agente está en `voz.ts`. Se sube a ElevenLabs con `scripts/crear-agente-voz.ts`.
-- **Falta para que hable de verdad:** `ELEVENLABS_API_KEY` y `ELEVENLABS_AGENT_ID` en `.env.local` y en Vercel (las saca Eze), y correr el script.
-- `/api/voz/prueba`: página de prueba solo para desarrollo. En la web publicada no existe.
+Todo lo que se itera se suma a lo anterior (la pantalla nunca reemplaza) y lo marcado con ♥ guía la próxima vuelta.
 
-## 6. El feed simple (se retira) · `POST /api/contenidos`
+- **Otros caminos** · `POST /api/direcciones` con `{ brief, gustan?, vistos?, colores?, pedido? }`: tres caminos más, en la línea de los que gustaron, conservando los colores marcados y sin repetir los vistos. Los colores siempre salen del negocio (producto, material, lugar), y `por_que` dice de dónde.
+- **Otra paleta** · `POST /api/paleta` con `{ brief, direccion, paleta, vistas?, pedido?, conservar? }` → `{ paleta, explicacion, uso_de_colores, comprobaciones }` (`paleta.ts`). `conservar`: los hex marcados con ♥; quedan exactos (la ruta los repone si la IA los movió) y cambia el resto. Se usa en los caminos (la variante se suma al lado como "Otros colores N") y en el brandbook (la paleta se suma a "Tus paletas" y el símbolo la sigue, color por rol).
+- **Otros logos** · `POST /api/logo` con `{ brief, direccion, gustan?, vistos?, pedido? }`: tres más en la línea de los marcados (si se marcó el símbolo, los nuevos lo toman como idea). El símbolo exacto también se puede elegir como logo, solo o con el nombre en la tipografía de títulos ("simbolo" o "simbolo-nombre"); ese se dibuja en el navegador para las descargas y BranderIA.
 
-> **Se retira (17/10):** el equipo eligió el motor completo de la sección 7. Este queda solo mientras Juan Pedro reconecta la pantalla del feed; después se borran `contenidos.ts`, `api/contenidos/route.ts` y `scripts/probar-contenidos.mjs`. No lo uses para nada nuevo.
+## 5. Contar con audio (cambió el 17/10: BrandIA ya no habla)
 
+- La persona cuenta su negocio con un audio desde la caja del chat de `/crear`, y la entrevista sigue por escrito. Antes había un agente de voz de ElevenLabs que conversaba hablando; se sacó (está en el historial de git, commit `a0b7633` y anteriores).
+- `POST /api/transcribir` con form-data (campo `audio`) → `{ texto }`. Pasa el audio a texto con **ElevenLabs Scribe** (`scribe_v2`, en español). La pantalla pone ese texto en la caja para que la persona lo revise y lo mande al chat como cualquier mensaje.
+- Necesita `ELEVENLABS_API_KEY` con el permiso **De voz a texto**. Gasta créditos de ElevenLabs, no del Gateway.
+- Frenos: 20 audios por minuto por servidor, hasta 5 MB por audio, y la pantalla corta la grabación a los 3 minutos.
+- La grabación está en `components/entrevista/grabadora.tsx` (Chrome graba en webm y Safari en mp4; Scribe entiende los dos).
 
-`POST /api/contenidos` con `{ brief, identidad }`: **la identidad entera, tal como sale de `/api/identidad`**. Devuelve `{ marca, direccion_de_arte, posteos, historias, medicion }`:
-- 3 o 4 posteos: `objetivo`, `titular` (para poner encima de la imagen con la tipografía de la marca), `texto`, `hashtags`, `idea_visual` e `imagen.url` (4:5).
-- 2 o 3 historias: `texto`, `interaccion` (encuesta, pregunta o null), `idea_visual` e `imagen.url` (9:16).
-- Las imágenes vienen **sin texto**: el titular lo pone la pantalla encima.
-- **Tarda unos 35 segundos y cuesta unos USD 0,29 por feed.** Probado con la identidad real de Valeria.
-
-Prueba sin pantalla: `node scripts/probar-contenidos.mjs`.
-
-## 7. Contenidos · el motor elegido · `POST /api/contenidos/lote`
+## 6. Contenidos · el motor elegido · `POST /api/contenidos/lote`
 
 **Ruta principal:** `POST /api/contenidos/lote` con `{ brief, identidad }`: la ficha del paso 1 y la
 identidad del paso 3, tal cual vinieron. Sale el plan del mes y las piezas (posteos, carrusel, historias y
@@ -89,3 +84,25 @@ reel), cada una dibujada en SVG con la marca del cliente por `componerPieza`. To
 eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/README.md`.
 
 **Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
+
+### 6b. BranderIA · productos para el rubro · `POST /api/branderia/sugerir`
+
+`{ brief, marca: { nombre, eslogan }, ya?, gustan?, pedido?, cantidad? }` → `{ productos }`: los productos con la marca pensados para ese negocio (una pastelería: cajas de torta, etiquetas, stickers de cierre), con su porqué y cómo se ve la foto (`branderia.ts`). Al entrar, 10; después, 5 más por vuelta en la línea de los marcados con ♥, o lo que se pida en palabras. Nunca repite los de `ya`. La pantalla saca la foto de cada uno con `/api/branderia` y los muestra cuando están todas.
+
+El lote de contenidos también acepta `gustaron` (las piezas que la persona marcó con ♥ en feeds anteriores): el planificador sigue esa línea con ideas nuevas.
+
+## 7. Lo que gasta la IA · panel `/costos`
+
+**Panel del equipo:** `/costos` (en la web publicada, https://app.brandiamos.com/costos; pide contraseña, ver `COSTOS_CLAVE`). Muestra el saldo del Gateway, lo gastado hoy, cuánto cuesta en promedio cada paso (y una marca completa), el gasto por modelo y por día, y una calculadora de margen para pensar precios. No tiene links desde la app y no lo indexan los buscadores.
+
+**Toda ruta nueva que use IA tiene que anotarse**, si no su gasto aparece como "sin paso" (`gastos.ts`):
+
+1. Sumá el paso a `PASOS`, en `gastos.ts`.
+2. Envolvé la ruta: `export const POST = medir("mi-paso", async (req: Request) => { ... });`
+3. En cada llamada a la IA: `providerOptions: etiquetar()`, o `etiquetar({ openai: {...} })` si ya tenía opciones.
+
+No hace falta base de datos: el Gateway guarda el costo de cada llamada con esas etiquetas, y el panel se las pide.
+
+**Cuánto costó cada cliente.** El navegador genera un id por cliente (uno por pestaña, en `sessionStorage`, clave `brandia:cliente`) y lo manda en el header `x-brandia-cliente` en todos los pedidos a `/api` (`lib/cliente.ts`; se instala solo desde `app/layout.tsx`, no hace falta tocar cada pantalla). `medir()` lo lee y `etiquetar()` suma la etiqueta `cliente:<id>`. El panel muestra los 20 clientes más nuevos con su total y lo que gastó en cada paso, y el promedio, el mínimo y el máximo de los que llegaron a la marca completa. Una ruta nueva envuelta con `medir()` ya queda medida por cliente, sin hacer nada más.
+
+**Todo lo que se genera queda guardado (panel `/pruebas`).** Además de medir, `medir()` guarda cada pedido con su respuesta en la tabla `pruebas` de Supabase (`lib/pruebas.ts`): qué entró, qué salió, cuánto tardó, de qué cliente era y si fue en la web publicada, en un link de rama o en la compu. Las imágenes y audios en base64 se suben a la carpeta `pruebas` de Storage y en la fila queda el link. Se guarda con `after()`, cuando ya se respondió, así no demora a nadie; si falla, avisa en el registro del servidor y la app sigue. Una ruta nueva envuelta con `medir()` ya queda guardada; una que no usa el Gateway (como `/api/transcribir`) se envuelve con `conGrabacion()`.

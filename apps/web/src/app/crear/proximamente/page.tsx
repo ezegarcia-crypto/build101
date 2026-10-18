@@ -52,6 +52,13 @@ export default function LoQueViene() {
           </ul>
         </section>
       ))}
+
+      <p data-entra className="text-lg">
+        ¿Cuánto cuesta?{" "}
+        <Link href="/crear/planes" className="font-semibold">
+          Mirá los planes →
+        </Link>
+      </p>
     </Entrada>
   );
 }

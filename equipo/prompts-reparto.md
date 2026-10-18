@@ -4,6 +4,8 @@ Un prompt por persona, para pegar en una **conversación nueva** de la app de Cl
 
 Se basan en el reparto confirmado de `equipo/plan-finde.md`. Si ese plan cambia, manda el plan.
 
+> **Cambio del 17/10:** ya no hay agente de voz ni botón "Hablar con BrandIA". La persona manda audios desde la caja del chat de `/crear` y se pasan a texto con ElevenLabs Scribe (`POST /api/transcribir`). Lo que estos prompts dicen de la entrevista por voz quedó sin efecto.
+
 ---
 
 ## Lo que ya está decidido (sábado 17/10)
@@ -16,7 +18,7 @@ Se basan en el reparto confirmado de `equipo/plan-finde.md`. Si ese plan cambia,
   | **Eze** | La IA, y junta las ramas en `main` | `ia` |
   | **Rodrigo** | Pruebas y pantallas "en construcción" | `pruebas` |
 
-- **La web publicada:** https://build101-bice.vercel.app. Cada push a `main` se publica solo. El repo ya es público y el organizador está invitado.
+- **La web publicada:** https://app.brandiamos.com (también responde en https://build101-bice.vercel.app). Cada push a `main` se publica solo. El repo ya es público y el organizador está invitado.
 - **Probar en la compu:** primero `npm install` y después `npm run dev:web`, y abrir http://localhost:3001/crear.
 - **La IA:** el texto, las imágenes y el video van por **Vercel AI Gateway** (una sola conexión para usar varios modelos). La entrevista usa **Claude Sonnet 5.5** y la identidad va a usar **Claude Opus**. La voz va por **ElevenLabs**.
 - **Ya funciona:** la entrevista por chat, que termina en la ficha de la marca. Está en `POST /api/entrevista`, y la ficha tiene el tipo `Brief` de `apps/web/src/lib/ia/brief.ts`. Cómo se usa desde una pantalla: `apps/web/src/lib/ia/README.md`.
@@ -86,7 +88,7 @@ Juntar ramas en main, cada 1 o 2 horas y de a una:
 1. Abrí una conversación nueva para la revisión "abogado del diablo": qué falta, qué sobra y qué puede romper la demo.
 2. Juntá la rama con main, y corré npm run check-types (revisa que el código no tenga errores) y npm run build.
 3. Si algo se rompe, no lo subas: avisale a quien hizo la rama.
-4. Si todo anda, push a main (se publica solo) y probá https://build101-bice.vercel.app en el celular.
+4. Si todo anda, push a main (se publica solo) y probá https://app.brandiamos.com en el celular.
 
 Pendiente mío que traba a los demás: que Juan Pedro y Rodrigo tengan la clave del Gateway en su compu [HUECO D].
 

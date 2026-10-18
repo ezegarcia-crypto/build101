@@ -9,6 +9,12 @@ import s from "./entrevista.module.css";
 const FRASES = {
   pregunta: ["Leyendo lo que contaste…", "Pensando la próxima pregunta…", "Ordenando las ideas…"],
   ficha: ["Armando tu ficha…", "Juntando todo lo que contaste…", "Ya casi está…"],
+  nombres: [
+    "Buscando palabras de tu rubro…",
+    "Probando cómo suenan en voz alta…",
+    "Pensando qué historia cuenta cada uno…",
+    "Ya casi están…",
+  ],
   direcciones: [
     "Leyendo tu ficha…",
     "Pensando tres caminos distintos…",
@@ -22,6 +28,13 @@ const FRASES = {
     "Dibujando tus logos…",
     "Revisando que todo se lea bien…",
     "Armando tu brandbook…",
+  ],
+  paleta: ["Leyendo lo que pediste…", "Mezclando colores…", "Revisando que todo se lea bien…"],
+  logos: ["Pensando ideas nuevas…", "Dibujando tus logos…", "Escribiendo bien tu nombre…", "Ya casi están…"],
+  productos: [
+    "Pensando qué usa tu negocio todos los días…",
+    "Eligiendo productos para tu rubro…",
+    "Ya casi están…",
   ],
   feed: [
     "Pensando qué contar primero…",

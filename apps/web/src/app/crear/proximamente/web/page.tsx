@@ -1,3 +1,5 @@
+import { BotonWeb } from "@/components/boton-web";
+
 import { Entrada } from "../_piezas/entrada";
 import { DetrasDeEscena, Encabezado, Lienzo, LugarLogo, Pasos, Renglon } from "../_piezas/piezas";
 
@@ -54,9 +56,14 @@ export default function Web() {
         ]}
       />
 
+      <div className="flex flex-wrap items-center gap-3">
+        <BotonWeb variant="default" />
+        <p className="text-sm text-muted-foreground">La entrevista, la web y los cambios por chat ya funcionan.</p>
+      </div>
+
       <DetrasDeEscena>
-        La web del cliente se está construyendo aparte. Hasta que esté lista, esta pantalla muestra cómo va a
-        funcionar. No se compra ningún dominio ni se cobra nada.
+        Ya funcionan con IA la entrevista de la web, la web armada con tu marca y los cambios por chat. Mirar la
+        competencia, elegir el dominio y publicar siguen en construcción: no se compra ningún dominio ni se cobra nada.
       </DetrasDeEscena>
     </Entrada>
   );

@@ -3,8 +3,8 @@ const PASOS = ["Contanos", "Tu marca", "Tu contenido", "Tus productos"];
 
 export function Pasos({ actual }: { actual: number }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex gap-2" aria-hidden="true">
+    <div className="flex min-w-0 items-center gap-3">
+      <div className="flex shrink-0 gap-2" aria-hidden="true">
         {PASOS.map((p, i) => (
           <i
             key={p}
@@ -14,7 +14,7 @@ export function Pasos({ actual }: { actual: number }) {
           />
         ))}
       </div>
-      <p className="label whitespace-nowrap">
+      <p className="label min-w-0 truncate">
         Paso {actual + 1} · {PASOS[actual]}
       </p>
     </div>

@@ -2,6 +2,7 @@ import { generateImage } from "ai";
 
 import type { PedidoImagen } from "@/lib/ia/contenidos/esquemas";
 import type { Kit } from "@/lib/ia/contenidos/kit";
+import { etiquetar, senalDelPedido } from "@/lib/ia/gastos";
 
 // Las imágenes de las piezas. El redactor solo describe la escena; este motor le suma la marca
 // (estilo de foto, clima de color, lo que nunca aparece) y las reglas fijas: sin texto y sin
@@ -20,7 +21,7 @@ function relacion(ancho: number, alto: number): `${number}:${number}` {
 }
 
 /** Arma el prompt de la imagen con la marca aplicada. Sin IA: siempre igual para la misma entrada. */
-export function promptImagen(escena: string, identidad: Kit, ancho: number, alto: number, zona: "abajo" | "centro"): string {
+export function promptImagen(escena: string, identidad: Kit, ancho: number, alto: number, zona: "abajo" | "centro" | "forma"): string {
   const colores = identidad.paleta.map((c) => `${c.nombre} ${c.hex}`).join(", ");
   const evitar = identidad.estilo_visual.evitar.join(", ");
   return [
@@ -28,7 +29,9 @@ export function promptImagen(escena: string, identidad: Kit, ancho: number, alto
     `Escena: ${escena}`,
     `Estilo de foto de la marca: ${identidad.estilo_visual.fotografia}`,
     `Clima de color: que dialogue con la paleta (${colores}) en objetos, materiales y luz, sin teñir la foto de un color. ${identidad.estilo_visual.uso_de_colores}`,
-    `Encuadre vertical ${relacion(ancho, alto)}. Dejá una zona tranquila y despejada ${zona === "abajo" ? "en el tercio de abajo" : "en el centro"}: ahí va texto encima.`,
+    zona === "forma"
+      ? `Encuadre vertical ${relacion(ancho, alto)}, con el sujeto centrado y aire alrededor, sobre un fondo simple: la foto se recorta en una forma (arco o círculo) y el texto va afuera, no encima.`
+      : `Encuadre vertical ${relacion(ancho, alto)}. Dejá una zona tranquila y despejada ${zona === "abajo" ? "en el tercio de abajo" : "en el centro"}: ahí va texto encima.`,
     "Natural y con imperfecciones reales: nada de simetría perfecta, piel de plástico ni aspecto de render.",
     "Sin ningún texto, letras, números, carteles legibles, logos, marcas de agua ni marcas comerciales reconocibles.",
     evitar ? `Nunca: ${evitar}.` : "",
@@ -43,7 +46,8 @@ export async function generarImagen(pedido: PedidoImagen): Promise<{ clave: stri
     prompt: pedido.prompt,
     size: "1024x1536",
     // jpeg: pesa ~0,4 MB contra ~3 MB del png, y viaja dentro de la respuesta.
-    providerOptions: { openai: { outputFormat: "jpeg", outputCompression: 85 } },
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar({ openai: { outputFormat: "jpeg", outputCompression: 85 } }),
   });
   const usd = Number((providerMetadata as { gateway?: { cost?: string | number } } | undefined)?.gateway?.cost ?? 0);
   return { clave: pedido.clave, url: `data:${image.mediaType};base64,${image.base64}`, usd: Number.isFinite(usd) ? usd : 0 };

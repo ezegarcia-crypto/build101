@@ -13,6 +13,7 @@ import {
 import { FORMATOS, MEZCLA_DEMO, type IdFormato } from "@/lib/ia/contenidos/formatos";
 import { generarImagen, promptImagen } from "@/lib/ia/contenidos/imagen";
 import {
+  type Gusto,
   MODELO_PLAN,
   MODELO_REDACCION,
   promptCorreccion,
@@ -20,6 +21,7 @@ import {
   promptRedactor,
 } from "@/lib/ia/contenidos/prompts";
 import type { Kit } from "@/lib/ia/contenidos/kit";
+import { etiquetar, senalDelPedido } from "@/lib/ia/gastos";
 
 // El motor del módulo B. Encadena cuatro pasos, cada uno con su entrada y su salida fijas:
 //
@@ -49,13 +51,16 @@ export async function planificar(o: {
   kit: Kit;
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
+  gustaron?: Gusto[];
 }): Promise<{ plan: Plan; uso: Uso }> {
   const uso = uso0();
   const mezcla = o.mezcla ?? MEZCLA_DEMO;
   const r = await generateText({
     model: MODELO_PLAN,
+    abortSignal: senalDelPedido(),
+    providerOptions: etiquetar(),
     output: Output.object({ schema: planSchema }),
-    prompt: promptPlanificador(o.kit, o.brief, mezcla),
+    prompt: promptPlanificador(o.kit, o.brief, mezcla, o.gustaron),
   });
   sumarUso(uso, r);
   return { plan: r.output, uso };
@@ -66,8 +71,10 @@ export async function planificar(o: {
 /** Las imágenes que necesita la pieza, con la marca ya aplicada al prompt. */
 function pedidosDeImagen(formato: IdFormato, contenido: Pieza["contenido"], identidad: Kit): PedidoImagen[] {
   const { ancho, alto } = FORMATOS[formato];
+  // En el estilo editorial la foto va recortada en una forma y el texto afuera: no hace falta zona libre
+  const editorial = identidad.estilo === "editorial";
   const pedido = (clave: string, escena: string | null | undefined, zona: "abajo" | "centro") =>
-    escena ? [{ clave, prompt: promptImagen(escena, identidad, ancho, alto, zona), ancho, alto }] : [];
+    escena ? [{ clave, prompt: promptImagen(escena, identidad, ancho, alto, editorial ? "forma" : zona), ancho, alto }] : [];
 
   switch (formato) {
     case "post":
@@ -107,6 +114,8 @@ export async function redactar(o: {
     intentos++;
     const r = await generateText({
       model: MODELO_REDACCION,
+      abortSignal: senalDelPedido(),
+      providerOptions: etiquetar(),
       output: Output.object({ schema: schema as typeof ESQUEMAS.post }),
       messages: mensajes,
     });
@@ -151,6 +160,7 @@ export async function* generarLote(o: {
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
   imagenes?: boolean;
+  gustaron?: Gusto[];
 }): AsyncGenerator<Evento> {
   const t0 = Date.now();
   const total = uso0();

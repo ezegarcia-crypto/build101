@@ -17,7 +17,7 @@ de la marca, con sus imágenes, y las dibuja con los colores, las tipografías y
 | 4 · Controlar | `control.ts` | La pieza | Observaciones `blocker` o `menor`: largos, cantidades, palabras prohibidas y frases gastadas, trato mezclado (vos/tú/usted), **datos inventados** (precios, porcentajes u horarios que el negocio no dio), una palabra de acento, hashtags, emojis | Sin IA |
 | 4b · Corregir | `motor.ts` | Los blocker | Una sola vuelta más al redactor con los problemas anotados. Si sigue mal, la pieza sale `revisar` | Sonnet 5.5 |
 | 5 · Imágenes | `imagen.ts` | La escena que escribió el redactor | El prompt con la marca aplicada (estilo de foto, clima de color, lo que nunca aparece, zona libre para el texto, sin texto ni logos) → la imagen | gpt-image-2 |
-| 6 · Componer | `componer.ts` | Pieza + identidad + imágenes | Un SVG por lienzo (1 post, N láminas, N pantallas, N escenas) | Sin IA |
+| 6 · Componer | `componer.ts` (y `componer-editorial.ts`) | Pieza + identidad + imágenes | Un SVG por lienzo (1 post, N láminas, N pantallas, N escenas), en el estilo que eligió la persona | Sin IA |
 
 Reglas que el motor garantiza y no dependen de la IA:
 
@@ -30,6 +30,31 @@ Reglas que el motor garantiza y no dependen de la IA:
 
 Marcado mínimo en los textos de la imagen: `*palabra*` va en el color de acento.
 
+## Estilos de diseño (`estilos.ts`)
+
+La IA escribe igual en todos; cambia cómo se dibuja. **La persona elige el estilo antes de generar**
+(en `/crear/contenido`, `components/feed/elegir-estilo.tsx`): ve tres piezas de muestra por estilo,
+compuestas en el momento con su marca (colores, letras, logo) y con **dos fotos de su rubro hechas por
+la IA** (`POST /api/contenidos/muestra` con `{ brief, identidad, cual: "a" | "b" }`, paso
+`contenidos-muestra`, ~USD 0,01 cada una, 10 a 25 s). La escena de cada foto se arma con lo que contó
+en la entrevista, sin otra IA de texto. Las fotos se piden una sola vez por marca, se achican y quedan
+en la sesión (`brandia:muestra-estilos`); si una falla no se reintenta sola. Mientras llegan, su lugar
+es una forma de color y ya se puede elegir. Los textos van marcados "Ejemplo": no los escribió la IA.
+
+| Estilo | Grilla | Foto | Letra | Color |
+|---|---|---|---|---|
+| `impacto` (el de siempre, `componer.ts`) | Foto a sangre con un panel sólido arriba o abajo | Ocupa todo el lienzo; el texto va encima en panel o en cajas | Titular fuerte, botón píldora | Fondo de la marca; la última lámina invertida |
+| `editorial` (`componer-editorial.ts`) | Papel con mucho aire: arco a la derecha, círculo centrado o píldora en columna | Recortada en una forma; el texto va afuera, en el papel | Titular grande y apretado, etiquetas en mayúsculas espaciadas, filetes, números de lámina calados, el llamado como link subrayado | Las tipográficas alternan papel y tinta (el principal lleno) |
+
+- El estilo viaja como `estilo` en el cuerpo de `POST /api/contenidos/lote` (y `/pieza`), entra al
+  kit (`kit.estilo`) y vuelve en el evento `kit`: queda **guardado con el lote** y `componerPieza`
+  lo lee de ahí. Sin estilo, es `impacto`. Las pantallas no tienen que pasar nada más.
+- En `editorial` el redactor recibe una nota (titular corto, escena con el sujeto centrado) y las
+  fotos se piden con el sujeto centrado y aire alrededor, sin zona libre para texto
+  (`promptImagen(..., "forma")`), porque se recortan en una forma.
+- Para sumar un estilo: agregarlo en `estilos.ts`, dibujarlo en un `componer-<estilo>.ts` con las
+  mismas garantías de abajo y despacharlo al principio de `componerPieza`.
+
 ## Cómo se usa desde las pantallas
 
 ### Todo el lote de una: `POST /api/contenidos/lote`
@@ -39,7 +64,7 @@ const res = await fetch("/api/contenidos/lote", {
   method: "POST",
   headers: { "content-type": "application/json" },
   // brief y identidad tal cual vinieron de /api/entrevista y /api/identidad
-  body: JSON.stringify({ brief, identidad, imagenes: true }), // mezcla opcional: { post: 2, carrusel: 1, historia: 2, reel: 1 }
+  body: JSON.stringify({ brief, identidad, imagenes: true, estilo: "editorial" }), // mezcla opcional: { post: 2, carrusel: 1, historia: 2, reel: 1 } · estilo opcional (estilos.ts)
 });
 // Responde una línea JSON por evento, apenas cada cosa está lista (NDJSON).
 const lector = res.body!.pipeThrough(new TextDecoderStream()).getReader();

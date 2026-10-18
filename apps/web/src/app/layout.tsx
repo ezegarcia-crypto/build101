@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
 
 import "../index.css";
+import { AvisoLimite } from "@/components/aviso-limite";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
+
+import { ClienteEnPedidos } from "./cliente-en-pedidos";
 
 // Tipografías de BrandIA (manual v1.3): Fraunces para títulos, Instrument Sans para texto
 const fraunces = Fraunces({
@@ -30,11 +33,13 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${fraunces.variable} ${instrumentSans.variable} antialiased`}>
+        <ClienteEnPedidos />
         <Providers>
           <div className="grid grid-rows-[auto_1fr] h-svh">
             <Header />
             {children}
           </div>
+          <AvisoLimite />
         </Providers>
       </body>
     </html>

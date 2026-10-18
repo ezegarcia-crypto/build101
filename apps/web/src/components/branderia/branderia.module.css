@@ -1,21 +1,5 @@
 /* Movimiento de BranderIA: curva y tiempos de equipo/design-system.md (punto 4) */
 
-/* El centrado va con `translate` (Tailwind); acá solo se mueve con `transform` */
-/* "El logo cae sobre el producto": baja, se pasa un poco y se acomoda (como back.out(1.6)) */
-.cae {
-  animation: cae 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-@keyframes cae {
-  from {
-    opacity: 0;
-    transform: translateY(-56px) scale(1.25);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* La foto aparece con un fundido de 0,5 s */
 .foto {
   animation: foto 0.5s var(--ease-brandia) both;
@@ -37,7 +21,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cae,
   .foto,
   .respira {
     animation: none;

@@ -1,5 +1,6 @@
 import type { Pieza } from "@/lib/ia/contenidos/esquemas";
 import { FORMATOS } from "@/lib/ia/contenidos/formatos";
+import { componerEditorial } from "@/lib/ia/contenidos/componer-editorial";
 import type { Kit } from "@/lib/ia/contenidos/kit";
 
 // El compositor: dibuja cada pieza en SVG con la marca del cliente. Sin IA y sin dependencias de
@@ -31,10 +32,10 @@ export function contraste(a: string, b: string): number {
   return (x + 0.05) / (y + 0.05);
 }
 
-const NEGRO = "#141414";
-const BLANCO = "#FAFAF7";
+export const NEGRO = "#141414";
+export const BLANCO = "#FAFAF7";
 
-function elMasLegible(sobre: string, candidatos: string[]): string {
+export function elMasLegible(sobre: string, candidatos: string[]): string {
   return [...candidatos, NEGRO, BLANCO].reduce((mejor, c) => (contraste(c, sobre) > contraste(mejor, sobre) ? c : mejor));
 }
 
@@ -69,13 +70,13 @@ export function coloresDeMarca(identidad: Kit): Colores {
 
 // ── Texto ────────────────────────────────────────────────────────────────────────────────────
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+export const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** pegada: va sin espacio antes (la coma o los dos puntos que siguen a una palabra de acento). */
-type Palabra = { t: string; acento: boolean; pegada: boolean };
+export type Palabra = { t: string; acento: boolean; pegada: boolean };
 
 /** "Pan de *masa madre*" → palabras, con las marcadas como acento. */
-function palabras(texto: string): Palabra[] {
+export function palabras(texto: string): Palabra[] {
   return texto
     .split(/(\*[^*]+\*)/)
     .filter(Boolean)
@@ -91,12 +92,12 @@ function palabras(texto: string): Palabra[] {
 }
 
 /** Une las palabras de una línea respetando la puntuación pegada. */
-function unir(linea: Palabra[], pintar: (p: Palabra) => string): string {
+export function unir(linea: Palabra[], pintar: (p: Palabra) => string): string {
   return linea.map((p, i) => (i > 0 && !p.pegada ? " " : "") + pintar(p)).join("");
 }
 
 // Ancho medio de un carácter, en proporción al cuerpo. Conservador para que no se salga.
-const ANCHO_LETRA = 0.56;
+export const ANCHO_LETRA = 0.56;
 
 function partir(ps: Palabra[], tamaño: number, anchoMax: number): Palabra[][] {
   const lineas: Palabra[][] = [];
@@ -117,7 +118,7 @@ function partir(ps: Palabra[], tamaño: number, anchoMax: number): Palabra[][] {
 }
 
 /** Busca el cuerpo más grande en el que el texto entra en `maxLineas` sin pasarse del ancho. */
-function ajustar(texto: string, o: { anchoMax: number; maxLineas: number; max: number; min: number }) {
+export function ajustar(texto: string, o: { anchoMax: number; maxLineas: number; max: number; min: number }) {
   const ps = palabras(texto);
   for (let tamaño = o.max; tamaño > o.min; tamaño -= 2) {
     const lineas = partir(ps, tamaño, o.anchoMax);
@@ -127,7 +128,7 @@ function ajustar(texto: string, o: { anchoMax: number; maxLineas: number; max: n
   return { lineas: partir(ps, o.min, o.anchoMax), tamaño: o.min };
 }
 
-type Bloque = {
+export type Bloque = {
   texto: string;
   x: number;
   y: number;
@@ -144,7 +145,7 @@ type Bloque = {
 };
 
 /** Dibuja un bloque de texto con su palabra de acento. Devuelve el SVG y dónde termina. */
-function bloque(b: Bloque): { svg: string; alto: number } {
+export function bloque(b: Bloque): { svg: string; alto: number } {
   const { lineas, tamaño } = ajustar(b.texto, b);
   const paso = tamaño * (b.interlinea ?? 1.12);
   const ancla = b.centrado ? ` text-anchor="middle"` : "";
@@ -166,7 +167,7 @@ const aBase64 = (s: string) =>
   typeof Buffer !== "undefined" ? Buffer.from(s, "utf8").toString("base64") : btoa(unescape(encodeURIComponent(s)));
 
 /** Ancho de la firma: el isotipo (cuadrado) más el nombre al lado. */
-function anchoFirma(id: Kit, alto: number): number {
+export function anchoFirma(id: Kit, alto: number): number {
   return (id.isotipo_svg ? alto * 1.3 : 0) + id.nombre.length * alto * 0.8 * ANCHO_LETRA;
 }
 
@@ -174,7 +175,7 @@ function anchoFirma(id: Kit, alto: number): number {
  * La firma de la marca: el isotipo del módulo A tal cual (nunca se redibuja) y el nombre al lado
  * con la tipografía de títulos, como lo compone el brandbook. Sin isotipo, solo el nombre.
  */
-function firma(id: Kit, x: number, y: number, alto: number, sobre: string, ancla: "inicio" | "fin" | "centro" = "inicio"): string {
+export function firma(id: Kit, x: number, y: number, alto: number, sobre: string, ancla: "inicio" | "fin" | "centro" = "inicio"): string {
   const ancho = anchoFirma(id, alto);
   const x0 = ancla === "fin" ? x - ancho : ancla === "centro" ? x - ancho / 2 : x;
   const t = id.tipografias.titulos;
@@ -193,7 +194,7 @@ function firmaSobreFoto(id: Kit, x: number, y: number, alto: number, c: Colores)
   return `<rect x="${x - pad}" y="${y - pad}" width="${ancho + pad * 2}" height="${alto + pad * 2}" rx="${pad}" fill="${c.fondo}"/>${firma(id, x, y, alto, c.fondo)}`;
 }
 
-function foto(url: string | undefined, x: number, y: number, ancho: number, alto: number, relleno: string): string {
+export function foto(url: string | undefined, x: number, y: number, ancho: number, alto: number, relleno: string): string {
   if (!url) return `<rect x="${x}" y="${y}" width="${ancho}" height="${alto}" fill="${relleno}" opacity="0.35"/>`;
   return `<image href="${esc(url)}" x="${x}" y="${y}" width="${ancho}" height="${alto}" preserveAspectRatio="xMidYMid slice"/>`;
 }
@@ -204,7 +205,7 @@ function boton(texto: string, x: number, y: number, c: Colores, familia: string,
   return `<rect x="${x}" y="${y}" width="${ancho}" height="${alto}" rx="${alto / 2}" fill="${c.principal}"/><text x="${x + ancho / 2}" y="${y + alto / 2 + tamaño * 0.35}" text-anchor="middle" font-family="${esc(familia)}" font-size="${tamaño}" font-weight="600" fill="${c.sobrePrincipal}">${esc(texto)}</text>`;
 }
 
-function lienzo(id: Kit, ancho: number, alto: number, fondo: string, cuerpo: string, alt: string): string {
+export function lienzo(id: Kit, ancho: number, alto: number, fondo: string, cuerpo: string, alt: string): string {
   const fuentes = id.fuentes
     .map((u) => `@import url('${u}');`)
     .join("");
@@ -212,13 +213,13 @@ function lienzo(id: Kit, ancho: number, alto: number, fondo: string, cuerpo: str
 }
 
 /** Variación determinística: la misma pieza siempre sale igual, piezas distintas varían. */
-function semilla(s: string): number {
+export function semilla(s: string): number {
   let h = 0;
   for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   return h;
 }
 
-const DESLIZA = { vos: "Deslizá →", tu: "Desliza →", usted: "Deslice →" } as const;
+export const DESLIZA = { vos: "Deslizá →", tu: "Desliza →", usted: "Deslice →" } as const;
 const ESCRIBI = { vos: "Escribí algo…", tu: "Escribe algo…", usted: "Escriba algo…" } as const;
 
 // ── Composiciones ────────────────────────────────────────────────────────────────────────────
@@ -298,7 +299,7 @@ function cuadroTipografico(k: Cuadro, invertido = false, maxLineas = 5): string 
 }
 
 /** El sticker de la historia, dibujado como se va a ver (la red lo reemplaza por el real). */
-function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, y: number, c: Colores, id: Kit, ancho: number): string {
+export function sticker(s: { tipo: string; texto: string | null; opciones: string[] }, y: number, c: Colores, id: Kit, ancho: number): string {
   if (s.tipo === "ninguno") return "";
   const fam = esc(id.tipografias.texto.familia);
   const w = 760;
@@ -341,8 +342,12 @@ function textoEscena(texto: string, y: number, c: Colores, id: Kit, ancho: numbe
 
 // ── La función pública ───────────────────────────────────────────────────────────────────────
 
-/** Dibuja todos los lienzos de una pieza. `imagenes` es clave → URL (o data URL) de la imagen. */
+/**
+ * Dibuja todos los lienzos de una pieza. `imagenes` es clave → URL (o data URL) de la imagen.
+ * El estilo sale del kit (`kit.estilo`, ver estilos.ts): lo de abajo es "impacto", el de siempre.
+ */
 export function componerPieza(pieza: Pieza, identidad: Kit, imagenes: Imagenes = {}): Lienzo[] {
+  if (identidad.estilo === "editorial") return componerEditorial(pieza, identidad, imagenes);
   const c = coloresDeMarca(identidad);
   const f = FORMATOS[pieza.formato];
   const { ancho, alto } = f;
