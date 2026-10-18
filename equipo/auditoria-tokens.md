@@ -220,3 +220,84 @@ Mismo criterio que el punto 6: precios reales, razonamiento de Sonnet incluido (
 ### Para el pitch
 
 > Cada cliente, con su marca, su mes de contenidos y su web, le cuesta a BrandIA menos de **un dólar** de IA. Solo la marca: **34 centavos**.
+
+## 8. Nueva auditoría, con costos reales por paso (sábado 17/10, 19:15)
+
+Código al día: `main` mergeado en `web-cliente`. Desde la auditoría anterior cambiaron cosas que tocan el costo:
+
+- **Se fue el agente de voz.** La entrevista es por chat, escrita o con audios que ElevenLabs Scribe pasa a texto (`/api/transcribir`, hasta 3 minutos por audio). Ya no hay costo por minuto de llamada.
+- **La web del cliente tiene fotos generadas** con la marca (`/api/web/foto`, GPT Image 2, 1536×1024), una por sección que la pide.
+- **BranderIA funciona:** la IA pone la marca en 12 productos (`/api/branderia`), una foto por producto.
+- **La web se publica** (`/api/web/publicar`, página `/w/[slug]` con link y QR). Ese paso no usa IA.
+- **Eze etiqueta cada llamada por paso** (`lib/ia/gastos.ts`). Por eso esta vez los números son **reales**, del Gateway (reporte agrupado por corrida), y no estimados.
+
+### Saldo y gasto total
+
+| | USD |
+|---|---|
+| Saldo del Gateway | **30,74** (ya se cargó crédito) |
+| Gastado en total, todo el 17/10 | 81,09 (2.428 pedidos) |
+| Gastado desde la auditoría anterior (16:00) | 6,47 |
+| ↳ de la app, etiquetado por paso | 5,38 en 100 corridas |
+| ↳ sin etiqueta (scripts de prueba y llamadas sueltas) | ≈ 1,09 |
+
+No hubo otro loop: el gasto nuevo es el normal de probar la app.
+
+### Costo real por paso
+
+| Módulo | Paso | Corridas medidas | USD por corrida (real) | Lo que estimé antes |
+|---|---|---|---|---|
+| A | Entrevista por chat (conversación) | 10 | **0,048** | 0,061 |
+| A | Nombres, 5 propuestas | 10 | **0,028** | 0,017 |
+| A | 3 direcciones | 11 | **0,040** | 0,045 |
+| A | Identidad (textos + isotipo con Opus) | 10 | **0,087** | 0,107 |
+| A | 3 logos (ideas + dibujos) | 8 | **0,133** | 0,126 |
+| B | Lote de contenidos con fotos | 5 | **0,288** | 0,275 |
+| Web | Entrevista de la web (conversación) | 4 | 0,020 (1,5 turnos en promedio; ≈ 0,013 por turno) | 0,061 |
+| Web | Armar la web | 4 | **0,020** | 0,046 |
+| Web | Un cambio por chat | 4 | **0,037** | 0,059 |
+| Web | Una foto de la web | 6 | **0,009** | — |
+| C | Una foto de producto de BranderIA | 24 | **0,016** | — |
+
+Qué se aprende:
+
+- **La web sale más barata de lo estimado:** armarla y cambiarla casi no "piensa" (armar: 0 tokens de razonamiento).
+- **Nombres sale más caro:** Sonnet piensa el doble de lo que escribe (15.600 tokens de razonamiento contra 7.400 de salida).
+- **El logo es el paso más caro de la marca** (0,133), por los 3 dibujos de Recraft.
+- Las pruebas de la entrevista de la web fueron cortas. Para una conversación completa de ~5 turnos se toma 0,013 × 5 ≈ 0,067.
+
+### Precio unitario por cliente, con datos reales
+
+| Módulo | Paso | USD |
+|---|---|---|
+| **A · Marca** | Entrevista por chat | 0,048 |
+| | Nombres (1 vuelta; si ya tiene nombre, 0) | 0,028 |
+| | 3 direcciones | 0,040 |
+| | Identidad y brandbook | 0,087 |
+| | 3 logos | 0,133 |
+| | *Subtotal marca* | ***0,34*** |
+| **B · Contenidos** | Lote: plan, 6 piezas y ~10 fotos | ***0,29*** |
+| **Web** | Entrevista de la web (~5 turnos) | 0,067 |
+| | Armar la web | 0,020 |
+| | 3 cambios por chat | 0,111 |
+| | ~4 fotos de las secciones | 0,036 |
+| | *Subtotal web* | ***0,23*** |
+| **C · BranderIA** | 12 fotos de productos con la marca | ***0,19*** |
+| | **Total por cliente, los tres módulos y la web** | **≈ USD 1,05** |
+
+| Lo que se lleva el cliente | USD |
+|---|---|
+| Solo la marca (ya tiene nombre) | 0,31 |
+| Solo la marca (sin nombre) | 0,34 |
+| Marca + web con 3 cambios | 0,57 |
+| Marca + contenidos + web | 0,86 |
+| **Marca + contenidos + web + BranderIA** | **1,05** |
+| Cada cambio más en la web | + 0,037 |
+| Cambiar de dirección (identidad y logos otra vez) | + 0,22 |
+| Cada audio de la entrevista (hasta 3 min, ElevenLabs Scribe) | + ≈ 0,01 a 0,02 (a confirmar en ElevenLabs; no pasa por el Gateway) |
+
+**No incluye:** el dominio de la web (USD 10 a 15 por año, "en construcción"), los costos fijos de Vercel y ElevenLabs, ni los reintentos cuando falla un paso.
+
+### Para el pitch (actualizado)
+
+> Con datos reales: cada cliente, con su marca, su mes de contenidos, su web y sus productos con la marca, le cuesta a BrandIA **alrededor de un dólar** de IA. Solo la marca: **34 centavos**.
