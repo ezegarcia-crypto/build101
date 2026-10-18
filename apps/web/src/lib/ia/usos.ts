@@ -48,6 +48,7 @@ export const USOS: Record<Paso, Uso[]> = {
   "contenidos-imagen": [{ modelo: MODELO_FOTOS_FEED, para: "Genera una foto" }],
   "contenidos-completar": [{ modelo: MODELO_COMPLETAR, para: "Reescribe las piezas con los datos que confirmó la persona" }],
   "contenidos-destacadas": [{ modelo: MODELO_DESTACADAS, para: "Elige el ícono y el nombre de cada historia destacada" }],
+  "contenidos-muestra": [{ modelo: MODELO_FOTOS_FEED, para: "Foto de muestra del rubro para elegir el estilo del feed" }],
   // Retirado el 17/10: queda solo para que /costos muestre lo que ya se gastó con él.
   "contenidos-simple": [],
   "web-entrevista": [{ modelo: MODELO_WEB, para: "Pregunta lo que falta para la web del cliente" }],
