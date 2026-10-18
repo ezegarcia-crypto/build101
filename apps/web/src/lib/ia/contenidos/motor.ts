@@ -13,6 +13,7 @@ import {
 import { FORMATOS, MEZCLA_DEMO, type IdFormato } from "@/lib/ia/contenidos/formatos";
 import { generarImagen, promptImagen } from "@/lib/ia/contenidos/imagen";
 import {
+  type Gusto,
   MODELO_PLAN,
   MODELO_REDACCION,
   promptCorreccion,
@@ -50,6 +51,7 @@ export async function planificar(o: {
   kit: Kit;
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
+  gustaron?: Gusto[];
 }): Promise<{ plan: Plan; uso: Uso }> {
   const uso = uso0();
   const mezcla = o.mezcla ?? MEZCLA_DEMO;
@@ -58,7 +60,7 @@ export async function planificar(o: {
     abortSignal: senalDelPedido(),
     providerOptions: etiquetar(),
     output: Output.object({ schema: planSchema }),
-    prompt: promptPlanificador(o.kit, o.brief, mezcla),
+    prompt: promptPlanificador(o.kit, o.brief, mezcla, o.gustaron),
   });
   sumarUso(uso, r);
   return { plan: r.output, uso };
@@ -156,6 +158,7 @@ export async function* generarLote(o: {
   brief: Brief;
   mezcla?: Record<IdFormato, number>;
   imagenes?: boolean;
+  gustaron?: Gusto[];
 }): AsyncGenerator<Evento> {
   const t0 = Date.now();
   const total = uso0();

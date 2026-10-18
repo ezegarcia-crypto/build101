@@ -14,11 +14,17 @@ const mezcla = z.object({
   reel: z.number().int().min(0).max(2),
 });
 
+/** Las piezas del feed anterior que la persona marcó con "me gusta": el próximo plan va en esa línea */
+export const gustaronSchema = z
+  .array(z.object({ formato: z.string().max(20), pilar: z.string().max(120), idea: z.string().max(300) }))
+  .max(20);
+
 export const entradaLote = z.object({
   brief: briefSchema,
   identidad: identidadEntradaSchema,
   mezcla: mezcla.optional(),
   imagenes: z.boolean().default(true),
+  gustaron: gustaronSchema.optional(),
 });
 
 export const entradaPieza = z.object({

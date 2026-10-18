@@ -3,9 +3,16 @@
 import { Button, buttonVariants } from "@build101/ui/components/button";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { CLAVE_IDENTIDAD, type IdentidadIA, type PropuestaLogo } from "@/components/brandbook/identidad";
+import { BotonWeb } from "@/components/boton-web";
+import {
+  CLAVE_IDENTIDAD,
+  type IdentidadIA,
+  logoDeMarca,
+  type MarcaGuardada,
+  type PropuestaLogo,
+} from "@/components/brandbook/identidad";
 import { Armando } from "@/components/entrevista/armando";
 import { CLAVE_FICHA } from "@/components/entrevista/ficha";
 import { Pasos } from "@/components/pasos";
@@ -20,10 +27,14 @@ import { Feed, type Lote } from "./feed";
 // ver lib/ia/contenidos/README.md). La respuesta llega de a partes: cada pieza se muestra apenas
 // sale y se vuelve a dibujar cuando llegan sus imágenes. Tarda ~70 s.
 // El lote terminado queda guardado junto con su identidad: si se recarga, no se vuelve a generar.
+// "Sumar otro feed" no borra: los anteriores quedan para ir y volver, y los "me gusta" de todos guían al nuevo.
 
 export const CLAVE_FEED = "brandia:feed";
+/** Las piezas que la persona marcó con "me gusta", del feed que está viendo */
+export const CLAVE_ME_GUSTA = "brandia:me-gusta";
 
-type Marca = { ficha: string; brief: Brief; identidad: IdentidadIA; logos: PropuestaLogo[] };
+type Marca = { ficha: string; brief: Brief; identidad: IdentidadIA; logo: PropuestaLogo | null };
+type Gusto = { formato: string; pilar: string; idea: string };
 
 type Estado =
   | { tipo: "cargando" }
@@ -68,7 +79,15 @@ export function GenerarFeed() {
   const [estado, setEstado] = useState<Estado>({ tipo: "cargando" });
   const [marca, setMarca] = useState<Marca | null>(null);
 
-  const generar = useCallback(async (m: Marca, senal?: AbortSignal) => {
+  // "Generar otro" suma un feed: los anteriores quedan para ir y volver (nada se borra)
+  const [anteriores, setAnteriores] = useState<Lote[]>([]);
+  const previos = useRef<Lote[]>([]);
+  /** El feed anterior que se está mirando; null: el último */
+  const [ver, setVer] = useState<number | null>(null);
+  /** "número de feed:id de pieza" de lo que la persona marcó con "me gusta", en todos los feeds */
+  const [meGusta, setMeGusta] = useState<string[]>([]);
+
+  const generar = useCallback(async (m: Marca, senal?: AbortSignal, gustaron?: Gusto[]) => {
     let lote = LOTE_VACIO;
     setEstado({ tipo: "lote", lote, generando: true });
     document.querySelector("main")?.scrollTo({ top: 0 });
@@ -76,7 +95,7 @@ export function GenerarFeed() {
       const res = await fetch("/api/contenidos/lote", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ brief: m.brief, identidad: m.identidad, imagenes: true }),
+        body: JSON.stringify({ brief: m.brief, identidad: m.identidad, imagenes: true, gustaron }),
         signal: senal,
       });
       if (!res.ok || !res.body) {
@@ -105,9 +124,12 @@ export function GenerarFeed() {
       if (!lote.fin) lote = { ...lote, fin: { segundos: 0, imagenes: Object.values(lote.imagenes).flatMap(Object.keys).length } };
       setEstado({ tipo: "lote", lote, generando: false });
       try {
-        sessionStorage.setItem(CLAVE_FEED, JSON.stringify({ huella: huella(m), lote }));
+        sessionStorage.setItem(CLAVE_FEED, JSON.stringify({ huella: huella(m), lote, anteriores: previos.current }));
       } catch {
-        // Las imágenes pesan: si no entran, el feed se ve igual, solo que no queda guardado
+        // Las imágenes pesan: si no entran todos, se guarda solo el último (los anteriores se ven igual hasta recargar)
+        try {
+          sessionStorage.setItem(CLAVE_FEED, JSON.stringify({ huella: huella(m), lote }));
+        } catch {}
       }
     } catch (e) {
       if ((e as Error).name !== "AbortError") setEstado({ tipo: "error", mensaje: (e as Error).message });
@@ -117,13 +139,17 @@ export function GenerarFeed() {
   useEffect(() => {
     const ficha = sessionStorage.getItem(CLAVE_FICHA);
     const brief = leer<Brief>(CLAVE_FICHA);
-    const guardada = leer<{ ficha: string; identidad: IdentidadIA; logos: PropuestaLogo[] }>(CLAVE_IDENTIDAD);
+    const guardada = leer<MarcaGuardada>(CLAVE_IDENTIDAD);
     if (!ficha || !brief || guardada?.ficha !== ficha) return setEstado({ tipo: "sin-marca" });
-    const m = { ficha, brief, identidad: guardada.identidad, logos: guardada.logos ?? [] };
+    const m = { ficha, brief, identidad: guardada.identidad, logo: logoDeMarca(guardada.logos ?? [], guardada.elegido) };
     setMarca(m);
 
-    const previo = leer<{ huella: string; lote?: Lote }>(CLAVE_FEED);
+    const previo = leer<{ huella: string; lote?: Lote; anteriores?: Lote[] }>(CLAVE_FEED);
     if (previo?.huella === huella(m) && previo.lote?.plan) {
+      previos.current = previo.anteriores ?? [];
+      setAnteriores(previos.current);
+      const gustos = leer<{ huella: string; ids: string[] }>(CLAVE_ME_GUSTA);
+      if (gustos?.huella === huella(m)) setMeGusta(gustos.ids);
       return setEstado({ tipo: "lote", lote: previo.lote, generando: false });
     }
 
@@ -132,14 +158,39 @@ export function GenerarFeed() {
     return () => control.abort();
   }, [generar]);
 
-  function otroFeed() {
+  function marcar(clave: string) {
     if (!marca) return;
-    sessionStorage.removeItem(CLAVE_FEED);
-    generar(marca);
+    setMeGusta((ids) => {
+      const nuevos = ids.includes(clave) ? ids.filter((x) => x !== clave) : [...ids, clave];
+      try {
+        sessionStorage.setItem(CLAVE_ME_GUSTA, JSON.stringify({ huella: huella(marca), ids: nuevos }));
+      } catch {}
+      return nuevos;
+    });
   }
 
-  const lote = estado.tipo === "lote" ? estado.lote : null;
+  function otroFeed() {
+    if (!marca) return;
+    const actual = estado.tipo === "lote" && estado.lote.plan ? estado.lote : null;
+    const todos = actual ? [...previos.current, actual] : previos.current;
+    // Lo que le gustó de todos los feeds guía al próximo
+    const gustaron = todos.flatMap((l, n) =>
+      (l.plan?.piezas ?? [])
+        .filter((p) => meGusta.includes(`${n}:${p.id}`))
+        .map((p) => ({ formato: p.formato, pilar: p.pilar, idea: p.idea })),
+    );
+    previos.current = todos;
+    setAnteriores(todos);
+    setVer(null);
+    generar(marca, undefined, gustaron.length ? gustaron : undefined);
+  }
+
+  const ultimo = estado.tipo === "lote" ? estado.lote : null;
   const generando = estado.tipo === "cargando" || (estado.tipo === "lote" && estado.generando);
+  const lote = ver !== null ? (anteriores[ver] ?? ultimo) : ultimo;
+  const numero = ver ?? anteriores.length;
+  const gustanAca = meGusta.filter((k) => k.startsWith(`${numero}:`)).map((k) => k.slice(k.indexOf(":") + 1));
+  const generandoAca = ver === null && generando;
 
   return (
     <main className="min-h-0 overflow-y-auto">
@@ -152,11 +203,35 @@ export function GenerarFeed() {
           </Link>
         </div>
 
+        {/* Los feeds que ya se generaron: generar otro suma, no borra */}
+        {anteriores.length > 0 && (
+          <nav aria-label="Tus feeds" className={`${s.entra} mt-8 flex flex-wrap items-center gap-2`}>
+            <span className="label mr-1">Tus feeds</span>
+            {[...anteriores, ultimo].map((_, n) => {
+              const activo = n === numero;
+              const enCurso = n === anteriores.length && (generando || estado.tipo === "error");
+              return (
+                <Button
+                  key={n}
+                  size="sm"
+                  variant={activo ? "default" : "outline"}
+                  aria-pressed={activo}
+                  onClick={() => setVer(n === anteriores.length ? null : n)}
+                >
+                  Feed {n + 1}
+                  {enCurso ? (estado.tipo === "error" ? " · no salió" : " · armándose…") : ""}
+                  {!enCurso && meGusta.some((k) => k.startsWith(`${n}:`)) ? " ♥" : ""}
+                </Button>
+              );
+            })}
+          </nav>
+        )}
+
         {/* Hasta que llega el plan, la pantalla de espera */}
-        {(estado.tipo === "cargando" || (lote && !lote.plan)) && (
+        {ver === null && (estado.tipo === "cargando" || (lote && !lote.plan)) && (
           <div className="flex min-h-[60svh] flex-col items-start justify-center">
             <h1 className={`${s.seCocina} display max-w-[16ch]`}>
-              Armando <span className={s.it}>tu</span> primer feed.
+              Armando <span className={s.it}>tu</span> {anteriores.length ? "próximo" : "primer"} feed.
             </h1>
             <p className="lead mt-4 max-w-[34em] text-base">
               Posteos, un carrusel, historias y un reel con la voz, los colores y las letras de{" "}
@@ -179,7 +254,7 @@ export function GenerarFeed() {
           </div>
         )}
 
-        {estado.tipo === "error" && (
+        {ver === null && estado.tipo === "error" && (
           <div className={`${s.entra} flex min-h-[60svh] flex-col items-start justify-center`}>
             <h1 className="display max-w-[16ch]">Algo se trabó.</h1>
             <p className="lead mt-4 max-w-[34em] text-base">{estado.mensaje} Tu marca sigue guardada.</p>
@@ -195,17 +270,36 @@ export function GenerarFeed() {
               <h1 className="display max-w-[18ch]">
                 El feed de <span className={s.it}>{marca.identidad.nombre}</span>.
               </h1>
-              <Button variant="outline" size="sm" onClick={otroFeed} disabled={generando}>
-                <RotateCcw data-icon="inline-start" />
-                Generar otro
-              </Button>
+              <div className="flex flex-col items-start gap-1 sm:items-end">
+                <Button variant="outline" size="sm" onClick={otroFeed} disabled={generando}>
+                  <RotateCcw data-icon="inline-start" />
+                  {meGusta.length ? "Sumar otro en esta línea" : "Sumar otro feed"}
+                </Button>
+                {!generando && (
+                  <p className="text-xs text-muted-foreground">
+                    {meGusta.length
+                      ? `${meGusta.length === 1 ? "Te gustó 1 pieza" : `Te gustaron ${meGusta.length} piezas`}: el próximo feed va a ir por ahí.`
+                      : "Marcá con ♥ lo que te gusta y el próximo feed va a ir por ahí. Los anteriores no se borran."}
+                  </p>
+                )}
+              </div>
             </div>
-            <Feed lote={lote} kit={lote.kit} plan={lote.plan} identidad={marca.identidad} logos={marca.logos} generando={generando} />
+            <Feed
+              lote={lote}
+              kit={lote.kit}
+              plan={lote.plan}
+              identidad={marca.identidad}
+              logo={marca.logo}
+              generando={generandoAca}
+              meGusta={gustanAca}
+              onMeGusta={(id) => marcar(`${numero}:${id}`)}
+            />
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/crear/branderia" className={buttonVariants({ size: "lg" })}>
                 Ver mis productos
                 <ArrowRight data-icon="inline-end" />
               </Link>
+              <BotonWeb />
             </div>
           </>
         )}

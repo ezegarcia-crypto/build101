@@ -3,6 +3,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { LogoBranderia } from "./logo-branderia";
 import { ModeToggle } from "./mode-toggle";
 
 // Los links de la barra en la app (/crear/...): lo que todavía no funciona y cuánto cuesta. Así quien prueba
@@ -17,18 +18,26 @@ export default function Header() {
   const ruta = usePathname();
   if (ruta?.startsWith("/w/")) return null;
   const enLaApp = ruta?.startsWith("/crear");
+  // En BranderIA (los productos) la barra lleva su nombre
+  const branderia = ruta?.startsWith("/crear/branderia") || ruta?.startsWith("/crear/proximamente/branderia");
   return (
     <header className="border-b">
       <div className="mx-auto flex max-w-[1080px] items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" aria-label="BrandIA, inicio" className="shrink-0">
-          {/* El logo nunca se recrea: se usan los SVG originales de brandia/marca/logo */}
-          <img src="/marca/logo-horizontal.svg" alt="BrandIA" className="h-6 w-auto sm:h-7 dark:hidden" />
-          <img
-            src="/marca/logo-horizontal-sobre-grafito.svg"
-            alt="BrandIA"
-            className="hidden h-6 w-auto sm:h-7 dark:block"
-          />
-        </Link>
+        {branderia ? (
+          <Link href="/" aria-label="BranderIA, de BrandIA: inicio" className="flex h-7 shrink-0 items-center">
+            <LogoBranderia className="text-[22px] sm:text-[28px]" />
+          </Link>
+        ) : (
+          <Link href="/" aria-label="BrandIA, inicio" className="shrink-0">
+            {/* El logo nunca se recrea: se usan los SVG originales de brandia/marca/logo */}
+            <img src="/marca/logo-horizontal.svg" alt="BrandIA" className="h-6 w-auto sm:h-7 dark:hidden" />
+            <img
+              src="/marca/logo-horizontal-sobre-grafito.svg"
+              alt="BrandIA"
+              className="hidden h-6 w-auto sm:h-7 dark:block"
+            />
+          </Link>
+        )}
         <div className="flex items-center gap-1 sm:gap-3">
           {enLaApp && (
             <nav aria-label="Más de BrandIA" className="flex items-center gap-0.5 sm:gap-2">

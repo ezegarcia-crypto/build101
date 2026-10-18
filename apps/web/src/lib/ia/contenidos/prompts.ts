@@ -65,7 +65,15 @@ function bloqueVoz(identidad: Kit): string {
 
 // ── Planificador ─────────────────────────────────────────────────────────────────────────────
 
-export function promptPlanificador(identidad: Kit, brief: Brief, mezcla: Record<IdFormato, number>): string {
+/** Una pieza de un feed anterior que a la persona le gustó */
+export type Gusto = { formato: string; pilar: string; idea: string };
+
+export function promptPlanificador(
+  identidad: Kit,
+  brief: Brief,
+  mezcla: Record<IdFormato, number>,
+  gustaron: Gusto[] = [],
+): string {
   const total = Object.values(mezcla).reduce((a, b) => a + b, 0);
   const formatos = (Object.keys(mezcla) as IdFormato[])
     .filter((f) => mezcla[f] > 0)
@@ -91,7 +99,15 @@ ${formatos}
 - Repartí los objetivos: no todo es vender. Como mucho un tercio de las piezas vende directo.
 - Usá lo que el negocio contó. Si una idea necesita un dato que no dio (un precio, un horario, una fecha), igual podés proponerla: el redactor lo va a marcar para confirmar. Nunca lo inventes.
 - Repartí las piezas en la semana, sin dos el mismo día salvo una historia.
-- Ids: p1, p2, p3… en el orden en que se publican.`;
+- Ids: p1, p2, p3… en el orden en que se publican.${
+    gustaron.length
+      ? `
+
+## Lo que le gustó del feed anterior
+La persona marcó con "me gusta" estas piezas. Seguí esa línea (los temas, los ángulos y los pilares que eligió), pero con ideas nuevas: no repitas ninguna.
+${gustaron.map((g) => `- ${g.formato} · ${g.pilar}: ${g.idea}`).join("\n")}`
+      : ""
+  }`;
 }
 
 // ── Redactor ─────────────────────────────────────────────────────────────────────────────────

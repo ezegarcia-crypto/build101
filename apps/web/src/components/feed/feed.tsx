@@ -1,8 +1,10 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, CircleAlert, ImageOff, Pause, Play } from "lucide-react";
+import { Button } from "@build101/ui/components/button";
+import { ChevronLeft, ChevronRight, CircleAlert, Download, Heart, ImageOff, Pause, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { bajar, slug, zip } from "@/components/brandbook/archivos";
 import { cargarFuentes, type IdentidadIA, type PropuestaLogo, svgSeguro } from "@/components/brandbook/identidad";
 import { Armando } from "@/components/entrevista/armando";
 import { type Colores, coloresDeMarca, componerPieza, type Imagenes, type Lienzo } from "@/lib/ia/contenidos/componer";
@@ -11,6 +13,7 @@ import { FORMATOS } from "@/lib/ia/contenidos/formatos";
 import type { Kit } from "@/lib/ia/contenidos/kit";
 
 import s from "../entrevista/entrevista.module.css";
+import { archivosDePieza } from "./descargar-feed";
 import f from "./feed.module.css";
 
 // El feed de la marca, como se vería su perfil. Cada pieza la dibuja el compositor del motor
@@ -270,13 +273,68 @@ function Cabecera({ item, c }: { item: ItemPlan; c: Colores }) {
   );
 }
 
-function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario }: {
+/** Me gusta y bajar la pieza: la fila de acciones abajo de la imagen, como en Instagram */
+function Acciones({
+  meGusta,
+  onMeGusta,
+  onBajar,
+  c,
+}: {
+  meGusta: boolean;
+  onMeGusta?: () => void;
+  onBajar: () => Promise<void>;
+  c: Colores;
+}) {
+  const [bajando, setBajando] = useState(false);
+  return (
+    <div className="flex items-center gap-1 px-2 pt-2">
+      {onMeGusta && (
+        <button
+          type="button"
+          onClick={onMeGusta}
+          aria-pressed={meGusta}
+          aria-label={meGusta ? "Sacar el me gusta" : "Me gusta"}
+          className="grid size-10 place-items-center rounded-full transition-transform duration-300 ease-brandia active:scale-90"
+        >
+          <Heart
+            className={`size-6 transition-[transform,fill] duration-300 ease-brandia ${meGusta ? "scale-110" : ""}`}
+            style={{ color: meGusta ? c.principal : c.texto, fill: meGusta ? c.principal : "transparent" }}
+            aria-hidden="true"
+          />
+        </button>
+      )}
+      <button
+        type="button"
+        disabled={bajando}
+        onClick={async () => {
+          setBajando(true);
+          try {
+            await onBajar();
+          } finally {
+            setBajando(false);
+          }
+        }}
+        aria-label="Descargar esta pieza"
+        className="grid size-10 place-items-center rounded-full disabled:opacity-50"
+      >
+        <Download className={`size-5 ${bajando ? "animate-bounce" : ""}`} style={{ color: c.texto }} aria-hidden="true" />
+      </button>
+      {meGusta && <span className="text-[13px] font-semibold">Te gusta</span>}
+    </div>
+  );
+}
+
+function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario, n, meGusta, onMeGusta }: {
   item: ItemPlan;
   pieza?: Pieza;
   kit: Kit;
   imagenes: Imagenes;
   fallas: Record<string, string>;
   usuario: string;
+  /** El orden de la pieza en el plan (para nombrar la descarga) */
+  n: number;
+  meGusta: boolean;
+  onMeGusta?: () => void;
 }) {
   const c = useMemo(() => coloresDeMarca(kit), [kit]);
   // Se vuelve a dibujar solo cuando cambian la pieza o sus imágenes
@@ -312,7 +370,18 @@ function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario }: {
           {pieza.formato === "historia" && <Secuencia lienzos={lienzos} etiqueta={`Historia: ${item.idea}`} />}
           {pieza.formato === "reel" && <Secuencia lienzos={lienzos} onCambio={setEscena} etiqueta={`Reel: ${item.idea}`} />}
 
-          <div className="flex flex-1 flex-col gap-3 p-4">
+          <Acciones
+            meGusta={meGusta}
+            onMeGusta={onMeGusta}
+            c={c}
+            onBajar={async () => {
+              const archivos = await archivosDePieza(n, item, pieza, lienzos);
+              const carpeta = archivos[0]?.nombre.split("/")[0] ?? "pieza";
+              bajar(zip(archivos), `${slug(kit.nombre)}-${carpeta}.zip`);
+            }}
+          />
+
+          <div className="flex flex-1 flex-col gap-3 px-4 pt-2 pb-4">
             <p className="text-[11px] font-semibold tracking-[0.14em] uppercase opacity-60">
               Para {OBJETIVO[item.objetivo].toLowerCase()}
             </p>
@@ -417,13 +486,52 @@ function Pendientes({ lote, plan }: { lote: Lote; plan: Plan }) {
   );
 }
 
-export function Feed({ lote, kit, plan, identidad, logos, generando }: {
+/** Todo el feed en un .zip: una carpeta por pieza con sus imágenes y su texto */
+function BajarFeed({ lote, kit, plan, generando }: { lote: Lote; kit: Kit; plan: Plan; generando: boolean }) {
+  const [bajando, setBajando] = useState(false);
+  const [error, setError] = useState(false);
+  if (generando) return null;
+  async function todo() {
+    setBajando(true);
+    setError(false);
+    try {
+      const archivos = [];
+      for (const [i, item] of plan.piezas.entries()) {
+        const pieza = lote.piezas[item.id];
+        if (!pieza) continue;
+        archivos.push(...(await archivosDePieza(i + 1, item, pieza, componerPieza(pieza, kit, lote.imagenes[item.id] ?? {}))));
+      }
+      bajar(zip(archivos), `${slug(kit.nombre)}-contenido-para-redes.zip`);
+    } catch {
+      setError(true);
+    } finally {
+      setBajando(false);
+    }
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="outline" onClick={todo} disabled={bajando}>
+        <Download data-icon="inline-start" className={bajando ? "animate-bounce" : ""} />
+        {bajando ? "Armando tus imágenes…" : "Descargar todo el contenido"}
+      </Button>
+      <span className="text-sm text-muted-foreground">
+        {error ? "No pudimos armar el archivo. Probá de nuevo." : "Cada pieza en PNG, lista para subir, con su texto para copiar."}
+      </span>
+    </div>
+  );
+}
+
+export function Feed({ lote, kit, plan, identidad, logo, generando, meGusta, onMeGusta }: {
   lote: Lote;
   kit: Kit;
   plan: Plan;
   identidad: IdentidadIA;
-  logos: PropuestaLogo[];
+  /** El logo que eligió la persona (null: el símbolo) */
+  logo: PropuestaLogo | null;
   generando: boolean;
+  /** Las piezas marcadas con ♥ (sin `onMeGusta`, por ejemplo en /pruebas, no se muestra el ♥) */
+  meGusta?: string[];
+  onMeGusta?: (id: string) => void;
 }) {
   const c = useMemo(() => coloresDeMarca(kit), [kit]);
   const titulos = `"${kit.tipografias.titulos.familia}", serif`;
@@ -445,7 +553,7 @@ export function Feed({ lote, kit, plan, identidad, logos, generando }: {
         <div className="flex items-center gap-5">
           <div className="size-20 shrink-0 rounded-full p-[3px] sm:size-24" style={{ background: c.principal }}>
             <div className="size-full rounded-full p-[2px]" style={{ background: c.fondo }}>
-              <Avatar kit={kit} logo={logos[0] ?? null} c={c} />
+              <Avatar kit={kit} logo={logo} c={c} />
             </div>
           </div>
           <div className="min-w-0">
@@ -474,12 +582,16 @@ export function Feed({ lote, kit, plan, identidad, logos, generando }: {
       </section>
 
       <Pendientes lote={lote} plan={plan} />
+      <BajarFeed lote={lote} kit={kit} plan={plan} generando={generando} />
 
       {/* Las piezas, en el orden del plan */}
       <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ fontFamily: `"${kit.tipografias.texto.familia}", sans-serif` }}>
-        {plan.piezas.map((item) => (
+        {plan.piezas.map((item, i) => (
           <TarjetaPieza
             key={item.id}
+            n={i + 1}
+            meGusta={meGusta?.includes(item.id) ?? false}
+            onMeGusta={onMeGusta ? () => onMeGusta(item.id) : undefined}
             item={item}
             pieza={lote.piezas[item.id]}
             kit={kit}

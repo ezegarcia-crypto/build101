@@ -1,10 +1,10 @@
 "use client";
 
-import { Component, type ReactNode } from "react";
+import { Component, type ReactNode, useState } from "react";
 
 import { Brandbook, Controles } from "@/components/brandbook/brandbook";
 import { Direcciones } from "@/components/brandbook/direcciones";
-import type { DireccionConControl, IdentidadIA, PropuestaLogo } from "@/components/brandbook/identidad";
+import type { DireccionConControl, IdentidadIA, LogoElegido, PropuestaLogo } from "@/components/brandbook/identidad";
 import { Feed, type Lote } from "@/components/feed/feed";
 import { VistaWeb } from "@/components/web/vista-web";
 import type { Plan } from "@/lib/ia/contenidos/esquemas";
@@ -117,7 +117,7 @@ export function Vistas({ r }: { r: Resumen }) {
 
       {r.marca && (
         <Seccion titulo="La marca" detalle="El brandbook con sus logos, como lo vio la persona.">
-          <Brandbook identidad={r.marca.identidad} logos={r.marca.logos} />
+          <BrandbookVisto identidad={r.marca.identidad} logos={r.marca.logos} />
           {r.marca.identidad.comprobaciones && <Controles comprobaciones={r.marca.identidad.comprobaciones} />}
         </Seccion>
       )}
@@ -136,7 +136,7 @@ export function Vistas({ r }: { r: Resumen }) {
             kit={feed.kit as Kit}
             plan={feed.plan as Plan}
             identidad={r.marca.identidad}
-            logos={r.marca.logos}
+            logo={r.marca.logos[0] ?? null}
             generando={false}
           />
         </Seccion>
@@ -170,4 +170,10 @@ export function Vistas({ r }: { r: Resumen }) {
       )}
     </div>
   );
+}
+
+/** El brandbook guardado: se pueden recorrer los logos como en la app, sin guardar nada */
+function BrandbookVisto({ identidad, logos }: { identidad: IdentidadIA; logos: PropuestaLogo[] }) {
+  const [elegido, setElegido] = useState<LogoElegido>(logos.length ? 0 : "simbolo");
+  return <Brandbook identidad={identidad} logos={logos} elegido={elegido} onElegir={setElegido} />;
 }

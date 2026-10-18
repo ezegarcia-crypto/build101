@@ -1,7 +1,9 @@
 "use client";
 
 import { Check, CircleAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
+import { MeGusta } from "@/components/me-gusta";
 
 import s from "../entrevista/entrevista.module.css";
 import {
@@ -10,6 +12,9 @@ import {
   fondoParaSimbolo,
   fuente,
   type IdentidadIA,
+  type LogoElegido,
+  esSimbolo,
+  logoDeMarca,
   type PropuestaLogo,
   rolesDe,
   svgSeguro,
@@ -51,20 +56,43 @@ function Subtitulo({ children }: { children: React.ReactNode }) {
   return <p className="text-sm font-semibold">{children}</p>;
 }
 
+/** El isotipo solo, sin el nombre (la opción "Solo el símbolo") */
+function Simbolo({ svg, className }: { svg: string; className: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`block shrink-0 [&>svg]:size-full ${className}`}
+      dangerouslySetInnerHTML={{ __html: svgSeguro(svg) }}
+    />
+  );
+}
+
 /** El isotipo (SVG) con el nombre compuesto al lado en la tipografía de títulos */
-function Isotipo({ identidad, color, grande }: { identidad: IdentidadIA; color: string; grande?: boolean }) {
+function Isotipo({
+  identidad,
+  color,
+  grande,
+  chico,
+}: {
+  identidad: IdentidadIA;
+  color: string;
+  grande?: boolean;
+  chico?: boolean;
+}) {
   const { logo, nombre, tipografias } = identidad;
   return (
-    <span className="inline-flex items-center gap-4" style={{ color }}>
+    <span className={`inline-flex items-center ${chico ? "gap-1.5" : "gap-4"}`} style={{ color }}>
       {logo.isotipo_svg && (
         <span
           aria-hidden="true"
-          className={`${grande ? "size-20 sm:size-24" : "size-14"} shrink-0 [&>svg]:size-full`}
+          className={`${grande ? "size-20 sm:size-24" : chico ? "size-8" : "size-14"} shrink-0 [&>svg]:size-full`}
           dangerouslySetInnerHTML={{ __html: svgSeguro(logo.isotipo_svg) }}
         />
       )}
       <span
-        className={grande ? "text-[clamp(2.2rem,1.6rem+2.4vw,3.6rem)] leading-none" : "text-3xl leading-none"}
+        className={
+          grande ? "text-[clamp(2.2rem,1.6rem+2.4vw,3.6rem)] leading-none" : chico ? "text-[15px] leading-none" : "text-3xl leading-none"
+        }
         style={{ fontFamily: fuente(tipografias.titulos, "serif") }}
       >
         {nombre}
@@ -76,12 +104,17 @@ function Isotipo({ identidad, color, grande }: { identidad: IdentidadIA; color: 
 function LogoPrincipal({
   identidad,
   logo,
+  simbolo,
   c,
 }: {
   identidad: IdentidadIA;
   logo: PropuestaLogo | null;
+  /** Si eligió el símbolo: solo, o con el nombre al lado */
+  simbolo: "simbolo" | "simbolo-nombre" | null;
   c: Colores;
 }) {
+  if (simbolo === "simbolo") return <Simbolo svg={identidad.logo.isotipo_svg} className="size-28 sm:size-36" />;
+  if (simbolo === "simbolo-nombre") return <Isotipo identidad={identidad} color={c.principal} grande />;
   if (logo)
     return (
       <img
@@ -106,15 +139,41 @@ function Lista({ items, tachada }: { items: string[]; tachada?: boolean }) {
   );
 }
 
-export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos: PropuestaLogo[] }) {
+export function Brandbook({
+  identidad,
+  logos,
+  elegido,
+  onElegir,
+  gustos,
+  extra,
+}: {
+  identidad: IdentidadIA;
+  logos: PropuestaLogo[];
+  /** El logo elegido: queda guardado con la marca (lo usan el feed, BranderIA y las descargas) */
+  elegido: LogoElegido | undefined;
+  onElegir: (e: LogoElegido) => void;
+  /** Lo marcado con ♥ (colores en hex minúscula; logos por posición o "simbolo"): guía las próximas vueltas */
+  gustos?: {
+    colores: string[];
+    onColor: (hex: string) => void;
+    logos: (number | "simbolo")[];
+    onLogo: (i: number | "simbolo") => void;
+  };
+  /** Controles de la app que van dentro de una sección (por ejemplo, pedir otra paleta) */
+  extra?: { logo?: React.ReactNode; paleta?: React.ReactNode };
+}) {
   const { nombre, eslogan, esencia, voz, estilo, brandbook, paleta, tipografias, logo } = identidad;
   const c = rolesDe(paleta);
   const titulos = fuente(tipografias.titulos, "serif");
   const cuerpo = fuente(tipografias.texto, "sans-serif");
   const sobrePrincipal = textoSobre(c.principal, paleta);
   const fondoSimbolo = fondoParaSimbolo(logo.isotipo_svg, paleta, c.fondo, c.principal);
-  const [elegido, setElegido] = useState(0);
-  const logoActual = logos[elegido] ?? null;
+  // El símbolo elegido como logo (solo o con el nombre); si la marca no tiene símbolo, va la propuesta
+  const simbolo = esSimbolo(elegido) && logo.isotipo_svg ? elegido : null;
+  const soloSimbolo = simbolo === "simbolo";
+  const logoActual = simbolo ? null : logoDeMarca(logos, elegido);
+  const indiceActual = logoActual ? logos.indexOf(logoActual) : -1;
+  const opciones = logos.length + (logo.isotipo_svg ? 1 : 0);
 
   useEffect(() => cargarFuentes(identidad.fuentes_url), [identidad.fuentes_url]);
 
@@ -134,7 +193,7 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
       >
         <p className="text-[11px] font-semibold tracking-[0.14em] uppercase opacity-70">Brandbook · {nombre}</p>
         <div className="py-10">
-          <LogoPrincipal identidad={identidad} logo={logoActual} c={c} />
+          <LogoPrincipal identidad={identidad} logo={logoActual} simbolo={simbolo} c={c} />
           <h1
             className={`${s.seCocina} mt-8 max-w-[16ch] text-[clamp(2.6rem,1.6rem+4.5vw,5.5rem)] leading-[0.98] font-normal`}
             style={{ fontFamily: titulos }}
@@ -197,37 +256,107 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
 
       {/* Logo */}
       <Seccion titulo="Logo" fondo={c.fondo} texto={c.texto}>
-        {logos.length > 0 && (
+        {(logos.length > 0 || simbolo) && (
           <>
             <div className="grid items-start gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-              <img
-                src={logoActual?.imagen}
-                alt={`Logo de ${nombre}`}
-                className="aspect-square w-full rounded-[10px] bg-white object-contain"
-              />
+              {soloSimbolo ? (
+                <div
+                  className="grid aspect-square w-full place-items-center rounded-[10px] p-[18%]"
+                  style={{ boxShadow: `inset 0 0 0 1px ${c.texto}22` }}
+                >
+                  <Simbolo svg={logo.isotipo_svg} className="size-full" />
+                </div>
+              ) : simbolo === "simbolo-nombre" ? (
+                <div
+                  className="grid aspect-square w-full place-items-center overflow-hidden rounded-[10px] p-6"
+                  style={{ boxShadow: `inset 0 0 0 1px ${c.texto}22` }}
+                >
+                  <Isotipo identidad={identidad} color={c.principal} />
+                </div>
+              ) : (
+                <img
+                  src={logoActual?.imagen}
+                  alt={`Logo de ${nombre}`}
+                  className="aspect-square w-full rounded-[10px] bg-white object-contain"
+                />
+              )}
               <div>
                 <p className="text-2xl leading-tight" style={{ fontFamily: titulos }}>
-                  {TIPO_LOGO[logoActual?.tipo ?? ""] ?? logoActual?.tipo}
+                  {simbolo === "simbolo"
+                    ? "Solo el símbolo"
+                    : simbolo === "simbolo-nombre"
+                      ? "El símbolo con tu nombre"
+                      : (TIPO_LOGO[logoActual?.tipo ?? ""] ?? logoActual?.tipo)}
                 </p>
-                <p className="mt-3 text-[15px] leading-relaxed opacity-85">{logoActual?.concepto}</p>
-                {logos.length > 1 && (
+                <p className="mt-3 text-[15px] leading-relaxed opacity-85">
+                  {simbolo ? logo.explicacion : logoActual?.concepto}
+                </p>
+                {opciones > 1 && (
                   <>
-                    <p className="mt-8 text-sm font-semibold">Otras propuestas</p>
-                    <div className="mt-3 flex gap-3">
+                    <p className="mt-8 text-sm font-semibold">Elegí tu logo</p>
+                    <div className="mt-3 flex flex-wrap gap-3">
                       {logos.map((l, i) => (
-                        <button
-                          key={`${i}-${l.tipo}`}
-                          type="button"
-                          onClick={() => setElegido(i)}
-                          aria-label={`Ver la propuesta ${i + 1}: ${TIPO_LOGO[l.tipo] ?? l.tipo}`}
-                          aria-pressed={i === elegido}
-                          className="size-20 overflow-hidden rounded-[8px] bg-white transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
-                          style={{ boxShadow: i === elegido ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
-                        >
-                          <img src={l.imagen} alt="" className="size-full object-contain" />
-                        </button>
+                        <span key={`${i}-${l.tipo}`} className="relative">
+                          <button
+                            type="button"
+                            onClick={() => onElegir(i)}
+                            aria-label={`Elegir la propuesta ${i + 1}: ${TIPO_LOGO[l.tipo] ?? l.tipo}`}
+                            aria-pressed={i === indiceActual}
+                            className="block size-20 overflow-hidden rounded-[8px] bg-white transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
+                            style={{ boxShadow: i === indiceActual ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
+                          >
+                            <img src={l.imagen} alt="" className="size-full object-contain" />
+                          </button>
+                          {gustos && (
+                            <MeGusta
+                              activo={gustos.logos.includes(i)}
+                              onClick={() => gustos.onLogo(i)}
+                              que={`la propuesta de logo ${i + 1}`}
+                              className="absolute -top-2 -right-2 size-7 bg-white text-[#1E1E1C] shadow-sm"
+                              tam="size-3.5"
+                            />
+                          )}
+                        </span>
                       ))}
+                      {logo.isotipo_svg && (
+                        <button
+                          type="button"
+                          onClick={() => onElegir("simbolo-nombre")}
+                          aria-label="Elegir el símbolo con tu nombre"
+                          aria-pressed={simbolo === "simbolo-nombre"}
+                          className="flex h-20 items-center rounded-[8px] px-3 transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
+                          style={{ boxShadow: simbolo === "simbolo-nombre" ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
+                        >
+                          <Isotipo identidad={identidad} color={c.principal} chico />
+                        </button>
+                      )}
+                      {logo.isotipo_svg && (
+                        <span className="relative">
+                          <button
+                            type="button"
+                            onClick={() => onElegir("simbolo")}
+                            aria-label="Elegir solo el símbolo"
+                            aria-pressed={soloSimbolo}
+                            className="grid size-20 place-items-center rounded-[8px] p-3 transition-transform duration-300 ease-brandia hover:-translate-y-0.5"
+                            style={{ boxShadow: soloSimbolo ? `0 0 0 2px ${c.texto}` : `0 0 0 1px ${c.texto}26` }}
+                          >
+                            <Simbolo svg={logo.isotipo_svg} className="size-full" />
+                          </button>
+                          {gustos && (
+                            <MeGusta
+                              activo={gustos.logos.includes("simbolo")}
+                              onClick={() => gustos.onLogo("simbolo")}
+                              que="el símbolo"
+                              className="absolute -top-2 -right-2 size-7 bg-white text-[#1E1E1C] shadow-sm"
+                              tam="size-3.5"
+                            />
+                          )}
+                        </span>
+                      )}
                     </div>
+                    <p className="mt-2 text-[13px] opacity-70">
+                      El que elijas es el que va en tu feed, tus productos y tus archivos.
+                    </p>
                   </>
                 )}
               </div>
@@ -235,7 +364,30 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
             <hr className="my-10 border-0 border-t" style={{ borderColor: `${c.texto}26` }} />
           </>
         )}
-        <Subtitulo>El símbolo, para aplicar en todos lados</Subtitulo>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Subtitulo>El símbolo, para aplicar en todos lados</Subtitulo>
+          {logo.isotipo_svg && (
+            <span className="flex items-center gap-2">
+              {gustos && (
+                <MeGusta
+                  activo={gustos.logos.includes("simbolo")}
+                  onClick={() => gustos.onLogo("simbolo")}
+                  que="el símbolo"
+                  className="size-9"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => onElegir("simbolo-nombre")}
+                disabled={simbolo === "simbolo-nombre"}
+                className="inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold transition-opacity duration-300 ease-brandia hover:opacity-80 disabled:opacity-60"
+                style={{ boxShadow: `inset 0 0 0 1.5px ${c.texto}` }}
+              >
+                {simbolo === "simbolo-nombre" ? "Es tu logo" : "Usar como logo"}
+              </button>
+            </span>
+          )}
+        </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div
             className="grid min-h-40 place-items-center rounded-[10px] p-6"
@@ -247,7 +399,10 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
             <Isotipo identidad={identidad} color={textoSobre(fondoSimbolo, paleta)} />
           </div>
         </div>
-        {logo.explicacion && <p className="mt-5 max-w-[40em] text-[15px] leading-relaxed opacity-85">{logo.explicacion}</p>}
+        {logo.explicacion && !simbolo && (
+          <p className="mt-5 max-w-[40em] text-[15px] leading-relaxed opacity-85">{logo.explicacion}</p>
+        )}
+        {extra?.logo}
       </Seccion>
 
       {/* Paleta */}
@@ -263,6 +418,14 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
                 boxShadow: contraste(color.hex, c.fondo) < 1.3 ? `inset 0 0 0 1px ${c.texto}33` : undefined,
               }}
             >
+              {gustos && (
+                <MeGusta
+                  activo={gustos.colores.includes(color.hex.toLowerCase())}
+                  onClick={() => gustos.onColor(color.hex.toLowerCase())}
+                  que={`el color ${color.nombre}`}
+                  className="mb-auto -mt-1 -ml-1 size-9 self-start"
+                />
+              )}
               <b className="font-semibold">{color.nombre}</b>
               <span className="uppercase opacity-80">{color.hex}</span>
               <span className="opacity-80">{color.rol}</span>
@@ -270,6 +433,7 @@ export function Brandbook({ identidad, logos }: { identidad: IdentidadIA; logos:
           ))}
         </div>
         <p className="mt-6 max-w-[40em] text-[15px] leading-relaxed opacity-85">{estilo.uso_de_colores}</p>
+        {extra?.paleta}
       </Seccion>
 
       {/* Tipografías */}
