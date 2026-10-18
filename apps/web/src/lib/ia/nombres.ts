@@ -69,6 +69,12 @@ Reglas:
 - Que no sea una marca conocida ni el nombre de una cadena grande.
 - Respetá palabras_no, no_parecerse_a y las restricciones de la ficha.
 - Si la ficha ya tiene nombre, al menos dos propuestas lo usan o lo combinan con lo que hace el negocio (por ejemplo, el apellido más el oficio).
+
+Profesionales (médicas, psicólogos, fonoaudiólogas, abogados, contadoras, arquitectos, nutricionistas, odontólogos… que trabajan con su propio nombre):
+- La primera propuesta es su nombre con el título abreviado, como se usa en Uruguay: «Lic. Sofía Méndez», «Dra. Ana Pérez», «Cr. Juan Gómez», «Arq. …», «Esc. …». Si la ficha no dice el título, usá el nombre y apellido solos. Estrategia: combinacion.
+- Las demás son profesionales y cálidas: el apellido con la especialidad («Méndez Fonoaudiología»), un consultorio o estudio con nombre sobrio («Espacio Méndez», «Consultorio Parque Batlle»), una sigla con sus iniciales o una palabra con significado claro y serio.
+- Nada de juegos de palabras ni palabras inventadas pegadas al nombre de la persona («Sofía Méndez Palavoz»): restan seriedad. Una palabra inventada va sola, nunca junto al nombre, y como mucho una de las cinco.
+- Para negocios que no son una persona (un local, una marca de productos), los nombres creativos siguen como siempre.
 - de_donde_sale explica el origen en una frase. historia cuenta cómo ese nombre ayuda a contar el negocio, citando algo concreto de la ficha (el barrio, el público, el diferencial, cómo empezó).
 - Español rioplatense, simple, sin jerga de marketing.
 
