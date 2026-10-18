@@ -20,6 +20,7 @@ import { Direcciones } from "./direcciones";
 import { OtrosLogos } from "./otros-logos";
 import { Nombres } from "./nombres";
 import { OtraPaleta, type PaletaNueva, type VersionPaleta } from "./otra-paleta";
+import { limpiarSimbolo, logoParaEnviar, useVersiones } from "./versiones";
 import {
   CLAVE_DIRECCIONES,
   CLAVE_IDENTIDAD,
@@ -28,6 +29,7 @@ import {
   direccionPura,
   type IdentidadIA,
   type LogoElegido,
+  logoDeMarca,
   type MarcaGuardada,
   type PropuestaLogo,
   recolorearSvg,
@@ -270,6 +272,52 @@ export function GenerarMarca() {
     },
     [ficha],
   );
+
+  // Las 4 versiones del logo elegido (brandbook y descargas). Si el elegido es una propuesta de Recraft, su
+  // símbolo solo lo separa la IA: UNA vez por logo, cuando se elige (o al abrir la marca con ese elegido),
+  // y queda guardado en la propuesta. Si falla, queda marcado y no se vuelve a pedir solo: hay un botón.
+  const [separando, setSeparando] = useState<number | null>(null);
+  const simbolosPedidos = useRef(new Set<string>());
+  const lista = estado.tipo === "lista" ? estado : null;
+  const logoElegido = lista ? logoDeMarca(lista.logos, lista.elegido) : null;
+  const indiceElegido = lista && logoElegido ? lista.logos.indexOf(logoElegido) : -1;
+  const versiones = useVersiones(lista?.identidad ?? null, logoElegido, separando !== null && separando === indiceElegido);
+
+  async function separarSimbolo(l: Lista, i: number, aMano = false) {
+    const logo = l.logos[i];
+    if (!logo || separando !== null) return;
+    const clave = `${i}:${logo.imagen.slice(-40)}`;
+    if (!aMano) {
+      if (logo.simbolo || logo.simboloFallo || simbolosPedidos.current.has(clave)) return;
+      if (!puedoArrancarSolo("logo-simbolo")) return;
+    }
+    simbolosPedidos.current.add(clave);
+    setSeparando(i);
+    let simbolo: string | null = null;
+    try {
+      const { imagen } = await pedir<{ imagen: string }>("/api/logo/simbolo", {
+        logo: await logoParaEnviar(logo.imagen),
+        nombre: l.identidad.nombre,
+        tipo: logo.tipo,
+      });
+      simbolo = await limpiarSimbolo(imagen);
+    } catch (e) {
+      console.error("[logo-simbolo]", e);
+    }
+    // Si sale mal, se queda el que había (si había) y se marca para no volver a pedirlo solo
+    actualizar((actual) => ({
+      ...actual,
+      logos: actual.logos.map((x, j) =>
+        j === i ? { ...x, simbolo: simbolo ?? x.simbolo, simboloFallo: !simbolo && !x.simbolo } : x,
+      ),
+    }));
+    setSeparando(null);
+  }
+
+  // Corre cuando cambia el logo elegido o termina una separación (nunca en bucle: ver separarSimbolo)
+  useEffect(() => {
+    if (lista && indiceElegido >= 0 && separando === null) void separarSimbolo(lista, indiceElegido);
+  }, [indiceElegido, separando, lista?.logos.length]);
 
   /** La ficha con el nombre final y la dirección completa de esta marca, para volver a pedirle a la IA */
   function contexto(l: Lista) {
@@ -625,6 +673,9 @@ export function GenerarMarca() {
               logos={estado.logos}
               elegido={estado.elegido}
               onElegir={(elegido) => actualizar((l) => ({ ...l, elegido }))}
+              versiones={versiones}
+              separando={separando !== null && separando === indiceElegido}
+              onReintentarSimbolo={indiceElegido >= 0 ? () => void separarSimbolo(estado, indiceElegido, true) : undefined}
               gustos={{
                 colores: estado.coloresGustan,
                 onColor: (hex) => actualizar((l) => ({ ...l, coloresGustan: alternar(l.coloresGustan, hex) })),
@@ -657,7 +708,7 @@ export function GenerarMarca() {
             />
             <div className="mt-4 flex flex-col gap-4">
               <Controles comprobaciones={estado.identidad.comprobaciones} />
-              <Descargas identidad={estado.identidad} logos={estado.logos} elegido={estado.elegido} />
+              <Descargas identidad={estado.identidad} versiones={versiones} />
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/crear/contenido" className={buttonVariants({ size: "lg" })}>

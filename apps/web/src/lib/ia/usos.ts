@@ -34,6 +34,7 @@ export const USOS: Record<Paso, Uso[]> = {
     { modelo: MODELO_DIBUJO_LOGO, para: "Dibuja los logos" },
     { modelo: MODELO_DIBUJO_LOGO_RESPALDO, para: "Dibuja los logos si falla el principal", respaldo: true },
   ],
+  "logo-simbolo": [{ modelo: MODELO_DIBUJO_LOGO_RESPALDO, para: "Le saca el texto al logo elegido: queda solo el símbolo" }],
   paleta: [{ modelo: MODELO_PALETA, para: "Propone otra paleta según lo que pide la persona" }],
   "contenidos-lote": [
     { modelo: MODELO_PLAN, para: "Planifica el mes" },

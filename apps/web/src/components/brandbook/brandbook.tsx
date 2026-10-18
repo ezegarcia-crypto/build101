@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import { MeGusta } from "@/components/me-gusta";
 
 import s from "../entrevista/entrevista.module.css";
+import { TITULOS, useVersiones, type Versiones } from "./versiones";
 import {
   cargarFuentes,
   contraste,
-  fondoParaSimbolo,
   fuente,
   type IdentidadIA,
   type LogoElegido,
@@ -126,6 +126,69 @@ function LogoPrincipal({
   return <Isotipo identidad={identidad} color={c.principal} grande />;
 }
 
+/** Las 4 versiones del logo elegido: la entrega base. Salen de lo que se eligió arriba, nunca de otra marca */
+function VersionesDelLogo({
+  versiones,
+  c,
+  separando,
+  onReintentar,
+}: {
+  versiones: Versiones | null;
+  c: Colores;
+  separando: boolean;
+  onReintentar?: () => void;
+}) {
+  const claves = ["completo", "nombre", "simbolo", "negativo"] as const;
+  const aviso = versiones?.aviso;
+  return (
+    <div>
+      <Subtitulo>Tu logo, en sus 4 versiones</Subtitulo>
+      <p className="mt-1 max-w-[40em] text-[13px] opacity-70">
+        Salen del logo que elegiste. Son las que van en tus archivos: completo, solo el nombre, solo el símbolo y en
+        negativo, para fondos oscuros.
+      </p>
+      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {claves.map((clave) => {
+          const v = versiones?.lista.find((x) => x.clave === clave);
+          return (
+            <figure key={clave} className="m-0">
+              <div
+                className="relative aspect-[4/3] rounded-[10px]"
+                style={{ background: v?.fondo ?? undefined, boxShadow: v?.fondo ? undefined : `inset 0 0 0 1px ${c.texto}22` }}
+              >
+                {v ? (
+                  <img
+                    src={v.imagen}
+                    alt={`Tu logo: ${v.titulo.toLowerCase()}`}
+                    className="absolute inset-[14%] size-[72%] object-contain"
+                  />
+                ) : (
+                  <span
+                    className={`absolute inset-[14%] rounded-[6px] ${clave === "simbolo" && separando ? "animate-pulse" : ""}`}
+                    style={{ background: `${c.texto}0f` }}
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+              <figcaption className="mt-2 text-[13px] font-semibold">{TITULOS[clave]}</figcaption>
+            </figure>
+          );
+        })}
+      </div>
+      {aviso && (
+        <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]" role="status">
+          <span className={separando ? "animate-pulse" : "opacity-80"}>{aviso}</span>
+          {!separando && onReintentar && (
+            <button type="button" onClick={onReintentar} className="font-semibold underline underline-offset-4">
+              Separar el símbolo de mi logo
+            </button>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function Lista({ items, tachada }: { items: string[]; tachada?: boolean }) {
   return (
     <ul className={`mt-2 space-y-2 text-[15px] leading-relaxed ${tachada ? "opacity-80" : ""}`}>
@@ -146,6 +209,9 @@ export function Brandbook({
   onElegir,
   gustos,
   extra,
+  versiones: dadas,
+  separando = false,
+  onReintentarSimbolo,
 }: {
   identidad: IdentidadIA;
   logos: PropuestaLogo[];
@@ -161,19 +227,27 @@ export function Brandbook({
   };
   /** Controles de la app que van dentro de una sección (por ejemplo, pedir otra paleta) */
   extra?: { logo?: React.ReactNode; paleta?: React.ReactNode };
+  /** Las 4 versiones del logo elegido, si ya las armó la pantalla (si no, se arman acá) */
+  versiones?: Versiones | null;
+  /** Si la IA está separando el símbolo del logo elegido */
+  separando?: boolean;
+  /** Volver a pedirle a la IA el símbolo del logo elegido (a mano, si salió mal) */
+  onReintentarSimbolo?: () => void;
 }) {
   const { nombre, eslogan, esencia, voz, estilo, brandbook, paleta, tipografias, logo } = identidad;
   const c = rolesDe(paleta);
   const titulos = fuente(tipografias.titulos, "serif");
   const cuerpo = fuente(tipografias.texto, "sans-serif");
   const sobrePrincipal = textoSobre(c.principal, paleta);
-  const fondoSimbolo = fondoParaSimbolo(logo.isotipo_svg, paleta, c.fondo, c.principal);
   // El símbolo elegido como logo (solo o con el nombre); si la marca no tiene símbolo, va la propuesta
   const simbolo = esSimbolo(elegido) && logo.isotipo_svg ? elegido : null;
   const soloSimbolo = simbolo === "simbolo";
   const logoActual = simbolo ? null : logoDeMarca(logos, elegido);
   const indiceActual = logoActual ? logos.indexOf(logoActual) : -1;
   const opciones = logos.length + (logo.isotipo_svg ? 1 : 0);
+  // Las 4 versiones salen de lo elegido arriba: si la pantalla ya las armó (para las descargas), van esas
+  const propias = useVersiones(identidad, logoActual, separando, dadas === undefined);
+  const versiones = dadas === undefined ? propias : dadas;
 
   useEffect(() => cargarFuentes(identidad.fuentes_url), [identidad.fuentes_url]);
 
@@ -364,44 +438,7 @@ export function Brandbook({
             <hr className="my-10 border-0 border-t" style={{ borderColor: `${c.texto}26` }} />
           </>
         )}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Subtitulo>El símbolo, para aplicar en todos lados</Subtitulo>
-          {logo.isotipo_svg && (
-            <span className="flex items-center gap-2">
-              {gustos && (
-                <MeGusta
-                  activo={gustos.logos.includes("simbolo")}
-                  onClick={() => gustos.onLogo("simbolo")}
-                  que="el símbolo"
-                  className="size-9"
-                />
-              )}
-              <button
-                type="button"
-                onClick={() => onElegir("simbolo-nombre")}
-                disabled={simbolo === "simbolo-nombre"}
-                className="inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold transition-opacity duration-300 ease-brandia hover:opacity-80 disabled:opacity-60"
-                style={{ boxShadow: `inset 0 0 0 1.5px ${c.texto}` }}
-              >
-                {simbolo === "simbolo-nombre" ? "Es tu logo" : "Usar como logo"}
-              </button>
-            </span>
-          )}
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div
-            className="grid min-h-40 place-items-center rounded-[10px] p-6"
-            style={{ boxShadow: `inset 0 0 0 1px ${c.texto}22` }}
-          >
-            <Isotipo identidad={identidad} color={c.principal} />
-          </div>
-          <div className="grid min-h-40 place-items-center rounded-[10px] p-6" style={{ background: fondoSimbolo }}>
-            <Isotipo identidad={identidad} color={textoSobre(fondoSimbolo, paleta)} />
-          </div>
-        </div>
-        {logo.explicacion && !simbolo && (
-          <p className="mt-5 max-w-[40em] text-[15px] leading-relaxed opacity-85">{logo.explicacion}</p>
-        )}
+        <VersionesDelLogo versiones={versiones} c={c} onReintentar={onReintentarSimbolo} separando={separando} />
         {extra?.logo}
       </Seccion>
 
