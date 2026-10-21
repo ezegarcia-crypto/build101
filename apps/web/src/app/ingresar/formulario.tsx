@@ -53,6 +53,14 @@ export function Formulario() {
     });
   }
 
+  function pedirOtro() {
+    setError("");
+    empezar(async () => {
+      const r = await pedirCodigo(correo);
+      if (!r.ok) setError(r.error);
+    });
+  }
+
   function cambiarCorreo() {
     setPaso("correo");
     setCodigo("");
@@ -125,7 +133,6 @@ export function Formulario() {
                 autoComplete="one-time-code"
                 autoFocus
                 inputMode="numeric"
-                maxLength={6}
                 placeholder="······"
                 value={codigo}
                 onChange={(e) => {
@@ -154,7 +161,7 @@ export function Formulario() {
             <button
               type="button"
               disabled={cargando}
-              onClick={() => empezar(async () => void (await pedirCodigo(correo)))}
+              onClick={pedirOtro}
               className="font-semibold text-muted-foreground transition-colors duration-300 ease-brandia hover:text-foreground"
             >
               Mandame otro código
