@@ -68,17 +68,27 @@ function bloqueVoz(identidad: Kit): string {
 /** Una pieza de un feed anterior que a la persona le gustó */
 export type Gusto = { formato: string; pilar: string; idea: string };
 
+/** El mes completo del suscriptor: cuántas semanas y entre qué fechas (por ejemplo "lunes 26 de octubre") */
+export type MesPlan = { semanas: number; desde: string; hasta: string };
+
 export function promptPlanificador(
   identidad: Kit,
   brief: Brief,
   mezcla: Record<IdFormato, number>,
   gustaron: Gusto[] = [],
+  mes?: MesPlan,
 ): string {
   const total = Object.values(mezcla).reduce((a, b) => a + b, 0);
   const formatos = (Object.keys(mezcla) as IdFormato[])
     .filter((f) => mezcla[f] > 0)
     .map((f) => `- ${mezcla[f]} × ${f} (${FORMATOS[f].nombre}): ${FORMATOS[f].para_que}`)
     .join("\n");
+  const porSemana = mes
+    ? (Object.keys(mezcla) as IdFormato[])
+        .filter((f) => mezcla[f] > 0)
+        .map((f) => `${mezcla[f] / mes.semanas} ${FORMATOS[f].nombre.toLowerCase()}`)
+        .join(", ")
+    : "";
 
   return `Sos el estratega de contenidos de BrandIA. Armás el plan de redes de un negocio chico o mediano, con su marca ya definida.
 
@@ -92,13 +102,24 @@ ${bloqueVoz(identidad)}
 1. Entre 3 y 4 pilares: los tipos de contenido que esta marca necesita para que la conozcan, le crean y le compren. Propios de ESTE negocio (en una panadería, "El horno por dentro"; nunca "Contenido de valor").
 2. Exactamente ${total} piezas, con esta mezcla:
 ${formatos}
-3. Para cada pieza: el pilar, el objetivo (conocer, confiar, vender o comunidad), la idea en una frase concreta, y el día y la hora en que conviene publicarla para su cliente.
+3. Para cada pieza: el pilar, el objetivo (conocer, confiar, vender o comunidad), la idea en una frase concreta, y el día y la hora en que conviene publicarla para su cliente.${
+    mes
+      ? `
+4. Es el plan de un mes entero: ${mes.semanas} semanas, del ${mes.desde} al ${mes.hasta}. Cada pieza lleva su semana (1 a ${mes.semanas}) y cada semana tiene la misma mezcla: ${porSemana}.`
+      : ""
+  }
 
 ## Reglas
 - Cada idea tiene que poder ser solo de este negocio: si sirve para cualquier otro del rubro, es demasiado genérica.
 - Repartí los objetivos: no todo es vender. Como mucho un tercio de las piezas vende directo.
 - Usá lo que el negocio contó. Si una idea necesita un dato que no dio (un precio, un horario, una fecha), igual podés proponerla: el redactor lo va a marcar para confirmar. Nunca lo inventes.
-- Repartí las piezas en la semana, sin dos el mismo día salvo una historia.
+- Repartí las piezas en la semana, sin dos el mismo día salvo una historia.${
+    mes
+      ? `
+- El mes cuenta una historia: que las semanas no se repitan. Variá los días, los ángulos y los pilares de una semana a otra, y no repitas ninguna idea en todo el mes.
+- Si en esas fechas hay algo propio del rubro o de la zona, podés usarlo, pero solo si estás seguro de la fecha. Ante la duda, no.`
+      : ""
+  }
 - Ids: p1, p2, p3… en el orden en que se publican.${
     gustaron.length
       ? `
@@ -130,7 +151,7 @@ ${bloqueVoz(identidad)}
 ## La pieza
 Formato: ${f.nombre} (${f.redes}), ${f.ancho}×${f.alto}.
 Pilar: ${item.pilar}${pilar ? ` — ${pilar.para_que}` : ""}.
-Objetivo: ${item.objetivo}. Se publica el ${item.dia} a las ${item.hora}.
+Objetivo: ${item.objetivo}. Se publica el ${item.dia}${item.semana ? ` de la semana ${item.semana} del mes` : ""} a las ${item.hora}.
 Idea: ${item.idea}
 
 ## Reglas del formato

@@ -85,6 +85,37 @@ eventos, cómo dibujar las piezas en pantalla, tiempos y costos) en `contenidos/
 
 **Es el motor elegido para el módulo B (decidido el 17/10).** Desde las pantallas: `POST /api/contenidos/lote` y `componerPieza` de `@/lib/ia/contenidos/componer`, como explica `contenidos/README.md`.
 
+### 6c. El mes completo del suscriptor · `POST /api/contenidos/mes`
+
+Para quien tiene el plan "Tu marca andando" (USD 29 por mes), BrandIA arma **todas las piezas del plan del mes**, no
+solo la primera semana. Quién es suscriptor lo decide `tieneSuscripcion()` en `lib/suscripcion.ts` (hoy, provisoria:
+solo el navegador del equipo). La pantalla lo pregunta con `GET /api/suscripcion`.
+
+- `POST /api/contenidos/mes` con `{ brief, identidad, estilo?, gustaron?, inicio }` (`inicio`: el próximo lunes,
+  AAAA-MM-DD, en la hora de la persona) → `{ id }` enseguida (202). Sin suscripción, 403.
+- El servidor lo arma solo, de a una semana (`lib/ia/contenidos/mes.ts`, `app/api/contenidos/mes/trabajo.ts`): la
+  semana 1 planifica el mes entero (24 piezas: 8 posteos, 4 carruseles, 8 historias y 4 reels, cada una con su semana,
+  día y hora) y escribe sus piezas con sus fotos; al terminar, el mismo servidor pide la semana siguiente
+  (`POST /api/contenidos/mes/seguir`, con las cookies de la persona). Usa el mismo motor del lote: `redactar` (con el
+  control de datos inventados y «[a confirmar]»), las fotos con la marca y el estilo elegido, y lo marcado con ♥.
+- Todo se guarda en Supabase Storage apenas sale (`lib/feed-mensual.ts`): el documento del mes en la carpeta privada
+  `feeds-mensuales` y las fotos en la pública `feeds-mensuales-fotos` (se crean solas). Corre con `after()` y sin la
+  señal del pedido (`enSegundoPlano` de `gastos.ts`): **cerrar la pestaña no lo corta**.
+- `GET /api/contenidos/mes?id=` → `{ mes, vivo, trabado, terminado, reintentable }`. La pantalla lo pide cada 4 s y lo
+  dibuja con el mismo `Feed` (`components/feed/mes.ts`). Si `trabado` (se cayó el servidor o no se encadenó la
+  semana), la pantalla pide seguir una vez por semana. `POST /api/contenidos/mes/seguir` con `{ id, reintentar: true }`
+  vuelve a pedir lo que no salió.
+- **Sin loops:** un solo servidor arma un mes a la vez (`mes.trabajo`, con señal de vida cada 20 s); cada semana se
+  empieza como mucho 3 veces; cada pieza o foto se pide como mucho 6 (2 al armar, 2 por cada "Reintentar").
+- Todo el mes es **una sola corrida** del paso `contenidos-mes` en `/costos` (`fijarCorrida(id)`), y cada semana queda
+  en `/pruebas` con lo que salió.
+
+**Tiempo y costo medidos (21/10, una marca de turismo, estilo editorial, en la compu):** el mes entero en **unos 4 minutos y medio**
+(la semana 1, con el plan, 1 min 50 s; las otras, 50 s a 1 min cada una). Salieron 24 de 24 piezas y 42 fotos, sin
+fallas. Costo que informó el Gateway llamada por llamada: **USD 1,10 el mes** (semana 1 con el plan USD 0,33; las otras
+USD 0,24 a 0,27). Con el plan a USD 29 por mes, la IA del mes es menos del 4 % del precio (más la marca, USD 1,10, una
+sola vez). Falta sumar Vercel y Supabase, que hoy son fijos.
+
 ### 6b. BranderIA · productos para el rubro · `POST /api/branderia/sugerir`
 
 `{ brief, marca: { nombre, eslogan }, ya?, gustan?, pedido?, cantidad? }` → `{ productos }`: los productos con la marca pensados para ese negocio (una pastelería: cajas de torta, etiquetas, stickers de cierre), con su porqué y cómo se ve la foto (`branderia.ts`). Al entrar, 10; después, 5 más por vuelta en la línea de los marcados con ♥, o lo que se pida en palabras. Nunca repite los de `ya`. La pantalla saca la foto de cada uno con `/api/branderia` y los muestra cuando están todas.

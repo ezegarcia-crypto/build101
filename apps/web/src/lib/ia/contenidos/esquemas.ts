@@ -36,8 +36,18 @@ export const planSchema = z.object({
   ),
 });
 
-export type Plan = z.infer<typeof planSchema>;
-export type ItemPlan = Plan["piezas"][number];
+export type Plan = Omit<z.infer<typeof planSchema>, "piezas"> & { piezas: ItemPlan[] };
+/** Una pieza del plan. `semana` (1 a 4) solo viene en el mes completo del suscriptor (planMesSchema). */
+export type ItemPlan = z.infer<typeof planSchema>["piezas"][number] & { semana?: number };
+
+/** El plan del mes completo (suscriptores): las mismas piezas, cada una con su semana. */
+export const planMesSchema = planSchema.extend({
+  piezas: z.array(
+    planSchema.shape.piezas.element.extend({
+      semana: z.number().int().describe("En qué semana del mes se publica: 1, 2, 3 o 4"),
+    }),
+  ),
+});
 
 // ── 2. Las piezas (las escribe el redactor, una por llamada) ─────────────────────────────────
 

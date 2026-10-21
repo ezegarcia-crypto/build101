@@ -114,3 +114,9 @@ export const FORMATOS_PROXIMOS: Record<IdFormatoProximo, { nombre: string; que_v
 
 /** La mezcla por defecto del lote de la demo: un feed que se ve completo con pocas piezas. */
 export const MEZCLA_DEMO: Record<IdFormato, number> = { post: 2, carrusel: 1, historia: 2, reel: 1 };
+
+/** El mes completo del suscriptor ("Tu marca andando"): cuatro semanas, cada una con la mezcla de la demo. */
+export const SEMANAS_MES = 4;
+export const MEZCLA_MES = Object.fromEntries(
+  Object.entries(MEZCLA_DEMO).map(([f, n]) => [f, n * SEMANAS_MES]),
+) as Record<IdFormato, number>;

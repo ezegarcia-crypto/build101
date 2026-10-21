@@ -17,6 +17,7 @@ import { Calendario } from "./calendario";
 import { archivosDePieza } from "./descargar-feed";
 import f from "./feed.module.css";
 import { Instagram } from "./instagram";
+import { fechaDePieza, fechaLocal, type InfoMes } from "./mes";
 
 // El feed de la marca, como se vería su perfil. Cada pieza la dibuja el compositor del motor
 // (componerPieza, sin IA) en SVG con los colores, las letras y el isotipo del cliente: el lienzo
@@ -34,6 +35,8 @@ export type Lote = {
   fallas: Record<string, string>;
   mensaje: string;
   fin: { segundos: number; imagenes: number } | null;
+  /** Solo en el mes completo del suscriptor (lo arma el servidor de a una semana, ver mes.ts) */
+  mes?: InfoMes;
 };
 
 const SIN_IMAGENES: Imagenes = {};
@@ -262,14 +265,15 @@ function Avisos({ pieza, fallasImagen }: { pieza: Pieza; fallasImagen: number })
   );
 }
 
-function Cabecera({ item, c }: { item: ItemPlan; c: Colores }) {
+function Cabecera({ item, c, inicio }: { item: ItemPlan; c: Colores; inicio?: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 pt-4 pb-3">
       <p className="text-[11px] font-semibold tracking-[0.14em] uppercase">
         {FORMATOS[item.formato].nombre} <span className="opacity-60">· {item.pilar}</span>
       </p>
       <p className="text-[12px] opacity-60" style={{ color: c.texto }}>
-        {item.dia} · {item.hora}
+        {inicio ? fechaDePieza(inicio, item).toLocaleDateString("es-UY", { weekday: "long", day: "numeric", month: "numeric" }) : item.dia} ·{" "}
+        {item.hora}
       </p>
     </div>
   );
@@ -326,8 +330,12 @@ function Acciones({
   );
 }
 
-function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario, n, meGusta, onMeGusta }: {
+function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario, n, meGusta, onMeGusta, inicio, generando }: {
   item: ItemPlan;
+  /** En el mes completo: el lunes en que empieza, para mostrar la fecha exacta */
+  inicio?: string;
+  /** Si el mes todavía se está armando (una pieza que falta puede estar en camino) */
+  generando?: boolean;
   pieza?: Pieza;
   kit: Kit;
   imagenes: Imagenes;
@@ -352,18 +360,28 @@ function TarjetaPieza({ item, pieza, kit, imagenes, fallas, usuario, n, meGusta,
       className={`${s.entra} flex scroll-mt-6 flex-col overflow-hidden rounded-[14px]`}
       style={{ background: c.fondo, color: c.texto, boxShadow: `0 0 0 1px ${c.texto}1f` }}
     >
-      <Cabecera item={item} c={c} />
+      <Cabecera item={item} c={c} inicio={inicio} />
 
       {!pieza ? (
         // Todavía no llegó: su lugar, con la idea del plan
         <div
-          className={`flex flex-col justify-end gap-2 p-5 ${fallo ? "" : "animate-pulse"}`}
+          className={`flex flex-col justify-end gap-2 p-5 ${fallo || (inicio && !generando) ? "" : "animate-pulse"}`}
           style={{ aspectRatio: alto ? "9 / 16" : "4 / 5", background: c.apoyo, color: c.texto }}
         >
           <p className="text-[15px] leading-snug" style={{ fontFamily: `"${kit.tipografias.titulos.familia}", serif` }}>
             {item.idea}
           </p>
-          <p className="text-[12px] opacity-70">{fallo ? "Esta pieza no salió. Probá generar otro feed." : "Escribiendo…"}</p>
+          <p className="text-[12px] opacity-70">
+            {fallo
+              ? inicio
+                ? "Esta pieza no salió. Podés reintentarla arriba."
+                : "Esta pieza no salió. Probá generar otro feed."
+              : inicio && !generando
+                ? "Esta pieza quedó sin armar."
+                : inicio
+                  ? "En camino: se arma con su semana."
+                  : "Escribiendo…"}
+          </p>
         </div>
       ) : (
         <>
@@ -412,6 +430,88 @@ function Avatar({ kit, logo, c }: { kit: Kit; logo: PropuestaLogo | null; c: Col
         <span style={{ fontFamily: `"${kit.tipografias.titulos.familia}", serif` }}>{kit.nombre[0]}</span>
       )}
     </span>
+  );
+}
+
+/** Las cuatro semanas del mes y en qué está cada una */
+function Semanas({ mes }: { mes: InfoMes }) {
+  const texto = { pendiente: "en espera", generando: "armándose", lista: "lista", fallo: "no salió" } as const;
+  return (
+    <ol className="flex flex-wrap gap-1.5" aria-label="Las semanas del mes">
+      {mes.semanas.map((s) => (
+        <li
+          key={s.semana}
+          className={`rounded-full border px-3 py-1 text-xs ${s.estado === "lista" ? "bg-foreground text-background" : "text-muted-foreground"} ${s.estado === "generando" ? "animate-pulse" : ""}`}
+        >
+          Semana {s.semana} · {texto[s.estado]}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** El mes completo del suscriptor: cuánto va, que se puede cerrar la pestaña y reintentar lo que no salió */
+function ProgresoMes({ lote, plan, mes, onReintentar }: { lote: Lote; plan: Plan; mes: InfoMes; onReintentar?: () => Promise<void> }) {
+  const [reintentando, setReintentando] = useState(false);
+  const total = plan.piezas.length;
+  const listas = plan.piezas.filter((p) => lote.piezas[p.id]).length;
+  const pedidas = Object.values(lote.piezas).reduce((n, p) => n + p.imagenes.length, 0);
+  const llegaron = Object.values(lote.imagenes).reduce((n, i) => n + Object.keys(i).length, 0);
+  const noSalieron = Object.keys(lote.fallas).filter((k) => k !== "plan").length;
+
+  if (mes.terminado) {
+    return (
+      <div className={`${s.entra} flex flex-col gap-3`}>
+        <Semanas mes={mes} />
+        <p className="text-sm text-muted-foreground">
+          Tu mes: {listas} de {total} piezas y {lote.fin?.imagenes ?? llegaron} imágenes
+          {lote.fin?.segundos ? `, en ${Math.max(1, Math.round(lote.fin.segundos / 60))} minutos` : ""}. Todo con tu marca.
+        </p>
+        {noSalieron > 0 && (
+          <div className="flex flex-wrap items-center gap-3 rounded-[14px] border bg-card p-4 text-sm">
+            <ImageOff className="size-4" aria-hidden="true" />
+            <span className="text-muted-foreground">
+              {noSalieron === 1 ? "Una pieza o imagen no salió." : `${noSalieron} piezas o imágenes no salieron.`}
+            </span>
+            {mes.reintentable && onReintentar ? (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={reintentando}
+                onClick={async () => {
+                  setReintentando(true);
+                  try {
+                    await onReintentar();
+                  } finally {
+                    setReintentando(false);
+                  }
+                }}
+              >
+                {reintentando ? "Pidiéndolas de nuevo…" : "Reintentar lo que no salió"}
+              </Button>
+            ) : (
+              <span className="text-muted-foreground">Ya las probamos varias veces: quedó el color de la marca.</span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+  const avance = (listas / total) * 0.5 + (pedidas ? (llegaron / pedidas) * 0.5 : 0);
+  return (
+    <div className={`${s.entra} flex flex-col gap-3 rounded-[14px] border bg-card p-4`}>
+      <Armando que="feed" mensaje={lote.mensaje} />
+      <Semanas mes={mes} />
+      <p className="text-sm text-muted-foreground tabular-nums">
+        {listas} de {total} piezas · {llegaron} de {pedidas || "…"} imágenes
+      </p>
+      <div className="h-1 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+        <div className="h-full origin-left bg-foreground transition-transform duration-500" style={{ transform: `scaleX(${Math.max(0.04, avance)})` }} />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Cada semana aparece apenas está. Podés recargar o cerrar la pestaña: BrandIA lo sigue armando.
+      </p>
+    </div>
   );
 }
 
@@ -611,7 +711,7 @@ function BajarFeed({ lote, kit, plan, generando }: { lote: Lote; kit: Kit; plan:
   );
 }
 
-export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meGusta, onMeGusta }: {
+export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meGusta, onMeGusta, onReintentar, onMesCompleto }: {
   lote: Lote;
   kit: Kit;
   plan: Plan;
@@ -622,6 +722,10 @@ export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meG
   /** Las piezas marcadas con ♥ (sin `onMeGusta`, por ejemplo en /pruebas, no se muestra el ♥) */
   meGusta?: string[];
   onMeGusta?: (id: string) => void;
+  /** Mes completo: vuelve a pedir lo que no salió */
+  onReintentar?: () => Promise<void>;
+  /** Para un suscriptor que está viendo una semana suelta: arma el mes completo */
+  onMesCompleto?: () => void;
 }) {
   const c = useMemo(() => coloresDeMarca(kit), [kit]);
   const titulos = `"${kit.tipografias.titulos.familia}", serif`;
@@ -657,9 +761,32 @@ export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meG
     for (const u of kit.fuentes) cargarFuentes(u);
   }, [kit.fuentes]);
 
+  const inicio = lote.mes?.inicio;
+  const grupos = useMemo(() => {
+    if (!inicio) return [{ semana: 1, titulo: null, fechas: "", items: plan.piezas }];
+    const corta = (d: Date) => d.toLocaleDateString("es-UY", { day: "numeric", month: "short" });
+    return [...new Set(plan.piezas.map((p) => p.semana ?? 1))]
+      .sort((a, b) => a - b)
+      .map((semana) => {
+        const lunes = fechaLocal(inicio);
+        lunes.setDate(lunes.getDate() + (semana - 1) * 7);
+        const domingo = new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + 6);
+        return {
+          semana,
+          titulo: `Semana ${semana}`,
+          fechas: `${corta(lunes)} al ${corta(domingo)}`,
+          items: plan.piezas.filter((p) => (p.semana ?? 1) === semana),
+        };
+      });
+  }, [inicio, plan.piezas]);
+
   return (
     <div className="flex flex-col gap-4">
-      <Progreso lote={lote} plan={plan} generando={generando} />
+      {lote.mes ? (
+        <ProgresoMes lote={lote} plan={plan} mes={lote.mes} onReintentar={onReintentar} />
+      ) : (
+        <Progreso lote={lote} plan={plan} generando={generando} />
+      )}
 
       {/* Cómo quedaría como perfil de Instagram, dentro de un celular */}
       <Instagram
@@ -705,30 +832,44 @@ export function Feed({ lote: llegado, kit, plan, identidad, logo, generando, meG
               </li>
             ))}
           </ul>
-          <Calendario plan={plan} piezas={lote.piezas} c={c} titulos={titulos} />
+          <Calendario plan={plan} piezas={lote.piezas} c={c} titulos={titulos} inicio={lote.mes?.inicio} onMesCompleto={onMesCompleto} />
         </div>
       </section>
 
       <Pendientes lote={lote} plan={plan} kit={kit} onCorregidas={corregir} />
       <BajarFeed lote={lote} kit={kit} plan={plan} generando={generando} />
 
-      {/* Las piezas, en el orden del plan */}
-      <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ fontFamily: `"${kit.tipografias.texto.familia}", sans-serif` }}>
-        {plan.piezas.map((item, i) => (
-          <TarjetaPieza
-            key={item.id}
-            n={i + 1}
-            meGusta={meGusta?.includes(item.id) ?? false}
-            onMeGusta={onMeGusta ? () => onMeGusta(item.id) : undefined}
-            item={item}
-            pieza={lote.piezas[item.id]}
-            kit={kit}
-            imagenes={lote.imagenes[item.id] ?? SIN_IMAGENES}
-            fallas={lote.fallas}
-            usuario={usuario}
-          />
-        ))}
-      </div>
+      {/* Las piezas, en el orden del plan. En el mes completo, una tanda por semana */}
+      {grupos.map((g) => (
+        <section key={g.semana} aria-label={g.titulo ?? "Las piezas"} className="flex flex-col gap-4">
+          {g.titulo && (
+            <h2 className="mt-4 flex flex-wrap items-baseline gap-x-3 text-2xl">
+              {g.titulo}
+              <span className="text-sm text-muted-foreground" style={{ fontFamily: "inherit" }}>
+                {g.fechas}
+              </span>
+            </h2>
+          )}
+          <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3" style={{ fontFamily: `"${kit.tipografias.texto.familia}", sans-serif` }}>
+            {g.items.map((item) => (
+              <TarjetaPieza
+                key={item.id}
+                n={plan.piezas.indexOf(item) + 1}
+                meGusta={meGusta?.includes(item.id) ?? false}
+                onMeGusta={onMeGusta ? () => onMeGusta(item.id) : undefined}
+                item={item}
+                pieza={lote.piezas[item.id]}
+                kit={kit}
+                imagenes={lote.imagenes[item.id] ?? SIN_IMAGENES}
+                fallas={lote.fallas}
+                usuario={usuario}
+                inicio={lote.mes?.inicio}
+                generando={generando}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

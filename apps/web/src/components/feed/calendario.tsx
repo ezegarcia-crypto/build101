@@ -7,9 +7,13 @@ import type { Colores } from "@/lib/ia/contenidos/componer";
 import type { ItemPlan, Pieza, Plan } from "@/lib/ia/contenidos/esquemas";
 import { FORMATOS } from "@/lib/ia/contenidos/formatos";
 
+import { fechaLocal } from "./mes";
+
 // El calendario del mes, armado con el plan que generó la IA: cada pieza cae en su día y su hora (sin IA nueva).
-// La primera semana es la del lote que se acaba de generar, desde el próximo lunes. Las otras tres quedan para el
-// plan mensual: se ven, pero vacías, con un link a los planes. Va en el lienzo del cliente, con sus colores.
+// Sin suscripción, la primera semana es la del lote que se acaba de generar, desde el próximo lunes, y las otras
+// tres quedan para el plan mensual: se ven, pero vacías, con un link a los planes (o, si la persona es suscriptora,
+// un botón para armar el mes completo). En el mes completo (las piezas traen `semana`), las cuatro semanas
+// están llenas, desde el lunes que quedó guardado con el mes. Va en el lienzo del cliente, con sus colores.
 
 const DIAS: ItemPlan["dia"][] = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
 const SEMANAS = 4;
@@ -49,17 +53,26 @@ function Chip({ item, lista, c, chico }: { item: ItemPlan; lista: boolean; c: Co
   );
 }
 
-export function Calendario({ plan, piezas, c, titulos }: {
+export function Calendario({ plan, piezas, c, titulos, inicio: inicioMes, onMesCompleto }: {
   plan: Plan;
   piezas: Record<string, Pieza>;
   c: Colores;
   /** La familia de los títulos de la marca, para el CSS */
   titulos: string;
+  /** Mes completo: el lunes en que empieza (AAAA-MM-DD). Sin él, es una semana suelta */
+  inicio?: string;
+  /** Suscriptor viendo una semana suelta: arma el mes completo */
+  onMesCompleto?: () => void;
 }) {
-  const inicio = useMemo(() => proximoLunes(), []);
+  const inicio = useMemo(() => (inicioMes ? fechaLocal(inicioMes) : proximoLunes()), [inicioMes]);
+  const mesCompleto = Boolean(inicioMes);
+  // "semana:día" → las piezas de ese día, por hora. Una semana suelta es la semana 1
   const porDia = useMemo(() => {
-    const m = new Map<ItemPlan["dia"], ItemPlan[]>();
-    for (const p of plan.piezas) m.set(p.dia, [...(m.get(p.dia) ?? []), p]);
+    const m = new Map<string, ItemPlan[]>();
+    for (const p of plan.piezas) {
+      const k = `${p.semana ?? 1}:${p.dia}`;
+      m.set(k, [...(m.get(k) ?? []), p]);
+    }
     for (const lista of m.values()) lista.sort((a, b) => a.hora.localeCompare(b.hora));
     return m;
   }, [plan.piezas]);
@@ -75,7 +88,7 @@ export function Calendario({ plan, piezas, c, titulos }: {
           Tu calendario · {meses}
         </p>
         <p className="text-[13px] opacity-70">
-          {plan.piezas.length} piezas la primera semana · tocá una para verla
+          {plan.piezas.length} piezas {mesCompleto ? `en ${SEMANAS} semanas` : "la primera semana"} · tocá una para verla
         </p>
       </div>
 
@@ -90,13 +103,13 @@ export function Calendario({ plan, piezas, c, titulos }: {
           {Array.from({ length: SEMANAS * 7 }, (_, i) => {
             const fecha = masDias(inicio, i);
             const semana = Math.floor(i / 7);
-            const items = semana === 0 ? (porDia.get(DIAS[i % 7]) ?? []) : [];
+            const items = porDia.get(`${semana + 1}:${DIAS[i % 7]}`) ?? [];
             const primero = i === 0 || fecha.getDate() === 1;
             return (
               <li
                 key={i}
                 aria-label={fechaLarga(fecha)}
-                className={`flex min-h-24 flex-col gap-1 rounded-[4px] p-1.5 ${semana > 0 ? "opacity-45" : ""}`}
+                className={`flex min-h-24 flex-col gap-1 rounded-[4px] p-1.5 ${semana > 0 && !mesCompleto ? "opacity-45" : ""}`}
                 style={{ boxShadow: `inset 0 0 0 1px ${linea}` }}
               >
                 <span className="text-[13px] leading-none" style={{ fontFamily: titulos }}>
@@ -112,13 +125,19 @@ export function Calendario({ plan, piezas, c, titulos }: {
         </ol>
       </div>
 
-      {/* Celular: la primera semana como agenda, día por día */}
+      {/* Celular: como agenda, día por día (en el mes completo, las cuatro semanas) */}
       <ol className="mt-4 flex flex-col gap-2 sm:hidden">
-        {DIAS.map((d, i) => {
-          const items = porDia.get(d) ?? [];
+        {Array.from({ length: (mesCompleto ? SEMANAS : 1) * 7 }, (_, i) => {
+          const semana = Math.floor(i / 7) + 1;
+          const items = porDia.get(`${semana}:${DIAS[i % 7]}`) ?? [];
           if (!items.length) return null;
+          const primeroDeLaSemana = mesCompleto && !DIAS.slice(0, i % 7).some((d) => porDia.has(`${semana}:${d}`));
           return (
-            <li key={d} className="flex gap-3 rounded-[4px] p-2.5" style={{ boxShadow: `inset 0 0 0 1px ${linea}` }}>
+            <li key={i} className="flex flex-col gap-2">
+              {primeroDeLaSemana && (
+                <span className="pt-2 text-[11px] font-semibold tracking-[0.14em] uppercase opacity-60">Semana {semana}</span>
+              )}
+              <span className="flex gap-3 rounded-[4px] p-2.5" style={{ boxShadow: `inset 0 0 0 1px ${linea}` }}>
               <span className="w-20 shrink-0 text-[13px] leading-tight first-letter:uppercase" style={{ fontFamily: titulos }}>
                 {fechaLarga(masDias(inicio, i)).replace(/ de [a-záéíóú]+$/, "")}
               </span>
@@ -127,17 +146,26 @@ export function Calendario({ plan, piezas, c, titulos }: {
                   <Chip key={p.id} item={p} lista={!!piezas[p.id]} c={c} />
                 ))}
               </span>
+              </span>
             </li>
           );
         })}
       </ol>
 
-      <p className="mt-4 text-[13px] leading-relaxed opacity-75">
-        Las otras semanas las arma BrandIA con tu plan mensual.{" "}
-        <Link href="/crear/planes" className="font-semibold underline underline-offset-2" style={{ color: c.texto }}>
-          Ver los planes
-        </Link>
-      </p>
+      {!mesCompleto && (
+        <p className="mt-4 text-[13px] leading-relaxed opacity-75">
+          Las otras semanas las arma BrandIA con tu plan mensual.{" "}
+          {onMesCompleto ? (
+            <button type="button" onClick={onMesCompleto} className="font-semibold underline underline-offset-2" style={{ color: c.texto }}>
+              Armar mi mes completo
+            </button>
+          ) : (
+            <Link href="/crear/planes" className="font-semibold underline underline-offset-2" style={{ color: c.texto }}>
+              Ver los planes
+            </Link>
+          )}
+        </p>
+      )}
     </section>
   );
 }

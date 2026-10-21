@@ -102,6 +102,12 @@ un componente de cliente. Devuelve `[{ clave, svg, ancho, alto, segundos? }]`. P
 - **`estado: "revisar"`** y `observaciones`: mostrarlas junto a la pieza ("revisá esto antes de publicar").
 - **`datos_a_confirmar`:** mostrarlos como pendientes del cliente.
 
+### El mes completo del suscriptor: `POST /api/contenidos/mes`
+
+Lo mismo que el lote, pero las cuatro semanas del plan, armadas por el servidor de a una y guardadas en Supabase
+(`mes.ts` y `lib/feed-mensual.ts`). Las piezas del plan traen `semana` (1 a 4). Detalle, tiempos y costo medido en la
+sección 6c de `lib/ia/README.md`.
+
 ### Pasos sueltos
 
 - `POST /api/contenidos/plan` → `{ plan, uso }`. Mismo cuerpo que el lote.

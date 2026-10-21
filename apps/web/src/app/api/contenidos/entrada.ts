@@ -30,6 +30,21 @@ export const entradaLote = z.object({
   estilo: z.enum(ID_ESTILOS).optional(),
 });
 
+/** El mes completo del suscriptor: lo mismo que el lote, más el lunes en que empieza (en la hora del navegador) */
+export const entradaMes = z.object({
+  brief: briefSchema,
+  identidad: identidadEntradaSchema,
+  gustaron: gustaronSchema.optional(),
+  estilo: z.enum(ID_ESTILOS).optional(),
+  inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "El inicio va como AAAA-MM-DD"),
+});
+
+/** Seguir armando el mes (la semana que falta) o, con `reintentar`, volver a pedir lo que no salió */
+export const entradaSeguirMes = z.object({
+  id: z.string().regex(/^[a-f0-9-]{36}$/),
+  reintentar: z.boolean().optional(),
+});
+
 /** Una de las dos fotos de muestra para elegir el estilo (antes de generar el feed) */
 export const entradaMuestra = z.object({
   brief: briefSchema,

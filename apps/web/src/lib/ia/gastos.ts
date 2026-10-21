@@ -33,6 +33,7 @@ export const PASOS = {
   "contenidos-destacadas": { modulo: "B", nombre: "Íconos de las historias destacadas", unidad: "pedido" },
   "contenidos-completar": { modulo: "B", nombre: "Datos a confirmar aplicados a las piezas", unidad: "pedido" },
   "contenidos-muestra": { modulo: "B", nombre: "Foto de muestra para elegir el estilo", unidad: "foto" },
+  "contenidos-mes": { modulo: "B", nombre: "Mes completo del suscriptor", unidad: "mes" },
   "contenidos-simple": { modulo: "B", nombre: "Feed simple (retirado)", unidad: "feed" },
   "web-entrevista": { modulo: "B", nombre: "Entrevista de la web", unidad: "conversación" },
   "web-armar": { modulo: "B", nombre: "Web armada", unidad: "web" },
@@ -73,6 +74,8 @@ const POR_MINUTO: Record<Paso, number> = {
   "contenidos-completar": 15,
   // 2 fotos por marca nueva, una sola vez (la pantalla las guarda)
   "contenidos-muestra": 30,
+  // El mes del suscriptor: un pedido para empezarlo y uno por cada semana (lo encadena el servidor)
+  "contenidos-mes": 20,
   "contenidos-simple": 8,
   "web-entrevista": 90,
   "web-armar": 15,
@@ -150,6 +153,16 @@ function correr<A extends unknown[], R>(paso: Paso, pedido: Request | undefined,
 /** La señal del pedido en curso, para pasarla como `abortSignal` a cada llamada a la IA. */
 export function senalDelPedido() {
   return corridaActual.getStore()?.senal;
+}
+
+/**
+ * Para seguir trabajando después de responder (con `after`): el trabajo queda anotado a la misma corrida,
+ * pero sin la señal del pedido, así no se corta si la persona cierra la pestaña. Lo usa el mes del suscriptor.
+ */
+export function enSegundoPlano<T>(trabajo: () => Promise<T>) {
+  const actual = corridaActual.getStore();
+  const copia = actual ? { ...actual, senal: undefined } : undefined;
+  return () => (copia ? corridaActual.run(copia, trabajo) : trabajo());
 }
 
 /** Para agrupar varios pedidos en una sola corrida (por ejemplo, todos los mensajes de una conversación). */
