@@ -15,7 +15,7 @@ const LINKS: { href: Route; texto: string }[] = [
 ];
 
 const estiloLink = (activo: boolean) =>
-  `rounded-full px-2 py-1.5 text-sm font-semibold whitespace-nowrap no-underline transition-colors duration-300 ease-brandia sm:px-3 ${
+  `rounded-full px-1.5 py-1.5 text-sm font-semibold whitespace-nowrap no-underline transition-colors duration-300 ease-brandia sm:px-3 ${
     activo ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
   }`;
 
@@ -28,7 +28,7 @@ export default function Header() {
   const branderia = ruta?.startsWith("/crear/branderia") || ruta?.startsWith("/crear/proximamente/branderia");
   return (
     <header className="border-b">
-      <div className="mx-auto flex max-w-[1080px] items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-[1080px] items-center justify-between gap-2 px-4 py-3 sm:gap-3">
         {branderia ? (
           <Link href="/" aria-label="BranderIA, de BrandIA: inicio" className="flex h-7 shrink-0 items-center">
             <LogoBranderia className="text-[22px] sm:text-[28px]" />
@@ -36,11 +36,11 @@ export default function Header() {
         ) : (
           <Link href="/" aria-label="BrandIA, inicio" className="shrink-0">
             {/* El logo nunca se recrea: se usan los SVG originales de brandia/marca/logo */}
-            <img src="/marca/logo-horizontal.svg" alt="BrandIA" className="h-6 w-auto sm:h-7 dark:hidden" />
+            <img src="/marca/logo-horizontal.svg" alt="BrandIA" className="h-5 w-auto min-[400px]:h-6 sm:h-7 dark:hidden" />
             <img
               src="/marca/logo-horizontal-sobre-grafito.svg"
               alt="BrandIA"
-              className="hidden h-6 w-auto sm:h-7 dark:block"
+              className="hidden h-5 w-auto min-[400px]:h-6 sm:h-7 dark:block"
             />
           </Link>
         )}
