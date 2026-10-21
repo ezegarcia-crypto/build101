@@ -3,6 +3,7 @@ import { Fraunces, Instrument_Sans } from "next/font/google";
 
 import "../index.css";
 import { AvisoLimite } from "@/components/aviso-limite";
+import { SincronizarMarca } from "@/components/cuenta/sincronizar-marca";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 
@@ -56,6 +57,7 @@ export default function RootLayout({
             {children}
           </div>
           <AvisoLimite />
+          <SincronizarMarca />
         </Providers>
       </body>
     </html>

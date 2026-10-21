@@ -3,15 +3,21 @@ import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { LinkCuenta } from "./cuenta/link-cuenta";
 import { LogoBranderia } from "./logo-branderia";
 import { ModeToggle } from "./mode-toggle";
 
-// Los links de la barra en la app (/crear/...): lo que todavía no funciona y cuánto cuesta. Así quien prueba
-// la app llega a las dos pantallas desde cualquier paso del recorrido.
+// Los links de la barra en la app (/crear/...): lo que todavía no funciona, cuánto cuesta y la cuenta. Así quien
+// prueba la app llega a esas pantallas desde cualquier paso del recorrido.
 const LINKS: { href: Route; texto: string }[] = [
   { href: "/crear/proximamente", texto: "Lo que viene" },
   { href: "/crear/planes", texto: "Planes" },
 ];
+
+const estiloLink = (activo: boolean) =>
+  `rounded-full px-2 py-1.5 text-sm font-semibold whitespace-nowrap no-underline transition-colors duration-300 ease-brandia sm:px-3 ${
+    activo ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+  }`;
 
 export default function Header() {
   // Las webs publicadas de los clientes (/w/...) son de su marca: ahí no va la barra de BrandIA
@@ -48,14 +54,13 @@ export default function Header() {
                     key={l.href}
                     href={l.href}
                     aria-current={activo ? "page" : undefined}
-                    className={`rounded-full px-2 py-1.5 text-sm font-semibold whitespace-nowrap no-underline transition-colors duration-300 ease-brandia sm:px-3 ${
-                      activo ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    className={estiloLink(Boolean(activo))}
                   >
                     {l.texto}
                   </Link>
                 );
               })}
+              <LinkCuenta className={estiloLink} />
             </nav>
           )}
           <ModeToggle />
