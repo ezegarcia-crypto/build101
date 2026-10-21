@@ -37,7 +37,7 @@ async function activas(planes: Suscripcion["plan"][]) {
     .from("suscripciones")
     .select("id, plan, estado, hasta, prueba")
     .eq("usuario", usuario.user.id)
-    .eq("estado", "activa")
+    .in("estado", ["activa", "cancelada"])
     .in("plan", planes)
     .order("creado", { ascending: false });
   if (error) {
@@ -45,7 +45,14 @@ async function activas(planes: Suscripcion["plan"][]) {
     return [];
   }
   const ahora = Date.now();
-  return (data as Suscripcion[]).filter((s) => !s.hasta || new Date(s.hasta).getTime() + GRACIA_MS > ahora);
+  return (data as (Omit<Suscripcion, "estado"> & { estado: string })[])
+    .filter((s) =>
+      s.estado === "activa"
+        ? !s.hasta || new Date(s.hasta).getTime() + GRACIA_MS > ahora
+        : // Si la canceló, el plan sigue andando hasta el final del mes que ya pagó
+          Boolean(s.hasta) && new Date(s.hasta as string).getTime() > ahora,
+    )
+    .map((s) => ({ ...s, estado: "activa" as const }));
 }
 
 /** La suscripción mensual ("Tu marca andando") activa de quien hizo el pedido, o null si no tiene. */

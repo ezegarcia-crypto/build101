@@ -6,6 +6,7 @@ import { ArrowRight, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Entrada } from "@/app/crear/proximamente/_piezas/entrada";
 import { Clave } from "@/app/crear/proximamente/_piezas/piezas";
@@ -58,7 +59,11 @@ function CuentaAdentro() {
     );
   }
   if (cargando) return <Cargando />;
-  return usuario ? <MiCuenta usuario={usuario} /> : <Entrar volver={volver} error={error} />;
+  return usuario ? (
+    <MiCuenta usuario={usuario} pago={parametros.get("pago")} />
+  ) : (
+    <Entrar volver={volver ?? (parametros.get("pago") ? "/crear/cuenta" : null)} error={error} />
+  );
 }
 
 // ─── Entrar ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -259,7 +264,7 @@ const PASOS: Record<string, string> = {
   web: "Web",
 };
 
-function MiCuenta({ usuario }: { usuario: User }) {
+function MiCuenta({ usuario, pago }: { usuario: User; pago: string | null }) {
   const router = useRouter();
   const supabase = supabaseNavegador()!;
   const [marcas, setMarcas] = useState<MarcaDeCuenta[] | null>(null);
@@ -280,7 +285,7 @@ function MiCuenta({ usuario }: { usuario: User }) {
       const { data } = await supabase
         .from("suscripciones")
         .select("plan, estado, hasta, prueba")
-        .in("estado", ["activa", "pausada"])
+        .in("estado", ["activa", "pausada", "cancelada"])
         .order("creado", { ascending: false });
       setSuscripciones((data as SuscripcionDeCuenta[]) ?? []);
     } catch {
@@ -335,9 +340,6 @@ function MiCuenta({ usuario }: { usuario: User }) {
     router.replace("/crear");
   }
 
-  const activa = suscripciones.find((s) => s.estado === "activa" && s.plan === "mensual") ?? suscripciones.find((s) => s.estado === "activa");
-  const planActivo = activa ? PLANES.find((p) => p.id === activa.plan) : undefined;
-
   return (
     <Entrada className="flex flex-col gap-14">
       <header className="flex flex-col gap-5">
@@ -352,30 +354,7 @@ function MiCuenta({ usuario }: { usuario: User }) {
         </p>
       </header>
 
-      <section data-entra className="flex flex-col gap-4 rounded-[14px] border bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-        <div className="flex flex-col gap-1.5">
-          <p className="label">Tu plan</p>
-          {planActivo ? (
-            <>
-              <h2 className="text-2xl">{planActivo.nombre}</h2>
-              <p className="text-muted-foreground">
-                {activa?.hasta ? `Activo. Se renueva el ${fecha(activa.hasta)}.` : "Activo."}
-                {activa?.prueba ? " (Modo prueba: no se cobró de verdad.)" : ""}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-2xl">Prueba gratis</h2>
-              <p className="text-muted-foreground">Estás en la beta: armás una marca completa sin pagar.</p>
-            </>
-          )}
-        </div>
-        {!planActivo && (
-          <Link href="/crear/planes" className={buttonVariants({ size: "lg" })}>
-            Ver los planes <ArrowRight data-icon="inline-end" />
-          </Link>
-        )}
-      </section>
+      <TuPlan suscripciones={suscripciones} pago={pago} alCambiar={cargar} />
 
       <section className="flex flex-col gap-5">
         <div data-entra className="flex flex-wrap items-end justify-between gap-3">
@@ -457,5 +436,140 @@ function MiCuenta({ usuario }: { usuario: User }) {
         </button>
       </div>
     </Entrada>
+  );
+}
+
+// ─── El plan ─────────────────────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * El plan de la persona. Si vuelve de pagar (?pago=<id>), le pide al servidor que confirme con Mercado Pago cómo
+ * quedó el pago, cada unos segundos, hasta que esté activo o pase un minuto.
+ */
+function TuPlan({
+  suscripciones,
+  pago,
+  alCambiar,
+}: {
+  suscripciones: SuscripcionDeCuenta[];
+  pago: string | null;
+  alCambiar: () => Promise<void>;
+}) {
+  const router = useRouter();
+  const [confirmando, setConfirmando] = useState(Boolean(pago));
+  const [aviso, setAviso] = useState("");
+  const [cancelando, setCancelando] = useState(false);
+
+  useEffect(() => {
+    if (!pago) return;
+    let vueltas = 0;
+    let frenado = false;
+    async function mirar() {
+      if (frenado) return;
+      vueltas++;
+      const r = await fetch("/api/cobros/confirmar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ suscripcion: pago }),
+      }).catch(() => null);
+      const d = (await r?.json().catch(() => ({}))) as { estado?: string } | undefined;
+      if (d?.estado === "activa") {
+        await alCambiar();
+        setConfirmando(false);
+        toast.success("¡Listo! Tu plan está activo.");
+        router.replace("/crear/cuenta");
+        return;
+      }
+      if (vueltas >= 15) {
+        setConfirmando(false);
+        setAviso(
+          "Mercado Pago todavía no nos confirmó el pago. Si pagaste, en unos minutos aparece acá. Si no, podés probar de nuevo desde los planes.",
+        );
+        router.replace("/crear/cuenta");
+        return;
+      }
+      window.setTimeout(mirar, 4_000);
+    }
+    mirar();
+    return () => {
+      frenado = true;
+    };
+  }, [pago, alCambiar, router]);
+
+  async function cancelar() {
+    if (!window.confirm("¿Cancelar tu plan mensual? No se te cobra más y sigue andando hasta el final del mes que pagaste."))
+      return;
+    setCancelando(true);
+    const r = await fetch("/api/cobros/cancelar", { method: "POST" }).catch(() => null);
+    setCancelando(false);
+    if (!r?.ok) {
+      setAviso("No pudimos cancelar tu plan. Probá de nuevo en un rato.");
+      return;
+    }
+    toast.success("Cancelaste tu plan. No se te cobra más.");
+    await alCambiar();
+  }
+
+  const ahora = Date.now();
+  const vigente = (s: SuscripcionDeCuenta) =>
+    s.estado === "activa" || (s.estado === "cancelada" && s.hasta !== null && new Date(s.hasta).getTime() > ahora);
+  const mensual = suscripciones.find((s) => s.plan === "mensual" && vigente(s));
+  const marca = suscripciones.find((s) => s.plan === "marca" && s.estado === "activa");
+  const actual = mensual ?? marca;
+  const plan = actual ? PLANES.find((p) => p.id === actual.plan) : undefined;
+
+  return (
+    <section
+      data-entra
+      aria-live="polite"
+      className="flex flex-col gap-4 rounded-[14px] border bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+    >
+      <div className="flex flex-col gap-1.5">
+        <p className="label">Tu plan</p>
+        {confirmando ? (
+          <>
+            <h2 className="text-2xl">Confirmando tu pago…</h2>
+            <p className="text-muted-foreground">Le estamos preguntando a Mercado Pago. Tarda unos segundos.</p>
+          </>
+        ) : plan && actual ? (
+          <>
+            <h2 className="text-2xl">{plan.nombre}</h2>
+            <p className="text-muted-foreground">
+              {actual.estado === "cancelada"
+                ? `Cancelado: sigue andando hasta el ${fecha(actual.hasta as string)}.`
+                : actual.plan === "mensual"
+                  ? actual.hasta
+                    ? `Activo. El próximo cobro es el ${fecha(actual.hasta)}.`
+                    : "Activo."
+                  : "Pagado. Tu marca es tuya."}
+              {actual.prueba ? " (Modo prueba: no se cobró de verdad.)" : ""}
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl">Prueba gratis</h2>
+            <p className="text-muted-foreground">Estás en la beta: armás una marca completa sin pagar.</p>
+          </>
+        )}
+        {aviso && <p className="text-sm font-semibold text-foreground">{aviso}</p>}
+      </div>
+      {confirmando ? (
+        <Loader />
+      ) : mensual?.estado === "activa" ? (
+        <button
+          type="button"
+          onClick={cancelar}
+          disabled={cancelando}
+          className={buttonVariants({ variant: "ghost", size: "lg" })}
+        >
+          {cancelando ? "Cancelando…" : "Cancelar mi plan"}
+        </button>
+      ) : (
+        !mensual && (
+          <Link href="/crear/planes" className={buttonVariants({ size: "lg" })}>
+            {marca ? "Sumar tus contenidos" : "Ver los planes"} <ArrowRight data-icon="inline-end" />
+          </Link>
+        )
+      )}
+    </section>
   );
 }

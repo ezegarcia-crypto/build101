@@ -3,13 +3,15 @@
 import { Button, buttonVariants } from "@build101/ui/components/button";
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { CLAVE_IDENTIDAD } from "@/components/brandbook/identidad";
 import type { Plan } from "@/lib/planes";
 
-// Las tarjetas de los planes y el formulario para anotarse. El formulario guarda de verdad (POST /api/planes),
-// pero no cobra: el equipo contacta a la persona.
+// Las tarjetas de los planes y el formulario para anotarse (POST /api/planes: el equipo contacta a la persona).
+// Con el cobro prendido (Mercado Pago, lib/mercadopago.ts), "Tu marca" y "Tu marca andando" se pagan desde acá:
+// hay que entrar a la cuenta y la persona va a la página de pago de Mercado Pago. BranderIA sigue con el formulario.
 
 const campo =
   "h-11 w-full rounded-[4px] border bg-background px-3 text-[0.9375rem] text-foreground outline-none transition-shadow duration-300 ease-brandia focus-visible:ring-2 focus-visible:ring-ring/50";
@@ -24,14 +26,54 @@ function marcaDeLaPestana() {
   }
 }
 
-export function Eleccion({ planes }: { planes: Plan[] }) {
-  const [elegido, setElegido] = useState<Plan["id"]>("mensual");
+const pesos = (n: number) => `$ ${n.toLocaleString("es-UY", { maximumFractionDigits: 2 })}`;
+
+export function Eleccion({
+  planes,
+  cobro = false,
+  enPesos = {},
+}: {
+  planes: Plan[];
+  /** Si se puede pagar desde la app (Mercado Pago conectado) */
+  cobro?: boolean;
+  /** Lo que se cobra en pesos de cada plan pagable */
+  enPesos?: Partial<Record<Plan["id"], number>>;
+}) {
+  const router = useRouter();
+  const [pagando, setPagando] = useState<Plan["id"] | null>(null);
+  const [errorPago, setErrorPago] = useState("");
+  const sePaga = (id: Plan["id"]) => cobro && enPesos[id] !== undefined;
+  // El formulario queda para lo que no se paga desde la app (con el cobro prendido, BranderIA)
+  const delFormulario = planes.filter((p) => !sePaga(p.id));
+  const [elegido, setElegido] = useState<Plan["id"]>(delFormulario.some((p) => p.id === "mensual") ? "mensual" : (delFormulario[0]?.id ?? "mensual"));
   const [marca, setMarca] = useState("");
   const [estado, setEstado] = useState<"listo" | "enviando" | "anotado">("listo");
   const [error, setError] = useState("");
   const formulario = useRef<HTMLFormElement>(null);
 
   useEffect(() => setMarca(marcaDeLaPestana()), []);
+
+  async function pagar(id: Plan["id"]) {
+    setPagando(id);
+    setErrorPago("");
+    try {
+      const r = await fetch("/api/cobros/suscribir", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plan: id }),
+      });
+      const d = (await r.json().catch(() => ({}))) as { url?: string; error?: string; cuenta?: boolean };
+      if (d.cuenta) {
+        router.push(`/crear/cuenta?volver=${encodeURIComponent(`/crear/planes?plan=${id}`)}` as "/crear/cuenta");
+        return;
+      }
+      if (!r.ok || !d.url) throw new Error(d.error ?? "No pudimos abrir Mercado Pago. Probá de nuevo en un rato.");
+      window.location.href = d.url;
+    } catch (e) {
+      setErrorPago(e instanceof Error ? e.message : "No pudimos abrir Mercado Pago.");
+      setPagando(null);
+    }
+  }
 
   function elegir(id: Plan["id"]) {
     setElegido(id);
@@ -87,12 +129,20 @@ export function Eleccion({ planes }: { planes: Plan[] }) {
               <p className={p.destacado ? "text-primary-foreground/75" : "text-muted-foreground"}>{p.resumen}</p>
             </div>
 
-            <p className="flex items-baseline gap-2">
-              <span className="font-display text-4xl">{p.precio}</span>
-              <span className={`text-sm ${p.destacado ? "text-primary-foreground/75" : "text-muted-foreground"}`}>
-                {p.periodo}
-              </span>
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="flex items-baseline gap-2">
+                <span className="font-display text-4xl">{p.precio}</span>
+                <span className={`text-sm ${p.destacado ? "text-primary-foreground/75" : "text-muted-foreground"}`}>
+                  {p.periodo}
+                </span>
+              </p>
+              {sePaga(p.id) && (
+                <p className={`text-sm ${p.destacado ? "text-primary-foreground/75" : "text-muted-foreground"}`}>
+                  Se cobra {pesos(enPesos[p.id] as number)}
+                  {p.id === "mensual" ? " por mes" : ""}, en pesos uruguayos
+                </p>
+              )}
+            </div>
 
             <ul className="flex flex-1 flex-col gap-2.5 text-[0.9375rem]">
               {p.incluye.map((i) => (
@@ -117,16 +167,32 @@ export function Eleccion({ planes }: { planes: Plan[] }) {
               size="lg"
               variant={p.destacado ? "outline" : "default"}
               className={p.destacado ? "border-transparent bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}
-              onClick={() => elegir(p.id)}
+              onClick={() => (sePaga(p.id) ? pagar(p.id) : elegir(p.id))}
+              disabled={pagando !== null}
             >
-              Quiero este plan <ArrowRight data-icon="inline-end" />
+              {pagando === p.id
+                ? "Abriendo Mercado Pago…"
+                : sePaga(p.id)
+                  ? p.id === "mensual"
+                    ? "Suscribirme"
+                    : "Comprar mi marca"
+                  : "Quiero este plan"}{" "}
+              <ArrowRight data-icon="inline-end" />
             </Button>
           </li>
         ))}
       </ul>
 
+      {errorPago && (
+        <p role="alert" className="-mt-10 text-sm font-semibold text-destructive">
+          {errorPago}
+        </p>
+      )}
+
       <p data-entra className="-mt-10 text-sm text-muted-foreground">
-        Precios de lanzamiento, en dólares. Todavía se pueden ajustar antes de empezar a cobrar.
+        {cobro
+          ? "Precios de lanzamiento. Se paga con Mercado Pago: tarjeta de crédito o débito, o dinero en tu cuenta. El plan mensual se cobra solo cada mes y lo cancelás cuando quieras desde tu cuenta."
+          : "Precios de lanzamiento, en dólares. Todavía se pueden ajustar antes de empezar a cobrar."}
       </p>
 
       <section data-entra className="flex scroll-mt-24 flex-col gap-5 rounded-[14px] border bg-card p-6 sm:p-8">
@@ -146,14 +212,18 @@ export function Eleccion({ planes }: { planes: Plan[] }) {
         ) : (
           <form ref={formulario} onSubmit={anotar} className="flex scroll-mt-24 flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <h2>Anotate para tu plan</h2>
-              <p className="text-muted-foreground">Todavía no se cobra nada. Te contactamos para empezar.</p>
+              <h2>{cobro ? "Pedí tu cotización" : "Anotate para tu plan"}</h2>
+              <p className="text-muted-foreground">
+                {cobro
+                  ? "Dejanos tus datos y te escribimos con la cotización."
+                  : "Todavía no se cobra nada. Te contactamos para empezar."}
+              </p>
             </div>
 
             <fieldset className="flex flex-col gap-2">
               <legend className="label mb-2">Tu plan</legend>
               <div className="flex flex-wrap gap-2">
-                {planes.map((p) => (
+                {delFormulario.map((p) => (
                   <label
                     key={p.id}
                     className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-brandia has-focus-visible:ring-2 has-focus-visible:ring-ring/50 ${
