@@ -19,7 +19,9 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const datos = await buscar((await params).slug);
   if (!datos) return { title: "Web no encontrada" };
-  return { title: datos.web.titulo_google, description: datos.web.descripcion_google };
+  // openGraph y twitter propios, sin imagen: la web del cliente no hereda la imagen de BrandIA al compartirse
+  const { titulo_google: title, descripcion_google: description } = datos.web;
+  return { title, description, openGraph: { title, description }, twitter: { card: "summary", title, description } };
 }
 
 export default async function WebPublicada({ params }: Props) {

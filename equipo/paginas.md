@@ -64,6 +64,14 @@ de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
 2. **`/costos` y `/pedidos` no tienen links a propósito**: son solo para el equipo.
 
+## La imagen al compartir el link
+
+Cuando se pega un link de app.brandiamos.com en WhatsApp o en redes, aparece `apps/web/public/compartir.png`
+(1200 × 630): la B naranja, el logotipo oficial y "Que se vea tan bien como lo que hacés." La portada la declara en
+su `<head>` (`brandia.html`) y la app, en `apps/web/src/app/layout.tsx`, para todas sus páginas. **Las webs de los
+clientes (`/w/[slug]`) no la usan**: se comparten con su título y descripción, sin la imagen de BrandIA. La lista
+de espera todavía no tiene imagen. La fuente de la imagen está en `brandia/marca/compartir/`.
+
 ## Todo vive en la pestaña
 
 La ficha, la marca, el feed y lo demás se guardan en el navegador, **solo en esa pestaña** (`sessionStorage`).
