@@ -49,11 +49,11 @@ que arranca y la otra entre paréntesis, y se coordina entre los dos.
 | 4 | **Descargables pixelados:** el brandbook, los logos y los fondos de la estética salen pixelados al descargarlos. Revisar el tamaño y el formato (por ejemplo, el logo en SVG, que no pierde calidad) | por empezar |
 | 8 | **Sección de artículos de BrandIA en nuestra web:** artículos nuestros, con noticias, contenido e información del rubro, para nuestros usuarios. (Los textos, con `ia` o escritos por el equipo) | por empezar |
 | 10 | **Paso inicial "¿ya tenés marca propia?"** antes de los pasos, para separar rebranding, comprar productos con la marca o arrancar de cero. Hoy solo está en la lista de espera | por empezar |
-| 11 | **Encabezado del marketplace en la portada:** todavía dice "marketplace de tu marca". Pasarlo a BranderIA, que produce y manda los productos | por empezar |
-| 12 | **Scroll horizontal de la portada:** que el texto "BranderIA" no se superponga al logo | por empezar |
+| 11 | **Encabezado del marketplace en la portada:** todavía dice "marketplace de tu marca". Pasarlo a BranderIA, que produce y manda los productos | hecho (21/10, rama `pantallas`, falta pasar a `main`) |
+| 12 | **Scroll horizontal de la portada:** que el texto "BranderIA" no se superponga al logo | hecho (21/10, rama `pantallas`, falta pasar a `main`) |
 | 13 | **Suscripción y precios en la portada:** ubicarlos sin cortar la lectura | por empezar |
 | 14 | **Lista de sugerencias de texto para la web** | por empezar |
-| 15 | **Imagen para compartir el link** (og:image, 1200 × 630) con el logo v2, para que se vea bien en WhatsApp y redes | por empezar |
+| 15 | **Imagen para compartir el link** (og:image, 1200 × 630) con el logo v2, para que se vea bien en WhatsApp y redes | hecho (21/10, rama `pantallas`, falta pasar a `main`) |
 
 ## `web-cliente` · la web del cliente (Rodrigo)
 
