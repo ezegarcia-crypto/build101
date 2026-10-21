@@ -169,22 +169,25 @@ function Entrar({ volver, error: errorInicial }: { volver: string | null; error:
               />
             </label>
             <p className="text-sm text-muted-foreground">
-              Te mandamos un código para entrar. Sin contraseña. Si es la primera vez, se crea tu cuenta.
+              Te mandamos un mail para entrar, sin contraseña. Si es la primera vez, se crea tu cuenta.
             </p>
             <div>
               <Button type="submit" size="lg" disabled={enviando}>
-                {enviando ? "Mandando…" : "Mandame el código"} <ArrowRight data-icon="inline-end" />
+                {enviando ? "Mandando…" : "Mandame el mail"} <ArrowRight data-icon="inline-end" />
               </Button>
             </div>
           </form>
         ) : (
           <form onSubmit={entrarConCodigo} className="flex flex-col gap-4">
             <p className="text-[0.9375rem]">
-              Te mandamos un código a <strong className="break-all">{mail}</strong>. Si no está, mirá en correo no
-              deseado.
+              Te mandamos un mail a <strong className="break-all">{mail}</strong>. Tocá el enlace y volvé a esta
+              pestaña: {conMarca ? "tu marca te espera acá y se guarda sola." : "acá vas a estar adentro."} Si no
+              está, mirá en correo no deseado.
             </p>
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              El código
+              <span>
+                Si el mail trae un código, escribilo acá
+              </span>
               <input
                 name="codigo"
                 required
@@ -379,7 +382,7 @@ function MiCuenta({ usuario }: { usuario: User }) {
           <h2>
             Tus <span className="italic">marcas</span>
           </h2>
-          <Link href="/crear" className={buttonVariants({ variant: "outline", size: "lg" })}>
+          <Link href="/crear" className={`${buttonVariants({ variant: "outline", size: "lg" })} text-foreground no-underline`}>
             Armar otra marca
           </Link>
         </div>

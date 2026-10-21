@@ -18,7 +18,22 @@ export function useSesion() {
     const { data } = supabase.auth.onAuthStateChange((_evento, sesion) => {
       setEstado({ cargando: false, usuario: sesion?.user ?? null });
     });
-    return () => data.subscription.unsubscribe();
+    // Si entró con el enlace del mail, eso pasó en otra pestaña: al volver a esta, se mira de nuevo la sesión
+    const mirar = () => {
+      if (document.visibilityState !== "visible") return;
+      supabase.auth.getSession().then(({ data: d }) => {
+        setEstado((antes) =>
+          antes.usuario?.id === d.session?.user.id ? antes : { cargando: false, usuario: d.session?.user ?? null },
+        );
+      });
+    };
+    document.addEventListener("visibilitychange", mirar);
+    window.addEventListener("focus", mirar);
+    return () => {
+      data.subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", mirar);
+      window.removeEventListener("focus", mirar);
+    };
   }, []);
 
   return estado;
