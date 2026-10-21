@@ -101,7 +101,7 @@ Plan de tareas y reparto: `equipo/plan-finde.md`.
 | Herramienta para construir | Claude Code, en la app de escritorio de Claude | Codex (OpenAI) |
 | Código | Este repo: `ezegarcia-crypto/build101`, privado | |
 | Web | Next.js, desde la plantilla Better-T-Stack, con shadcn para lo visual | |
-| Publicar | Vercel (cuenta de Eze, team `ezegb`), conectado a GitHub: cada push a `main` se publica solo | |
+| Publicar | Vercel, team **BrandIA** (`brand-ia`, plan Pro, lo paga Eze), conectado a GitHub: cada push a `main` se publica solo. Desde el 21/10; antes estaba en `ezegb`, el team personal de Eze, que queda para sus proyectos de Gary+ | |
 | Datos | Supabase (cuenta de Eze), solo si el producto guarda datos | |
 | IA del producto | Se decide después del kickoff: Eve de Vercel, AI SDK o tool use de la API de Claude; modelos de decisión; voz con ElevenLabs si la consigna lo pide | Claude para clasificar |
 
@@ -182,10 +182,10 @@ Si llegaste hasta acá, la persona ya tiene git, `gh` y este repo. Falta comprob
 ## Comandos útiles
 
 - Invitar a alguien al repo: `gh api -X PUT repos/ezegarcia-crypto/build101/collaborators/USUARIO -f permission=push`
-- Ver las publicaciones: `vercel ls build101 --scope ezegb`
-- **La web publicada:** https://app.brandiamos.com, nuestro dominio. Es el proyecto `build101` del team `ezegb` en Vercel, conectado a GitHub: cada push a `main` se publica solo. La misma web responde también en https://build101-bice.vercel.app, la dirección automática de Vercel. Ojo: `build101.vercel.app` es de otra persona.
+- Ver las publicaciones: `vercel ls build101 --scope brand-ia`
+- **La web publicada:** https://app.brandiamos.com, nuestro dominio. Es el proyecto `build101` del team `brand-ia` (BrandIA) en Vercel, conectado a GitHub: cada push a `main` se publica solo. La misma web responde también en https://build101-bice.vercel.app, la dirección automática de Vercel. Ojo: `build101.vercel.app` es de otra persona.
 - Probar en la compu: `npm install` y después `npm run dev:web` → http://localhost:3001
-- La IA va por **Vercel AI Gateway** (texto, imágenes y video) y los audios se pasan a texto con **ElevenLabs Scribe** (`POST /api/transcribir`). En la compu, la clave del Gateway se baja con `vercel env pull` (queda en `.env.local`, fuera de git); publicada en Vercel no hace falta clave.
+- La IA va por **Vercel AI Gateway** (texto, imágenes y video) y los audios se pasan a texto con **ElevenLabs Scribe** (`POST /api/transcribir`). En la compu de Eze, el acceso se baja con `vercel env pull --scope brand-ia` (queda en `.env.local`, fuera de git; ojo, pisa el archivo: las claves de Supabase no se bajan y hay que conservarlas). Juan Pedro y Rodrigo son Viewer en el team (gratis, no bajan claves): usan una clave del AI Gateway del team BrandIA que Eze les pasa por AirDrop. Publicada en Vercel no hace falta clave. El saldo de la IA es el del AI Gateway del team BrandIA.
 - **Lo que gasta la IA:** https://app.brandiamos.com/costos. Pide contraseña: el usuario puede ser cualquiera y la contraseña es `COSTOS_CLAVE` (la tiene Eze). Muestra el saldo, el costo de cada paso y de una marca completa, y los pagos de cada uno. Toda ruta nueva con IA se anota con `medir()` y `etiquetar()`: ver la sección 7 de `apps/web/src/lib/ia/README.md`.
 - **Límites de la beta abierta:** cada navegador tiene una prueba gratis (una marca completa) y el servidor corta la IA si en el día se gastan USD 30. **El equipo no tiene límite:** entrando una vez a `/costos` con la contraseña, ese navegador queda como del equipo. Detalle en `equipo/paginas.md`.
 - **Todo lo que se generó en cada prueba:** https://app.brandiamos.com/pruebas, con la misma contraseña que `/costos`. Cada pedido a la IA queda guardado con lo que entró y lo que salió (imágenes y audios incluidos) en la tabla `pruebas` de Supabase. Sirve para aprender de las pruebas reales y mejorar BrandIA.
