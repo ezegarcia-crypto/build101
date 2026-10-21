@@ -63,6 +63,7 @@ de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes
 1. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
 2. **`/costos` y `/pedidos` no tienen links a propósito**: son solo para el equipo.
+3. **El ingreso (`/ingresar`) es solo la pantalla**: no manda el código ni crea la sesión. Se conecta en `apps/web/src/app/ingresar/acciones.ts`.
 
 ## La imagen al compartir el link
 
@@ -136,6 +137,7 @@ Todos los textos de muestra están marcados como ejemplo: nada de esto lo gener�
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
 | `/crear/planes` | Los planes y sus precios (los del documento de costos, hasta que los socios los cierren): **Tu marca** USD 19,99 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. "Quiero este plan" lleva al formulario: nombre, mail o WhatsApp y marca (se completa sola si la armó en esa pestaña). **No cobra:** guarda a la persona y el equipo la contacta. Abajo, "Qué pasa cuando te suscribís" | "Planes" en la barra de arriba, o "Mirá los planes" desde `/crear/proximamente` | Después de anotarse, "Seguir con mi marca" → `/crear` | La tabla `interesados` de Supabase (`apps/web/supabase/interesados.sql`). Los anotados se ven en el Table Editor de Supabase | Ninguna. `POST /api/planes` guarda (sin IA) |
+| `/ingresar` | Entrar a tu marca. A la izquierda, "Todo lo que BrandIAste, en un mismo *lugar*"; a la derecha, la tarjeta en dos pasos: el correo ("Recibir código") y después el código de 6 números ("Entrar"), con "Cambiar correo" y "Mandame otro código". Sin contraseña y sin registro aparte. **Solo la pantalla:** todavía no manda correos ni crea la sesión; el paso del código lo dice con un aviso "En construcción" | Por ahora, escribiendo la dirección (todavía no hay botón que lleve) | "Empezá acá" → `/crear`. Al conectarlo, "Entrar" → `/crear` | Nada todavía. Para conectarlo se cambian solo las dos funciones de `apps/web/src/app/ingresar/acciones.ts` (por ejemplo con Supabase Auth) | Ninguna |
 
 Los precios y lo que incluye cada plan se cambian en `apps/web/src/lib/planes.ts`. Arriba dice "Beta abierta:
 hoy lo probás gratis" y que son precios de lanzamiento.
