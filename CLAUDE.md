@@ -69,6 +69,7 @@ Plan de tareas y reparto: `equipo/plan-finde.md`.
 | `equipo/build101-consigna.pdf` | **La consigna oficial**: consigna, rúbrica y cómo se evalúa (3 páginas) |
 | `equipo/kickoff-consigna.md` | La consigna, la evaluación y las reglas, resumidas del kickoff |
 | `equipo/plan-finde.md` | Plan de tareas y reparto para el finde |
+| `equipo/pendientes.md` | **La lista única de pendientes** después de la hackathon, con rama y responsable de cada tarea |
 | `equipo/flujo-web-cliente.md` | La web del cliente de punta a punta, con el ejemplo de Costa (se trabaja en paralelo a los contenidos) |
 | `equipo/design-system.md` | **Obligatorio:** cómo se ve y se mueve BrandIA y BranderIA en la app |
 | `equipo/paginas.md` | **Registro de páginas:** todas las de app.brandiamos.com, cómo se llega a cada una, a dónde lleva y qué necesita |

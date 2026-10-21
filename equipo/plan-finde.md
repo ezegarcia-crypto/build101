@@ -51,6 +51,9 @@ Cada uno en su rama y en sus carpetas: dos agentes nunca tocan los mismos archiv
 
 Lo que quedó anotado después de probar con «Lic. Sofía Méndez» y que no entra para la demo:
 
+> **Desde el 21/10 estas tareas siguen en `equipo/pendientes.md`**, la lista única del equipo, con rama y
+> responsable. Las nuevas se anotan ahí, no acá.
+
 - **Subir referencias en el logo:** un espacio en la sección del logo para que la persona suba su logo actual o
   imágenes que le gustan, como referencia para la IA.
 - **Íconos de la marca para la web:** los íconos de las historias destacadas ya se hacen con el feed; faltan los
