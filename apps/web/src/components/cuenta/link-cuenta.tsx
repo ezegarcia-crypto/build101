@@ -12,11 +12,11 @@ import { useSesion } from "@/components/cuenta/usar-sesion";
 export function LinkCuenta({ className }: { className: (activo: boolean) => string }) {
   const ruta = usePathname();
   const { cargando, usuario } = useSesion();
-  const activo = ruta === "/crear/cuenta";
+  const activo = ruta === "/crear/cuenta" || ruta === "/ingresar";
   const volver = ruta && ruta !== "/crear/cuenta" ? `?volver=${encodeURIComponent(ruta)}` : "";
   return (
     <Link
-      href={`/crear/cuenta${usuario ? "" : volver}` as "/crear/cuenta"}
+      href={(usuario ? "/crear/cuenta" : `/ingresar${volver}`) as "/crear/cuenta"}
       aria-current={activo ? "page" : undefined}
       className={`${className(activo)} inline-flex items-center ${cargando ? "invisible" : ""}`}
     >

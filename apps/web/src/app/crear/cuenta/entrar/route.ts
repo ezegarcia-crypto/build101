@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl;
   const destino = new URL(destinoSeguro(url.searchParams.get("volver")), url.origin);
   const supabase = await supabaseServidor();
-  if (!supabase) return NextResponse.redirect(new URL("/crear/cuenta?error=sin-cuentas", url.origin));
+  if (!supabase) return NextResponse.redirect(new URL("/ingresar?error=sin-cuentas", url.origin));
 
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
   if (error) {
     console.error("[cuenta] no se pudo entrar:", error.message);
-    return NextResponse.redirect(new URL("/crear/cuenta?error=enlace", url.origin));
+    return NextResponse.redirect(new URL("/ingresar?error=enlace", url.origin));
   }
   return NextResponse.redirect(destino);
 }

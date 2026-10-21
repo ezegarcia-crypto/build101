@@ -12,24 +12,18 @@ import { Entrada } from "@/app/crear/proximamente/_piezas/entrada";
 import { Clave } from "@/app/crear/proximamente/_piezas/piezas";
 import { useSesion } from "@/components/cuenta/usar-sesion";
 import Loader from "@/components/loader";
-import { destinoSeguro } from "@/lib/destino";
 import {
   abrirMarca,
   borrarMarca,
   CLAVE_MARCA_CUENTA,
-  hayMarcaEnLaPestana,
   listarMarcas,
   type MarcaDeCuenta,
 } from "@/lib/marcas-cuenta";
 import { PLANES } from "@/lib/planes";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 
-// La pantalla de la cuenta. Sin sesión: entrar con un código que llega por mail (o con Google, si está prendido en
-// Supabase). Con sesión: el plan, las marcas guardadas (abrir o borrar) y salir.
-// El código por mail se usa en lugar del enlace porque el enlace abre otra pestaña, y la marca vive en esta.
-
-const campo =
-  "h-11 w-full rounded-[4px] border bg-background px-3 text-[0.9375rem] text-foreground outline-none transition-shadow duration-300 ease-brandia focus-visible:ring-2 focus-visible:ring-ring/50";
+// La pantalla de la cuenta: el plan, las marcas guardadas (abrir o borrar) y salir. Sin sesión, manda a /ingresar
+// (la pantalla de ingreso de Juan Pedro, conectada a Supabase Auth en app/ingresar/acciones.ts).
 
 export function Cuenta() {
   return (
@@ -49,204 +43,25 @@ function Cargando() {
 
 function CuentaAdentro() {
   const { cargando, usuario } = useSesion();
+  const router = useRouter();
   const parametros = useSearchParams();
-  const volver = parametros.get("volver");
-  const error = parametros.get("error");
+  const pago = parametros.get("pago");
+
+  // Sin sesión, a la pantalla de ingreso; vuelve acá (con el pago, si venía de Mercado Pago)
+  useEffect(() => {
+    if (!cargando && !usuario) {
+      const aca = pago ? `/crear/cuenta?pago=${encodeURIComponent(pago)}` : "/crear/cuenta";
+      router.replace(`/ingresar?volver=${encodeURIComponent(aca)}` as "/crear/cuenta");
+    }
+  }, [cargando, usuario, pago, router]);
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return (
       <p className="text-muted-foreground">Las cuentas todavía no están conectadas en esta versión de BrandIA.</p>
     );
   }
-  if (cargando) return <Cargando />;
-  return usuario ? (
-    <MiCuenta usuario={usuario} pago={parametros.get("pago")} />
-  ) : (
-    <Entrar volver={volver ?? (parametros.get("pago") ? "/crear/cuenta" : null)} error={error} />
-  );
-}
-
-// ─── Entrar ──────────────────────────────────────────────────────────────────────────────────────────────────
-
-function Entrar({ volver, error: errorInicial }: { volver: string | null; error: string | null }) {
-  const router = useRouter();
-  const [paso, setPaso] = useState<"mail" | "codigo">("mail");
-  const [mail, setMail] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [enviando, setEnviando] = useState(false);
-  const [error, setError] = useState(
-    errorInicial === "enlace" ? "Ese enlace ya no sirve. Pedí un código nuevo y escribilo acá." : "",
-  );
-  const [google, setGoogle] = useState(false);
-  const [conMarca, setConMarca] = useState(false);
-
-  useEffect(() => {
-    setConMarca(hayMarcaEnLaPestana());
-    // Google aparece solo si está prendido en Supabase (Authentication → Providers)
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const clave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !clave) return;
-    fetch(`${url}/auth/v1/settings`, { headers: { apikey: clave } })
-      .then((r) => r.json())
-      .then((d: { external?: { google?: boolean } }) => setGoogle(Boolean(d.external?.google)))
-      .catch(() => {});
-  }, []);
-
-  const vuelta = () =>
-    `${window.location.origin}/crear/cuenta/entrar?volver=${encodeURIComponent(destinoSeguro(volver))}`;
-
-  async function pedirCodigo(e: React.FormEvent) {
-    e.preventDefault();
-    setEnviando(true);
-    setError("");
-    const { error: err } = await supabaseNavegador()!.auth.signInWithOtp({
-      email: mail.trim(),
-      options: { emailRedirectTo: vuelta(), shouldCreateUser: true },
-    });
-    setEnviando(false);
-    if (err) {
-      setError(
-        err.status === 429
-          ? "Pediste muchos códigos seguidos. Esperá un rato y probá de nuevo."
-          : "No pudimos mandarte el código. Revisá el mail y probá de nuevo.",
-      );
-      return;
-    }
-    setPaso("codigo");
-  }
-
-  async function entrarConCodigo(e: React.FormEvent) {
-    e.preventDefault();
-    setEnviando(true);
-    setError("");
-    const { error: err } = await supabaseNavegador()!.auth.verifyOtp({
-      email: mail.trim(),
-      token: codigo.replace(/\D/g, ""),
-      type: "email",
-    });
-    setEnviando(false);
-    if (err) {
-      setError("Ese código no es o ya venció. Fijate el último mail que te mandamos.");
-      return;
-    }
-    router.replace(destinoSeguro(volver) as "/crear/cuenta");
-  }
-
-  async function entrarConGoogle() {
-    setError("");
-    const { error: err } = await supabaseNavegador()!.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: vuelta() },
-    });
-    if (err) setError("No pudimos abrir Google. Probá con tu mail.");
-  }
-
-  return (
-    <Entrada className="flex flex-col gap-10">
-      <header className="flex max-w-2xl flex-col gap-5">
-        <p data-entra className="label">
-          BrandIA · tu cuenta
-        </p>
-        <h1 data-entra className="display text-balance">
-          Entrá a tu <Clave>cuenta.</Clave>
-        </h1>
-        <p data-entra className="text-lg text-muted-foreground">
-          {conMarca
-            ? "La marca que armaste en esta pestaña se guarda en tu cuenta apenas entrás. Después la encontrás desde cualquier lado."
-            : "Tus marcas quedan guardadas en tu cuenta: las encontrás desde cualquier compu o celular."}
-        </p>
-      </header>
-
-      <section data-entra className="flex max-w-xl flex-col gap-5 rounded-[14px] border bg-card p-6 sm:p-8">
-        {paso === "mail" ? (
-          <form onSubmit={pedirCodigo} className="flex flex-col gap-4">
-            <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              Tu mail
-              <input
-                type="email"
-                name="email"
-                required
-                maxLength={120}
-                autoComplete="email"
-                value={mail}
-                onChange={(e) => setMail(e.target.value)}
-                className={campo}
-              />
-            </label>
-            <p className="text-sm text-muted-foreground">
-              Te mandamos un mail para entrar, sin contraseña. Si es la primera vez, se crea tu cuenta.
-            </p>
-            <div>
-              <Button type="submit" size="lg" disabled={enviando}>
-                {enviando ? "Mandando…" : "Mandame el mail"} <ArrowRight data-icon="inline-end" />
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={entrarConCodigo} className="flex flex-col gap-4">
-            <p className="text-[0.9375rem]">
-              Te mandamos un mail a <strong className="break-all">{mail}</strong>. Tocá el enlace y volvé a esta
-              pestaña: {conMarca ? "tu marca te espera acá y se guarda sola." : "acá vas a estar adentro."} Si no
-              está, mirá en correo no deseado.
-            </p>
-            <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              <span>
-                Si el mail trae un código, escribilo acá
-              </span>
-              <input
-                name="codigo"
-                required
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="[0-9 ]{6,10}"
-                maxLength={10}
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                className={`${campo} font-display text-xl tracking-[0.3em]`}
-                // biome-ignore lint/a11y/noAutofocus: el único campo de este paso
-                autoFocus
-              />
-            </label>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button type="submit" size="lg" disabled={enviando}>
-                {enviando ? "Entrando…" : "Entrar"} <ArrowRight data-icon="inline-end" />
-              </Button>
-              <button
-                type="button"
-                onClick={() => {
-                  setPaso("mail");
-                  setCodigo("");
-                  setError("");
-                }}
-                className={buttonVariants({ variant: "ghost", size: "lg" })}
-              >
-                Usar otro mail
-              </button>
-            </div>
-          </form>
-        )}
-
-        {error && (
-          <p role="alert" className="text-sm font-semibold text-destructive">
-            {error}
-          </p>
-        )}
-
-        {google && paso === "mail" && (
-          <>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <span className="h-px flex-1 bg-border" /> o <span className="h-px flex-1 bg-border" />
-            </div>
-            <div>
-              <Button type="button" variant="outline" size="lg" onClick={entrarConGoogle}>
-                Entrar con Google
-              </Button>
-            </div>
-          </>
-        )}
-      </section>
-    </Entrada>
-  );
+  if (cargando || !usuario) return <Cargando />;
+  return <MiCuenta usuario={usuario} pago={pago} />;
 }
 
 // ─── Adentro ─────────────────────────────────────────────────────────────────────────────────────────────────

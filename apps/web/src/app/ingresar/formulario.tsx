@@ -5,19 +5,27 @@ import gsap from "gsap";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { destinoSeguro } from "@/lib/destino";
+
 import { pedirCodigo, verificarCodigo } from "./acciones";
 
 // La tarjeta de ingreso, en dos pasos: el correo y después el código que llega por correo.
 // Al cambiar de paso, el contenido entra con la curva de BrandIA (power2.out, 0,5 s).
+// Después de entrar lleva a `volver` (la página desde donde vino, por ejemplo los planes) o a la cuenta.
 
 const campo =
   "h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-base text-foreground outline-none transition-colors duration-300 ease-brandia placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive dark:bg-input/30";
 
-export function Formulario() {
+const ERRORES: Record<string, string> = {
+  enlace: "Ese enlace ya no sirve: pedí uno nuevo y abrilo en este mismo navegador.",
+  "sin-cuentas": "El ingreso todavía no está conectado en esta versión de BrandIA.",
+};
+
+export function Formulario({ volver = null, errorInicial = null }: { volver?: string | null; errorInicial?: string | null }) {
   const [paso, setPaso] = useState<"correo" | "codigo">("correo");
   const [correo, setCorreo] = useState("");
   const [codigo, setCodigo] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(errorInicial ? (ERRORES[errorInicial] ?? "") : "");
   const [enConstruccion, setEnConstruccion] = useState(false);
   const [cargando, empezar] = useTransition();
   const caja = useRef<HTMLDivElement>(null);
@@ -36,7 +44,7 @@ export function Formulario() {
     e.preventDefault();
     setError("");
     empezar(async () => {
-      const r = await pedirCodigo(correo);
+      const r = await pedirCodigo(correo, volver);
       if (!r.ok) return setError(r.error);
       setEnConstruccion(Boolean(r.enConstruccion));
       setPaso("codigo");
@@ -49,7 +57,8 @@ export function Formulario() {
     empezar(async () => {
       const r = await verificarCodigo(correo, codigo);
       if (!r.ok) return setError(r.error);
-      window.location.href = "/crear";
+      // Recarga entera: así la pantalla y la barra se enteran de la sesión nueva (la pestaña conserva la marca)
+      window.location.href = destinoSeguro(volver);
     });
   }
 
@@ -103,9 +112,10 @@ export function Formulario() {
         <>
           <div className="flex flex-col gap-3">
             <p className="label">Revisá tu correo</p>
-            <h2 className="text-balance">Te mandamos un código.</h2>
+            <h2 className="text-balance">Te mandamos un correo.</h2>
             <p className="text-muted-foreground">
-              Escribí los 6 números que mandamos a <span className="font-semibold text-foreground">{correo.trim()}</span>.
+              Lo mandamos a <span className="font-semibold text-foreground">{correo.trim()}</span>. Tocá el enlace y
+              volvé a esta pestaña, o escribí acá el código si el correo lo trae.
             </p>
           </div>
 
@@ -125,16 +135,16 @@ export function Formulario() {
                 autoComplete="one-time-code"
                 autoFocus
                 inputMode="numeric"
-                maxLength={6}
+                maxLength={8}
                 placeholder="······"
                 value={codigo}
                 onChange={(e) => {
-                  setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  setCodigo(e.target.value.replace(/\D/g, "").slice(0, 8));
                   setError("");
                 }}
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? "error-ingreso" : undefined}
-                className={`${campo} text-center font-display text-2xl tracking-[0.5em] tabular-nums`}
+                className={`${campo} text-center font-display text-2xl tracking-[0.35em] tabular-nums`}
               />
             </label>
             <AvisoError texto={error} />
@@ -154,7 +164,12 @@ export function Formulario() {
             <button
               type="button"
               disabled={cargando}
-              onClick={() => empezar(async () => void (await pedirCodigo(correo)))}
+              onClick={() =>
+                empezar(async () => {
+                  const r = await pedirCodigo(correo, volver);
+                  setError(r.ok ? "" : r.error);
+                })
+              }
               className="font-semibold text-muted-foreground transition-colors duration-300 ease-brandia hover:text-foreground"
             >
               Mandame otro código

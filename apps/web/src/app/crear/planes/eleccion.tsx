@@ -64,7 +64,7 @@ export function Eleccion({
       });
       const d = (await r.json().catch(() => ({}))) as { url?: string; error?: string; cuenta?: boolean };
       if (d.cuenta) {
-        router.push(`/crear/cuenta?volver=${encodeURIComponent(`/crear/planes?plan=${id}`)}` as "/crear/cuenta");
+        router.push(`/ingresar?volver=${encodeURIComponent(`/crear/planes?plan=${id}`)}` as "/crear/cuenta");
         return;
       }
       if (!r.ok || !d.url) throw new Error(d.error ?? "No pudimos abrir Mercado Pago. Probá de nuevo en un rato.");
