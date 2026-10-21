@@ -64,6 +64,14 @@ de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
 2. **`/costos` y `/pedidos` no tienen links a propósito**: son solo para el equipo.
 
+## La imagen al compartir el link
+
+Cuando se pega un link de app.brandiamos.com en WhatsApp o en redes, aparece `apps/web/public/compartir.png`
+(1200 × 630): la B naranja, el logotipo oficial y "Que se vea tan bien como lo que hacés." La portada la declara en
+su `<head>` (`brandia.html`) y la app, en `apps/web/src/app/layout.tsx`, para todas sus páginas. **Las webs de los
+clientes (`/w/[slug]`) no la usan**: se comparten con su título y descripción, sin la imagen de BrandIA. La lista
+de espera todavía no tiene imagen. La fuente de la imagen está en `brandia/marca/compartir/`.
+
 ## Todo vive en la pestaña
 
 La ficha, la marca, el feed y lo demás se guardan en el navegador, **solo en esa pestaña** (`sessionStorage`).
@@ -88,7 +96,7 @@ para el rubro y fotos anteriores) y
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Estado |
 |---|---|---|---|---|
-| `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | **A la app (`/crear`)** con "BrandIAmos" (barra de arriba), "Quiero BrandIAr mi marca →" (inicio), "BrandIAmos →" y el botón gigante "¿BrandIAmos?" (abajo de todo). Los demás links ("Cómo funciona", "Productos"…) bajan dentro de la misma portada | Funciona. Abajo de todo, un solo botón gigante "¿BrandIAmos?" que lleva a `/crear` (sin formulario ni textos) |
+| `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | **A la app (`/crear`)** con "BrandIAmos" (barra de arriba), "Quiero BrandIAr mi marca →" (inicio), "BrandIAmos →" y el botón gigante "¿BrandIAmos?" (abajo de todo). Los demás links ("Cómo funciona", "Productos"…) bajan dentro de la misma portada | Funciona. Abajo de todo, un solo botón gigante "¿BrandIAmos?" que lleva a `/crear` (sin formulario ni textos). La sección de productos se llama BranderIA ("lo producimos y te lo mandamos", sin proveedores) |
 | `/lista-de-espera` | La landing de lista de espera, tal cual (`public/lista-de-espera.html`) | Solo con el link | A ningún lado | Carga. El formulario no guarda |
 | `/w/[slug]` | **La web publicada de un cliente** (por ejemplo `/w/hoy-rueda`), con SU marca (el logo elegido, sus tipografías y su paleta): sin la barra de BrandIA, solo un "Hecha con BrandIA" chico al final. Si la dirección no existe, "Acá no hay ninguna web" | El link o el QR que entrega `/crear/web` | Los botones de la web (WhatsApp, mapa, Instagram…) · "BrandIA" del pie → `/` | Funciona. Lee la tabla `webs` de Supabase; no usa IA |
 | `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso, de una marca completa y de cada cliente de punta a punta | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
