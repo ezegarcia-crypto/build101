@@ -28,7 +28,9 @@ flowchart LR
   proxotras["/crear/proximamente/<br/>redes · pauta · newsletter ·<br/>linkedin · x · branderia"]
   costos["/costos<br/>(solo el equipo, con contraseña)"]
   pedidos["/pedidos<br/>(solo el equipo, con contraseña)"]
-  planes["/crear/planes<br/>Planes<br/>(precios y anotarse)"]
+  planes["/crear/planes<br/>Planes<br/>(precios y pagar)"]
+  cuenta["/crear/cuenta<br/>Tu cuenta<br/>(entrar, tus marcas, tu plan)"]
+  mp["Mercado Pago<br/>(página de pago)"]
 
   crear -->|Armar mi marca| marca
   marca -->|Ver mis contenidos| contenido
@@ -44,6 +46,11 @@ flowchart LR
   proxotras -.->|Lo que viene| prox
   proxweb -.->|Lo que viene| prox
   prox -->|Mirá los planes| planes
+  planes -->|Suscribirme · Comprar mi marca| mp
+  planes -.->|si no entró| cuenta
+  mp -->|vuelve con ?pago=| cuenta
+  cuenta -->|Abrir una marca| marca
+  cuenta -->|Ver los planes| planes
 
   marca -.->|Volver a la entrevista| crear
   contenido -.->|Volver a tu marca| marca
@@ -56,7 +63,8 @@ flowchart LR
 ```
 
 En todas las páginas de la app, el logo de BrandIA de arriba lleva a la portada (`/`). En las de `/crear`, la barra
-de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes"** (`/crear/planes`).
+de arriba suma tres links: **"Lo que viene"** (`/crear/proximamente`), **"Planes"** (`/crear/planes`) y
+**"Entrar"** o **"Tu cuenta"** (`/crear/cuenta`; en celular es un ícono de persona).
 
 ## Lo que no está conectado (revisar antes de la demo)
 
@@ -79,7 +87,8 @@ Por eso:
 
 - Cada página del recorrido necesita la anterior **en la misma pestaña**. Si alguien abre `/crear/marca` en una
   pestaña nueva, ve "Primero, contanos tu negocio" con un botón a `/crear`.
-- Si se cierra la pestaña, se pierde la marca. Para la demo: todo en una sola pestaña, de punta a punta.
+- Si se cierra la pestaña, se pierde la marca, **salvo que la persona haya entrado a su cuenta** (ver abajo, "La
+  marca en la cuenta"). Para la demo: todo en una sola pestaña, de punta a punta.
 - Recargar no vuelve a generar lo que ya está terminado (queda guardado en la pestaña). Lo que estaba a medio
   generar sí se pierde: por ejemplo, la web del cliente si se recarga mientras se arma. Si una pantalla se recarga
   más de 3 veces en 2 minutos, deja de pedirle a la IA y muestra un botón para hacerlo a mano (freno de gasto).
@@ -89,6 +98,19 @@ Lo que guarda cada paso: `brandia:ficha` (entrevista), `brandia:nombres`, `brand
 feeds anteriores), `brandia:me-gusta` (piezas del feed marcadas), `brandia:branderia` (fotos de productos, sugeridos
 para el rubro y fotos anteriores) y
 `brandia:web` (web del cliente).
+
+### La marca en la cuenta
+
+Si la persona entró a su cuenta (`/crear/cuenta`), **todo lo de la pestaña se guarda solo en su cuenta** cada pocos
+segundos y al irse de la pestaña: cada clave `brandia:…` es un archivo en la carpeta privada `marcas` de Supabase
+Storage (`marcas/<su id>/<id de la marca>/<parte>.json`) y en la tabla `marcas` queda el resumen (nombre, rubro,
+colores y hasta dónde llegó). Sube directo del navegador a Supabase, sin pasar por nuestro servidor (Vercel corta
+los pedidos de más de 4,5 MB y los logos van adentro). Cada pestaña sube solo lo que cambió en ella: así la pestaña
+de la web y la de la marca no se pisan. Si entra después de armar la marca, se guarda apenas entra.
+
+En `/crear/cuenta` están sus marcas: **"Abrir"** la baja entera a la pestaña y lleva al último paso al que llegó,
+sin pedirle nada a la IA. Si en la pestaña se reinicia la entrevista, la marca nueva se guarda aparte. El código
+está en `apps/web/src/lib/marcas-cuenta.ts` y `apps/web/src/components/cuenta/sincronizar-marca.tsx`.
 
 ## Página por página
 
@@ -135,7 +157,16 @@ Todos los textos de muestra están marcados como ejemplo: nada de esto lo gener�
 
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
-| `/crear/planes` | Los planes y sus precios (los del documento de costos, hasta que los socios los cierren): **Tu marca** USD 19,99 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. "Quiero este plan" lleva al formulario: nombre, mail o WhatsApp y marca (se completa sola si la armó en esa pestaña). **No cobra:** guarda a la persona y el equipo la contacta. Abajo, "Qué pasa cuando te suscribís" | "Planes" en la barra de arriba, o "Mirá los planes" desde `/crear/proximamente` | Después de anotarse, "Seguir con mi marca" → `/crear` | La tabla `interesados` de Supabase (`apps/web/supabase/interesados.sql`). Los anotados se ven en el Table Editor de Supabase | Ninguna. `POST /api/planes` guarda (sin IA) |
+| `/crear/planes` | Los planes y sus precios: **Tu marca** USD 19,99 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. **Con Mercado Pago conectado** (`MERCADOPAGO_ACCESS_TOKEN`), las dos primeras muestran lo que se cobra en pesos (tabla `planes`) y sus botones dicen **"Comprar mi marca"** y **"Suscribirme"**: si la persona no entró, la manda a `/crear/cuenta` y vuelve; si entró, abre la página de pago de Mercado Pago. BranderIA sigue con el formulario ("Pedí tu cotización"). **Sin Mercado Pago conectado**, como antes: "Quiero este plan" lleva al formulario y el equipo contacta a la persona. En modo prueba, arriba dice "Modo prueba: no se cobra de verdad" | "Planes" en la barra de arriba, "Mirá los planes" desde `/crear/proximamente` o "Ver los planes" desde `/crear/cuenta` | Mercado Pago → vuelve a `/crear/cuenta?pago=…` · Después de anotarse, "Seguir con mi marca" → `/crear` | Las tablas `planes`, `suscripciones` y `cobros` (`apps/web/supabase/cuentas.sql`) y la tabla `interesados` (`interesados.sql`) | Ninguna. `POST /api/cobros/suscribir` arma el pago y `POST /api/planes` guarda a quien se anota (sin IA) |
+| `/crear/cuenta` | **La cuenta.** Sin entrar: "Entrá a tu cuenta", con el mail (Supabase manda un mail para entrar, sin contraseña; si el mail trae un código, se escribe ahí mismo) o con Google si está prendido en Supabase. Adentro: "Hola, …", **Tu plan** (prueba gratis, el plan activo con su próximo cobro, "Cancelar mi plan" en el mensual, o "Confirmando tu pago…" al volver de Mercado Pago), **Tus marcas** (tarjetas con los colores de cada marca, hasta dónde llegó, "Abrir" y borrar) y "Salir de mi cuenta" | "Entrar" o "Tu cuenta" en la barra de arriba, o desde `/crear/planes` al pagar | "Abrir" → el último paso de esa marca · "Ver los planes" → `/crear/planes` · "Armar otra marca" → `/crear` | Las tablas `perfiles`, `marcas`, `suscripciones` y la carpeta `marcas` de Supabase (`apps/web/supabase/cuentas.sql`). Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Ninguna. `/crear/cuenta/entrar` recibe la vuelta del enlace del mail o de Google · `POST /api/cobros/confirmar` y `POST /api/cobros/cancelar` (sin IA) |
+
+**El aviso de Mercado Pago:** `POST /api/cobros/aviso` (webhook). Se carga en el panel de Mercado Pago (la
+aplicación → Webhooks) con los eventos de pagos y de suscripciones. No cree lo que dice el aviso: le pregunta a
+Mercado Pago cómo quedó y recién ahí marca la suscripción activa en Supabase. Detalle y comparación con Stripe en
+`equipo/cobros.md`.
+
+**Para saber si alguien tiene el plan mensual:** `suscripcionActiva()` o `tieneSuscripcion()` de
+`apps/web/src/lib/suscripcion-activa.ts` (solo en el servidor; lee la sesión de las cookies).
 
 Los precios y lo que incluye cada plan se cambian en `apps/web/src/lib/planes.ts`. Arriba dice "Beta abierta:
 hoy lo probás gratis" y que son precios de lanzamiento.
