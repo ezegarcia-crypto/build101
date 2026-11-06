@@ -1,7 +1,10 @@
 import { z } from "zod";
 
+import { catalogoParaPrompt } from "@/lib/ia/catalogos/fuentes";
+
 // Paso 2 del módulo A: con la ficha, la IA propone tres direcciones visuales distintas y la persona elige una.
 // Adaptado de brandia/motor-ia/03-direcciones.md (sin imágenes de moodboard, para que sea rápido).
+// Las tipografías salen del catálogo de lib/ia/catalogos/ (va al final del prompt).
 
 export const MODELO_DIRECCIONES = "anthropic/claude-sonnet-5.5";
 
@@ -33,8 +36,14 @@ export const direccionSchema = z.object({
     .max(6)
     .describe("Tiene que haber exactamente un color con rol fondo y uno con rol texto"),
   tipografias: z.object({
-    titulos: z.object({ familia: z.string().describe("Nombre exacto en Google Fonts"), por_que: z.string() }),
-    texto: z.object({ familia: z.string().describe("Nombre exacto en Google Fonts"), por_que: z.string() }),
+    titulos: z.object({
+      familia: z.string().describe("Nombre exacto, tal cual figura en el catálogo de tipografías"),
+      por_que: z.string(),
+    }),
+    texto: z.object({
+      familia: z.string().describe("Nombre exacto, tal cual figura en el catálogo, de una marcada para «títulos y texto»"),
+      por_que: z.string(),
+    }),
   }),
   formas: z.string().describe("Lenguaje de formas en una línea: geométrico, orgánico, caligráfico, modular…"),
   logo_sugerido: z.object({
@@ -62,7 +71,9 @@ Reglas:
 - Ninguna dirección puede usar colores de colores_no, parecerse a no_parecerse_a ni romper las restricciones.
 - Si la persona nombró colores que le gustan, al menos la dirección A los usa.
 - Los colores salen del negocio, no de una paleta genérica: de lo que vende o hace, sus materiales, su lugar y su público (una pastelería: crema, frutilla, chocolate; un estudio contable: tinta, papel, sello). El nombre de cada color lo cuenta y por_que dice de dónde salen.
-- Tipografías: solo de Google Fonts, con el nombre exacto de la familia (por ejemplo "Playfair Display", "DM Sans"). Una para títulos y otra para texto, que se lean bien en pantalla.
+- Tipografías: las dos salen del catálogo que va al final, con el nombre escrito exactamente igual. La de texto tiene que estar marcada para «títulos y texto»; la de títulos puede ser cualquiera.
+- Elegilas por su estilo y su carácter (los del catálogo): que respondan a la ficha (el rubro, el público, las palabras de la persona) y que el par combine, por ejemplo una con personalidad para títulos y una sobria para leer. En por_que contá qué de la ficha te llevó a cada una.
+- Las tres direcciones usan pares de tipografías distintos. Las marcadas «muy vista» están en todos lados: usalas solo si la ficha pide algo neutro o muy clásico.
 - Paleta de 4 a 6 colores: exactamente un color "fondo" y uno "texto", y el texto sobre el fondo tiene que leerse muy bien (contraste alto).
 - Si la marca ya tiene logo o algo a conservar, las tres lo respetan.
 - Si la ficha dice que necesita nombre, cada dirección propone uno distinto en nombre_marca, corto, fácil de decir en español rioplatense y que no sea una marca conocida.
@@ -72,7 +83,13 @@ Si te pasan lo que la persona ya opinó de otros caminos:
 - Los que le gustaron muestran lo que busca: seguí esa línea con caminos nuevos, sin repetirlos.
 - Los colores que marcó que le gustan se conservan en al menos dos de los tres caminos.
 - No repitas ninguna paleta ni camino que ya vio.
-- Si hay un pedido en palabras, manda sobre todo lo demás (salvo las reglas de la ficha).`;
+- Si hay un pedido en palabras, manda sobre todo lo demás (salvo las reglas de la ficha).
+
+## Catálogo de tipografías
+
+Todas de Google Fonts, con licencia libre. Cada línea: nombre, su estilo y su carácter, y entre corchetes si sirve para texto y si está muy vista.
+
+${catalogoParaPrompt()}`;
 
 /** Lo que la persona ya vio y opinó, para la próxima vuelta de caminos */
 export type IteracionDirecciones = {

@@ -1,13 +1,8 @@
 import { generateText, Output } from "ai";
 
 import { briefSchema } from "@/lib/ia/brief";
-import {
-  asegurarContraste,
-  type Comprobacion,
-  comprobarPrincipal,
-  limpiarSvg,
-  parametroGoogleFonts,
-} from "@/lib/ia/comprobaciones";
+import { tipografiasDeLaIdentidad } from "@/lib/ia/catalogos/fuentes";
+import { asegurarContraste, type Comprobacion, comprobarPrincipal, limpiarSvg } from "@/lib/ia/comprobaciones";
 import { direccionSchema } from "@/lib/ia/direcciones";
 import {
   logoSchema,
@@ -26,9 +21,6 @@ import { etiquetar, medir, senalDelPedido } from "@/lib/ia/gastos";
 
 export const maxDuration = 180;
 
-// Si una tipografía no existe en Google Fonts, se reemplaza por una segura del mismo uso
-const REEMPLAZO = { titulos: "DM Serif Display", texto: "DM Sans" } as const;
-
 export const POST = medir("identidad", async (req: Request) => {
   const cuerpo = await req.json();
   const ficha = briefSchema.safeParse(cuerpo.brief);
@@ -42,7 +34,7 @@ export const POST = medir("identidad", async (req: Request) => {
   const direccion = brief.marca.nombre ? { ...elegida.data, nombre_marca: brief.marca.nombre } : elegida.data;
   const contexto = `Ficha de la marca:\n${JSON.stringify(brief, null, 2)}\n\nDirección visual elegida:\n${JSON.stringify(direccion, null, 2)}`;
 
-  const [textos, logo, fuenteTitulos, fuenteTexto] = await Promise.all([
+  const [textos, logo, fuentes] = await Promise.all([
     conReintento(() =>
       generateText({
         model: MODELO_TEXTOS,
@@ -63,8 +55,10 @@ export const POST = medir("identidad", async (req: Request) => {
         prompt: `${contexto}\n\nTipo de logo: ${direccion.logo_sugerido.tipo}. Formas: ${direccion.formas}.`,
       }),
     ),
-    parametroGoogleFonts(direccion.tipografias.titulos.familia),
-    parametroGoogleFonts(direccion.tipografias.texto.familia),
+    tipografiasDeLaIdentidad({
+      titulos: direccion.tipografias.titulos.familia,
+      texto: direccion.tipografias.texto.familia,
+    }),
   ]);
 
   const comprobaciones: Comprobacion[] = [];
@@ -72,19 +66,7 @@ export const POST = medir("identidad", async (req: Request) => {
   const { paleta, comprobacion: contrasteOk } = asegurarContraste(direccion.paleta);
   comprobaciones.push(contrasteOk, comprobarPrincipal(paleta));
 
-  const tipografias = {
-    titulos: fuenteTitulos ? direccion.tipografias.titulos.familia : REEMPLAZO.titulos,
-    texto: fuenteTexto ? direccion.tipografias.texto.familia : REEMPLAZO.texto,
-  };
-  const parametros = [fuenteTitulos ?? "family=DM+Serif+Display", fuenteTexto ?? "family=DM+Sans:wght@400;700"];
-  comprobaciones.push({
-    que: "Tipografías",
-    ok: Boolean(fuenteTitulos && fuenteTexto),
-    detalle:
-      fuenteTitulos && fuenteTexto
-        ? `${tipografias.titulos} y ${tipografias.texto} existen en Google Fonts`
-        : `Se reemplazó la que no existe en Google Fonts: ${tipografias.titulos} y ${tipografias.texto}`,
-  });
+  comprobaciones.push(fuentes.comprobacion);
 
   const { svg, comprobacion: logoOk } = limpiarSvg(logo.output.isotipo_svg);
   comprobaciones.push(logoOk);
@@ -101,8 +83,8 @@ export const POST = medir("identidad", async (req: Request) => {
         formas: direccion.formas,
       },
       paleta,
-      tipografias,
-      fuentes_url: `https://fonts.googleapis.com/css2?${[...new Set(parametros)].join("&")}&display=swap`,
+      tipografias: fuentes.tipografias,
+      fuentes_url: fuentes.fuentes_url,
       logo: { tipo: direccion.logo_sugerido.tipo, isotipo_svg: svg, explicacion: logo.output.explicacion },
       comprobaciones,
     },

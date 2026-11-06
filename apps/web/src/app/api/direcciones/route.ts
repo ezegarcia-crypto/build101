@@ -2,6 +2,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 
 import { type Brief, briefSchema } from "@/lib/ia/brief";
+import { fuentesDelCatalogo } from "@/lib/ia/catalogos/fuentes";
 import { asegurarContraste } from "@/lib/ia/comprobaciones";
 import { direccionesSchema, MODELO_DIRECCIONES, pedidoDirecciones, PROMPT_DIRECCIONES } from "@/lib/ia/direcciones";
 import { conReintento } from "@/lib/ia/reintentar";
@@ -42,7 +43,13 @@ export const POST = medir("direcciones", async (req: Request) => {
 
   const direcciones = output.direcciones.map((d) => {
     const { paleta, comprobacion } = asegurarContraste(d.paleta);
-    return { ...d, paleta, comprobaciones: [comprobacion] };
+    // Las tipografías tienen que ser del catálogo: si la IA nombró otra, va una segura del mismo tipo
+    const fuentes = fuentesDelCatalogo({ titulos: d.tipografias.titulos.familia, texto: d.tipografias.texto.familia });
+    const tipografias = {
+      titulos: { ...d.tipografias.titulos, familia: fuentes.titulos.familia },
+      texto: { ...d.tipografias.texto, familia: fuentes.texto.familia },
+    };
+    return { ...d, paleta, tipografias, comprobaciones: [comprobacion, fuentes.comprobacion] };
   });
 
   return Response.json({ direcciones });
