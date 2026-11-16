@@ -28,6 +28,7 @@ flowchart LR
   proxotras["/crear/proximamente/<br/>redes · pauta · newsletter ·<br/>linkedin · x · branderia"]
   costos["/costos<br/>(solo el equipo, con contraseña)"]
   pedidos["/pedidos<br/>(solo el equipo, con contraseña)"]
+  pilotos["/pilotos<br/>(solo el equipo, con contraseña)"]
   planes["/crear/planes<br/>Planes<br/>(precios y pagar)"]
   cuenta["/crear/cuenta<br/>Tu cuenta<br/>(entrar, tus marcas, tu plan)"]
   mp["Mercado Pago<br/>(página de pago)"]
@@ -62,6 +63,7 @@ flowchart LR
   espera ~~~ portada
   costos ~~~ espera
   branderia -->|Pedir cotización · el pedido llega a| pedidos
+  pilotos -.->|la persona entra con ese correo en| ingresar
 ```
 
 En todas las páginas de la app, el logo de BrandIA de arriba lleva a la portada (`/`). En las de `/crear`, la barra
@@ -72,7 +74,7 @@ de arriba suma tres links: **"Lo que viene"** (`/crear/proximamente`), **"Planes
 
 1. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
-2. **`/costos` y `/pedidos` no tienen links a propósito**: son solo para el equipo.
+2. **`/costos`, `/pedidos` y `/pilotos` no tienen links a propósito**: son solo para el equipo.
 3. **Los correos para entrar solo les llegan al equipo.** Supabase manda con su servidor de correo de prueba: solo
    a los correos del equipo, pocos por hora y sin el código (solo el enlace). Antes de abrir las cuentas a clientes
    hay que configurar un servidor de correo propio (por ejemplo Resend, con brandiamos.com) en Supabase →
@@ -129,6 +131,7 @@ está en `apps/web/src/lib/marcas-cuenta.ts` y `apps/web/src/components/cuenta/s
 | `/w/[slug]` | **La web publicada de un cliente** (por ejemplo `/w/hoy-rueda`), con SU marca (el logo elegido, sus tipografías y su paleta): sin la barra de BrandIA, solo un "Hecha con BrandIA" chico al final. Si la dirección no existe, "Acá no hay ninguna web" | El link o el QR que entrega `/crear/web` | Los botones de la web (WhatsApp, mapa, Instagram…) · "BrandIA" del pie → `/` | Funciona. Lee la tabla `webs` de Supabase; no usa IA |
 | `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso, de una marca completa y de cada cliente de punta a punta | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
 | `/pedidos` | Panel del equipo: los pedidos de BranderIA (marca, colores, productos, cantidades, contacto con link a WhatsApp y a dónde mandarlo). Se cambia el estado de cada uno: recibido, cotizado, en producción, en camino, entregado o cancelado | Solo con el link. La misma contraseña que `/costos` | — | Necesita la tabla `pedidos_branderia` de Supabase (`apps/web/supabase/pedidos-branderia.sql`) |
+| `/pilotos` | **Panel del equipo: las cuentas piloto.** BrandIA completo y gratis por un tiempo para la gente que invitamos. Se pone el correo de la persona, cuántos días (60 de entrada) y una nota para el equipo que la persona no ve. Si no tenía cuenta, se la crea (sin contraseña); si ya tenía un piloto vigente, lo alarga en vez de sumar otro. Lista todas, con hasta cuándo es gratis cada una, y "Terminar hoy". Por dentro, cada piloto es una fila de `suscripciones` con proveedor `piloto`: todo lo que se destraba pagando se destraba también para un piloto | Solo con el link. La misma contraseña que `/costos` | La persona entra en `/ingresar` con ese correo | Las tablas `suscripciones` y `perfiles` (`apps/web/supabase/cuentas.sql`). Sin IA. `app/pilotos/acciones.ts` y `lib/pilotos.ts` |
 | `/pruebas` | **Panel del equipo: todo lo que se generó en cada prueba.** Un cliente por pestaña que usó la app (con el nombre de su marca, el rubro y por qué pasos pasó), del más nuevo al más viejo | Solo con el link. Pide la misma contraseña que `/costos` | Cada cliente → `/pruebas/[cliente]` | Funciona. Lee la tabla `pruebas` de Supabase (`apps/web/supabase/pruebas.sql`); no usa IA |
 | `/pruebas/[cliente]` | Una prueba entera. Arriba, lo que se generó dibujado como en la app, con los mismos componentes: la entrevista como chat, los nombres en tarjetas, los tres caminos (y cuál eligió), el brandbook con sus logos, el feed, las fotos de BranderIA y la web. Abajo, el historial: cada pedido a la IA con lo que se mandó y lo que volvió. "Bajar todo (JSON)" la descarga entera | Desde `/pruebas` | "Todas las pruebas" → `/pruebas` | Funciona. Las imágenes y audios están en la carpeta `pruebas` de Supabase Storage |
 
@@ -164,7 +167,7 @@ Todos los textos de muestra están marcados como ejemplo: nada de esto lo gener�
 | Dirección | Qué es | Cómo se llega | Lleva a | Necesita | IA que usa |
 |---|---|---|---|---|---|
 | `/crear/planes` | Los planes y sus precios: **Tu marca** USD 19,99 una vez, **Tu marca andando** USD 29 por mes y **BranderIA** a cotizar. **Con Mercado Pago conectado** (`MERCADOPAGO_ACCESS_TOKEN`), las dos primeras muestran lo que se cobra en pesos (tabla `planes`) y sus botones dicen **"Comprar mi marca"** y **"Suscribirme"**: si la persona no entró, la manda a `/crear/cuenta` y vuelve; si entró, abre la página de pago de Mercado Pago. BranderIA sigue con el formulario ("Pedí tu cotización"). **Sin Mercado Pago conectado**, como antes: "Quiero este plan" lleva al formulario y el equipo contacta a la persona. En modo prueba, arriba dice "Modo prueba: no se cobra de verdad" | "Planes" en la barra de arriba, "Mirá los planes" desde `/crear/proximamente` o "Ver los planes" desde `/crear/cuenta` | Mercado Pago → vuelve a `/crear/cuenta?pago=…` · Después de anotarse, "Seguir con mi marca" → `/crear` | Las tablas `planes`, `suscripciones` y `cobros` (`apps/web/supabase/cuentas.sql`) y la tabla `interesados` (`interesados.sql`) | Ninguna. `POST /api/cobros/suscribir` arma el pago y `POST /api/planes` guarda a quien se anota (sin IA) |
-| `/crear/cuenta` | **La cuenta.** Sin sesión, manda a `/ingresar` y vuelve. Adentro: "Hola, …", **Tu plan** (prueba gratis, el plan activo con su próximo cobro, "Cancelar mi plan" en el mensual, o "Confirmando tu pago…" al volver de Mercado Pago), **Tus marcas** (tarjetas con los colores de cada marca, hasta dónde llegó, "Abrir" y borrar) y "Salir de mi cuenta" | "Tu cuenta" en la barra de arriba, al entrar desde `/ingresar` o al volver de Mercado Pago | "Abrir" → el último paso de esa marca · "Ver los planes" → `/crear/planes` · "Armar otra marca" → `/crear` | Las tablas `perfiles`, `marcas`, `suscripciones` y la carpeta `marcas` de Supabase (`apps/web/supabase/cuentas.sql`). Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Ninguna. `/crear/cuenta/entrar` recibe la vuelta del enlace del correo · `POST /api/cobros/confirmar` y `POST /api/cobros/cancelar` (sin IA) |
+| `/crear/cuenta` | **La cuenta.** Sin sesión, manda a `/ingresar` y vuelve. Adentro: "Hola, …", **Tu plan** (prueba gratis, "Cuenta piloto" con hasta cuándo es gratis y sin botón de cancelar, el plan activo con su próximo cobro, "Cancelar mi plan" en el mensual, o "Confirmando tu pago…" al volver de Mercado Pago), **Tus marcas** (tarjetas con los colores de cada marca, hasta dónde llegó, "Abrir" y borrar) y "Salir de mi cuenta" | "Tu cuenta" en la barra de arriba, al entrar desde `/ingresar` o al volver de Mercado Pago | "Abrir" → el último paso de esa marca · "Ver los planes" → `/crear/planes` · "Armar otra marca" → `/crear` | Las tablas `perfiles`, `marcas`, `suscripciones` y la carpeta `marcas` de Supabase (`apps/web/supabase/cuentas.sql`). Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Ninguna. `/crear/cuenta/entrar` recibe la vuelta del enlace del correo · `POST /api/cobros/confirmar` y `POST /api/cobros/cancelar` (sin IA) |
 | `/ingresar` | **Entrar a tu cuenta** (pantalla de Juan Pedro, conectada a Supabase Auth). A la izquierda, "Todo lo que BrandIAste, en un mismo *lugar*"; a la derecha, la tarjeta en dos pasos: el correo ("Recibir código") y después "Te mandamos un correo": se toca el enlace del correo o se escribe el código si lo trae (6 u 8 números, "Entrar"), con "Cambiar correo" y "Mandame otro código". Sin contraseña y sin registro aparte: la primera vez crea la cuenta. Entra en la misma pestaña, así la marca que estaba armando se guarda sola en su cuenta | "Entrar" en la barra de `/crear` (lleva `?volver=` con la página donde estaba), `/crear/cuenta` sin sesión, o "Suscribirme" en `/crear/planes` sin sesión | Después de entrar, a `volver` o a `/crear/cuenta` · El enlace del correo pasa por `/crear/cuenta/entrar` · "Empezá acá" → `/crear` | Supabase Auth (ver "Lo que no está conectado", punto 3: los correos) | Ninguna. `app/ingresar/acciones.ts` (signInWithOtp y verifyOtp, en el servidor) |
 
 **El aviso de Mercado Pago:** `POST /api/cobros/aviso` (webhook). Se carga en el panel de Mercado Pago (la
@@ -190,6 +193,9 @@ hoy lo probás gratis" y que son precios de lanzamiento.
 - **El equipo no tiene límite:** entrar una vez a `/costos` con la contraseña deja ese navegador como del equipo
   (cookie del servidor y marca en el navegador). En `/costos` aparece "Este navegador es del equipo". Hay que
   hacerlo en cada navegador y celular que se use para probar o para la demo.
+- **Las cuentas con plan mensual tampoco tienen el tope de la prueba gratis**, sea pago o piloto (`/pilotos`):
+  al entrar a su cuenta, el navegador anota hasta cuándo vale (`components/cuenta/plan-de-la-cuenta.tsx`) y al
+  salir o vencer se borra. El tope diario de gasto sí les corre.
 
 ## Solo en la compu
 

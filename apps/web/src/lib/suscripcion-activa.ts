@@ -35,7 +35,7 @@ async function activas(planes: Suscripcion["plan"][]) {
   if (!usuario.user) return [];
   const { data, error } = await supabase
     .from("suscripciones")
-    .select("id, plan, estado, hasta, prueba")
+    .select("id, plan, estado, hasta, prueba, proveedor")
     .eq("usuario", usuario.user.id)
     .in("estado", ["activa", "cancelada"])
     .in("plan", planes)
@@ -45,10 +45,11 @@ async function activas(planes: Suscripcion["plan"][]) {
     return [];
   }
   const ahora = Date.now();
-  return (data as (Omit<Suscripcion, "estado"> & { estado: string })[])
+  return (data as (Omit<Suscripcion, "estado"> & { estado: string; proveedor: string })[])
     .filter((s) =>
       s.estado === "activa"
-        ? !s.hasta || new Date(s.hasta).getTime() + GRACIA_MS > ahora
+        ? // Una cuenta piloto vence justo en su fecha; la paga tiene unos días de gracia
+          !s.hasta || new Date(s.hasta).getTime() + (s.proveedor === "piloto" ? 0 : GRACIA_MS) > ahora
         : // Si la canceló, el plan sigue andando hasta el final del mes que ya pagó
           Boolean(s.hasta) && new Date(s.hasta as string).getTime() > ahora,
     )

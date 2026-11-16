@@ -81,13 +81,14 @@ export async function empezarCobro(plan: PlanCobrable, usuario: { id: string; ma
   const mail = prueba ? process.env.MERCADOPAGO_COMPRADOR_PRUEBA || usuario.mail : usuario.mail;
   if (!mail) throw new Error("Tu cuenta no tiene mail: no se puede cobrar.");
 
-  // Si ya tiene el plan activo, no se cobra dos veces
+  // Si ya tiene el plan activo y pago, no se cobra dos veces. Una cuenta piloto (gratis) sí puede pasar a pagar
   const { data: activa } = await base()
     .from("suscripciones")
     .select("id")
     .eq("usuario", usuario.id)
     .eq("plan", plan)
     .eq("estado", "activa")
+    .eq("proveedor", "mercadopago")
     .limit(1);
   if (activa?.length) throw new Error("Ya tenés este plan activo.");
 
@@ -289,6 +290,7 @@ export async function cancelarSuscripcion(usuario: string) {
     .select("id, proveedor_id")
     .eq("usuario", usuario)
     .eq("plan", "mensual")
+    .eq("proveedor", "mercadopago")
     .in("estado", ["activa", "pausada"]);
   for (const f of filas ?? []) {
     if (f.proveedor_id) await mp("PUT", `/preapproval/${encodeURIComponent(f.proveedor_id)}`, { status: "cancelled" });

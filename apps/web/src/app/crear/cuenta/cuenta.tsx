@@ -66,7 +66,7 @@ function CuentaAdentro() {
 
 // ─── Adentro ─────────────────────────────────────────────────────────────────────────────────────────────────
 
-type SuscripcionDeCuenta = { plan: string; estado: string; hasta: string | null; prueba: boolean };
+type SuscripcionDeCuenta = { plan: string; estado: string; hasta: string | null; prueba: boolean; proveedor: string };
 
 const fecha = (iso: string) =>
   new Date(iso).toLocaleDateString("es-UY", { day: "numeric", month: "long", year: "numeric" });
@@ -99,7 +99,7 @@ function MiCuenta({ usuario, pago }: { usuario: User; pago: string | null }) {
       setMarcas(await listarMarcas(supabase));
       const { data } = await supabase
         .from("suscripciones")
-        .select("plan, estado, hasta, prueba")
+        .select("plan, estado, hasta, prueba, proveedor")
         .in("estado", ["activa", "pausada", "cancelada"])
         .order("creado", { ascending: false });
       setSuscripciones((data as SuscripcionDeCuenta[]) ?? []);
@@ -326,8 +326,14 @@ function TuPlan({
 
   const ahora = Date.now();
   const vigente = (s: SuscripcionDeCuenta) =>
-    s.estado === "activa" || (s.estado === "cancelada" && s.hasta !== null && new Date(s.hasta).getTime() > ahora);
-  const mensual = suscripciones.find((s) => s.plan === "mensual" && vigente(s));
+    s.proveedor === "piloto"
+      ? s.estado === "activa" && s.hasta !== null && new Date(s.hasta).getTime() > ahora
+      : s.estado === "activa" || (s.estado === "cancelada" && s.hasta !== null && new Date(s.hasta).getTime() > ahora);
+  // Si pagó, manda lo pago; si no, la cuenta piloto (gratis, la regala el equipo desde /pilotos)
+  const mensual =
+    suscripciones.find((s) => s.plan === "mensual" && s.proveedor !== "piloto" && vigente(s)) ??
+    suscripciones.find((s) => s.plan === "mensual" && vigente(s));
+  const piloto = mensual?.proveedor === "piloto";
   const marca = suscripciones.find((s) => s.plan === "marca" && s.estado === "activa");
   const actual = mensual ?? marca;
   const plan = actual ? PLANES.find((p) => p.id === actual.plan) : undefined;
@@ -344,6 +350,14 @@ function TuPlan({
           <>
             <h2 className="text-2xl">Confirmando tu pago…</h2>
             <p className="text-muted-foreground">Le estamos preguntando a Mercado Pago. Tarda unos segundos.</p>
+          </>
+        ) : piloto && mensual ? (
+          <>
+            <h2 className="text-2xl">Cuenta piloto</h2>
+            <p className="text-muted-foreground">
+              Tenés BrandIA completo, gratis hasta el {fecha(mensual.hasta as string)}. Gracias por probarlo con
+              nosotros.
+            </p>
           </>
         ) : plan && actual ? (
           <>
@@ -369,7 +383,7 @@ function TuPlan({
       </div>
       {confirmando ? (
         <Loader />
-      ) : mensual?.estado === "activa" ? (
+      ) : piloto ? null : mensual?.estado === "activa" ? (
         <button
           type="button"
           onClick={cancelar}

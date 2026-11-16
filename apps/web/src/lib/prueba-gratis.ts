@@ -4,6 +4,8 @@
 // (components/aviso-limite.tsx). Se puede saltear con otro navegador o una ventana privada: es un freno para la
 // mayoría, no una seguridad. La seguridad de verdad es el tope diario del servidor (lib/ia/tope-diario.ts).
 // El equipo no tiene límite: entrar una vez a /costos con la contraseña marca el navegador (lib/equipo.ts).
+// Tampoco quien entró a una cuenta con el plan mensual activo, pago o piloto: lo anota en el navegador
+// components/cuenta/plan-de-la-cuenta.tsx, con la fecha hasta la que vale.
 
 /** Cuántos pedidos bien respondidos admite cada ruta. Alcanza para una marca completa con sus vueltas. */
 export const LIMITES: Record<string, number> = {
@@ -52,10 +54,23 @@ export function esNavegadorDelEquipo() {
   }
 }
 
+/** Dónde se anota hasta cuándo vale el plan de la cuenta que entró en este navegador (fecha ISO). */
+export const CLAVE_PLAN = "brandia:plan-hasta";
+
+/** Si la cuenta que entró en este navegador tiene el plan mensual activo (pago o piloto). */
+export function tienePlanActivo() {
+  try {
+    const hasta = localStorage.getItem(CLAVE_PLAN);
+    return Boolean(hasta) && new Date(hasta as string).getTime() > Date.now();
+  } catch {
+    return false;
+  }
+}
+
 /** Si esta ruta ya llegó a su tope en este navegador. */
 export function agotado(ruta: string) {
   const tope = LIMITES[ruta];
-  return tope !== undefined && !esNavegadorDelEquipo() && (leer()[ruta] ?? 0) >= tope;
+  return tope !== undefined && !esNavegadorDelEquipo() && !tienePlanActivo() && (leer()[ruta] ?? 0) >= tope;
 }
 
 /** Suma un pedido bien respondido a esta ruta. */

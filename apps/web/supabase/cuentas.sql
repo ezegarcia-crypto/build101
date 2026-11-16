@@ -158,14 +158,24 @@ create table if not exists public.suscripciones (
   actualizado timestamptz not null default now(),
   -- pendiente: fue a pagar y todavía no volvió · activa: pagó · pausada / cancelada: la frenó él o falló el cobro
   estado text not null default 'pendiente' check (estado in ('pendiente', 'activa', 'pausada', 'cancelada')),
-  proveedor text not null default 'mercadopago' check (proveedor in ('mercadopago')),
+  -- mercadopago: la pagó · piloto: cuenta piloto, gratis, la regala el equipo desde /pilotos
+  proveedor text not null default 'mercadopago' check (proveedor in ('mercadopago', 'piloto')),
   -- El id en Mercado Pago: el de la suscripción (preapproval) o el de la preferencia de pago, según el plan
   proveedor_id text unique,
-  -- Hasta cuándo está pago (el próximo cobro). En una compra única queda vacío: no vence
+  -- Hasta cuándo está pago (el próximo cobro). En una compra única queda vacío: no vence.
+  -- En una cuenta piloto, hasta cuándo es gratis
   hasta timestamptz,
   -- Para modo prueba: no se cuenta como cliente real
-  prueba boolean not null default false
+  prueba boolean not null default false,
+  -- Para el equipo: por qué se regaló una cuenta piloto (quién es, de dónde viene). La persona no la ve
+  nota text check (nota is null or char_length(nota) <= 200)
 );
+
+-- Si la tabla ya existía de antes: se suman las cuentas piloto y la nota
+alter table public.suscripciones add column if not exists nota text check (nota is null or char_length(nota) <= 200);
+alter table public.suscripciones drop constraint if exists suscripciones_proveedor_check;
+alter table public.suscripciones
+  add constraint suscripciones_proveedor_check check (proveedor in ('mercadopago', 'piloto'));
 
 create index if not exists suscripciones_usuario on public.suscripciones (usuario, estado);
 
@@ -175,7 +185,11 @@ drop policy if exists "cada uno ve sus suscripciones" on public.suscripciones;
 create policy "cada uno ve sus suscripciones" on public.suscripciones
   for select to authenticated using ((select auth.uid()) = usuario);
 
-grant select on public.suscripciones to authenticated;
+-- La persona lee sus suscripciones, menos la nota del equipo. Primero se le saca todo lo que Supabase da de
+-- fábrica a las tablas nuevas, y después se le da solo esas columnas.
+revoke all on public.suscripciones from anon, authenticated;
+grant select (id, usuario, plan, creado, actualizado, estado, proveedor, proveedor_id, hasta, prueba)
+  on public.suscripciones to authenticated;
 grant select, insert, update on public.suscripciones to service_role;
 
 -- ─── Cobros ───────────────────────────────────────────────────────────────────────────────────────────────

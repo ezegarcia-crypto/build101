@@ -38,6 +38,30 @@ suscripciones para vender en Uruguay ni sus comisiones publicadas.
 5. Cada mes Mercado Pago cobra solo y vuelve a avisar: la suscripción sigue activa hasta el próximo mes. Si el
    cobro falla o la persona la cancela, deja de estar activa.
 
+Las **cuentas piloto** (`/pilotos`, gratis) son otra fila de `suscripciones`, con proveedor `piloto`: no pasan por
+Mercado Pago, no se pueden cancelar desde la cuenta y no impiden pagar. Si un piloto se suscribe, manda lo pago.
+
+## Para conectarlo (estado al 16/11/2026: el código está, faltan las credenciales)
+
+Las cuentas, contraseñas y claves las maneja Eze; Claude guía. Primero en **modo prueba** (plata ficticia):
+
+1. En [Mercado Pago Developers](https://www.mercadopago.com.uy/developers/panel/app), con la cuenta de Mercado
+   Pago que va a cobrar, **crear una aplicación** (Checkout Pro y suscripciones).
+2. En esa aplicación → **Cuentas de prueba**: crear un **vendedor** y un **comprador** de prueba, de Uruguay.
+3. Entrar con el vendedor de prueba (en una ventana privada), crear ahí una aplicación y copiar sus
+   **"Credenciales de producción" → Access Token**. Así prueba Mercado Pago: credenciales de un vendedor ficticio.
+4. En esa aplicación del vendedor de prueba → **Webhooks**: la dirección es la de la versión de prueba de la rama
+   (o `https://app.brandiamos.com` cuando esté en `main`) más `/api/cobros/aviso`, con los eventos **Pagos** y
+   **Planes y suscripciones**. Copiar la **clave secreta**.
+5. Cargar las cuatro variables en `apps/web/.env.local` y en Vercel (Preview): `MERCADOPAGO_ACCESS_TOKEN`,
+   `MERCADOPAGO_WEBHOOK_SECRET`, `MERCADOPAGO_PRUEBA=1` y `MERCADOPAGO_COMPRADOR_PRUEBA` (el mail del comprador).
+6. Probar: entrar a una cuenta, `/crear/planes` → "Suscribirme", pagar con el comprador de prueba y una
+   [tarjeta de prueba](https://www.mercadopago.com.uy/developers/es/docs/checkout-pro/additional-content/your-integrations/test/cards),
+   y ver en `/crear/cuenta` "Activo (Modo prueba)".
+7. **Para cobrar de verdad:** los socios fijan los precios en pesos (tabla `planes` de Supabase; hoy son
+   provisorios), se cambia el Access Token por el de la cuenta real, se borra `MERCADOPAGO_PRUEBA` y el webhook
+   pasa a `https://app.brandiamos.com/api/cobros/aviso`.
+
 ## Fuentes
 
 - [Stripe: países donde se puede abrir una cuenta](https://stripe.com/global)
