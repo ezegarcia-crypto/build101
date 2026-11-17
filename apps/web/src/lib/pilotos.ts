@@ -92,24 +92,28 @@ async function cuentaDe(mail: string) {
 }
 
 /**
- * Le da a ese correo una cuenta piloto por `dias` días, contando desde hoy. Si ya tenía una vigente, la alarga
- * (no se suman dos). Devuelve hasta cuándo queda gratis.
+ * Le da a ese correo una cuenta piloto por `dias` días, contando desde hoy. Si ya tenía una vigente, se le suman
+ * los días a los que le quedan (no se arma otra). Si la que tenía ya venció, arranca una nueva. Devuelve hasta
+ * cuándo queda gratis.
  */
 export async function darPiloto({ mail, dias, nota }: z.infer<typeof pilotoSchema>) {
   const usuario = await cuentaDe(mail);
-  const hasta = new Date(Date.now() + dias * DIA_MS).toISOString();
-  const ahora = new Date().toISOString();
   const s = base();
+  const ahora = new Date().toISOString();
 
   const { data: vigente } = await s
     .from("suscripciones")
-    .select("id, nota")
+    .select("id, nota, hasta")
     .eq("usuario", usuario)
     .eq("proveedor", "piloto")
     .eq("estado", "activa")
-    .order("creado", { ascending: false })
+    .gt("hasta", ahora)
+    .order("hasta", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  const desde = vigente?.hasta ? new Date(vigente.hasta).getTime() : Date.now();
+  const hasta = new Date(desde + dias * DIA_MS).toISOString();
 
   const { error } = vigente
     ? await s

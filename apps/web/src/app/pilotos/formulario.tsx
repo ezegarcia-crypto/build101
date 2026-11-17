@@ -34,6 +34,9 @@ export function Formulario({ diasPorDefecto }: { diasPorDefecto: number }) {
           <input type="number" name="dias" min={1} max={365} step={1} required defaultValue={diasPorDefecto} className={campo} />
         </label>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Si ya tiene una cuenta piloto vigente, los días se suman a los que le quedan.
+      </p>
       <label className="flex flex-col gap-1 text-[0.9375rem]">
         Nota para el equipo (opcional)
         <input name="nota" maxLength={200} placeholder="Quién es y de dónde viene. La persona no la ve" className={campo} />

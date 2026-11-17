@@ -31,7 +31,7 @@ export async function dar(_: EstadoForm, datos: FormData): Promise<EstadoForm> {
     revalidatePath("/pilotos");
     return {
       ok: true,
-      mensaje: `${alargada ? "Listo, se alargó" : "Listo"}: ${r.data.mail} tiene BrandIA completo gratis hasta el ${fecha.format(new Date(hasta))}.`,
+      mensaje: `${alargada ? `Listo, se le sumaron ${r.data.dias} días` : "Listo"}: ${r.data.mail} tiene BrandIA completo gratis hasta el ${fecha.format(new Date(hasta))}.`,
     };
   } catch (error) {
     console.error("[pilotos] no se pudo dar la cuenta", error);

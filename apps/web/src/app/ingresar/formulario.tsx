@@ -5,6 +5,7 @@ import gsap from "gsap";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { useSesion } from "@/components/cuenta/usar-sesion";
 import { destinoSeguro } from "@/lib/destino";
 
 import { pedirCodigo, verificarCodigo } from "./acciones";
@@ -30,6 +31,13 @@ export function Formulario({ volver = null, errorInicial = null }: { volver?: st
   const [cargando, empezar] = useTransition();
   const caja = useRef<HTMLDivElement>(null);
   const primeraVez = useRef(true);
+  const { usuario } = useSesion();
+
+  // Si mientras espera el código entró tocando el enlace del correo (en otra pestaña), al volver a esta se da
+  // cuenta y sigue sola: así no se queda en "Te mandamos un correo" y la marca de esta pestaña se guarda
+  useEffect(() => {
+    if (paso === "codigo" && usuario) window.location.href = destinoSeguro(volver);
+  }, [paso, usuario, volver]);
 
   useEffect(() => {
     if (primeraVez.current) {

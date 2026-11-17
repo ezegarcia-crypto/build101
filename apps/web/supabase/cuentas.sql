@@ -23,6 +23,9 @@ drop policy if exists "cada uno cambia su perfil" on public.perfiles;
 create policy "cada uno cambia su perfil" on public.perfiles
   for update to authenticated using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
+-- La persona lee su perfil y cambia solo el nombre: el mail no, porque /pilotos busca las cuentas por ese mail.
+-- Primero se le saca todo lo que Supabase pueda dar de fábrica a las tablas nuevas.
+revoke all on public.perfiles from anon, authenticated;
 grant select, update (nombre) on public.perfiles to authenticated;
 grant select, insert, update, delete on public.perfiles to service_role;
 
