@@ -1,0 +1,5341 @@
+{
+ "actualizado": "2026-11-05",
+ "fuentes_de_datos": [
+  "https://api.fontsource.org/v1/fonts",
+  "https://github.com/google/fonts/blob/main/tags/all/families.csv",
+  "https://fonts.google.com/metadata/fonts"
+ ],
+ "fuentes": [
+  {
+   "familia": "Abril Fatface",
+   "categoria": "display",
+   "estilo": [
+    "fat face, muy gruesa",
+    "moderna"
+   ],
+   "caracter": [
+    "vintage",
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 184,
+   "calidad": 88,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Alfa Slab One",
+   "categoria": "display",
+   "estilo": [
+    "fat face, muy gruesa",
+    "slab geométrica"
+   ],
+   "caracter": [
+    "llamativa",
+    "robusta",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 111,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Baloo 2",
+   "categoria": "display",
+   "estilo": [
+    "redondeada"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 194,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Balsamiq Sans",
+   "categoria": "display",
+   "estilo": [
+    "redondeada"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 434,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bangers",
+   "categoria": "display",
+   "estilo": [],
+   "caracter": [
+    "juguetona",
+    "llamativa",
+    "alegre"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 274,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Big Shoulders",
+   "categoria": "display",
+   "estilo": [],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 508,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Black Ops One",
+   "categoria": "display",
+   "estilo": [
+    "geométrica",
+    "esténcil"
+   ],
+   "caracter": [
+    "rígida",
+    "robusta",
+    "llamativa"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 55,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bungee",
+   "categoria": "display",
+   "estilo": [
+    "geométrica",
+    "redondeada"
+   ],
+   "caracter": [
+    "robusta",
+    "rígida",
+    "innovadora"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 155,
+   "calidad": 90,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Calistoga",
+   "categoria": "display",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "sincera",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 412,
+   "calidad": 86,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Caprasimo",
+   "categoria": "display",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "llamativa",
+    "sincera",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 453,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Carter One",
+   "categoria": "display",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "enérgica",
+    "entusiasta",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 518,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Changa One",
+   "categoria": "display",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 90,
+   "calidad": 86,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Chango",
+   "categoria": "display",
+   "estilo": [
+    "tipo madera"
+   ],
+   "caracter": [
+    "tierna",
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 540,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Chewy",
+   "categoria": "display",
+   "estilo": [
+    "de pincel",
+    "inflada"
+   ],
+   "caracter": [
+    "juguetona",
+    "tierna",
+    "alegre"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 550,
+   "calidad": 66,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cinzel Decorative",
+   "categoria": "display",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700,
+    900
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 371,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Coda",
+   "categoria": "display",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "futurista",
+    "robusta",
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    800
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 517,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Comfortaa",
+   "categoria": "display",
+   "estilo": [
+    "geométrica",
+    "redondeada"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 152,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Creepster",
+   "categoria": "display",
+   "estilo": [
+    "gastada"
+   ],
+   "caracter": [
+    "robusta",
+    "vintage",
+    "entusiasta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 319,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Dela Gothic One",
+   "categoria": "display",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [
+    "robusta",
+    "llamativa",
+    "tierna"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 316,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Forum",
+   "categoria": "display",
+   "estilo": [
+    "moderna"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 355,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Fugaz One",
+   "categoria": "display",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "robusta",
+    "enérgica",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 310,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Funnel Display",
+   "categoria": "display",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 487,
+   "calidad": 68,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Gabarito",
+   "categoria": "display",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 321,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Goldman",
+   "categoria": "display",
+   "estilo": [
+    "tecno",
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "robusta",
+    "futurista",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 397,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Grandstander",
+   "categoria": "display",
+   "estilo": [
+    "estrafalaria"
+   ],
+   "caracter": [
+    "juguetona"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 509,
+   "calidad": 66,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Gravitas One",
+   "categoria": "display",
+   "estilo": [
+    "fat face, muy gruesa",
+    "tipo madera"
+   ],
+   "caracter": [
+    "vintage",
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 211,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Jersey 25",
+   "categoria": "display",
+   "estilo": [
+    "pixel"
+   ],
+   "caracter": [
+    "vintage",
+    "robusta",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 500,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Lilita One",
+   "categoria": "display",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "robusta",
+    "llamativa",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 170,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Lobster",
+   "categoria": "display",
+   "estilo": [],
+   "caracter": [
+    "ornamentada",
+    "artística",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 151,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Lobster Two",
+   "categoria": "display",
+   "estilo": [],
+   "caracter": [
+    "artística",
+    "vintage",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 107,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Luckiest Guy",
+   "categoria": "display",
+   "estilo": [],
+   "caracter": [
+    "juguetona",
+    "entusiasta",
+    "llamativa"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 245,
+   "calidad": 78,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Monoton",
+   "categoria": "display",
+   "estilo": [
+    "geométrica",
+    "con línea interior"
+   ],
+   "caracter": [
+    "artística",
+    "vintage",
+    "entusiasta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 468,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "MuseoModerno",
+   "categoria": "display",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 514,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Oxanium",
+   "categoria": "display",
+   "estilo": [
+    "cuadrada suave",
+    "tecno"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 292,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Passion One",
+   "categoria": "display",
+   "estilo": [
+    "humanista",
+    "tipo madera"
+   ],
+   "caracter": [
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700,
+    900
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 295,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Patua One",
+   "categoria": "display",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "sincera",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 291,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Pirata One",
+   "categoria": "display",
+   "estilo": [
+    "gótica"
+   ],
+   "caracter": [
+    "vintage",
+    "artística",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 494,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Pixelify Sans",
+   "categoria": "display",
+   "estilo": [
+    "pixel",
+    "tecno"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 466,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Press Start 2P",
+   "categoria": "display",
+   "estilo": [
+    "pixel",
+    "tecno"
+   ],
+   "caracter": [
+    "vintage",
+    "robusta",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 236,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Racing Sans One",
+   "categoria": "display",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "enérgica",
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 384,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Rowdies",
+   "categoria": "display",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 266,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Rye",
+   "categoria": "display",
+   "estilo": [
+    "toscana",
+    "tipo madera"
+   ],
+   "caracter": [
+    "vintage",
+    "artística",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 492,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Silkscreen",
+   "categoria": "display",
+   "estilo": [
+    "pixel",
+    "tecno"
+   ],
+   "caracter": [
+    "futurista",
+    "vintage",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 534,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Special Elite",
+   "categoria": "display",
+   "estilo": [
+    "slab clarendon",
+    "gastada"
+   ],
+   "caracter": [
+    "robusta",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 261,
+   "calidad": 88,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Squada One",
+   "categoria": "display",
+   "estilo": [
+    "grotesca",
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "vintage",
+    "rígida",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 529,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Staatliches",
+   "categoria": "display",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [
+    "vintage",
+    "robusta",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 286,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Titan One",
+   "categoria": "display",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 221,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Unica One",
+   "categoria": "display",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "futurista",
+    "vintage",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 447,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "UnifrakturMaguntia",
+   "categoria": "display",
+   "estilo": [
+    "gótica"
+   ],
+   "caracter": [
+    "artística",
+    "vintage",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 533,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Yeseva One",
+   "categoria": "display",
+   "estilo": [
+    "didona, de alto contraste"
+   ],
+   "caracter": [
+    "vintage",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 386,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Alex Brush",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "artística",
+    "ornamentada",
+    "enérgica"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 353,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Allura",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "artística",
+    "vintage",
+    "ornamentada"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 272,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Amatic SC",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 262,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Caveat",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 105,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Caveat Brush",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "sincera",
+    "juguetona",
+    "infantil"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 435,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Comic Neue",
+   "categoria": "manuscrita",
+   "estilo": [
+    "redondeada"
+   ],
+   "caracter": [
+    "sincera",
+    "infantil",
+    "tierna"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 248,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cookie",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal",
+    "escrita a mano"
+   ],
+   "caracter": [
+    "ornamentada",
+    "sofisticada",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 373,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Courgette",
+   "categoria": "manuscrita",
+   "estilo": [
+    "script informal"
+   ],
+   "caracter": [
+    "sincera",
+    "enérgica",
+    "alegre"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 283,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Damion",
+   "categoria": "manuscrita",
+   "estilo": [],
+   "caracter": [
+    "vintage",
+    "sincera",
+    "juguetona"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 375,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Dancing Script",
+   "categoria": "manuscrita",
+   "estilo": [],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 87,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Delius",
+   "categoria": "manuscrita",
+   "estilo": [],
+   "caracter": [
+    "sincera",
+    "alegre",
+    "infantil"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 232,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Gochi Hand",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "infantil",
+    "sincera",
+    "alegre"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 502,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Great Vibes",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "artística",
+    "ornamentada",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 174,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Handlee",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "de pincel"
+   ],
+   "caracter": [
+    "infantil",
+    "sincera",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 416,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Homemade Apple",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "sincera",
+    "artística",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 350,
+   "calidad": 74,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Italianno",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal",
+    "escrita a mano"
+   ],
+   "caracter": [
+    "artística",
+    "vintage",
+    "sofisticada"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 465,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Kaushan Script",
+   "categoria": "manuscrita",
+   "estilo": [
+    "script informal"
+   ],
+   "caracter": [
+    "artística",
+    "enérgica",
+    "alegre"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 284,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Mr Dafoe",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "entusiasta",
+    "artística",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 433,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Mrs Saint Delafield",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "ornamentada",
+    "sofisticada",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 428,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Ms Madi",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "ornamentada",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 437,
+   "calidad": 68,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Pacifico",
+   "categoria": "manuscrita",
+   "estilo": [
+    "script informal",
+    "escrita a mano"
+   ],
+   "caracter": [
+    "vintage",
+    "artística",
+    "llamativa"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 138,
+   "calidad": 84,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Pangolin",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 528,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Parisienne",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "artística",
+    "vintage",
+    "ornamentada"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 413,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Permanent Marker",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "artística",
+    "robusta",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 188,
+   "calidad": 78,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Pinyon Script",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "artística",
+    "sofisticada",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 318,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Reenie Beanie",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano"
+   ],
+   "caracter": [
+    "enérgica",
+    "entusiasta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 377,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Rock Salt",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano",
+    "script informal"
+   ],
+   "caracter": [
+    "entusiasta",
+    "vintage",
+    "enérgica"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 438,
+   "calidad": 73,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "Sacramento",
+   "categoria": "manuscrita",
+   "estilo": [
+    "script informal"
+   ],
+   "caracter": [
+    "vintage",
+    "artística"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 289,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Tangerine",
+   "categoria": "manuscrita",
+   "estilo": [
+    "caligráfica formal"
+   ],
+   "caracter": [
+    "ornamentada",
+    "vintage",
+    "artística"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 354,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Yellowtail",
+   "categoria": "manuscrita",
+   "estilo": [
+    "escrita a mano"
+   ],
+   "caracter": [
+    "vintage",
+    "artística",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 175,
+   "calidad": 68,
+   "licencia": "Apache-2.0",
+   "muy_vista": false
+  },
+  {
+   "familia": "DM Mono",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "geométrica"
+   ],
+   "caracter": [
+    "calma",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 143,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "IBM Plex Mono",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "neo grotesca"
+   ],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 68,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Inconsolata",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 56,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "JetBrains Mono",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 42,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Roboto Mono",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 16,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Source Code Pro",
+   "categoria": "mono",
+   "estilo": [
+    "monoespaciada",
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 52,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "ABeeZee",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "calma",
+    "de negocios",
+    "solvente"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 192,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Abel",
+   "categoria": "sans",
+   "estilo": [],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 160,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Anton",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [
+    "llamativa",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 77,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Archivo",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 44,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Archivo Black",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [
+    "robusta",
+    "sincera",
+    "llamativa"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 41,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Arimo",
+   "categoria": "sans",
+   "estilo": [],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 13,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Asap",
+   "categoria": "sans",
+   "estilo": [
+    "redondeada",
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 159,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Asap Condensed",
+   "categoria": "sans",
+   "estilo": [
+    "redondeada",
+    "humanista"
+   ],
+   "caracter": [
+    "calma",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 224,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Barlow",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca",
+    "redondeada"
+   ],
+   "caracter": [
+    "calma",
+    "robusta"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 48,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Barlow Condensed",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca",
+    "redondeada"
+   ],
+   "caracter": [
+    "calma",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 73,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Barlow Semi Condensed",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca",
+    "redondeada"
+   ],
+   "caracter": [
+    "calma",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 137,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bebas Neue",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 43,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bricolage Grotesque",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 60,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cabin",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 112,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "DM Sans",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 21,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Exo",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 182,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Exo 2",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 128,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Figtree",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 38,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Fira Sans",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "calma"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 61,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Fjalla One",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 100,
+   "calidad": 82,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Geologica",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 179,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Google Sans",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "solvente",
+    "calma"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 4,
+   "calidad": 100,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Google Sans Flex",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 101,
+   "calidad": 100,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Heebo",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 70,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "IBM Plex Sans",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 46,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Inter",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [
+    "solvente",
+    "calma"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 5,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Inter Tight",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 76,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Jost",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica",
+    "redondeada"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 54,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Kanit",
+   "categoria": "sans",
+   "estilo": [
+    "humanista",
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "calma",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 37,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Karla",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 66,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Lato",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "solvente",
+    "calma",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    300,
+    400,
+    700,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 9,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Lexend",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 108,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Libre Franklin",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 78,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Manrope",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [
+    "robusta"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 29,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Merriweather Sans",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 145,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Montserrat",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 7,
+   "calidad": 84,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Mulish",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 47,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Nunito",
+   "categoria": "sans",
+   "estilo": [
+    "redondeada",
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 25,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Nunito Sans",
+   "categoria": "sans",
+   "estilo": [
+    "redondeada",
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 26,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Open Sans",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 3,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Oswald",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 19,
+   "calidad": 84,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Outfit",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 32,
+   "calidad": 72,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Overpass",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 131,
+   "calidad": 79,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Oxygen",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "calma",
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 133,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Play",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "futurista",
+    "rígida",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 195,
+   "calidad": 66,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Plus Jakarta Sans",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 34,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Poppins",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [
+    "calma",
+    "de negocios",
+    "robusta"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 8,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "PT Sans",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "calma",
+    "de negocios",
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 50,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "PT Sans Narrow",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [
+    "calma",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 154,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Public Sans",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 83,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Quicksand",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica",
+    "redondeada"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 49,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Rajdhani",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "futurista",
+    "calma",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 122,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Raleway",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 23,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Roboto",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 2,
+   "calidad": 79,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Roboto Condensed",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 14,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Roboto Flex",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 115,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Rubik",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 31,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Saira",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 57,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Saira Condensed",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [
+    "calma",
+    "futurista",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 190,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Schibsted Grotesk",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 99,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Smooch Sans",
+   "categoria": "sans",
+   "estilo": [
+    "cuadrada suave"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 64,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Sora",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 88,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Source Sans 3",
+   "categoria": "sans",
+   "estilo": [
+    "humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 53,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Space Grotesk",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca",
+    "tecno"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 58,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Teko",
+   "categoria": "sans",
+   "estilo": [],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 144,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Titillium Web",
+   "categoria": "sans",
+   "estilo": [
+    "grotesca"
+   ],
+   "caracter": [
+    "calma",
+    "solvente",
+    "rígida"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    600,
+    700,
+    900
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 71,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Unbounded",
+   "categoria": "sans",
+   "estilo": [
+    "humanista",
+    "neo grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 172,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Urbanist",
+   "categoria": "sans",
+   "estilo": [
+    "geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 103,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Varela Round",
+   "categoria": "sans",
+   "estilo": [
+    "humanista",
+    "redondeada"
+   ],
+   "caracter": [
+    "calma",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 189,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Work Sans",
+   "categoria": "sans",
+   "estilo": [
+    "neo grotesca",
+    "grotesca"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 40,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Alegreya",
+   "categoria": "serif",
+   "estilo": [
+    "veneciana"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 265,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Andada Pro",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 240,
+   "calidad": 68,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Arvo",
+   "categoria": "serif",
+   "estilo": [
+    "slab geométrica"
+   ],
+   "caracter": [
+    "robusta",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 147,
+   "calidad": 68,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Baskervville",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 252,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bitter",
+   "categoria": "serif",
+   "estilo": [
+    "escocesa"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 102,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bodoni Moda",
+   "categoria": "serif",
+   "estilo": [
+    "didona, de alto contraste",
+    "moderna"
+   ],
+   "caracter": [
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 146,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Bree Serif",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 243,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cardo",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [
+    "vintage",
+    "sincera",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 253,
+   "calidad": 66,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cinzel",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 120,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cormorant",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 191,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Cormorant Garamond",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 65,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Crete Round",
+   "categoria": "serif",
+   "estilo": [
+    "slab clarendon"
+   ],
+   "caracter": [
+    "robusta",
+    "de negocios",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 269,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Crimson Pro",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 223,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Crimson Text",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 141,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "DM Serif Display",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "vintage",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 106,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "DM Serif Text",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 228,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Domine",
+   "categoria": "serif",
+   "estilo": [
+    "moderna"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 153,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "EB Garamond",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 84,
+   "calidad": 79,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Faustina",
+   "categoria": "serif",
+   "estilo": [
+    "escocesa"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 287,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Fraunces",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 82,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Gelasio",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 372,
+   "calidad": 80,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Gilda Display",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "sincera",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 345,
+   "calidad": 67,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "IBM Plex Serif",
+   "categoria": "serif",
+   "estilo": [
+    "escocesa"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 187,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Instrument Serif",
+   "categoria": "serif",
+   "estilo": [
+    "moderna",
+    "escocesa"
+   ],
+   "caracter": [
+    "vintage",
+    "sincera",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 79,
+   "calidad": 76,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Josefin Slab",
+   "categoria": "serif",
+   "estilo": [
+    "slab geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 342,
+   "calidad": 70,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Libre Baskerville",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 72,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Libre Caslon Text",
+   "categoria": "serif",
+   "estilo": [
+    "antigua (garalda)"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 254,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Literata",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 219,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Lora",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 39,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Merriweather",
+   "categoria": "serif",
+   "estilo": [],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 35,
+   "calidad": 88,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Neuton",
+   "categoria": "serif",
+   "estilo": [
+    "veneciana"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 367,
+   "calidad": 74,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Newsreader",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 125,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Noticia Text",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 275,
+   "calidad": 72,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Old Standard TT",
+   "categoria": "serif",
+   "estilo": [
+    "moderna"
+   ],
+   "caracter": [
+    "solvente",
+    "de negocios",
+    "calma"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 279,
+   "calidad": 69,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Playfair",
+   "categoria": "serif",
+   "estilo": [
+    "didona, de alto contraste"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 242,
+   "calidad": 88,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Playfair Display",
+   "categoria": "serif",
+   "estilo": [
+    "didona, de alto contraste"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 24,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": true
+  },
+  {
+   "familia": "Prata",
+   "categoria": "serif",
+   "estilo": [
+    "didona, de alto contraste"
+   ],
+   "caracter": [
+    "vintage",
+    "sincera",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 256,
+   "calidad": 71,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "PT Serif",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 75,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Quattrocento",
+   "categoria": "serif",
+   "estilo": [
+    "veneciana",
+    "antigua (garalda)"
+   ],
+   "caracter": [
+    "vintage",
+    "de negocios"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 309,
+   "calidad": 68,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Roboto Serif",
+   "categoria": "serif",
+   "estilo": [],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 199,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Roboto Slab",
+   "categoria": "serif",
+   "estilo": [
+    "slab geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": false,
+   "variable": true,
+   "popularidad": 28,
+   "calidad": 78,
+   "licencia": "Apache-2.0",
+   "muy_vista": true
+  },
+  {
+   "familia": "Rokkitt",
+   "categoria": "serif",
+   "estilo": [
+    "slab geométrica"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 365,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Sanchez",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "robusta",
+    "sincera"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 202,
+   "calidad": 65,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Slabo 27px",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "robusta"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400
+   ],
+   "cursiva": false,
+   "variable": false,
+   "popularidad": 136,
+   "calidad": 81,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Source Serif 4",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "solvente"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 113,
+   "calidad": 85,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "STIX Two Text",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 293,
+   "calidad": 75,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Tinos",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "sincera"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 250,
+   "calidad": 73,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Unna",
+   "categoria": "serif",
+   "estilo": [
+    "moderna"
+   ],
+   "caracter": [
+    "de negocios",
+    "sincera",
+    "vintage"
+   ],
+   "usos": [
+    "titulos"
+   ],
+   "pesos": [
+    400,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 338,
+   "calidad": 66,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Vollkorn",
+   "categoria": "serif",
+   "estilo": [
+    "de transición"
+   ],
+   "caracter": [],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+   ],
+   "cursiva": true,
+   "variable": true,
+   "popularidad": 222,
+   "calidad": 78,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  },
+  {
+   "familia": "Zilla Slab",
+   "categoria": "serif",
+   "estilo": [
+    "slab humanista"
+   ],
+   "caracter": [
+    "de negocios",
+    "solvente",
+    "robusta"
+   ],
+   "usos": [
+    "titulos",
+    "texto"
+   ],
+   "pesos": [
+    300,
+    400,
+    500,
+    600,
+    700
+   ],
+   "cursiva": true,
+   "variable": false,
+   "popularidad": 164,
+   "calidad": 83,
+   "licencia": "OFL-1.1",
+   "muy_vista": false
+  }
+ ]
+}

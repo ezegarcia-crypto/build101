@@ -34,7 +34,9 @@ const r = await fetch("/api/direcciones", { method: "POST", body: JSON.stringify
 const { direcciones } = await r.json(); // 3: A (la esperada), B (la vecina), C (la que se anima)
 ```
 
-Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (una frase para el cliente), `palabras`, `paleta` (4 a 6 colores con `hex`, `nombre` y `rol`), `tipografias` (de Google Fonts), `formas`, `logo_sugerido` y, si la marca no tenía nombre, `nombre_marca`. Es lo que se muestra para que la persona elija. **Tarda unos 30 segundos.**
+Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (una frase para el cliente), `palabras`, `paleta` (4 a 6 colores con `hex`, `nombre` y `rol`), `tipografias` (del catálogo de BrandIA, ver abajo), `formas`, `logo_sugerido` y, si la marca no tenía nombre, `nombre_marca`. Es lo que se muestra para que la persona elija. **Tarda unos 30 segundos.**
+
+**Las tipografías salen del catálogo** de `catalogos/` (unas 200 familias de Google Fonts, de licencia libre, cada una con su estilo, su carácter y si sirve para leer párrafos). El catálogo va en el prompt y la IA elige de ahí. Si nombra una que no está, o una de títulos para el texto, la ruta la cambia por una segura del mismo tipo y lo cuenta en `comprobaciones`. Detalle en `catalogos/README.md`.
 
 ## 3. La identidad de la dirección elegida
 
@@ -46,7 +48,7 @@ Cada dirección (tipo `Direccion` de `direcciones.ts`) trae `nombre`, `idea` (un
 - `estilo`: uso de colores, fotografía e íconos
 - `brandbook`: introducción, usos correctos e incorrectos, aplicaciones
 - `paleta` (ya con el contraste corregido si hacía falta) y `tipografias` (`titulos` y `texto`)
-- `fuentes_url`: el link de Google Fonts. En la pantalla: `<link rel="stylesheet" href={identidad.fuentes_url} />` y después `font-family` con esos nombres
+- `fuentes_url`: el link de Google Fonts, con los pesos que tiene cada familia según el catálogo. En la pantalla: `<link rel="stylesheet" href={identidad.fuentes_url} />` y después `font-family` con esos nombres
 - `logo.isotipo_svg`: el símbolo en SVG (viewBox 100×100), ya limpio y seguro. Se muestra con `dangerouslySetInnerHTML`. El nombre se compone al lado con la tipografía de títulos
 - `comprobaciones`: lista de `{ que, ok, detalle }` (contraste del texto, color principal, tipografías y logo). **Mostrarlas en el brandbook**: son la prueba de calidad que pide la rúbrica
 
