@@ -5,6 +5,7 @@ import { ArrowRight, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { useSesion } from "@/components/cuenta/usar-sesion";
 import { EVENTO_LIMITE, type TipoLimite } from "@/lib/prueba-gratis";
 
 // El aviso cuando se termina la prueba gratis de este navegador o cuando BrandIA llegó al tope de gasto del día
@@ -26,6 +27,7 @@ const TEXTOS: Record<TipoLimite, { titulo: string; clave: string; texto: string 
 
 export function AvisoLimite() {
   const [tipo, setTipo] = useState<TipoLimite | null>(null);
+  const { cargando, usuario } = useSesion();
 
   useEffect(() => {
     const escuchar = (e: Event) => setTipo((e as CustomEvent<TipoLimite>).detail);
@@ -54,6 +56,19 @@ export function AvisoLimite() {
           {t.titulo} <span className="italic">{t.clave}</span>
         </h2>
         <p className="mt-2 text-[15px] text-muted-foreground">{t.texto}</p>
+        {tipo === "prueba" && !cargando && !usuario && (
+          <p className="mt-2 text-[15px] text-muted-foreground">
+            ¿Te invitamos a probar BrandIA?{" "}
+            <Link
+              href={`/ingresar?volver=${encodeURIComponent(window.location.pathname)}`}
+              onClick={() => setTipo(null)}
+              className="font-semibold text-foreground underline underline-offset-4"
+            >
+              Entrá a tu cuenta
+            </Link>{" "}
+            para seguir.
+          </p>
+        )}
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <Link href="/crear/planes" onClick={() => setTipo(null)} className={buttonVariants({ size: "lg" })}>
             Ver los planes <ArrowRight data-icon="inline-end" />
