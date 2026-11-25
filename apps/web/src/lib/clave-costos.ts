@@ -1,6 +1,6 @@
-// La contraseña del panel /costos (variable COSTOS_CLAVE). La usan el proxy, que la pide antes de
-// mostrar la página, y las acciones del registro de pagos, que la vuelven a revisar porque Next.js
-// deja llamar a una acción desde cualquier dirección del sitio.
+// La contraseña compartida del equipo (variable COSTOS_CLAVE). Ya no abre los paneles: ahora cada uno entra con su
+// cuenta de administrador y Google Authenticator (lib/admin). Solo se pide para hacer el alta en /admin/alta, así
+// alguien de afuera que adivine un mail de la lista no puede quedarse con esa cuenta antes que su dueño.
 
 function iguales(a: string, b: string) {
   if (a.length !== b.length) return false;
@@ -9,20 +9,8 @@ function iguales(a: string, b: string) {
   return distinto === 0;
 }
 
-function claveEscrita(cabecera: string | null) {
-  if (!cabecera?.startsWith("Basic ")) return null;
-  try {
-    const texto = atob(cabecera.slice(6));
-    return texto.slice(texto.indexOf(":") + 1);
-  } catch {
-    return null;
-  }
-}
-
-/** "abierto": no hay contraseña y estamos en la compu · "sin-configurar": falta en la web publicada. */
-export function revisarClave(cabecera: string | null): "ok" | "abierto" | "sin-configurar" | "no" {
+/** Si lo escrito es la contraseña del equipo. Sin la variable configurada, nunca. */
+export function esClaveDelEquipo(escrita: string) {
   const clave = process.env.COSTOS_CLAVE;
-  if (!clave) return process.env.NODE_ENV === "development" ? "abierto" : "sin-configurar";
-  const escrita = claveEscrita(cabecera);
-  return escrita !== null && iguales(escrita, clave) ? "ok" : "no";
+  return Boolean(clave) && iguales(escrita, clave as string);
 }

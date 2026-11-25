@@ -1,24 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 
-import { revisarClave } from "@/lib/clave-costos";
+import { esAdmin } from "@/lib/admin/sesion";
 import { anotarPago, borrarPago, pagoSchema } from "@/lib/pagos";
 
-// Anotar y borrar pagos del registro. Cada acción revisa la contraseña del panel de nuevo.
+// Anotar y borrar pagos del registro. Cada acción revisa de nuevo que sea un administrador.
 
 export type EstadoForm = { ok: boolean; mensaje: string | null };
-
-async function autorizado() {
-  const estado = revisarClave((await headers()).get("authorization"));
-  return estado === "ok" || estado === "abierto";
-}
 
 const texto = (v: FormDataEntryValue | null) => (v === null || String(v).trim() === "" ? null : String(v));
 
 export async function anotar(_: EstadoForm, datos: FormData): Promise<EstadoForm> {
-  if (!(await autorizado())) return { ok: false, mensaje: "No tenés permiso para anotar pagos." };
+  if (!(await esAdmin())) return { ok: false, mensaje: "No tenés permiso para anotar pagos." };
   const r = pagoSchema.safeParse({
     fecha: datos.get("fecha"),
     quien: datos.get("quien"),
@@ -44,7 +38,7 @@ export async function anotar(_: EstadoForm, datos: FormData): Promise<EstadoForm
 }
 
 export async function borrar(id: number) {
-  if (!(await autorizado())) return;
+  if (!(await esAdmin())) return;
   await borrarPago(id);
   revalidatePath("/costos");
 }

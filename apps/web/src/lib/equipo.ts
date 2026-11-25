@@ -1,8 +1,8 @@
 // La llave del equipo: el navegador de alguien de BrandIA no tiene límite de pruebas ni tope diario de gasto.
-// Se consigue entrando una vez a /costos con la contraseña (COSTOS_CLAVE): el proxy deja una cookie con una
-// huella de esa contraseña, que el servidor puede comprobar (medir() en lib/ia/gastos.ts) y nadie puede inventar
-// sin saber la clave. La pantalla, además, guarda una marca en el navegador para no frenarse a sí misma
-// (lib/prueba-gratis.ts). En la compu (npm run dev) sin contraseña configurada, todo es del equipo.
+// Se consigue entrando una vez como administrador en /admin: la respuesta del ingreso (app/api/admin/respuesta.ts)
+// deja una cookie con una huella de la contraseña del equipo (COSTOS_CLAVE), que el servidor puede comprobar
+// (medir() en lib/ia/gastos.ts) y nadie puede inventar sin saber la clave. La pantalla, además, guarda una marca
+// en el navegador para no frenarse a sí misma (lib/prueba-gratis.ts). En la compu (npm run dev) sin contraseña configurada, todo es del equipo.
 
 export const COOKIE_EQUIPO = "brandia_equipo";
 

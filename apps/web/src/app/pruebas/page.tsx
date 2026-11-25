@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 
+import { SesionAdmin } from "@/app/admin/sesion-admin";
 import { hayDondeGuardar, listarClientes } from "@/lib/pruebas";
 
 import { nombreDelPaso } from "./pasos";
 
 // Panel interno del equipo: cada persona que probó la app y todo lo que la IA le generó (lib/pruebas.ts).
-// Con la misma contraseña que /costos. No tiene links desde la app y los buscadores no lo indexan.
+// Solo para administradores, como /costos. No tiene links desde la app y los buscadores no lo indexan.
 
 export const metadata: Metadata = {
   title: "Pruebas · BrandIA",
@@ -40,7 +41,10 @@ export default async function Pruebas() {
   return (
     <main className="mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-10 px-4 py-12 sm:py-16">
       <header className="flex flex-col gap-4">
-        <p className="label">BrandIA · solo para el equipo</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="label">BrandIA · solo para el equipo</p>
+          <SesionAdmin />
+        </div>
         <h1 className="display max-w-3xl text-balance">
           Todo lo que <span className="font-normal italic">generamos.</span>
         </h1>

@@ -26,8 +26,9 @@ flowchart LR
   prox["/crear/proximamente<br/>Lo que viene"]
   proxweb["/crear/proximamente/web"]
   proxotras["/crear/proximamente/<br/>redes · pauta · newsletter ·<br/>linkedin · x · branderia"]
-  costos["/costos<br/>(solo el equipo, con contraseña)"]
-  pedidos["/pedidos<br/>(solo el equipo, con contraseña)"]
+  admin["/admin<br/>(ingreso del equipo: mail, contraseña<br/>y Google Authenticator)"]
+  costos["/costos<br/>(solo administradores)"]
+  pedidos["/pedidos<br/>(solo administradores)"]
   planes["/crear/planes<br/>Planes<br/>(precios y anotarse)"]
 
   crear -->|Armar mi marca| marca
@@ -52,6 +53,7 @@ flowchart LR
   portada -->|BrandIAmos · Quiero BrandIAr mi marca| crear
   espera ~~~ portada
   costos ~~~ espera
+  admin -->|Entrar| costos
   branderia -->|Pedir cotización · el pedido llega a| pedidos
 ```
 
@@ -62,7 +64,8 @@ de arriba suma dos links: **"Lo que viene"** (`/crear/proximamente`) y **"Planes
 
 1. **La lista de espera no guarda.** `/lista-de-espera` tiene vacíos los datos de Supabase y del webhook: el
    formulario no manda nada. Falta conectarlo (ver `brandia/referencias/landing-waitlist/`).
-2. **`/costos` y `/pedidos` no tienen links a propósito**: son solo para el equipo.
+2. **`/costos`, `/pruebas`, `/pedidos` y `/admin` no tienen links a propósito**: son solo para el equipo. Para entrar
+   a los paneles hace falta que la tabla `admins` exista y que cada uno haya activado su cuenta en `/admin/alta`.
 3. **El ingreso (`/ingresar`) es solo la pantalla**: no manda el código ni crea la sesión. Se conecta en `apps/web/src/app/ingresar/acciones.ts`.
 
 ## La imagen al compartir el link
@@ -100,10 +103,12 @@ para el rubro y fotos anteriores) y
 | `/` | La portada: la web original de BrandIA tal cual (`apps/web/public/brandia.html`) | Es la dirección principal | **A la app (`/crear`)** con "BrandIAmos" (barra de arriba), "Quiero BrandIAr mi marca →" (inicio), "BrandIAmos →" y el botón gigante "¿BrandIAmos?" (abajo de todo). Los demás links ("Cómo funciona", "Productos"…) bajan dentro de la misma portada | Funciona. Abajo de todo, un solo botón gigante "¿BrandIAmos?" que lleva a `/crear` (sin formulario ni textos). La sección de productos se llama BranderIA ("lo producimos y te lo mandamos", sin proveedores) |
 | `/lista-de-espera` | La landing de lista de espera, tal cual (`public/lista-de-espera.html`) | Solo con el link | A ningún lado | Carga. El formulario no guarda |
 | `/w/[slug]` | **La web publicada de un cliente** (por ejemplo `/w/hoy-rueda`), con SU marca (el logo elegido, sus tipografías y su paleta): sin la barra de BrandIA, solo un "Hecha con BrandIA" chico al final. Si la dirección no existe, "Acá no hay ninguna web" | El link o el QR que entrega `/crear/web` | Los botones de la web (WhatsApp, mapa, Instagram…) · "BrandIA" del pie → `/` | Funciona. Lee la tabla `webs` de Supabase; no usa IA |
-| `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso, de una marca completa y de cada cliente de punta a punta | Solo con el link. Pide contraseña (`COSTOS_CLAVE`, la tiene Eze) | — | Funciona |
-| `/pedidos` | Panel del equipo: los pedidos de BranderIA (marca, colores, productos, cantidades, contacto con link a WhatsApp y a dónde mandarlo). Se cambia el estado de cada uno: recibido, cotizado, en producción, en camino, entregado o cancelado | Solo con el link. La misma contraseña que `/costos` | — | Necesita la tabla `pedidos_branderia` de Supabase (`apps/web/supabase/pedidos-branderia.sql`) |
-| `/pruebas` | **Panel del equipo: todo lo que se generó en cada prueba.** Un cliente por pestaña que usó la app (con el nombre de su marca, el rubro y por qué pasos pasó), del más nuevo al más viejo | Solo con el link. Pide la misma contraseña que `/costos` | Cada cliente → `/pruebas/[cliente]` | Funciona. Lee la tabla `pruebas` de Supabase (`apps/web/supabase/pruebas.sql`); no usa IA |
+| `/costos` | Panel del equipo: saldo del AI Gateway, costo de cada paso, de una marca completa y de cada cliente de punta a punta | Solo con el link. Sin sesión de administrador, lleva a `/admin` | "Salir" → `/admin` | Funciona |
+| `/pedidos` | Panel del equipo: los pedidos de BranderIA (marca, colores, productos, cantidades, contacto con link a WhatsApp y a dónde mandarlo). Se cambia el estado de cada uno: recibido, cotizado, en producción, en camino, entregado o cancelado | Solo con el link. Sin sesión de administrador, lleva a `/admin` | "Salir" → `/admin` | Necesita la tabla `pedidos_branderia` de Supabase (`apps/web/supabase/pedidos-branderia.sql`) |
+| `/pruebas` | **Panel del equipo: todo lo que se generó en cada prueba.** Un cliente por pestaña que usó la app (con el nombre de su marca, el rubro y por qué pasos pasó), del más nuevo al más viejo | Solo con el link. Sin sesión de administrador, lleva a `/admin` | Cada cliente → `/pruebas/[cliente]` · "Salir" → `/admin` | Funciona. Lee la tabla `pruebas` de Supabase (`apps/web/supabase/pruebas.sql`); no usa IA |
 | `/pruebas/[cliente]` | Una prueba entera. Arriba, lo que se generó dibujado como en la app, con los mismos componentes: la entrevista como chat, los nombres en tarjetas, los tres caminos (y cuál eligió), el brandbook con sus logos, el feed, las fotos de BranderIA y la web. Abajo, el historial: cada pedido a la IA con lo que se mandó y lo que volvió. "Bajar todo (JSON)" la descarga entera | Desde `/pruebas` | "Todas las pruebas" → `/pruebas` | Funciona. Las imágenes y audios están en la carpeta `pruebas` de Supabase Storage |
+| `/admin` | **La puerta de los paneles del equipo** (`/costos`, `/pruebas` y `/pedidos`). Mail, contraseña y el código de 6 números de Google Authenticator. Solo para la lista cerrada de administradores (tabla `admins`). A los 5 intentos fallidos la cuenta queda frenada 15 minutos. La sesión dura 12 horas | Solo con el link, o al querer abrir un panel sin sesión | "Entrar" → el panel que se quería abrir (o `/costos`) · "¿Primera vez? Activá tu cuenta" → `/admin/alta` | La tabla `admins` de Supabase (`apps/web/supabase/admins.sql`, con los mails reales escritos en el SQL Editor, nunca en el repo). En la compu sin Supabase, los paneles abren sin login | Ninguna. `POST /api/admin/entrar` y `POST /api/admin/salir` (sin IA) |
+| `/admin/alta` | Activar la cuenta de administrador, una sola vez por persona: contraseña del equipo (`COSTOS_CLAVE`, la tiene Eze), tu mail de la lista y tu contraseña nueva (10 caracteres o más); después, escanear el QR con Google Authenticator y escribir el primer código | Desde `/admin` | "Activar mi cuenta" → `/costos` · "Ya tengo cuenta" → `/admin` | La tabla `admins` de Supabase y `COSTOS_CLAVE` | Ninguna. `POST /api/admin/alta` (sin IA) |
 
 ### El recorrido (la demo)
 
@@ -151,7 +156,7 @@ hoy lo probás gratis" y que son precios de lanzamiento.
   privada: es un freno, no una seguridad.
 - **Tope diario de gasto:** si en el día (hora UTC) se gastaron USD 30 en IA, el servidor no atiende más pedidos a
   la IA y aparece "BrandIA está a full por hoy". Se cambia en `apps/web/src/lib/ia/tope-diario.ts`.
-- **El equipo no tiene límite:** entrar una vez a `/costos` con la contraseña deja ese navegador como del equipo
+- **El equipo no tiene límite:** entrar una vez en `/admin` deja ese navegador como del equipo
   (cookie del servidor y marca en el navegador). En `/costos` aparece "Este navegador es del equipo". Hay que
   hacerlo en cada navegador y celular que se use para probar o para la demo.
 

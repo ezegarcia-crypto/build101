@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { SesionAdmin } from "@/app/admin/sesion-admin";
 import { MODULOS, PASOS, type Paso } from "@/lib/ia/gastos";
 import { armarReporte, partesDeVozPorMes } from "@/lib/ia/reporte-gastos";
 import { pasosDelModelo, USOS } from "@/lib/ia/usos";
@@ -125,7 +126,10 @@ export default async function Costos() {
     <main className="viz-etapas mx-auto flex w-full min-w-0 max-w-[1080px] flex-col gap-12 overflow-x-clip px-4 py-12 sm:py-16">
       <style>{ESTILOS_SERIES}</style>
       <header className="flex flex-col gap-4">
-        <p className="label">BrandIA · solo para el equipo</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="label">BrandIA · solo para el equipo</p>
+          <SesionAdmin />
+        </div>
         <h1 className="display max-w-3xl text-balance">
           Lo que nos cuesta <Clave>la IA.</Clave>
         </h1>

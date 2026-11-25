@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 
+import { SesionAdmin } from "@/app/admin/sesion-admin";
 import { ESTADOS, hayBaseDeDatos, listarPedidos, numeroDe, type Pedido } from "@/lib/pedidos";
 
 import { moverPedido } from "./acciones";
 
-// Panel interno del equipo: los pedidos de BranderIA que llegan desde /crear/branderia. Pide la misma contraseña
-// que /costos (ver proxy.ts). Acá se ve qué pidió cada uno, a dónde mandarlo y se cambia su estado.
+// Panel interno del equipo: los pedidos de BranderIA que llegan desde /crear/branderia. Solo para administradores,
+// como /costos (ver proxy.ts). Acá se ve qué pidió cada uno, a dónde mandarlo y se cambia su estado.
 
 export const metadata: Metadata = {
   title: "Pedidos de BranderIA · BrandIA",
@@ -150,7 +151,10 @@ export default async function Pedidos() {
   return (
     <main className="mx-auto w-full max-w-[1080px] px-4 py-12 sm:py-16">
       <header className="flex flex-col gap-4">
-        <p className="label">BranderIA · solo para el equipo</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="label">BranderIA · solo para el equipo</p>
+          <SesionAdmin />
+        </div>
         <h1 className="display max-w-3xl text-balance">
           Los <Clave>pedidos.</Clave>
         </h1>

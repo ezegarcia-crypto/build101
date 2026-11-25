@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { CLAVE_EQUIPO } from "@/lib/prueba-gratis";
 
-// Entrar a /costos (con la contraseña) deja este navegador como del equipo: sin límite de prueba gratis.
+// Entrar a /costos (como administrador) deja este navegador como del equipo: sin límite de prueba gratis.
 // El servidor lo sabe por la cookie que deja el proxy (lib/equipo.ts); esta marca es para que la pantalla
 // tampoco se frene a sí misma (lib/prueba-gratis.ts).
 export function NavegadorEquipo() {
