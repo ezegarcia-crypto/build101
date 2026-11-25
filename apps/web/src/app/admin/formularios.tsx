@@ -14,7 +14,7 @@ const campoCodigo = `${campo} font-mono text-lg tracking-[0.4em]`;
 
 /** Solo se vuelve a uno de los paneles: nunca a una dirección que venga escrita en el link. */
 function destinoSeguro(volver: string | undefined) {
-  return volver && /^\/(costos|pedidos|pruebas)(\/[\w-]*)?$/.test(volver) ? volver : "/costos";
+  return volver && /^\/(costos|pedidos|pruebas|admin\/cobros)(\/[\w-]*)?$/.test(volver) ? volver : "/costos";
 }
 
 async function enviar(ruta: string, datos: Record<string, unknown>) {
