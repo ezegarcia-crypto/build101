@@ -1,4 +1,4 @@
-# Prompts para la beta del 20/12 · Eze y Juan Pedro
+# Prompts para la beta del 20/12
 
 Un prompt por persona, para pegar en una **conversación nueva** de la app de Claude, abierta en
 `~/Proyectos/build101`. Se basan en `equipo/plan-beta-20-diciembre.md`: si el plan cambia, manda el plan.
@@ -9,7 +9,7 @@ Un prompt por persona, para pegar en una **conversación nueva** de la app de Cl
 |---|---|---|
 | **Eze** | `cobros` | Todo lo que conecta: `apps/web/src/app/api/pagos/`, `apps/web/src/app/api/suscripcion/`, `apps/web/src/app/ingresar/acciones.ts`, `apps/web/src/lib/pagos/`, `apps/web/src/lib/facturas/`, las tablas nuevas en `apps/web/supabase/` |
 | **Juan Pedro** | `pantallas-cobro` | Lo que se ve: las pantallas de pago, de la cuenta y de la suscripción, `apps/web/src/app/crear/planes/`, los textos legales |
-| **Rodrigo** | `admin-2fa` y después `pedidos-cobro` | `apps/web/src/app/admin/`, `apps/web/src/app/pedidos/`, `apps/web/src/lib/admin/` |
+| **Rodrigo** | `admin-2fa`, después `panel-cobros` y `pedidos-cobro` | `apps/web/src/app/admin/`, `apps/web/src/app/pedidos/`, `apps/web/src/lib/admin/` |
 
 Juan Pedro arma las pantallas con funciones de mentira que devuelven datos de ejemplo. Eze las reemplaza
 por las de verdad. Así cada uno avanza sin esperar al otro.
@@ -65,4 +65,49 @@ Reglas:
 - Antes de dar algo por listo: lint, build, navegador en compu y en tamaño celular, y una captura.
 
 Está terminado cuando alguien que nunca vio BrandIA entiende, sin preguntar, qué es gratis, qué paga, cuánto, qué incluye la suscripción y cómo darse de baja, y todo se ve como parte de la misma web. Las pantallas tienen que estar listas el jueves 3/12, para que Eze las conecte antes del primer pago real del jueves 10/12.
+```
+
+---
+
+## Prompt para Rodrigo
+
+```text
+Leé CLAUDE.md, equipo/plan-beta-20-diciembre.md, equipo/prompts-beta-diciembre.md y equipo/design-system.md. Hacé git pull.
+
+Objetivo: que el equipo vea y controle cada peso que entra, que BranderIA cobre y que el cobro esté probado antes de que paguen personas reales. Me tocan C6, C7, D1, D4 y E1 del plan, y llevar el seguimiento del cronograma.
+
+En este orden, de a un paso, y avisame antes de cada uno qué vas a hacer:
+1. Terminar la rama `admin-2fa` (el ingreso a /admin con doble factor): revisarla, probarla y dejarla lista para que Eze la junte con main.
+2. Desde main, crear la rama `panel-cobros`. Hacer el panel de cobros en /admin (C6): pagos, suscripciones activas y dadas de baja, cobros fallidos, facturas emitidas y pendientes, reintentos y costo de IA por cliente (lo que ya mide /costos). Hasta que Eze tenga la tabla `pagos`, uso datos de ejemplo en un solo archivo y le pregunto qué campos va a tener la tabla, para no inventarlos.
+3. Devoluciones (D4): desde el panel, ver un pago y pedir la devolución. Proponer la regla de reembolso a los socios antes de construirla.
+4. BranderIA con cobro (C7), en la rama `pedidos-cobro`: en /pedidos cargar el precio cotizado y generar el link de pago con la función que deje Eze en apps/web/src/lib/pagos/ (no la escribo yo). Al pagarse, el pedido pasa solo a "en producción". Es lo primero que se recorta si no da el tiempo.
+5. Pruebas del cobro (D1): una lista de casos, recorrida en la compu y en el celular con tarjetas de prueba: pago aprobado, pendiente, rechazado, pago repetido, suscripción, baja, cobro mensual fallido, devolución y factura que no sale. Dejar el resultado en equipo/pruebas-cobro.md, con captura de cada caso.
+6. Beta cerrada (E1, del 14 al 18/12): la lista de 10 a 20 personas, el mensaje para invitarlas y una tabla con lo que hizo y pagó cada una y lo que falló.
+
+Reglas:
+- No toco la lógica de pagos, el webhook, apps/web/src/lib/pagos/ ni apps/web/src/app/ingresar/acciones.ts: son de Eze. Tampoco las pantallas de pago, de la cuenta ni /crear/planes: son de Juan Pedro.
+- Las claves van en .env.local y en Vercel, nunca en el código. Contraseñas y autorizaciones las hago yo.
+- Toda página nueva o cambiada se anota en equipo/paginas.md.
+- Antes de dar algo por listo: lint, build, navegador en compu y en tamaño celular, y una captura.
+
+Está terminado cuando, el viernes 18/12, el panel muestra cada pago y cada suscripción de la beta cerrada con su factura, todos los casos de equipo/pruebas-cobro.md pasaron y BranderIA cobró al menos un pedido real (o quedó decidido recortarlo).
+```
+
+---
+
+## Seguimiento diario (lo corre Rodrigo, cada mañana)
+
+Para pegar en una conversación nueva. No cambia código: solo mira y avisa.
+
+```text
+Leé equipo/plan-beta-20-diciembre.md y la tabla "Quién toca qué" de equipo/prompts-beta-diciembre.md. Hacé git fetch y no cambies ningún archivo ni de rama.
+
+Armame el parte del día:
+1. Por cada rama del plan (cobros, pantallas-cobro, admin-2fa, panel-cobros, pedidos-cobro): los commits de las últimas 24 horas en una línea cada uno, y si ya entró a main.
+2. Contra el cronograma de hoy: qué ítems están en tiempo, cuáles atrasados y cuáles en riesgo para el próximo hito (jueves 3/12 cobro de prueba, jueves 10/12 primer cobro real, viernes 18/12 congelado).
+3. Choques: si dos ramas cambiaron los mismos archivos, o si alguien tocó archivos que la tabla le da a otro.
+4. Lo que falta de afuera del código (contador, quién factura, Mercado Pago, proveedor de facturas, precios): qué sigue pendiente según el plan.
+5. Un mensaje corto, listo para mandar por WhatsApp a Eze y Juan Pedro, con lo atrasado y lo que necesita cada uno del otro.
+
+Escribilo simple y sin jerga. No mandes nada: el mensaje lo mando yo.
 ```
