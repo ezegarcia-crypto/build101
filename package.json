@@ -22,7 +22,7 @@
     "postinstall": "varlock codegen --path ./apps/web/"
   },
   "dependencies": {
-    "zod": "^4.5.4"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@build101/config": "*",
