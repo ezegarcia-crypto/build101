@@ -38,6 +38,7 @@ Para cada logo:
 
 Reglas:
 - Seguí la dirección: usá solo colores de su paleta (sobre todo el principal y el acento; nunca el de fondo para el logo), su lenguaje de formas y sus palabras. La letra del nombre va en el estilo de su tipografía de títulos: describila en el prompt (serif, sans geométrica, condensada, peso, terminaciones) y nombrala como referencia.
+- Si la dirección trae estilo (su familia, el mecanismo y un descriptor en inglés), los tres logos siguen ese mecanismo. Del descriptor tomá para el prompt solo lo que sirve en un logo plano (formas, letra, color), nunca fotos, 3D ni movimiento.
 - Las tres ideas no repiten el mismo símbolo.
 - Si los tres son del mismo tipo, que se diferencien en la forma, el trabajo de las letras y la composición.
 - Respetá la personalidad de la ficha (palabras_si y palabras_no), los colores que no le gustan y lo obligatorio de las restricciones.
@@ -150,6 +151,9 @@ export async function generarLogos({
             tipografia_titulos: direccion.tipografias.titulos.familia,
             formas: direccion.formas,
             logo_sugerido: direccion.logo_sugerido,
+            ...(direccion.estilo?.descriptor
+              ? { estilo: { familia: direccion.estilo.familia, mecanismo: direccion.estilo.mecanismo, descriptor: direccion.estilo.descriptor } }
+              : {}),
           },
           null,
           1,

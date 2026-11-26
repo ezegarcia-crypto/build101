@@ -47,6 +47,41 @@ Google Fonts, así que hay que alojarlas nosotros y cambiar cómo se cargan en e
 cliente, que hoy usan el link de Google Fonts. Ojo con Fontshare: por lo que sabemos, usa una licencia propia
 (ITF Free Font License) y no OFL. Hay que leerla antes de usarla.
 
+## Estilos · `estilos.json` y `estilos.ts`
+
+**Qué es:** las 15 familias de estilo del apéndice A de `reports/Estudios de branding referentes mundiales.md`. Lo que
+las separa es el **mecanismo** (la decisión de diseño que manda: una retícula, el vacío, un personaje, la letra hecha a
+mano, un bloque de color…), no un adjetivo. Cada familia tiene:
+
+| Campo | Qué dice |
+|---|---|
+| `numero` y `nombre` | Por ejemplo «7. Vacío y calma» |
+| `mecanismo` | La decisión de diseño que la define, en español |
+| `rubros` | Para qué negocios suele servir. Orienta, no obliga |
+| `descriptores` | De 5 a 12 descripciones en inglés, listas para el prompt (118 en total) |
+
+El informe no da pareja tipográfica, paleta base ni regla de movimiento por familia, así que no están: las
+tipografías salen del catálogo de fuentes y los colores, del negocio. **Ningún dato nombra estudios ni diseñadores.**
+
+**Cómo lo usa el motor:**
+
+1. `/api/direcciones`: el catálogo va en el prompt (`catalogoEstilosParaPrompt()`, unos 26.000 caracteres,
+   aproximadamente 6.500 tokens) y la IA elige **una familia distinta para cada una de las 3 direcciones** según la
+   ficha, más el número del descriptor que mejor le queda. Después, `estilosDelCatalogo()` revisa que cada familia
+   exista y que no se repita, y lo anota en `comprobaciones` («Estilo»). No se corrige solo: para eso habría que volver
+   a pedirle a la IA.
+2. Cada dirección guarda `estilo`: familia, número, mecanismo, el descriptor en inglés y por qué. La tarjeta del camino
+   muestra «Estilo: …», las vueltas de caminos le pasan a la IA las familias que la persona ya vio, y `/api/logo`
+   recibe el mecanismo y el descriptor para que los logos sigan el mismo estilo.
+3. Las direcciones guardadas antes del catálogo no tienen `estilo` y siguen funcionando (el campo es opcional).
+
+**Cómo se arma:** `node scripts/catalogo-estilos.mjs` (desde la raíz del repo). Lee el apéndice A del informe y
+escribe `estilos.json`. Frena si encuentra en los datos el nombre de alguno de los 177 estudios de las tablas del
+informe. No se edita a mano: si cambia el apéndice, se vuelve a correr.
+
+**Queda para después** (issue #2): los acentos regionales del mismo apéndice (filete, Torres García, chicha…), con la
+intensidad regulable de 0 a 2. Están en el informe pero todavía no en los datos.
+
 ## Paletas
 
 Pendiente (prioridad 2 del issue #2).

@@ -473,8 +473,8 @@ export function GenerarMarca() {
         brief,
         gustan: todas
           .filter((d) => gustos.current.caminos.includes(claveDe(d)))
-          .map((d) => ({ nombre: d.nombre, idea: d.idea, colores: colores(d) })),
-        vistos: todas.map((d) => ({ nombre: d.nombre, colores: colores(d) })),
+          .map((d) => ({ nombre: d.nombre, idea: d.idea, colores: colores(d), estilo: d.estilo?.familia })),
+        vistos: todas.map((d) => ({ nombre: d.nombre, colores: colores(d), estilo: d.estilo?.familia })),
         colores: gustos.current.colores,
         pedido: pedidoCaminos.trim() || undefined,
       });

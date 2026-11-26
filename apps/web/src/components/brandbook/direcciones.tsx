@@ -179,6 +179,12 @@ function Tarjeta({
           <span className="opacity-70">Se siente: </span>
           {d.palabras.join(", ")}
         </span>
+        {d.estilo && (
+          <span>
+            <span className="opacity-70">Estilo: </span>
+            {d.estilo.familia}
+          </span>
+        )}
       </span>
 
       {iterar && (
